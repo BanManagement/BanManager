@@ -1,0 +1,108 @@
+commands: 
+  ban: 
+    description: "ban a player"
+    usage: "/ban <username> <reason>"
+    aliases: [bmban]
+  tempban: 
+    description: "tempban a player"
+    usage: "/tempban <username> <timeDiff> <reason>"
+    aliases: [bmtempban]
+  unban:
+    description: "unban a player"
+    usage: "/unban <username>"
+    aliases: [bmunban]
+  baninfo:
+    description: "see information on a player"
+    usage: "/baninfo <username>"
+    aliases: [bmbaninfo]
+  banip:
+    description: "ban an ip"
+    usage: "/banip <username || IP Address> <reason>"
+    aliases: [bmbanip]
+  unbanip:
+    description: "unban's an ip"
+    usage: "/unbanip <IP Address>"
+    aliases: [bmunbanip]
+  banimport:
+    description: "imports bans"
+    usage: "/banimport <player || ip> <reason>"
+    aliases: [bmbanimport]
+  kick:
+    description: "kick a player"
+    usage: "/kick <player> <reason>"
+    aliases: [bmkick]
+  mute:
+    description: "mutes a player"
+    usage: "/mute <player> <reason>"
+    aliases: [bmmute]
+  tempmute:
+    description: "temp mutes a player"
+    usage: "/tempmute <player> <timeDiff> <reason>"
+    aliases: [bmtempmute]
+  unmute:
+    description: "unmute a player"
+    usage: "/unmute <username>"
+    aliases: [bmunmute]
+main: me.confuserr.banmanager.BanManager
+name: BanManager
+permissions:
+    bm.*:
+        description: Gives access to all BanManager commands
+        children:
+            bm.ban: true
+            bm.unban: true
+            bm.tempban: true
+            bm.exempt: true
+            bm.baninfo: true
+            bm.notify: true
+            bm.banip: true
+            bm.unbanip: true
+            bm.import: true
+            bm.kick: true
+            bm.update: true
+            bm.mute: true
+            bm.tempmute: true
+            bm.unmute: true
+    bm.unban:
+        description: Allows you to unban a user
+        default: op
+    bm.ban:
+        description: Allows you to ban a user
+        default: op
+    bm.tempban:
+        description: Allows you to tempban a user
+        default: op
+    bm.exempt:
+        description: Prevents this user from being banned or kicked
+        default: op
+    bm.baninfo:
+        description: Allows you to see information on players
+        default: op
+    bm.notify:
+        description: Players with this permission will be told of bans
+        default: op
+    bm.banip:
+        description: Allows you to ban an ip
+        default: op
+    bm.unbanip:
+        description: Allows you to unban an ip
+        default: op
+    bm.import:
+        description: Allows importing of banned players and ips from Bukkit
+        default: op
+    bm.kick:
+        description: Allows a player to kick another player
+        default: op
+    bm.update:
+        description: Notifies player of a plugin update
+        default: op
+    bm.mute:
+        description: Allows you to mute a player
+        default: op
+    bm.tempmute:
+        description: Allows you to temp mute a player
+        default: op
+    bm.unmute:
+        description: Allows you to unmute a player
+        default: op
+version: 1.82
