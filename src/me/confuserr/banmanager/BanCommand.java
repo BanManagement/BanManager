@@ -4,7 +4,6 @@ import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
 
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,7 +57,7 @@ public class BanCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("playerBanned").replace("[name]", target.getName()));
 				
 				String message = plugin.banMessages.get("ban").replace("[name]", target.getDisplayName()).replace("[reason]", viewReason).replace("[by]", playerName);
-				plugin.sendMessageWithPerm(ChatColor.RED+message, "bm.notify");
+				plugin.sendMessageWithPerm(message, "bm.notify");
 			}
 		}
 		else if(list.size() > 1) {
@@ -77,7 +76,7 @@ public class BanCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("playerBanned").replace("[name]", offlinePlayer.getName()));
 				
 				String message = plugin.banMessages.get("ban").replace("[name]", offlinePlayer.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
-				plugin.sendMessageWithPerm(ChatColor.RED+message, "bm.notify");
+				plugin.sendMessageWithPerm(message, "bm.notify");
 			}
 		}
 		return true;
