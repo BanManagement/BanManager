@@ -58,7 +58,7 @@ public class muteAsync implements Runnable {
 			while(result1.next()) {
 				// Remove them from the muted list
 				String player = result1.getString("muted");
-				Long expires = result1.getLong("mute_expires_on");
+				Long expires = result1.getLong("mute_expired_on");
 				
 				if(plugin.mutedPlayersBy.containsKey(player)) {
 					if(plugin.mutedPlayersLength.get(player) == expires)
