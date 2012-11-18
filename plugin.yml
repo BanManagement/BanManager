@@ -105,4 +105,4 @@ permissions:
     bm.unmute:
         description: Allows you to unmute a player
         default: op
-version: 1.82
+version: 1.83
