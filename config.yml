@@ -73,5 +73,5 @@ messages:
     ipNotBannedError: '&c[ip] is not currently banned. You can''t unban someone who isn''t banned!'
     invalidIp: '&cInvalid IP!'
     playerUnmuted: '[name] has been unmuted'
-    playerNotMuted: '&cYou can''t unmute someone who isn''t muted!'
+    playerNotMutedError: '&cYou can''t unmute someone who isn''t muted!'
     updateAvailable: '&A[version] update available'
