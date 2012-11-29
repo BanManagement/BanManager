@@ -313,6 +313,7 @@ $actions = array(
 	'admin',
 	'deleteserver',
 	'editserver',
+	'logout',
 	'searchplayer',
 	'searchip',
 	'servers',

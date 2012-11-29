@@ -3,8 +3,10 @@ $nav = array(
 	'Home' => 'index.php',
 	'Servers' => 'index.php?action=servers'
 );
-if(isset($_SESSION['admin']) && $_SESSION['admin'])
+if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	$nav['Admin'] = 'index.php?action=admin';
+	$nav['Logout'] = 'index.php?action=logout';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
