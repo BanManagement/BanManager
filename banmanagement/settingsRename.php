@@ -1,5 +1,5 @@
 <?php
 $settings['servers'] = '';
 $settings['password'] = '';
-$settings['footer'] = '&copy;'.date('Y').' Your Server';
+$settings['footer'] = '&copy; Your Server '.date('Y');
 ?>
