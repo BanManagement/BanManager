@@ -6,3 +6,6 @@ bin
 *.jar
 *.war
 *.ear
+
+# Web Interface Files #
+banmanagement/settings.php
