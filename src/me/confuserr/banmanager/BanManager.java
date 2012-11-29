@@ -164,6 +164,7 @@ public class BanManager extends JavaPlugin {
 		getCommand("unbanip").setExecutor(new UnBanIpCommand(this));
 		getCommand("banimport").setExecutor(new BanImportCommand(this));
 		getCommand("kick").setExecutor(new KickCommand(this));
+		getCommand("nlkick").setExecutor(new LoglessKickCommand(this));
 		getCommand("mute").setExecutor(new MuteCommand(this));
 		getCommand("tempmute").setExecutor(new TempMuteCommand(this));
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));

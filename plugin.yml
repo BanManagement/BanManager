@@ -43,6 +43,10 @@ commands:
     description: "unmute a player"
     usage: "/unmute <username>"
     aliases: [bmunmute]
+  nlkick:
+    description: "kick a player without logging"
+    usage: "/nlkick <player> <reason>"
+    aliases: [bmnlkick]
 main: me.confuserr.banmanager.BanManager
 name: BanManager
 permissions:
