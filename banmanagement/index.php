@@ -315,8 +315,11 @@ $actions = array(
 	'viewip',
 	'viewplayer'
 );
+if(file_exists('settings.php'))
+	include('settings.php');
+else
+	errors('You must rename settingsRename.php to settings.php');
 
-include('settings.php');
 $settings['servers'] = unserialize($settings['servers']);
 
 if(!isset($_GET['ajax']) || (isset($_GET['ajax']) && !$_GET['ajax']))
