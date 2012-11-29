@@ -37,7 +37,12 @@ else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
 	}
 		?></tbody>
 	</table>
-	<a class="btn btn-primary btn-large" data-toggle="modal" href="#addserver" >Add Server</a>
+	<?php
+	if(!is_writable('settings.php')) {
+		echo '<a class="btn btn-primary btn-large disabled" href="#addserver" title="Settings file not writable">Add Server</a>';
+	} else
+		echo '<a class="btn btn-primary btn-large" href="#addserver" data-toggle="modal">Add Server</a>';
+	?>
 	<div class="modal hide fade" id="addserver">
 		<form class="form-horizontal" action="" method="post">
 			<div class="modal-header">
