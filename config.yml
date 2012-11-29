@@ -10,6 +10,7 @@ localDatabase:
     kicksTable: 'mb_kicks'
     mutesTable: 'mb_mutes'
     mutesRecordTable: 'mb_mutes_records'
+    playerIpsTable: 'mb_player_ips'
 # Only fill in if you are syncing bans accross servers
 serverName: ''
 checkForUpdates: true

@@ -96,6 +96,8 @@ public class BanManager extends JavaPlugin {
 		localMutesTable = getConfig().getString("localDatabase.mutesTable");
 		localMutesRecordTable = getConfig().getString("localDatabase.mutesRecordTable");
 		
+		localPlayerIpsTable = getConfig().getString("localDatabase.mutesRecordTable");
+		
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("keepKicks");
 		
