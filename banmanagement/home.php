@@ -4,7 +4,7 @@
 	<form action="index.php" method="get" class="form-horizontal" id="search">
 		<fieldset>
 			<div class="control-group">
-				<label class="control-label" for="servername">
+				<!-- <label class="control-label" for="servername">
 					<div class="btn-group" id="searchtype">
 						<button class="btn" id="player">Player</button>
 						<button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -14,10 +14,20 @@
 							<li id="ip"><a href="#">IP</a></li>
 						</ul>
 					</div>
-				</label>
-				<div class="controls searchinput">
-					<input type="text" name="player" class="span4 search-query required" placeholder="Enter Player Name">
-				</div>
+				</label> -->
+					<div class="input-prepend">
+						<div class="btn-group">
+							<button id="player" class="btn dropdown-toggle" data-toggle="dropdown">
+								Player
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li id="ip"><a href="#">IP</a></li>
+							</ul>
+						</div>
+						<input type="text" name="player" class="span4 required" placeholder="Enter Player Name">
+					</div>
+
 			</div>
 		<?php
 		if(!empty($settings['servers']) && count($settings['servers']) > 1) {

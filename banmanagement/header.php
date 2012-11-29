@@ -34,22 +34,6 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'])
 				margin: 0;
 				vertical-align: text-top;
 			}
-			#search {
-				position: relative;
-			}
-			#search .searchinput input {
-				display: inline;
-				margin-left: -74px;
-				position: absolute;
-				top: 5px;
-				z-index: 1;
-			}
-			#searchtype {
-				z-index: 5;
-			}
-			#search.form-horizontal .control-label {
-				text-align: left;
-			}
 			.latestban {
 				position: relative;
 			}

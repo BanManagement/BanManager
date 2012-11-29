@@ -13,13 +13,13 @@
 					if(s.attr("id") == 'ip') {
 						var player = $("#player");
 						$("#ip").attr('id', 'player').find("a").text('Player');
-						player.attr('id', 'ip').text('IP');
+						player.attr('id', 'ip').html('IP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span>');
 						$("#search input[type=text]").attr('placeholder', 'Enter IP Address');
 						$("#search input[name=action]").attr('value', 'searchip');
 					} else {
 						var ip = $("#ip");
 						$("#player").attr('id', 'ip').find("a").text('IP');
-						ip.attr('id', 'player').text('Player');
+						ip.attr('id', 'player').html('Player <span class="caret"></span>');
 						$("#search input[type=text]").attr('placeholder', 'Enter Player Name');
 						$("#search input[name=action]").attr('value', 'searchplayer');
 					}
