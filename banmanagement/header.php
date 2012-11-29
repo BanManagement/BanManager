@@ -17,34 +17,10 @@ if(isset($_SESSION['admin']) && $_SESSION['admin'])
 
 		<!-- Le styles -->
 		<link href="css/bootstrap.min.css" rel="stylesheet">
-		<style type="text/css">
-			body {
-				padding-top: 60px;
-				padding-bottom: 40px;
-			}
-			#ajaxLoading {
-				margin-top: 15px;
-				margin-left: auto;
-				margin-right: auto;
-				margin-bottom: 15px;
-				text-align: center;
-			}
-			#ajaxLoading.small {
-				display: inline-block;
-				margin: 0;
-				vertical-align: text-top;
-			}
-			.latestban {
-				position: relative;
-			}
-			.latestban button {
-				position: absolute;
-				right: 4px;
-				top: 4px;
-			}
-		</style>
 		<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 
+		<link href="css/style.css" rel="stylesheet">
+		
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
 		  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

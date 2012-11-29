@@ -1,0 +1,24 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+#ajaxLoading {
+	margin-top: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 15px;
+	text-align: center;
+}
+#ajaxLoading.small {
+	display: inline-block;
+	margin: 0;
+	vertical-align: text-top;
+}
+.latestban {
+	position: relative;
+}
+.latestban button {
+	position: absolute;
+	right: 4px;
+	top: 4px;
+}
