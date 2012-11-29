@@ -22,3 +22,6 @@ body {
 	right: 4px;
 	top: 4px;
 }
+#servers td {
+	vertical-align: middle;
+}
