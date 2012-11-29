@@ -2,7 +2,7 @@
 			<footer>
 				<p class="pull-left"><?php echo $settings['footer']; ?></p>
 				<!-- Must not be removed as per the licence terms -->
-				<p class="pull-right">Created By <a href="http://www.frostcast.net">Frostcast</a></p>
+				<p class="pull-right">Created By <a href="http://www.frostcast.net" target="_blank">Frostcast</a></p>
 			</footer>
 		</div> <!-- /container -->
 		<script type="text/javascript">
