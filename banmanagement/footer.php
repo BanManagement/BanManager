@@ -1,6 +1,8 @@
 			<hr>
 			<footer>
-				<p>&copy; <a href="http://www.frostcast.net">Frostcast</a> 2012</p>
+				<p class="pull-left"><?php echo $settings['footer']; ?></p>
+				<!-- Must not be removed as per the licence terms -->
+				<p class="pull-right">Created By <a href="http://www.frostcast.net">Frostcast</a></p>
 			</footer>
 		</div> <!-- /container -->
 		<script type="text/javascript">
