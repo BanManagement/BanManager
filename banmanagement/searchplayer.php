@@ -81,7 +81,23 @@ else {
 			$found[] = $r['muted'];
 	}
 	
-	if($noneCurrent && $nonePast && $noneMutes && $noneMutesPast) {
+	 // Check past kicks!
+	$result = cache("SELECT kicked FROM ".$server['kicksTable']." WHERE kicked LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
+	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+		$result = array($result);
+	$rows = count($result);
+	if($rows > 0 && $_GET['player'] != '%') {
+		// Found the player! Redirect
+		$fetch = $result[0];
+		redirect('index.php?action=viewplayer&player='.$fetch['kicked'].'&server='.$_GET['server']);
+	} else if($rows == 0)
+		$noneKicksPast = true;
+	else if($rows > 0) {
+		foreach($result as $r)
+			$found[] = $r['kicked'];
+	}
+
+	if($noneCurrent && $nonePast && $noneMuted && $noneMutesPast && $noneKicksPast) {
 		errors('No matched players found');
 		?><a href="index.php" class="btn btn-primary">New Search</a><?php
 	} else {
