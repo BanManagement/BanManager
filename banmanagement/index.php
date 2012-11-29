@@ -2,6 +2,10 @@
 // All code is copyright of James Mortemore (confuser, confuserr) and cannot be redistributed without express permission
 session_start();
 ob_start();
+
+// IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
+header('X-FRAME-OPTIONS: SAMEORIGIN');
+
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
     $_SESSION['initiated'] = true;
