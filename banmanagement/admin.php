@@ -1,15 +1,26 @@
 <?php
 if($settings['password'] == '')
 	errors('You have not yet set a password!');
-else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
+else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4) {
+	die('You have reached your maxiumum attempts. Please try again later');
+	if($_SESSION['failed_attempt'] < time())
+		unset($_SESSION['failed_attempts']);
+} else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
 	?><form action="" method="post" class="well form-inline">
     <input type="password" class="input-xlarge" name="password" placeholder="Password">
     <button type="submit" class="btn">Sign in</button>
     </form><?php
 } else if(isset($_POST['password']) && !isset($_SESSION['admin'])) {
-	if(htmlspecialchars_decode($_POST['password'], ENT_QUOTES) != $settings['password'])
+	if(htmlspecialchars_decode($_POST['password'], ENT_QUOTES) != $settings['password']) {
+		//set how long we want them to have to wait after 5 wrong attempts
+		$time = 1800; //make them wait 30 mins
+		if(isset($_SESSION['failed_attempts']))
+			++$_SESSION['failed_attempts']; 
+		else
+			$_SESSION['failed_attempts'] = 1;
+		$_SESSION['failed_attempt'] = time() + $time;
 		redirect('index.php?action=admin');
-	else {
+	} else {
 		$_SESSION['admin'] = true;
 		redirect('index.php?action=admin');
 	}
