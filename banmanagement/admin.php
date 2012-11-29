@@ -1,6 +1,6 @@
 <?php
 if($settings['password'] == '')
-	echo 'You have not yet set a password!';
+	errors('You have not yet set a password!');
 else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
 	?><form action="" method="post" class="well form-inline">
     <input type="password" class="input-xlarge" name="password" placeholder="Password">
