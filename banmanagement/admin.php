@@ -7,7 +7,7 @@ else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
     <button type="submit" class="btn">Sign in</button>
     </form><?php
 } else if(isset($_POST['password']) && !isset($_SESSION['admin'])) {
-	if($_POST['password'] != $settings['password'])
+	if(htmlspecialchars_decode($_POST['password'], ENT_QUOTES) != $settings['password'])
 		redirect('index.php?action=admin');
 	else {
 		$_SESSION['admin'] = true;
