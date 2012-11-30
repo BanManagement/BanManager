@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.listeners.AsyncChat;
 import me.confuserr.banmanager.listeners.AsyncPreLogin;
+import me.confuserr.banmanager.listeners.MutedBlacklistCheck;
 import me.confuserr.banmanager.listeners.SyncLogin;
 import me.confuserr.banmanager.listeners.UpdateNotify;
 import me.confuserr.banmanager.scheduler.bukkitUnbanSync;
@@ -56,6 +57,7 @@ public class BanManager extends JavaPlugin {
 	public boolean onlineMode;
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
+	public List<String> mutedBlacklist;
 	
 	public DbLogger dbLogger;
 	public String updateVersion;
@@ -109,6 +111,8 @@ public class BanManager extends JavaPlugin {
 	    	banMessages.put(key, colorize(getConfig().getString("messages."+key)));
 		}
 		
+		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
+
 		/*// bans
 		banMessages.put("ban", colorize(getConfig().getString("messages.ban")));
 		banMessages.put("banKick", colorize(getConfig().getString("messages.banKick")));
@@ -184,6 +188,9 @@ public class BanManager extends JavaPlugin {
 		
 		// Register the chat event for mutes
 		getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
+		
+		// Register the blacklist check event for mutes
+		getServer().getPluginManager().registerEvents(new MutedBlacklistCheck(plugin), this);
 		
 		try {
 		    Metrics metrics = new Metrics(this);

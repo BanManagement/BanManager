@@ -17,6 +17,11 @@ checkForUpdates: true
 logKicks: false
 # Keep kicks for number of days, use 0 to never delete
 keepKicks: 30
+
+# Blacklist commands for muted players
+mutedCommandBlacklist:
+    - msg
+
 messages:
     ban: '[name] has been banned for [reason]'
     banKick: 'You have been banned for [reason]'
