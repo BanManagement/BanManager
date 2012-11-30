@@ -96,7 +96,7 @@ public class BanManager extends JavaPlugin {
 		localMutesTable = getConfig().getString("localDatabase.mutesTable");
 		localMutesRecordTable = getConfig().getString("localDatabase.mutesRecordTable");
 		
-		localPlayerIpsTable = getConfig().getString("localDatabase.mutesRecordTable");
+		localPlayerIpsTable = getConfig().getString("localDatabase.playerIpsTable");
 		
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("keepKicks");
@@ -146,7 +146,8 @@ public class BanManager extends JavaPlugin {
 			return;
 		}
 		
-		if(!localConn.checkTable(localMutesTable)) {
+		if(!localConn.checkTable(localPlayerIpsTable)) {
+			this.logger.info("["+pdfFile.getName()+"] creating tables");
 			try {
 				plugin.dbLogger.create_tables();
 			} catch (SQLException e) {

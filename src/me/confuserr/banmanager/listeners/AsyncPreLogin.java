@@ -60,6 +60,6 @@ public class AsyncPreLogin implements Listener {
 		}
 		
 		// Here we log their IP to the database
-		// plugin.dbLogger.setIp(name, ip);
+		plugin.dbLogger.setIP(name, ip);
 	}
 }

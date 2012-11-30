@@ -384,9 +384,9 @@ public class DbLogger {
 											plugin.logger.severe("Unable to create local BanManagement table");
 										else {
 											Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+plugin.localPlayerIpsTable+" ("+
-											 "player varchar(25) NOT NULL AUTO_INCREMENT,"+
-											 "ip int NOT NULL UNSIGNED," +
-											 "last_seen int(10) NOT NULL"+
+											 "`player` varchar(25) NOT NULL,"+
+											 "`ip` int UNSIGNED NOT NULL," +
+											 "`last_seen` int(10) NOT NULL,"+
 											 "KEY `player` (`player`),"+
 											 "KEY `ip` (`ip`)"+
 											") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
@@ -410,7 +410,7 @@ public class DbLogger {
 	}
 	
 	public void setIP(String name, InetAddress ip) {
-		localConn.query("");
+		localConn.query("INSERT INTO "+plugin.localPlayerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = '"+plugin.getIp(ip)+"', last_seen = '"+System.currentTimeMillis() / 1000+"'");
 	}
 
 	public void closeConnection() {

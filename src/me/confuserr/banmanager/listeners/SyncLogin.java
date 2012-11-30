@@ -58,5 +58,8 @@ public class SyncLogin implements Listener {
 		if(!plugin.mutedPlayersBy.containsKey(name)) {
 			plugin.dbLogger.isMutedThenAdd(name);
 		}
+		
+		// Here we log their IP to the database
+		plugin.dbLogger.setIP(name, ip);
 	}
 }
