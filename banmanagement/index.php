@@ -311,6 +311,7 @@ function connect($server) {
 $actions = array(
 	'addserver',
 	'admin',
+	'deletebanrecord',
 	'deleteserver',
 	'editserver',
 	'logout',

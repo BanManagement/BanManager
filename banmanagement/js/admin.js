@@ -40,13 +40,44 @@ $(function() {
 		$(this).append('<div id="ajaxLoading" class="small"><span id="loadingSmall"></span></div>').find('i').hide().parent().addClass('disabled');
 		showLoading('loadingSmall');
 		$.ajax({
-			url: 'index.php?action=deleteserver&ajax=true&id='+id,
+			url: 'index.php?action=deleteserver&ajax=true&authid='+authid+'&id='+id,
 			type: 'post',
 			dataType: 'json',
 			success: function(data, textStatus, jqXHR) {
 				hideLoading();
 				$this.removeClass('disabled').find('i').show();
 				if(data.error) {
+					formBody.prepend(error(data.error));
+				} else {
+					errorRemove();
+					$this.parent().parent().fadeOut().remove();
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				hideLoading();
+				$this.removeClass('disabled').find('i').show();
+				formBody.prepend(error('Invalid response from server, try again'));
+			}
+		});
+	});
+	
+	$("#previous-bans a.delete").live('click', function(e) {
+		e.preventDefault();
+		var id = $(this).data('record-id');
+		var server = $(this).data('server');
+		var formBody = $("#container");
+		$this = $(this);
+		$(this).append('<div id="ajaxLoading" class="small"><span id="loadingSmall"></span></div>').find('i').hide().parent().addClass('disabled');
+		showLoading('loadingSmall');
+		$.ajax({
+			url: 'index.php?action=deletebanrecord&ajax=true&authid='+authid+'&server='+server+'&id='+id,
+			type: 'post',
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				hideLoading();
+				$this.removeClass('disabled').find('i').show();
+				if(data.error) {
+					$(document).load().scrollTop(0);
 					formBody.prepend(error(data.error));
 				} else {
 					errorRemove();
