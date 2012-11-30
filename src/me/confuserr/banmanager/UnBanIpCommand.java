@@ -1,5 +1,6 @@
 package me.confuserr.banmanager;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -42,7 +43,20 @@ public class UnBanIpCommand implements CommandExecutor {
 			}
 			
 		} else {
-			plugin.sendMessage(sender, plugin.banMessages.get("invalidIp"));
+			// Assume its a player!
+			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
+			
+			String ip = plugin.dbLogger.getIP(offlinePlayer.getName());
+
+			if(ip.isEmpty())
+				plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
+			else {
+				// Ok, we have their IP, lets ban it
+				plugin.getServer().unbanIP(ip);
+				plugin.dbLogger.ipRemove(ip, playerName);
+				plugin.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
+			}
+			//plugin.sendMessage(sender, plugin.banMessages.get("invalidIp"));
 		}
 
 		return true;
