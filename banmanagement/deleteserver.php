@@ -1,6 +1,8 @@
 <?php
 if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin']))
 	die('Hacking attempt');
+else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
+	die('Hacking attempt');
 else if(!isset($_GET['id']) || !is_numeric($_GET['id']))
 	die('Hacking attempt');
 else if(!isset($settings['servers'][$_GET['id']]))

@@ -31,7 +31,18 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		<script src="js/bootstrap.min.js"></script>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 		<script src="js/heartcode-canvasloader-min.js"></script>
-		<script src="js/jquery.countdown.min.js"></script>
+		<script src="js/jquery.countdown.min.js"></script><?php
+if(isset($_SESSION['admin']) && $_SESSION['admin']) {
+	echo '
+		<script type="text/javascript">
+			var authid = \''.sha1($settings['password']).'\';
+		</script>';
+	if(isset($_GET['action']) && $_GET['action'] != 'admin')
+		echo '
+		<script src="js/admin.js"></script>
+';
+}
+		?>
 		<script src="js/core.js"></script>
 	</head>
 	<body>
