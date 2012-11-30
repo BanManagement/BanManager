@@ -26,18 +26,30 @@ public class TempMuteCommand implements CommandExecutor {
 		Player player = null;
 		String playerName = "Console";
 		
+		Long timeExpires = getTimeStamp(args[1]);
+		
 		if(sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.tempmute")) {
 				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
+			} else {
+				for(String k : plugin.timeLimitsMutes.keySet()) {
+					if(player.hasPermission("bm.timelimit.mutes."+k)) {
+						long timeLimit = getTimeStamp(plugin.timeLimitsMutes.get(k));
+						if(timeLimit < timeExpires) {
+							// Erm, they tried to ban for too long
+							plugin.sendMessage(player, plugin.banMessages.get("muteTimeLimitError"));
+							return true;
+						}
+					}
+				}
 			}
 		}
 		
 		String reason = plugin.getReason(args, 2);
 		String viewReason = plugin.viewReason(reason);
-		Long timeExpires = getTimeStamp(args[1]);
 		
 		if(timeExpires == 0) {
 			plugin.sendMessage(sender, plugin.banMessages.get("illegalDateError"));

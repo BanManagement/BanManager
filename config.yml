@@ -22,6 +22,14 @@ keepKicks: 30
 mutedCommandBlacklist:
     - msg
 
+# Simply give the permission bm.timelimit.mutes.X or bm.timelimit.bans.X to apply the time limits
+# replace X with the group defined here, can be anything you like.
+timeLimits:
+    mutes:
+        Moderator: 1h
+    bans:
+        Moderator: 1d
+
 messages:
     ban: '[name] has been banned for [reason]'
     banKick: 'You have been banned for [reason]'
@@ -81,3 +89,5 @@ messages:
     playerUnmuted: '[name] has been unmuted'
     playerNotMutedError: '&cYou can''t unmute someone who isn''t muted!'
     updateAvailable: '&A[version] update available'
+    banTimeLimitError: '&cYou cannot ban for that length of time'
+    muteTimeLimitError: '&cYou cannot mute for that length of time'

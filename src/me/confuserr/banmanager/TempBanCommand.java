@@ -1,6 +1,8 @@
 package me.confuserr.banmanager;
 
 import java.util.List;
+import java.util.Set;
+
 import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.OfflinePlayer;
@@ -9,7 +11,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-
 public class TempBanCommand implements CommandExecutor {
 
 	private BanManager plugin;
@@ -17,7 +18,7 @@ public class TempBanCommand implements CommandExecutor {
 	TempBanCommand(BanManager instance) {
 		plugin = instance;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {		
 		if(args.length < 3)
@@ -26,23 +27,36 @@ public class TempBanCommand implements CommandExecutor {
 		Player player = null;
 		String playerName = "Console";
 		
+		Long timeExpires = getTimeStamp(args[1]);
+		
 		if(sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.tempban")) {
 				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
+			} else {
+				for(String k : plugin.timeLimitsBans.keySet()) {
+					if(player.hasPermission("bm.timelimit.bans."+k)) {
+						long timeLimit = getTimeStamp(plugin.timeLimitsBans.get(k));
+						if(timeLimit < timeExpires) {
+							// Erm, they tried to ban for too long
+							plugin.sendMessage(player, plugin.banMessages.get("banTimeLimitError"));
+							return true;
+						}
+					}
+				}
 			}
 		}
-		
-		String reason = plugin.getReason(args, 2);
-		String viewReason = plugin.viewReason(reason);
-		Long timeExpires = getTimeStamp(args[1]);
 		
 		if(timeExpires == 0) {
 			plugin.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
 			return true;
 		}
+		
+		String reason = plugin.getReason(args, 2);
+		String viewReason = plugin.viewReason(reason);
+		
 		timeExpires = timeExpires / 1000;
 		String formatExpires = plugin.formatDateDiff(timeExpires * 1000);
 		List<Player> list = plugin.getServer().matchPlayer(args[0]);
@@ -91,7 +105,7 @@ public class TempBanCommand implements CommandExecutor {
 		}
 		return true;
 	}
-	
+
 	private long getTimeStamp(String time) {
 		// TODO Auto-generated method stub
 		long timeReturn;

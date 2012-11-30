@@ -58,6 +58,8 @@ public class BanManager extends JavaPlugin {
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
 	public List<String> mutedBlacklist;
+	public HashMap<String, String> timeLimitsMutes = new HashMap<String, String>();
+	public HashMap<String, String> timeLimitsBans = new HashMap<String, String>();
 	
 	public DbLogger dbLogger;
 	public String updateVersion;
@@ -112,6 +114,17 @@ public class BanManager extends JavaPlugin {
 		}
 		
 		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
+		
+		// Loop through the time limits
+		for(String key : getConfig().getConfigurationSection("timeLimits.mutes").getKeys(false)) {
+			String path = "timeLimits.mutes."+key;
+			timeLimitsMutes.put(key, getConfig().getString(path));
+		}
+		
+		for(String key : getConfig().getConfigurationSection("timeLimits.bans").getKeys(false)) {
+			String path = "timeLimits.bans."+key;
+			timeLimitsBans.put(key, getConfig().getString(path));
+		}
 
 		/*// bans
 		banMessages.put("ban", colorize(getConfig().getString("messages.ban")));
