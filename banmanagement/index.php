@@ -312,6 +312,7 @@ $actions = array(
 	'addserver',
 	'admin',
 	'deletebanrecord',
+	'deletekickrecord',
 	'deletemuterecord',
 	'deleteserver',
 	'editserver',

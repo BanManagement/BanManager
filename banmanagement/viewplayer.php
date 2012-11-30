@@ -284,7 +284,7 @@ else {
 				</tbody>
 			</table>
 			<br />
-			<table class="table table-striped table-bordered">
+			<table class="table table-striped table-bordered" id="previous-kicks">
 				<caption>Kicks</caption>
 				<thead>
 					<th>ID</th>
@@ -303,7 +303,10 @@ else {
 		if($serverName) {
 				echo '
 					<th>Server</th>';
-		}		
+		}
+		if($admin)
+			echo '
+					<th></th>';
 				?>
 				</thead>
 				<tbody><?php
@@ -323,7 +326,8 @@ else {
 						<td>'.$r['kick_reason'].'</td>
 						<td>'.$r['kicked_by'].'</td>
 						<td>'.date('d/m/y', $r['kick_time']).'</td>'.($serverName ? '
-						<td>'.$r['server'].'</td>' : '').'
+						<td>'.$r['server'].'</td>' : '').($admin ? '
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['kick_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
 					</tr>';
 				++$i;
 			}
