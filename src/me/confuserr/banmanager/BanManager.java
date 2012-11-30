@@ -37,6 +37,9 @@ public class BanManager extends JavaPlugin {
 	public BanManager plugin;
 	public String localUser;
 	public String localPass;
+	public String localHost;
+	public String localDatabase;
+	public String localPort;
 	public String localUrl;
 	public String localBansTable;
 	public String localBanRecordTable;
@@ -84,10 +87,40 @@ public class BanManager extends JavaPlugin {
 		
 		PluginDescriptionFile pdfFile = this.getDescription();
 		
+		if(getConfig().getString("localDatabase.url") != null) {
+			// Old config, need to migrate!
+			
+			String oldUrl = getConfig().getString("localDatabase.url");
+
+			Pattern p = Pattern.compile("jdbc:mysql:\\/\\/(.*):(.*)\\/(.*)");
+			Matcher m = p.matcher(oldUrl);
+			
+			while (m.find()) {
+				localHost = m.group(1);
+				localPort = m.group(2);
+				localDatabase = m.group(3);
+			}
+			
+			this.logger.info("["+pdfFile.getName()+"] Old config found, migrating!");
+
+			getConfig().set("localDatabase.url", null);
+			
+			getConfig().set("localDatabase.host", localHost);
+			getConfig().set("localDatabase.port", localPort);
+			getConfig().set("localDatabase.database", localDatabase);
+			
+			this.saveConfig();
+		}
+		
 		// Set the database variables from the config
+		localHost = getConfig().getString("localDatabase.host");
+		localPort = getConfig().getString("localDatabase.port");
+		localDatabase = getConfig().getString("localDatabase.database");
 		localUser = getConfig().getString("localDatabase.username");
 		localPass = getConfig().getString("localDatabase.password");
-		localUrl  = getConfig().getString("localDatabase.url");
+		
+		//localUrl  = getConfig().getString("localDatabase.url");
+		localUrl = "jdbc:mysql://"+localHost+":"+localPort+"/"+localDatabase;
 		
 		localBansTable = getConfig().getString("localDatabase.bansTable");
 		localBanRecordTable = getConfig().getString("localDatabase.bansRecordTable");
