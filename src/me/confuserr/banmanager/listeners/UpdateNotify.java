@@ -23,7 +23,7 @@ public class UpdateNotify implements Listener {
 			if(player.hasPermission("bm.update")) {
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				   public void run() {
-					   player.sendMessage(plugin.banMessages.get("commandPermissionError").replace("[version]", plugin.updateVersion));
+					   player.sendMessage(plugin.banMessages.get("updateAvailable").replace("[version]", plugin.updateVersion));
 					   player.sendMessage(ChatColor.GOLD+"http://dev.bukkit.org/server-mods/ban-management/");
 				   }
 				}, 40L);
