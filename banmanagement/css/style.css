@@ -25,3 +25,9 @@ body {
 #servers td {
 	vertical-align: middle;
 }
+.hero-unit {
+	font-size: 14px;
+}
+td.admin-options {
+	text-align: center;
+}
