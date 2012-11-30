@@ -143,7 +143,7 @@ public class BanManager extends JavaPlugin {
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
 		
 		for(String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
-	    	banMessages.put(key, colorize(getConfig().getString("messages."+key)));
+	    	banMessages.put(key, colorize(getConfig().getString("messages."+key).replace("\\n", "\n")));
 		}
 		
 		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
