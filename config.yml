@@ -1,6 +1,8 @@
 # Default configuration file for James' BanManagement Plugin
 localDatabase:
-    url: 'jdbc:mysql://localhost:3306/frostcast'
+    host: 'localhost'
+    port: 3306
+    database: 'frostcast'
     username: 'root'
     password: ''
     bansTable: 'mb_bans'
