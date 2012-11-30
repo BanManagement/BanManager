@@ -32,7 +32,7 @@ else {
 	}
 	// Check past bans!
 	$result = cache("SELECT banned FROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-	if(!is_array($result[0]) && !empty($result[0]))
+	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 		$result = array($result);
 	$rows = count($result);
 	if($rows == 1 && $_GET['player'] != '%') {
