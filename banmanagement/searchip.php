@@ -46,7 +46,7 @@ else {
 			$found[] = $r['banned'];
 	}
 	if($noneCurrent && $nonePast) {
-		errors('No matched players found');
+		errors('No matched IPs found');
 		?><a href="index.php" class="btn btn-primary">New Search</a><?php
 	} else {
 		// Lets list all the players found!
