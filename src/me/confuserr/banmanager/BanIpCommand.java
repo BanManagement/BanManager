@@ -88,8 +88,25 @@ public class BanIpCommand implements CommandExecutor {
 				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 				return false;
 			} else {
+				// They're offline, lets check the database
 				OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-				plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
+				
+				String ip = plugin.dbLogger.getIP(offlinePlayer.getName());
+
+				if(ip.isEmpty())
+					plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
+				else {
+					// Ok, we have their IP, lets ban it
+					plugin.getServer().banIP(ip);
+					plugin.dbLogger.logIpBan(ip, playerName, reason);
+					plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+					
+					if(!sender.hasPermission("bm.notify"))
+						plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+					
+					String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", playerName);
+					plugin.sendMessageWithPerm(message, "bm.notify");
+				}
 			}
 			
 		}
