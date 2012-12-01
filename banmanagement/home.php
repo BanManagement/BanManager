@@ -101,7 +101,7 @@ if(!empty($settings['servers'])) {
 			$mysqlSecs = ($mysqlTime * 60) * 60;
 			foreach($result as $r) {
 				$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
-				echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$i.'">'.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
+				echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$i.'">'.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
 				if($r['ban_expires_on'] == 0)
 					echo ' <span class=\'label label-important\'>Never</span>';
 				else if($expires > 0)
