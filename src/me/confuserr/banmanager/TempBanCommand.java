@@ -1,8 +1,6 @@
 package me.confuserr.banmanager;
 
 import java.util.List;
-import java.util.Set;
-
 import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.OfflinePlayer;
