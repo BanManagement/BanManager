@@ -35,7 +35,7 @@
 					}
 				});
 				$("#viewall").click(function() {
-					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+$("#search input[name=server]").val()+'&player=%';
+					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+$("#search input[name=server]:checked").val()+'&player=%';
 				});
 			});
 		</script>
