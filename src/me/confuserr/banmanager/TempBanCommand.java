@@ -65,7 +65,7 @@ public class TempBanCommand implements CommandExecutor {
 			Player target = list.get(0);
 			if (target.getName().equals(playerName)) {
 				plugin.sendMessage(sender, plugin.banMessages.get("banSelfError"));
-			} else if (target.hasPermission("bm.exempt")) {
+			} else if (target.hasPermission("bm.exempt.tempban")) {
 				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 			} else if (target.isBanned()) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", target.getName()));
