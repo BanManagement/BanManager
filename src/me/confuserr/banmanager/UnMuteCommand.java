@@ -39,11 +39,15 @@ public class UnMuteCommand implements CommandExecutor {
 			plugin.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
 		} else {			
 			plugin.removeMute(offlineName, playerName);
-			
-			plugin.logger.info(plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName));
+		
+			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName);
+		
+			plugin.logger.info(message);
 			
 			if(!sender.hasPermission("bm.notify"))
-				plugin.sendMessage(sender, plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName));
+				plugin.sendMessage(sender, message);
+			
+			plugin.sendMessageWithPerm(message, "bm.notify");
 		}
 		return true;
 	}
