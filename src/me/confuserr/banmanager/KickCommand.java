@@ -68,9 +68,9 @@ public class KickCommand implements CommandExecutor {
 					plugin.logger.info(plugin.banMessages.get("kickReason").replace("[name]", target.getName()));
 				
 				if(reason.isEmpty())
-					message = plugin.banMessages.get("kickedNo").replace("[name]", target.getDisplayName()).replace("[by]", playerName);
+					message = plugin.banMessages.get("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName);
 				else
-					message = plugin.banMessages.get("kicked").replace("[name]", target.getDisplayName()).replace("[reason]", viewReason).replace("[by]", playerName);
+					message = plugin.banMessages.get("kicked").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				
 				plugin.sendMessageWithPerm(message, "bm.notify");
 			}
