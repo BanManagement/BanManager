@@ -387,7 +387,7 @@ public class DbLogger {
 											 "`player` varchar(25) NOT NULL,"+
 											 "`ip` int UNSIGNED NOT NULL," +
 											 "`last_seen` int(10) NOT NULL,"+
-											 "KEY `player` (`player`),"+
+											 "PRIMARY KEY `player` (`player`),"+
 											 "KEY `ip` (`ip`)"+
 											") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 											
