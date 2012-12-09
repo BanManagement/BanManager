@@ -93,3 +93,4 @@ messages:
     updateAvailable: '&A[version] update available'
     banTimeLimitError: '&cYou cannot ban for that length of time'
     muteTimeLimitError: '&cYou cannot mute for that length of time'
+    consoleName: 'Console'

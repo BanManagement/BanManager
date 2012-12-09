@@ -23,7 +23,7 @@ public class TempBanCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = "Console";
+		String playerName = plugin.banMessages.get("consoleName");
 
 		Long timeExpires = getTimeStamp(args[1]);
 

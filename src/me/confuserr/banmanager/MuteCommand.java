@@ -24,7 +24,7 @@ public class MuteCommand implements CommandExecutor {
 			return false;
 		
 		Player player = null;
-		String playerName = "Console";
+		String playerName = plugin.banMessages.get("consoleName");
 		
 		if(sender instanceof Player) {
 			player = (Player) sender;
