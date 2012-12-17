@@ -35,7 +35,12 @@
 					}
 				});
 				$("#viewall").click(function() {
-					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+$("#search input[name=server]:checked").val()+'&player=%';
+					var server = $("#search input[name=server]:checked").val();
+					
+					 if(typeof server === 'undefined')
+						server = 0;
+					
+					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+server+'&player=%';
 				});
 			});
 		</script>
