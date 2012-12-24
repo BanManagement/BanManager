@@ -1,4 +1,4 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class MuteCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	MuteCommand(BanManager instance) {
+	public MuteCommand(BanManager instance) {
 		plugin = instance;
 	}
 	

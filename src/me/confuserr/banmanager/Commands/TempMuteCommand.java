@@ -1,4 +1,4 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 import me.confuserr.banmanager.BanManager;
@@ -13,7 +13,7 @@ public class TempMuteCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	TempMuteCommand(BanManager instance) {
+	public TempMuteCommand(BanManager instance) {
 		plugin = instance;
 	}
 

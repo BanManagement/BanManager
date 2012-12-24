@@ -1,7 +1,9 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.Iterator;
 import java.util.Set;
+
+import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -13,7 +15,7 @@ public class BanImportCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	BanImportCommand(BanManager instance) {
+	public BanImportCommand(BanManager instance) {
 		plugin = instance;
 	}
 	

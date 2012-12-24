@@ -1,6 +1,8 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.List;
+
+import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +13,7 @@ public class LoglessKickCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	LoglessKickCommand(BanManager instance) {
+	public LoglessKickCommand(BanManager instance) {
 		plugin = instance;
 	}
 	

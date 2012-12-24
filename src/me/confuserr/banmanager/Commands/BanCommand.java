@@ -1,4 +1,4 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class BanCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	BanCommand(BanManager instance) {
+	public BanCommand(BanManager instance) {
 		plugin = instance;
 	}
 	

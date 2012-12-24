@@ -1,4 +1,4 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
 
@@ -8,11 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class UnMuteCommand implements CommandExecutor {
+public class UnBanCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	UnMuteCommand(BanManager instance) {
+	public UnBanCommand(BanManager instance) {
 		plugin = instance;
 	}
 	
@@ -27,22 +27,21 @@ public class UnMuteCommand implements CommandExecutor {
 		if(sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
-			if(!player.hasPermission("bm.unmute")) {
+			if(!player.hasPermission("bm.unban")) {
 				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-		String offlineName = offlinePlayer.getName();
+		if(!offlinePlayer.isBanned()) {
+			plugin.sendMessage(sender, plugin.banMessages.get("unbanError"));
+		} else {
+			offlinePlayer.setBanned(false);
+			String offlineName = offlinePlayer.getName();
+			plugin.dbLogger.banRemove(offlinePlayer.getName(), playerName);
+			plugin.logger.info(plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName));
 
-		if(!plugin.dbLogger.isMuted(offlineName)) {
-			plugin.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
-		} else {			
-			plugin.removeMute(offlineName, playerName);
-		
-			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName);
-		
-			plugin.logger.info(message);
+			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName);
 			
 			if(!sender.hasPermission("bm.notify"))
 				plugin.sendMessage(sender, message);

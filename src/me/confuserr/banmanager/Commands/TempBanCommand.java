@@ -1,4 +1,4 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 import me.confuserr.banmanager.BanManager;
@@ -13,7 +13,7 @@ public class TempBanCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	TempBanCommand(BanManager instance) {
+	public TempBanCommand(BanManager instance) {
 		plugin = instance;
 	}
 

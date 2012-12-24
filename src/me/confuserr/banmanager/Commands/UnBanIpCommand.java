@@ -1,4 +1,6 @@
-package me.confuserr.banmanager;
+package me.confuserr.banmanager.Commands;
+
+import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -10,7 +12,7 @@ public class UnBanIpCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
-	UnBanIpCommand(BanManager instance) {
+	public UnBanIpCommand(BanManager instance) {
 		plugin = instance;
 	}
 	

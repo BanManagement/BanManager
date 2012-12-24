@@ -16,6 +16,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.confuserr.banmanager.Database;
+import me.confuserr.banmanager.Commands.BanCommand;
+import me.confuserr.banmanager.Commands.BanImportCommand;
+import me.confuserr.banmanager.Commands.BanInfoCommand;
+import me.confuserr.banmanager.Commands.BanIpCommand;
+import me.confuserr.banmanager.Commands.KickCommand;
+import me.confuserr.banmanager.Commands.LoglessKickCommand;
+import me.confuserr.banmanager.Commands.MuteCommand;
+import me.confuserr.banmanager.Commands.TempBanCommand;
+import me.confuserr.banmanager.Commands.TempMuteCommand;
+import me.confuserr.banmanager.Commands.UnBanCommand;
+import me.confuserr.banmanager.Commands.UnBanIpCommand;
+import me.confuserr.banmanager.Commands.UnMuteCommand;
 import me.confuserr.banmanager.listeners.AsyncChat;
 import me.confuserr.banmanager.listeners.AsyncPreLogin;
 import me.confuserr.banmanager.listeners.MutedBlacklistCheck;
