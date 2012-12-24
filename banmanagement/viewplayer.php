@@ -214,15 +214,17 @@ else {
 				$r['ban_reason'] = str_replace(array('&quot;', '"'), array('&#039;', '\''), $r['ban_reason']);
 				$r['ban_expired_on'] = ($r['ban_expired_on'] != 0 ? $r['ban_expired_on'] + $mysqlSecs : $r['ban_expired_on']);
 				$r['ban_time'] = $r['ban_time'] + $mysqlSecs;
+				$r['unbanned_time'] = $r['unbanned_time'] + $mysqlSecs;
+
 				echo '
 					<tr>
 						<td>'.$i.'</td>
 						<td>'.$r['ban_reason'].'</td>
 						<td>'.$r['banned_by'].'</td>
-						<td>'.date('d/m/y', $r['ban_time']).'</td>
+						<td>'.date('H:i:s d/m/y', $r['ban_time']).'</td>
 						<td>'.($r['ban_expired_on'] == 0 ? 'Never' : secs_to_h($r['ban_expired_on'] - $r['ban_time'])).'</td>
 						<td>'.$r['unbanned_by'].'</td>
-						<td>'.date('d/m/y', $r['unbanned_time']).'</td>'.($serverName ? '
+						<td>'.date('H:i:s d/m/y', $r['unbanned_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
 						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['ban_record_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
 					</tr>';
