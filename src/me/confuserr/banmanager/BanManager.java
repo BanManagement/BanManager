@@ -31,6 +31,7 @@ import me.confuserr.banmanager.Commands.UnMuteCommand;
 import me.confuserr.banmanager.listeners.AsyncChat;
 import me.confuserr.banmanager.listeners.AsyncPreLogin;
 import me.confuserr.banmanager.listeners.MutedBlacklistCheck;
+import me.confuserr.banmanager.listeners.SyncChat;
 import me.confuserr.banmanager.listeners.SyncLogin;
 import me.confuserr.banmanager.listeners.UpdateNotify;
 import me.confuserr.banmanager.scheduler.bukkitUnbanSync;
@@ -245,7 +246,10 @@ public class BanManager extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 		
 		// Register the chat event for mutes
-		getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
+		if(getConfig().getBoolean("useSyncChat"))
+			getServer().getPluginManager().registerEvents(new SyncChat(plugin), this);
+		else
+			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
 		
 		// Register the blacklist check event for mutes
 		getServer().getPluginManager().registerEvents(new MutedBlacklistCheck(plugin), this);

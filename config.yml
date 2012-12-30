@@ -24,6 +24,9 @@ keepKicks: 30
 mutedCommandBlacklist:
     - msg
 
+# Leave false, this is for Tekkit servers
+useSyncChat: false
+
 # Simply give the permission bm.timelimit.mutes.X or bm.timelimit.bans.X to apply the time limits
 # replace X with the group defined here, can be anything you like.
 timeLimits:
