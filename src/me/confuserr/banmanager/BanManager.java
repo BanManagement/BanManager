@@ -23,6 +23,7 @@ import me.confuserr.banmanager.Commands.BanIpCommand;
 import me.confuserr.banmanager.Commands.KickCommand;
 import me.confuserr.banmanager.Commands.LoglessKickCommand;
 import me.confuserr.banmanager.Commands.MuteCommand;
+import me.confuserr.banmanager.Commands.ReloadCommand;
 import me.confuserr.banmanager.Commands.TempBanCommand;
 import me.confuserr.banmanager.Commands.TempMuteCommand;
 import me.confuserr.banmanager.Commands.UnBanCommand;
@@ -238,7 +239,7 @@ public class BanManager extends JavaPlugin {
 		getCommand("mute").setExecutor(new MuteCommand(this));
 		getCommand("tempmute").setExecutor(new TempMuteCommand(this));
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
-		
+		getCommand("bmreload").setExecutor(new ReloadCommand(this));
 		
 		// Is the server in online mode?
 		onlineMode = getServer().getOnlineMode();
@@ -289,6 +290,41 @@ public class BanManager extends JavaPlugin {
 				this.logger.info("["+pdfFile.getName()+"] "+updateVersion+" update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}
+		}
+	}
+	
+	// Reloads everything in the config except the database details
+	public void reloadConfig() {
+		logKicks = getConfig().getBoolean("logKicks");
+		keepKicks = getConfig().getInt("keepKicks");
+		
+		serverName = getConfig().getString("serverName");
+		
+		checkForUpdates = getConfig().getBoolean("checkForUpdates");
+		
+		usePartialNames = getConfig().getBoolean("use-partial-names");
+		
+		
+		banMessages.clear();
+		
+		for(String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
+	    	banMessages.put(key, colorize(getConfig().getString("messages."+key).replace("\\n", "\n")));
+		}
+		
+		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
+		
+		
+		timeLimitsMutes.clear();
+		// Loop through the time limits
+		for(String key : getConfig().getConfigurationSection("timeLimits.mutes").getKeys(false)) {
+			String path = "timeLimits.mutes."+key;
+			timeLimitsMutes.put(key, getConfig().getString(path));
+		}
+		
+		timeLimitsBans.clear();
+		for(String key : getConfig().getConfigurationSection("timeLimits.bans").getKeys(false)) {
+			String path = "timeLimits.bans."+key;
+			timeLimitsBans.put(key, getConfig().getString(path));
 		}
 	}
 	

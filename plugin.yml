@@ -47,6 +47,9 @@ commands:
     description: "kick a player without logging"
     usage: "/nlkick <player> <reason>"
     aliases: [bmnlkick]
+  bmreload:
+    description: "Reloads from the config everything except database connection info"
+    usage: "/bmreload"
 main: me.confuserr.banmanager.BanManager
 name: BanManager
 permissions:
