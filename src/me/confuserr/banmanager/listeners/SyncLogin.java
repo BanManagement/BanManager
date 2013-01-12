@@ -22,19 +22,21 @@ public class SyncLogin implements Listener {
 	public void onPlayerLogin(final PlayerLoginEvent event) {
 		String name = event.getPlayer().getName();
 		InetAddress ip = event.getAddress();
+		String ipStr = plugin.getIp(ip.getAddress().toString());
 		
 		// Check to see if they are to be unbanned
 		if(plugin.toUnbanPlayer.contains(name)) {
 			// Ok they are, no need to do additional checks!
 			// But we unban them now otherwise they'll get the Ban Hammer message
+			// This is experimental, as its an async event, shouldn't really be calling a main thread method, shall see how it goes for now!
 			plugin.getServer().getOfflinePlayer(name).setBanned(false);
 			return;
 		}
 		
 		// Do the same as above but for IP
-		if(plugin.toUnbanIp.contains(ip)) {
+		if(plugin.toUnbanIp.contains(ipStr)) {
 			// But we unban them now otherwise they'll get the Ban Hammer message
-			plugin.getServer().unbanIP(plugin.getIp(ip));
+			plugin.getServer().unbanIP(ipStr);
 			return;
 		}
 		
