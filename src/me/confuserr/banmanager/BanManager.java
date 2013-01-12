@@ -260,7 +260,7 @@ public class BanManager extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new MutedBlacklistCheck(plugin), this);
 		
 		try {
-		    Metrics metrics = new Metrics(this);
+		    MetricsLite metrics = new MetricsLite(this);
 		    metrics.start();
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
