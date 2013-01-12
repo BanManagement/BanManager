@@ -84,6 +84,8 @@ public class BanManager extends JavaPlugin {
 	public ConcurrentHashMap<String, String> mutedPlayersReason = new ConcurrentHashMap<String, String>();
 	public ConcurrentHashMap<String, String> mutedPlayersBy = new ConcurrentHashMap<String, String>();
 	
+	public boolean usePartialNames = true;
+	
 	@Override
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -154,6 +156,8 @@ public class BanManager extends JavaPlugin {
 		serverName = getConfig().getString("serverName");
 		
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
+		
+		usePartialNames = getConfig().getBoolean("use-partial-names");
 		
 		for(String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
 	    	banMessages.put(key, colorize(getConfig().getString("messages."+key).replace("\\n", "\n")));

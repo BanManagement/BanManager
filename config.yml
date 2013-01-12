@@ -35,6 +35,10 @@ timeLimits:
     bans:
         Moderator: 1d
 
+# If set to true, allows you to use partial player names in commands for online players
+# If set to false, you must specifiy the entire name of the player
+use-partial-names: true
+
 messages:
     ban: '[name] has been banned for [reason]'
     banKick: 'You have been banned for [reason]'

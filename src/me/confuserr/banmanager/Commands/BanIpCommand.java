@@ -41,22 +41,35 @@ public class BanIpCommand implements CommandExecutor {
 		if(BanManager.ValidateIPAddress(args[0])) {
 			// Its an IP
 			String ip = args[0];
-			plugin.getServer().banIP(ip);
-			plugin.dbLogger.logIpBan(ip, playerName, reason);
-			plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
 			
-			String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", playerName);
-			
-			for(Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-				if(plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip))
-					onlinePlayer.kickPlayer(kick);
-			}
-			
-			String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", playerName);
-			plugin.sendMessageWithPerm(message, "bm.notify");
+			ban(sender, ip, playerName, reason, viewReason);
 			
 		} else {
 			// Its a player!
+			if(!plugin.usePartialNames) {
+				if(plugin.getServer().getPlayerExact(args[0]) == null) {
+					// Offline player
+					OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
+					
+					String ip = plugin.dbLogger.getIP(offlinePlayer.getName());
+
+					if(ip.isEmpty())
+						plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
+					else {
+						// Ok, we have their IP, lets ban it
+						ban(sender, ip, playerName, reason, viewReason);
+					}
+				} else {
+					// Online
+					Player target = plugin.getServer().getPlayerExact(args[0]);
+					
+					String ip = plugin.getIp(target.getAddress().getAddress().toString());
+					
+					ban(sender, ip, playerName, reason, viewReason);
+				}
+				return true;
+			}
+			
 			List<Player> list = plugin.getServer().matchPlayer(args[0]);
 			if(list.size() == 1) {
 				Player target = list.get(0);
@@ -66,24 +79,8 @@ public class BanIpCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));											
 				} else {
 					String ip = plugin.getIp(target.getAddress().getAddress().toString());
-					String kick = "";
-					// Find users with same ip and kick them
-					for(Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-						if(plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip)) {
-							kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[name]", onlinePlayer.getName()).replace("[by]", playerName);
-							onlinePlayer.kickPlayer(kick);
-						}
-					}
 					
-					plugin.getServer().banIP(ip);
-					plugin.dbLogger.logIpBan(ip, playerName, reason);
-					plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
-				
-					if(!sender.hasPermission("bm.notify"))
-						plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
-					
-					String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", playerName);
-					plugin.sendMessageWithPerm(message, "bm.notify");
+					ban(sender, ip, playerName, reason, viewReason);
 				}
 			}
 			else if(list.size() > 1) {
@@ -99,20 +96,32 @@ public class BanIpCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
 				else {
 					// Ok, we have their IP, lets ban it
-					plugin.getServer().banIP(ip);
-					plugin.dbLogger.logIpBan(ip, playerName, reason);
-					plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
-					
-					if(!sender.hasPermission("bm.notify"))
-						plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
-					
-					String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", playerName);
-					plugin.sendMessageWithPerm(message, "bm.notify");
+					ban(sender, ip, playerName, reason, viewReason);
 				}
 			}
 			
 		}
 	
 		return true;
+	}
+	
+	private void ban(CommandSender sender, String ip, String bannedByName, String reason, String viewReason) {
+		
+		String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
+		
+		for(Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+			if(plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip))
+				onlinePlayer.kickPlayer(kick);
+		}
+		
+		plugin.getServer().banIP(ip);
+		plugin.dbLogger.logIpBan(ip, bannedByName, reason);
+		plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+		
+		if(!sender.hasPermission("bm.notify"))
+			plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+		
+		String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
+		plugin.sendMessageWithPerm(message, "bm.notify");
 	}
 }

@@ -32,6 +32,12 @@ public class BanInfoCommand implements CommandExecutor {
 				return true;
 			}
 		}
+		
+		if(!plugin.usePartialNames) {
+			plugin.sendMessage(sender, plugin.banMessages.get("banInfo").replace("[name]", args[0]).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(args[0])).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(args[0]))));
+			return true;
+		}
+		
 		List<Player> list = plugin.getServer().matchPlayer(args[0]);
 		if(list.size() == 1) {
 			String target = list.get(0).getName();

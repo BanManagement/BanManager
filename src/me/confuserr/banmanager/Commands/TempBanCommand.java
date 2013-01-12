@@ -59,50 +59,73 @@ public class TempBanCommand implements CommandExecutor {
 
 		timeExpires = timeExpires / 1000;
 		String formatExpires = plugin.formatDateDiff(timeExpires * 1000);
-		List<Player> list = plugin.getServer().matchPlayer(args[0]);
 
-		if (list.size() == 1) {
-			Player target = list.get(0);
-			if (target.getName().equals(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banSelfError"));
-			} else if (target.hasPermission("bm.exempt.tempban")) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
-			} else if (target.isBanned()) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", target.getName()));
+		if (plugin.usePartialNames) {
+			List<Player> list = plugin.getServer().matchPlayer(args[0]);
+			if (list.size() == 1) {
+				Player target = list.get(0);
+				ban(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason, timeExpires, formatExpires);
+			} else if (list.size() > 1) {
+				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				return false;
 			} else {
-				String kick = plugin.banMessages.get("tempBanKick").replace("[name]", target.getDisplayName()).replace("[expires]", formatExpires).replace("[reason]", viewReason).replace("[by]", playerName);
-				target.kickPlayer(kick);
-				target.setBanned(true);
-
-				plugin.dbLogger.logTempBan(target.getName(), playerName, reason, timeExpires);
-				plugin.logger.info(plugin.banMessages.get("playerTempBanned").replace("[name]", target.getName()));
-
-				if (!sender.hasPermission("bm.notify"))
-					plugin.sendMessage(sender, plugin.banMessages.get("playerTempBanned").replace("[name]", target.getName()));
-
-				String message = plugin.banMessages.get("tempBan").replace("[name]", target.getDisplayName()).replace("[expires]", formatExpires).replace("[reason]", viewReason).replace("[by]", playerName);
-				plugin.sendMessageWithPerm(message, "bm.notify");
+				// Offline
+				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			}
-		} else if (list.size() > 1) {
-			plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
-			return false;
 		} else {
-			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-			if (offlinePlayer.isBanned()) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", offlinePlayer.getName()));
+			// Must be exact name
+			if(plugin.getServer().getPlayerExact(args[0]) == null) {
+				// Offline player
+				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			} else {
-				offlinePlayer.setBanned(true);
-				plugin.dbLogger.logTempBan(offlinePlayer.getName(), playerName, reason, timeExpires);
-				plugin.logger.info(plugin.banMessages.get("playerTempBanned").replace("[name]", offlinePlayer.getName()));
-
-				if (!sender.hasPermission("bm.notify"))
-					plugin.sendMessage(sender, plugin.banMessages.get("playerTempBanned").replace("[name]", offlinePlayer.getName()));
-
-				String message = plugin.banMessages.get("tempBan").replace("[name]", offlinePlayer.getName()).replace("[expires]", formatExpires).replace("[reason]", viewReason).replace("[by]", playerName);
-				plugin.sendMessageWithPerm(message, "bm.notify");
+				// Online
+				Player target = plugin.getServer().getPlayerExact(args[0]);
+				ban(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason, timeExpires, formatExpires);
 			}
 		}
 		return true;
+	}
+	
+	private void ban(CommandSender sender, String playerName, String playerDisplayName, String bannedByName, boolean online, String reason, String viewReason, Long timeExpires, String formatExpires) {
+		if (online) {
+			Player player = plugin.getServer().getPlayer(playerName);
+
+			if (playerName.equals(bannedByName)) {
+				plugin.sendMessage(sender, plugin.banMessages.get("banSelfError"));
+				return;
+			} else if (player.hasPermission("bm.exempt.tempban")) {
+				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
+				return;
+			} else if (player.isBanned()) {
+				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+				return;
+			}
+
+			String kick = plugin.banMessages.get("tempBanKick").replace("[name]", player.getDisplayName()).replace("[reason]", viewReason).replace("[by]", bannedByName);
+			player.kickPlayer(kick);
+
+			player.setBanned(true);
+		} else {
+			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
+
+			if (offlinePlayer.isBanned()) {
+				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", offlinePlayer.getName()));
+				return;
+			}
+			offlinePlayer.setBanned(true);
+		}
+
+		plugin.dbLogger.logTempBan(playerName, bannedByName, reason, timeExpires);
+		
+		String infoMessage = plugin.banMessages.get("playerTempBanned").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
+		
+		plugin.logger.info(infoMessage);
+
+		if (!sender.hasPermission("bm.notify"))
+			plugin.sendMessage(sender, infoMessage);
+
+		String message = plugin.banMessages.get("tempBan").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", bannedByName);
+		plugin.sendMessageWithPerm(message, "bm.notify");
 	}
 
 	private long getTimeStamp(String time) {
