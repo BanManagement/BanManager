@@ -100,7 +100,7 @@ public class DbLogger {
 	// IP ban check
 	public String isBanned(InetAddress address) {
 		String message = "";
-		String ip = plugin.getIp(address);
+		String ip = plugin.getIp(address.getAddress().toString());
 		
 		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+ipBansTable+" WHERE banned = '"+ip+"'");
 		try {

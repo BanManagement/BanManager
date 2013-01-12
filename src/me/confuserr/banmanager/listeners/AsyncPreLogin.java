@@ -21,6 +21,7 @@ public class AsyncPreLogin implements Listener {
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
 		String name = event.getName();
 		InetAddress ip = event.getAddress();
+		String ipStr = plugin.getIp(ip.getAddress().toString());
 		
 		// Check to see if they are to be unbanned
 		if(plugin.toUnbanPlayer.contains(name)) {
@@ -32,9 +33,9 @@ public class AsyncPreLogin implements Listener {
 		}
 		
 		// Do the same as above but for IP
-		if(plugin.toUnbanIp.contains(ip)) {
+		if(plugin.toUnbanIp.contains(ipStr)) {
 			// But we unban them now otherwise they'll get the Ban Hammer message
-			plugin.getServer().unbanIP(plugin.getIp(ip));
+			plugin.getServer().unbanIP(ipStr);
 			return;
 		}
 		
