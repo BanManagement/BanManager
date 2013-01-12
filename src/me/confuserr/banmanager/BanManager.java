@@ -548,18 +548,18 @@ public class BanManager extends JavaPlugin {
 			};
 			String[] names = new String[]
 			{
-				"year",
-				"years",
-				"month",
-				"months",
-				"day",
-				"days",
-				"hour",
-				"hours",
-				"minute",
-				"minutes",
-				"second",
-				"seconds"
+				plugin.banMessages.get("timeYear"),
+				plugin.banMessages.get("timeYears"),
+				plugin.banMessages.get("timeMonth"),
+				plugin.banMessages.get("timeMonths"),
+				plugin.banMessages.get("timeDay"),
+				plugin.banMessages.get("timeDays"),
+				plugin.banMessages.get("timeHour"),
+				plugin.banMessages.get("timeHours"),
+				plugin.banMessages.get("timeMinute"),
+				plugin.banMessages.get("timeMinutes"),
+				plugin.banMessages.get("timeSecond"),
+				plugin.banMessages.get("timeSeconds")
 			};
 			for (int i = 0; i < types.length; i++)
 			{
