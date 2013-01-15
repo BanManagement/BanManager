@@ -26,7 +26,7 @@ public class ReloadCommand implements CommandExecutor {
 			}
 		}
 		
-		plugin.reloadConfig();
+		plugin.configReload();
 		
 		return true;
 	}
