@@ -136,7 +136,7 @@ public class BanManager extends JavaPlugin {
 		localPass = getConfig().getString("localDatabase.password");
 		
 		//localUrl  = getConfig().getString("localDatabase.url");
-		localUrl = "jdbc:mysql://"+localHost+":"+localPort+"/"+localDatabase;
+		localUrl = "jdbc:mysql://"+localHost+":"+localPort+"/"+localDatabase+"?autoReconnect=true&failOverReadOnly=false&maxReconnects=10";
 		
 		localBansTable = getConfig().getString("localDatabase.bansTable");
 		localBanRecordTable = getConfig().getString("localDatabase.bansRecordTable");
