@@ -244,17 +244,18 @@ public class BanManager extends JavaPlugin {
 		// Is the server in online mode?
 		onlineMode = getServer().getOnlineMode();
 		
-		// If it is, use the async login event
-		if(onlineMode)
-			getServer().getPluginManager().registerEvents(new AsyncPreLogin(plugin), this);
-		else // Otherwise use the normal sync login event
+		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use Sync events
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
-		
-		// Register the chat event for mutes
-		if(getConfig().getBoolean("useSyncChat"))
 			getServer().getPluginManager().registerEvents(new SyncChat(plugin), this);
-		else
+		}
+		else if(onlineMode) { // If server is in online mode and syncChat is off, use async events
+			getServer().getPluginManager().registerEvents(new AsyncPreLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
+		}
+		else { // Otherwise use the normal sync login event and use Async chat even for mutes.
+			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
+			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
+		}
 		
 		// Register the blacklist check event for mutes
 		getServer().getPluginManager().registerEvents(new MutedBlacklistCheck(plugin), this);
