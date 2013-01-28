@@ -105,14 +105,14 @@ public class TempMuteCommand implements CommandExecutor {
 		plugin.addMute(playerName, reason, mutedByName, timeExpires);
 		plugin.dbLogger.logTempMute(playerName, mutedByName, reason, timeExpires);
 
-		String infoMessage = plugin.banMessages.get("playerTempMuted").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
+		String infoMessage = plugin.banMessages.get("playerTempMuted").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))
 			plugin.sendMessage(sender, infoMessage);
 
-		String message = plugin.banMessages.get("tempMute").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
+		String message = plugin.banMessages.get("tempMute").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
 		plugin.sendMessageWithPerm(message, "bm.notify");
 		
 		if(online) {
