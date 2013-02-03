@@ -49,12 +49,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BanManager extends JavaPlugin {
 	public Logger logger = Logger.getLogger("Minecraft");
 	public BanManager plugin;
-	public String localUser;
-	public String localPass;
-	public String localHost;
-	public String localDatabase;
-	public String localPort;
-	public String localUrl;
+	public static BanManager staticPlugin;
+	private String localUser;
+	private String localPass;
+	private String localHost;
+	private String localDatabase;
+	private String localPort;
+	private String localUrl;
 	public String localBansTable;
 	public String localBanRecordTable;
 	public Database localConn;
@@ -101,6 +102,7 @@ public class BanManager extends JavaPlugin {
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
 		plugin = this;
+		staticPlugin = this;
 		
 		PluginDescriptionFile pdfFile = this.getDescription();
 		
@@ -427,6 +429,10 @@ public class BanManager extends JavaPlugin {
 			plugin.mutedPlayersLength.remove(player);
 			plugin.mutedPlayersReason.remove(player);
 		}
+	}
+	
+	public static BanManager getPlugin() {
+		return staticPlugin;
 	}
 	
 	// Copyright essentials, all credits to them, this is here to remove dependency on it, I did not create these functions!
