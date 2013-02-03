@@ -11,10 +11,10 @@ commands:
     description: "unban a player"
     usage: "/unban <username>"
     aliases: [bmunban]
-  baninfo:
+  bminfo:
     description: "see information on a player"
-    usage: "/baninfo <username>"
-    aliases: [bmbaninfo]
+    usage: "/bminfo <username>"
+    aliases: [bmbminfo]
   banip:
     description: "ban an ip"
     usage: "/banip <username || IP Address> <reason>"

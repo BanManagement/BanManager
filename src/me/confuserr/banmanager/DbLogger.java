@@ -206,8 +206,54 @@ public class DbLogger {
 		return message;
 	}
 	
+	public String getCurrentMuteInfo(String user) {
+		String message = "None";
+		
+		ResultSet result = localConn.query("SELECT mute_reason, mute_time, mute_expires_on, muted_by, server FROM "+plugin.localMutesTable+" WHERE muted = '"+user+"'");
+		try {
+			if(result.next()) {
+				message = plugin.viewReason(result.getString("mute_reason"))+"\n"+ChatColor.RED+"Muted By: "+result.getString("muted_by");
+				String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date (result.getLong("mute_time")*1000));
+				message += "\n"+ChatColor.RED+"Muted at: "+date;
+				long expires = result.getInt("mute_expires_on");
+				if(expires == 0)
+					message += "\n"+ChatColor.RED+"Expires: Never";
+				else {
+					// Temp ban, check to see if expired
+					long timestampNow = System.currentTimeMillis()/1000;
+					if(timestampNow < expires) {
+						// Still banned
+						expires = (long) expires * 1000;
+						message += "\n"+ChatColor.RED+"Expires in: "+plugin.formatDateDiff(expires);
+					} else
+						message += "\n"+ChatColor.RED+"Expires in: Now";
+				}
+				String server = result.getString("server");
+				if(!server.isEmpty())
+					message += "\n"+ChatColor.RED+"Server: "+server;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return message;
+	}
+	
 	public int getPastBanCount(String user) {
 		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+recordsTable+" WHERE banned = '"+user+"'");
+		int count = 0;
+		try {
+			if(result.next())
+				count = result.getInt("numb");
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+	
+	public int getPastMuteCount(String user) {
+		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+plugin.localMutesRecordTable+" WHERE muted = '"+user+"'");
 		int count = 0;
 		try {
 			if(result.next())

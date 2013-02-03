@@ -75,7 +75,7 @@ messages:
     noIpsImport: '&cNo IPs need importing, yay less work for me!'
     percentageIPsImported: '&6[percent]% of IPs imported'
     ipImportComplete: '&6IP import complete!'
-    banInfo: '&cName: &6[name]\n&cCurrentBan: [currentBan]\n&cPrevious bans: [previousBans]'
+    bmInfo: '&cName: &6[name]\n&cCurrent Ban: [currentBan]\n&cPrevious Bans: [previousBans]\n&cCurrent Mute: [currentMute]\n&cPrevious Mutes: [previousMutes]'
     ipBanned: '[ip] has been banned'
     ipSelfError: '&cYou can''t ip ban yourself fool!'
     ipPlayerOfflineError: '&c[name] is offline, unable to retrieve IP'

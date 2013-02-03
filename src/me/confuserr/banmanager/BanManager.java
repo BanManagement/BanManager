@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.BanCommand;
 import me.confuserr.banmanager.Commands.BanImportCommand;
-import me.confuserr.banmanager.Commands.BanInfoCommand;
 import me.confuserr.banmanager.Commands.BanIpCommand;
+import me.confuserr.banmanager.Commands.BmInfoCommand;
 import me.confuserr.banmanager.Commands.KickCommand;
 import me.confuserr.banmanager.Commands.LoglessKickCommand;
 import me.confuserr.banmanager.Commands.MuteCommand;
@@ -176,33 +176,6 @@ public class BanManager extends JavaPlugin {
 			String path = "timeLimits.bans."+key;
 			timeLimitsBans.put(key, getConfig().getString(path));
 		}
-
-		/*// bans
-		banMessages.put("ban", colorize(getConfig().getString("messages.ban")));
-		banMessages.put("banKick", colorize(getConfig().getString("messages.banKick")));
-		banMessages.put("disconnectBan", colorize(getConfig().getString("messages.disconnectBan")));
-		
-		// tempbans
-		banMessages.put("tempBan", colorize(getConfig().getString("messages.tempBan")));
-		banMessages.put("tempBanKick", colorize(getConfig().getString("messages.tempBanKick")));
-		banMessages.put("disconnectTempBan", colorize(getConfig().getString("messages.disconnectTempBan")));
-		
-		// ip bans
-		banMessages.put("ipBan", colorize(getConfig().getString("messages.ipBan")));
-		banMessages.put("ipBanKick", colorize(getConfig().getString("messages.ipBanKick")));
-		banMessages.put("disconnectIpBan", colorize(getConfig().getString("messages.disconnectIpBan")));
-		
-		// Kicks
-		banMessages.put("kicked", colorize(getConfig().getString("messages.kicked")));
-		banMessages.put("kickedNo", colorize(getConfig().getString("messages.kickedNo")));
-		banMessages.put("kickReason", colorize(getConfig().getString("messages.kickReason")));
-		banMessages.put("kickNoReason", colorize(getConfig().getString("messages.kickNoReason")));
-		
-		// Mutes
-		banMessages.put("mute", colorize(getConfig().getString("messages.mute")));
-		banMessages.put("muted", colorize(getConfig().getString("messages.muted")));
-		banMessages.put("tempMute", colorize(getConfig().getString("messages.tempMute")));
-		banMessages.put("tempMuted", colorize(getConfig().getString("messages.tempMuted")));*/
 		
 		localConn = new Database(localUser, localPass, localUrl, this);
 		
@@ -230,7 +203,7 @@ public class BanManager extends JavaPlugin {
 		getCommand("ban").setExecutor(new BanCommand(this));
 		getCommand("tempban").setExecutor(new TempBanCommand(this));
 		getCommand("unban").setExecutor(new UnBanCommand(this));
-		getCommand("baninfo").setExecutor(new BanInfoCommand(this));
+		getCommand("bminfo").setExecutor(new BmInfoCommand(this));
 		getCommand("banip").setExecutor(new BanIpCommand(this));
 		getCommand("unbanip").setExecutor(new UnBanIpCommand(this));
 		getCommand("banimport").setExecutor(new BanImportCommand(this));
