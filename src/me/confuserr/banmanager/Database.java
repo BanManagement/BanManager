@@ -103,6 +103,7 @@ public class Database {
 			}
 		} catch (SQLException e) {
 			plugin.logger.info("Error in SQL query: " + e.getMessage());
+			plugin.sendMessageWithPerm("Error in SQL query: " + e.getMessage(), "bm.sqlnotify");
 		}
 		return result;
 	}
