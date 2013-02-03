@@ -435,6 +435,27 @@ public class BanManager extends JavaPlugin {
 		return staticPlugin;
 	}
 	
+	public void asyncQuery(final String query) {
+		if(getConfig().getBoolean("useSyncChat")) {
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					localConn.query(query);
+				}
+				
+			});
+		} else
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					localConn.query(query);
+				}
+			
+		});
+	}
+	
 	// Copyright essentials, all credits to them, this is here to remove dependency on it, I did not create these functions!
 		public long parseDateDiff(String time, boolean future) throws Exception {
 			Pattern timePattern = Pattern.compile(
