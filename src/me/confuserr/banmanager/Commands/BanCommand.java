@@ -52,7 +52,7 @@ public class BanCommand implements CommandExecutor {
 			}
 		} else {
 			// Must be exact name
-			if(plugin.getServer().getPlayerExact(args[0]) == null) {
+			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason);
 			} else {
@@ -74,7 +74,12 @@ public class BanCommand implements CommandExecutor {
 			} else if (player.hasPermission("bm.exempt.ban")) {
 				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
-			} else if (player.isBanned()) {
+			} else if (plugin.bukkitBan) {
+				if (player.isBanned()) {
+					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					return;
+				}
+			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
@@ -82,21 +87,29 @@ public class BanCommand implements CommandExecutor {
 			String kick = plugin.banMessages.get("banKick").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", bannedByName);
 			player.kickPlayer(kick);
 
-			player.setBanned(true);
+			if (plugin.bukkitBan)
+				player.setBanned(true);
 		} else {
 			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
 
-			if (offlinePlayer.isBanned()) {
+			if (plugin.bukkitBan) {
+				if (offlinePlayer.isBanned()) {
+					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					return;
+				}
+			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
-			offlinePlayer.setBanned(true);
+
+			if (plugin.bukkitBan)
+				offlinePlayer.setBanned(true);
 		}
 
 		plugin.dbLogger.logBan(playerName, bannedByName, reason);
-		
+
 		String infoMessage = plugin.banMessages.get("playerBanned").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
-		
+
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))

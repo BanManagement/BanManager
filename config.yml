@@ -39,6 +39,11 @@ timeLimits:
 # If set to false, you must specifiy the entire name of the player
 use-partial-names: true
 
+# Bans the players and IP's within banned-players.txt & banned-ips.txt
+# Only set this to false if you have a very stable MySQL connection
+# If the database fails whilst this is false, banned players can join.
+bukkit-ban: true
+
 messages:
     ban: '[name] has been banned for [reason]'
     banKick: 'You have been banned for [reason]'

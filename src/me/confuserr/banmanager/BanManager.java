@@ -86,6 +86,7 @@ public class BanManager extends JavaPlugin {
 	public ConcurrentHashMap<String, String> mutedPlayersBy = new ConcurrentHashMap<String, String>();
 	
 	public boolean usePartialNames = true;
+	public boolean bukkitBan = true;
 	
 	@Override
 	public void onDisable() {
@@ -159,6 +160,8 @@ public class BanManager extends JavaPlugin {
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
 		
 		usePartialNames = getConfig().getBoolean("use-partial-names");
+		
+		bukkitBan = getConfig().getBoolean("bukkit-ban");
 		
 		for(String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
 	    	banMessages.put(key, colorize(getConfig().getString("messages."+key).replace("\\n", "\n")));

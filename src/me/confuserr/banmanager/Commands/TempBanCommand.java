@@ -74,7 +74,7 @@ public class TempBanCommand implements CommandExecutor {
 			}
 		} else {
 			// Must be exact name
-			if(plugin.getServer().getPlayerExact(args[0]) == null) {
+			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			} else {
@@ -85,7 +85,7 @@ public class TempBanCommand implements CommandExecutor {
 		}
 		return true;
 	}
-	
+
 	private void ban(CommandSender sender, String playerName, String playerDisplayName, String bannedByName, boolean online, String reason, String viewReason, Long timeExpires, String formatExpires) {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
@@ -96,7 +96,12 @@ public class TempBanCommand implements CommandExecutor {
 			} else if (player.hasPermission("bm.exempt.tempban")) {
 				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
-			} else if (player.isBanned()) {
+			} else if (plugin.bukkitBan) {
+				if (player.isBanned()) {
+					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					return;
+				}
+			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
@@ -104,21 +109,29 @@ public class TempBanCommand implements CommandExecutor {
 			String kick = plugin.banMessages.get("tempBanKick").replace("[name]", player.getDisplayName()).replace("[reason]", viewReason).replace("[by]", bannedByName);
 			player.kickPlayer(kick);
 
-			player.setBanned(true);
+			if (plugin.bukkitBan)
+				player.setBanned(true);
 		} else {
 			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
 
-			if (offlinePlayer.isBanned()) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", offlinePlayer.getName()));
+			if (plugin.bukkitBan) {
+				if (offlinePlayer.isBanned()) {
+					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					return;
+				}
+			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
+				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
-			offlinePlayer.setBanned(true);
+
+			if (plugin.bukkitBan)
+				offlinePlayer.setBanned(true);
 		}
 
 		plugin.dbLogger.logTempBan(playerName, bannedByName, reason, timeExpires);
-		
+
 		String infoMessage = plugin.banMessages.get("playerTempBanned").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
-		
+
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))
