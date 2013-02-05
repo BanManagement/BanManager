@@ -34,14 +34,14 @@ public class BmInfoCommand implements CommandExecutor {
 		}
 		
 		if(!plugin.usePartialNames) {
-			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", args[0]).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(args[0])).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(args[0]))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(args[0]).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(args[0])))));
+			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", args[0]).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(args[0])).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(args[0]))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(args[0])).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(args[0]))));
 			return true;
 		}
 		
 		List<Player> list = plugin.getServer().matchPlayer(args[0]);
 		if(list.size() == 1) {
 			String target = list.get(0).getName();
-			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target)))));
+			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
 		}
 		else if(list.size() > 1) {
 			plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
@@ -49,7 +49,7 @@ public class BmInfoCommand implements CommandExecutor {
 		} else {
 			// Possible offline player
 			String target = args[0];
-			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target)))));
+			plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
 		}		
 		return true;
 	}
