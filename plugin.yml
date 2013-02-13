@@ -60,7 +60,7 @@ permissions:
             bm.unban: true
             bm.tempban: true
             bm.exempt: true
-            bm.baninfo: true
+            bm.bminfo: true
             bm.notify: true
             bm.banip: true
             bm.unbanip: true
@@ -82,7 +82,7 @@ permissions:
     bm.exempt:
         description: Prevents this user from being banned or kicked
         default: op
-    bm.baninfo:
+    bm.bminfo:
         description: Allows you to see information on players
         default: op
     bm.notify:
