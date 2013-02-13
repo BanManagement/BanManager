@@ -36,10 +36,10 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
-		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-		<script src="js/heartcode-canvasloader-min.js"></script>
-		<script src="js/jquery.countdown.min.js"></script><?php
+		<script src="//js/bootstrap.min.js"></script>
+		<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+		<script src="//js/heartcode-canvasloader-min.js"></script>
+		<script src="//js/jquery.countdown.min.js"></script><?php
 if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	echo '
 		<script type="text/javascript">
@@ -47,7 +47,7 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		</script>';
 	if(isset($_GET['action']) && $_GET['action'] != 'admin')
 		echo '
-		<script src="js/admin.js"></script>
+		<script src="//js/admin.js"></script>
 ';
 }
 		?>
