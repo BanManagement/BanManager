@@ -1,5 +1,8 @@
 package me.confuserr.banmanager;
 
+import me.confuserr.banmanager.data.BanData;
+import me.confuserr.banmanager.data.MuteData;
+
 class BmAPI {
 
 	private BanManager plugin = BanManager.getPlugin();
@@ -33,7 +36,9 @@ class BmAPI {
 		return !plugin.dbLogger.isBanned(player).isEmpty();
 	}
 
-	// public BanData getCurrentBan(String player);
+	public BanData getCurrentBan(String player) {
+		return plugin.dbLogger.getCurrentBan(player);
+	}
 
 	// Mutes
 	public void mute(String player, String muted_by, String reason) {
@@ -59,5 +64,7 @@ class BmAPI {
 		return plugin.dbLogger.isMuted(player);
 	}
 
-	// public MuteData getCurrentMute(String player);
+	public MuteData getCurrentMute(String player) {
+		return plugin.dbLogger.getCurrentMute(player);
+	}
 }

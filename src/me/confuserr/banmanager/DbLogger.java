@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
 
+import me.confuserr.banmanager.data.BanData;
+import me.confuserr.banmanager.data.MuteData;
+
 import org.bukkit.ChatColor;
 
 
@@ -47,6 +50,26 @@ public class DbLogger {
 	
 	public void logTempMute(String muted, String muted_by, String reason, long expires) {
 		plugin.asyncQuery("INSERT INTO "+plugin.localMutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+	}
+	
+	public BanData getCurrentBan(String username) {
+		
+		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+bansTable+" WHERE banned = '"+username+"'");
+		try {
+			if(result.next()) {
+				
+				BanData data = new BanData(username, result.getLong("ban_expires_on"), result.getString("ban_reason"), result.getLong("ban_time"), result.getString("banned_by"));
+				
+				result.close();
+				
+				return data;
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public String isBanned(String username) {
@@ -172,6 +195,26 @@ public class DbLogger {
 			e.printStackTrace();
 		}
 		return muted;
+	}
+	
+	public MuteData getCurrentMute(String username) {
+		
+		ResultSet result = localConn.query("SELECT mute_id, mute_reason, muted_by, mute_time, mute_expires_on FROM "+plugin.localMutesTable+" WHERE muteed = '"+username+"'");
+		try {
+			if(result.next()) {
+				
+				MuteData data = new MuteData(username, result.getLong("mute_expires_on"), result.getString("mute_reason"), result.getLong("mute_time"), result.getString("muted_by"));
+				
+				result.close();
+				
+				return data;
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public String getCurrentBanInfo(String user) {
