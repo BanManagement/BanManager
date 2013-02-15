@@ -499,7 +499,7 @@ public class DbLogger {
 	}
 	
 	public void setIP(String name, InetAddress ip) {
-		localConn.query("INSERT INTO "+plugin.localPlayerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
+		plugin.asyncQuery("INSERT INTO "+plugin.localPlayerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
 	}
 	
 	public String getIP(String name) {
