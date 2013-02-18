@@ -124,6 +124,12 @@ if(!function_exists('json_encode')) {
 	}
 }
 
+if(!function_exists('apc_exists')) {
+	function apc_exists($key) { 
+		return (bool) apc_fetch($key);
+	}
+}
+
 function redirect($location, $code = '302') {
 	switch($code) {
 		case '301';
