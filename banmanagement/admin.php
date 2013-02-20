@@ -153,4 +153,4 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	<?php
 }
 ?>
-<script src="js/admin.js"></script>
+<script src="//<?php echo $path; ?>js/admin.js"></script>

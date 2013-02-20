@@ -15,6 +15,8 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	$nav['Admin'] = 'index.php?action=admin';
 	$nav['Logout'] = 'index.php?action=logout';
 }
+
+$path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,10 +38,10 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-		<script src="//js/bootstrap.min.js"></script>
+		<script src="//<?php echo $path; ?>js/bootstrap.min.js"></script>
 		<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-		<script src="//js/heartcode-canvasloader-min.js"></script>
-		<script src="//js/jquery.countdown.min.js"></script><?php
+		<script src="//<?php echo $path; ?>js/heartcode-canvasloader-min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.countdown.min.js"></script><?php
 if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	echo '
 		<script type="text/javascript">
@@ -51,7 +53,7 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 ';
 }
 		?>
-		<script src="js/core.js"></script>
+		<script src="//<?php echo $path; ?>js/core.js"></script>
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top">
