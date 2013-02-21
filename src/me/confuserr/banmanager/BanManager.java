@@ -286,16 +286,16 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 		
-		this.logger.info("[" + pdfFile.getName() + "] " + " loaded " + playerBans + " player bans");
+		this.logger.info("[" + pdfFile.getName() + "] " + " Loaded " + playerBans + " player bans");
 		
-		ResultSet result1 = localConn.query("SELECT * FROM " + plugin.localIpBansTable);
+		ResultSet result1 = localConn.query("SELECT banned FROM " + plugin.localIpBansTable);
 		
 		int ipBans = 0;
 		
 		try {
 			while (result1.next()) {
 				// Add them to the banned list
-				plugin.bannedPlayers.add(result1.getString("banned"));
+				plugin.bannedIps.add(result1.getString("banned"));
 				ipBans++;
 			}
 
@@ -304,7 +304,7 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 		
-		this.logger.info("[" + pdfFile.getName() + "] " + " loaded " + ipBans + " ip bans");
+		this.logger.info("[" + pdfFile.getName() + "] " + " Loaded " + ipBans + " ip bans");
 
 		// Check for an update
 		if (checkForUpdates) {
