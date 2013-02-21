@@ -1,7 +1,6 @@
 package me.confuserr.banmanager.listeners;
 
 import java.net.InetAddress;
-
 import me.confuserr.banmanager.BanManager;
 
 import org.bukkit.event.EventHandler;
@@ -21,7 +20,7 @@ public class AsyncPreLogin implements Listener {
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
 		String name = event.getName();
 		InetAddress ip = event.getAddress();
-		String ipStr = plugin.getIp(ip.getAddress().toString());
+		String ipStr = plugin.getIp(ip.toString());
 		
 		if(plugin.bukkitBan) {
 			// Check to see if they are to be unbanned

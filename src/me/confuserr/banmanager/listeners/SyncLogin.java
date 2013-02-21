@@ -22,7 +22,7 @@ public class SyncLogin implements Listener {
 	public void onPlayerLogin(final PlayerLoginEvent event) {
 		String name = event.getPlayer().getName();
 		InetAddress ip = event.getAddress();
-		String ipStr = plugin.getIp(ip.getAddress().toString());
+		String ipStr = plugin.getIp(ip.toString());
 		
 		if(plugin.bukkitBan) {
 			// Check to see if they are to be unbanned
