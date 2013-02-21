@@ -43,6 +43,18 @@ public class AsyncPreLogin implements Listener {
 			}
 		}
 		
+		// Here we check to see if player is muted, if they are, we add them to the list!
+		if(!plugin.mutedPlayersBy.containsKey(name)) {
+			plugin.dbLogger.isMutedThenAdd(name);
+		}
+		
+		// Here we log their IP to the database
+		plugin.dbLogger.setIP(name, ip);
+		
+		// Check to see if they are banned
+		if(!plugin.bannedPlayers.contains(name) && !plugin.bannedIps.contains(ipStr))
+			return;
+		
 		String banReason = plugin.dbLogger.isBanned(name);
 		if(!banReason.isEmpty()) {
 			banReason = BanManager.colorize(banReason);
@@ -58,13 +70,5 @@ public class AsyncPreLogin implements Listener {
 				return;
 			}
 		}
-		
-		// Here we check to see if player is muted, if they are, we add them to the list!
-		if(!plugin.mutedPlayersBy.containsKey(name)) {
-			plugin.dbLogger.isMutedThenAdd(name);
-		}
-		
-		// Here we log their IP to the database
-		plugin.dbLogger.setIP(name, ip);
 	}
 }

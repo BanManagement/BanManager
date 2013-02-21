@@ -30,14 +30,17 @@ public class DbLogger {
 	
 	public void logBan(String banned, String banned_by, String reason) {
 		plugin.asyncQuery("INSERT INTO "+bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logTempBan(String banned, String banned_by, String reason, long expires) {
 		plugin.asyncQuery("INSERT INTO "+bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logIpBan(String banned, String banned_by, String reason) {
 		plugin.asyncQuery("INSERT INTO "+ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		plugin.bannedIps.add(banned);
 	}
 	
 	public void logKick(String banned, String banned_by, String reason) {
@@ -100,17 +103,20 @@ public class DbLogger {
 						message = plugin.banMessages.get("disconnectTempBan").replace("[name]", username).replace("[expires]", formatExpires).replace("[reason]", reason).replace("[by]", by);
 					} else {
 						// No longer banned, remove the ban!
-						plugin.getServer().getOfflinePlayer(username).setBanned(false);
+						if(plugin.bukkitBan)
+							plugin.getServer().getOfflinePlayer(username).setBanned(false);
+
 						banRemove(result.getInt("ban_id"), "Console automated");
 					}
 				}
-			} else if(plugin.getServer().getOfflinePlayer(username).isBanned()) {
+			} else if(plugin.getServer().getOfflinePlayer(username).isBanned() && plugin.bukkitBan) {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed
 				ResultSet result2 = localConn.query("SELECT banned FROM "+recordsTable+" WHERE banned = '"+username+"'");
 				if(result2.next())
 					plugin.getServer().getOfflinePlayer(username).setBanned(false);
+				
 				result2.close();
 			}
 			result.close();
@@ -141,7 +147,7 @@ public class DbLogger {
 					// Perma banned
 					message = plugin.banMessages.get("disconnectIpBan").replace("[ip]", ip).replace("[reason]", reason).replace("[by]", by);
 				}
-			} else if(ipBanned(ip)) {
+			} else if(ipBanned(ip) && plugin.bukkitBan) {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed

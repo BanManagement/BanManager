@@ -2,6 +2,7 @@ package me.confuserr.banmanager;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,9 +36,10 @@ import me.confuserr.banmanager.listeners.MutedBlacklistCheck;
 import me.confuserr.banmanager.listeners.SyncChat;
 import me.confuserr.banmanager.listeners.SyncLogin;
 import me.confuserr.banmanager.listeners.UpdateNotify;
+import me.confuserr.banmanager.scheduler.bansAsync;
 import me.confuserr.banmanager.scheduler.bukkitUnbanSync;
 import me.confuserr.banmanager.scheduler.databaseAsync;
-import me.confuserr.banmanager.scheduler.databaseClose;
+import me.confuserr.banmanager.scheduler.ipBansAsync;
 import me.confuserr.banmanager.scheduler.muteAsync;
 import net.h31ix.updater.Updater;
 
@@ -85,6 +87,9 @@ public class BanManager extends JavaPlugin {
 	public ConcurrentHashMap<String, Long> mutedPlayersLength = new ConcurrentHashMap<String, Long>();
 	public ConcurrentHashMap<String, String> mutedPlayersReason = new ConcurrentHashMap<String, String>();
 	public ConcurrentHashMap<String, String> mutedPlayersBy = new ConcurrentHashMap<String, String>();
+	
+	public List<String> bannedPlayers = Collections.synchronizedList(new ArrayList<String>());
+	public List<String> bannedIps = Collections.synchronizedList(new ArrayList<String>());
 
 	public boolean usePartialNames = true;
 	public boolean bukkitBan = true;
@@ -204,7 +209,6 @@ public class BanManager extends JavaPlugin {
 			// column
 			plugin.dbLogger.serverExists();
 		}
-		localConn.close();
 
 		getCommand("ban").setExecutor(new BanCommand(this));
 		getCommand("tempban").setExecutor(new TempBanCommand(this));
@@ -254,14 +258,53 @@ public class BanManager extends JavaPlugin {
 		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Bukkit unban bans those that have expired
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 2420L, 6040L);
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, 50L);
 
 		// Check the muted table for new mutes
 		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, 150L);
+		
+		// Check the banned tables for new player bans
+		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this), 21L, 150L);
+		
+		// Check the ip table for new ip bans
+		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, 150L);
+		
+		// Load all the player & ip bans into the array
+		ResultSet result = localConn.query("SELECT * FROM " + plugin.localBansTable);
+		
+		int playerBans = 0;
+		
+		try {
+			while (result.next()) {
+				// Add them to the banned list
+				plugin.bannedPlayers.add(result.getString("banned"));
+				playerBans++;
+			}
 
-		// Close the MySQL connection every so often rather than constantly
-		// opening and closing it.
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new databaseClose(this), 2425L, 2400L);
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		this.logger.info("[" + pdfFile.getName() + "] " + " loaded " + playerBans + " player bans");
+		
+		ResultSet result1 = localConn.query("SELECT * FROM " + plugin.localIpBansTable);
+		
+		int ipBans = 0;
+		
+		try {
+			while (result1.next()) {
+				// Add them to the banned list
+				plugin.bannedPlayers.add(result1.getString("banned"));
+				ipBans++;
+			}
+
+			result1.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		this.logger.info("[" + pdfFile.getName() + "] " + " loaded " + ipBans + " ip bans");
 
 		// Check for an update
 		if (checkForUpdates) {
