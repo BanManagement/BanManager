@@ -79,7 +79,7 @@ public class BanCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
-			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
+			} else if (plugin.bannedPlayers.contains(playerName)) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
@@ -97,7 +97,7 @@ public class BanCommand implements CommandExecutor {
 					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
-			} else if (!plugin.dbLogger.isBanned(playerName).isEmpty()) {
+			} else if (plugin.bannedPlayers.contains(playerName)) {
 				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
