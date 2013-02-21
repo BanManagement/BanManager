@@ -587,7 +587,7 @@ public class BanManager extends JavaPlugin {
 		if (sb.length() == 0) {
 			return "now";
 		}
-		return sb.toString();
+		return sb.toString().trim();
 	}
 
 	public String formatDateDiff(long date) {
