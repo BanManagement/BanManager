@@ -17,7 +17,6 @@ public class KickCommand implements CommandExecutor {
 		plugin = instance;
 	}
 	
-	@SuppressWarnings("null")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
 
