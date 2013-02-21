@@ -19,7 +19,7 @@ public class BanIpCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 2)
 			return false;
 
@@ -35,8 +35,8 @@ public class BanIpCommand implements CommandExecutor {
 			}
 		}
 
-		String reason = plugin.getReason(args, 1);
-		String viewReason = plugin.viewReason(reason);
+		final String reason = plugin.getReason(args, 1);
+		final String viewReason = plugin.viewReason(reason);
 
 		if (BanManager.ValidateIPAddress(args[0])) {
 			// Its an IP
@@ -45,27 +45,44 @@ public class BanIpCommand implements CommandExecutor {
 			ban(sender, ip, playerName, reason, viewReason);
 
 		} else {
+
+			final String byName = playerName;
+
 			// Its a player!
 			if (!plugin.usePartialNames) {
 				if (plugin.getServer().getPlayerExact(args[0]) == null) {
 					// Offline player
 					OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
 
-					String ip = plugin.dbLogger.getIP(offlinePlayer.getName());
+					final String pName = offlinePlayer.getName();
 
-					if (ip.isEmpty())
-						plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
-					else {
-						// Ok, we have their IP, lets ban it
-						ban(sender, ip, playerName, reason, viewReason);
-					}
+					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+
+						public void run() {
+							String ip = plugin.dbLogger.getIP(pName);
+
+							if (ip.isEmpty())
+								plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+							else {
+								// Ok, we have their IP, lets ban it
+								ban(sender, ip, byName, reason, viewReason);
+							}
+						}
+					});
 				} else {
 					// Online
 					Player target = plugin.getServer().getPlayerExact(args[0]);
 
-					String ip = plugin.getIp(target.getAddress().getAddress().toString());
+					final String targetIp = target.getAddress().getAddress().toString();
 
-					ban(sender, ip, playerName, reason, viewReason);
+					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+
+						public void run() {
+							String ip = plugin.getIp(targetIp);
+
+							ban(sender, ip, byName, reason, viewReason);
+						}
+					});
 				}
 				return true;
 			}
@@ -78,9 +95,17 @@ public class BanIpCommand implements CommandExecutor {
 				} else if (target.hasPermission("bm.exempt.banip")) {
 					plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				} else {
-					String ip = plugin.getIp(target.getAddress().getAddress().toString());
 
-					ban(sender, ip, playerName, reason, viewReason);
+					final String targetIp = target.getAddress().getAddress().toString();
+
+					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+
+						public void run() {
+							String ip = plugin.getIp(targetIp);
+
+							ban(sender, ip, byName, reason, viewReason);
+						}
+					});
 				}
 			} else if (list.size() > 1) {
 				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
@@ -89,14 +114,21 @@ public class BanIpCommand implements CommandExecutor {
 				// They're offline, lets check the database
 				OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
 
-				String ip = plugin.dbLogger.getIP(offlinePlayer.getName());
+				final String pName = offlinePlayer.getName();
+				
+				plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-				if (ip.isEmpty())
-					plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlinePlayer.getName()));
-				else {
-					// Ok, we have their IP, lets ban it
-					ban(sender, ip, playerName, reason, viewReason);
-				}
+					public void run() {
+						String ip = plugin.dbLogger.getIP(pName);
+
+						if (ip.isEmpty())
+							plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+						else {
+							// Ok, we have their IP, lets ban it
+							ban(sender, ip, byName, reason, viewReason);
+						}
+					}
+				});
 			}
 
 		}
