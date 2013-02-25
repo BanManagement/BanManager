@@ -106,7 +106,7 @@ public class TempBanCommand implements CommandExecutor {
 				return;
 			}
 
-			String kick = plugin.banMessages.get("tempBanKick").replace("[name]", player.getDisplayName()).replace("[reason]", viewReason).replace("[by]", bannedByName);
+			String kick = plugin.banMessages.get("tempBanKick").replace("[name]", player.getDisplayName()).replace("[reason]", viewReason).replace("[by]", bannedByName).replace("[expires]", formatExpires);
 			player.kickPlayer(kick);
 
 			if (plugin.bukkitBan)
