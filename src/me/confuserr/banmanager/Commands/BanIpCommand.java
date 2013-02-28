@@ -115,7 +115,7 @@ public class BanIpCommand implements CommandExecutor {
 				OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
 
 				final String pName = offlinePlayer.getName();
-				
+
 				plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 					public void run() {
@@ -136,14 +136,20 @@ public class BanIpCommand implements CommandExecutor {
 		return true;
 	}
 
-	private void ban(CommandSender sender, String ip, String bannedByName, String reason, String viewReason) {
+	private void ban(CommandSender sender, final String ip, String bannedByName, String reason, String viewReason) {
 
-		String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
+		final String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
 
-		for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-			if (plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip))
-				onlinePlayer.kickPlayer(kick);
-		}
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			public void run() {
+				for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+					if (plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip)) {
+
+						onlinePlayer.kickPlayer(kick);
+					}
+				}
+			}
+		});
 
 		if (plugin.bukkitBan)
 			plugin.getServer().banIP(ip);
