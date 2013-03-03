@@ -13,51 +13,43 @@ import org.bukkit.ChatColor;
 
 public class DbLogger {
 	private Database localConn;
-	private String bansTable;
-	private String recordsTable;
-	private String ipBansTable;
-	private String ipRecordsTable;
 	private BanManager plugin;
 	
-	DbLogger(Database conn, String localBansTable, String localBanRecordTable, String localIpBansTable, String localIpBanRecordTable, BanManager instance) {
+	DbLogger(Database conn, BanManager instance) {
 		localConn = conn;
-		bansTable = localBansTable;
-		recordsTable = localBanRecordTable;
-		ipBansTable = localIpBansTable;
-		ipRecordsTable = localIpBanRecordTable;
 		plugin = instance;
 	}
 	
 	public void logBan(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logTempBan(String banned, String banned_by, String reason, long expires) {
-		plugin.asyncQuery("INSERT INTO "+bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logIpBan(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 		plugin.bannedIps.add(banned);
 	}
 	
 	public void logKick(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+plugin.localKicksTable+" (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.kicksTable+" (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
 	}
 	
 	public void logMute(String muted, String muted_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+plugin.localMutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 	}
 	
 	public void logTempMute(String muted, String muted_by, String reason, long expires) {
-		plugin.asyncQuery("INSERT INTO "+plugin.localMutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		plugin.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 	}
 	
 	public BanData getCurrentBan(String username) {
 		
-		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+bansTable+" WHERE banned = '"+username+"'");
+		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.bansTable+" WHERE banned = '"+username+"'");
 		try {
 			if(result.next()) {
 				
@@ -78,7 +70,7 @@ public class DbLogger {
 	public String isBanned(String username) {
 		String message = "";
 		
-		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+bansTable+" WHERE banned = '"+username+"'");
+		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.bansTable+" WHERE banned = '"+username+"'");
 		try {
 			if(result.next()) {
 				// Found, check to see if perma banned
@@ -113,7 +105,7 @@ public class DbLogger {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed
-				ResultSet result2 = localConn.query("SELECT banned FROM "+recordsTable+" WHERE banned = '"+username+"'");
+				ResultSet result2 = localConn.query("SELECT banned FROM "+localConn.bansRecordTable+" WHERE banned = '"+username+"'");
 				if(result2.next())
 					plugin.getServer().getOfflinePlayer(username).setBanned(false);
 				
@@ -131,7 +123,7 @@ public class DbLogger {
 		String message = "";
 		String ip = plugin.getIp(address.toString());
 		
-		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+ipBansTable+" WHERE banned = '"+ip+"'");
+		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
 		try {
 			if(result.next()) {
 				// Found, check to see if perma banned
@@ -151,7 +143,7 @@ public class DbLogger {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed
-				ResultSet result2 = localConn.query("SELECT banned FROM "+ipRecordsTable+" WHERE banned = '"+ip+"'");
+				ResultSet result2 = localConn.query("SELECT banned FROM "+localConn.ipBansRecordTable+" WHERE banned = '"+ip+"'");
 				if(result2.next())
 					plugin.getServer().unbanIP(ip);
 				result2.close();
@@ -164,7 +156,7 @@ public class DbLogger {
 	}
 	
 	public void isMutedThenAdd(String user) {
-		ResultSet result = localConn.query("SELECT mute_reason, mute_expires_on, muted_by FROM "+plugin.localMutesTable+" WHERE muted = '"+user+"'");
+		ResultSet result = localConn.query("SELECT mute_reason, mute_expires_on, muted_by FROM "+localConn.mutesTable+" WHERE muted = '"+user+"'");
 		
 		try {
 			if(result.next()) {
@@ -192,7 +184,7 @@ public class DbLogger {
 	public boolean isMuted(String username) {	
 		boolean muted = false;
 		
-		ResultSet result = localConn.query("SELECT mute_id FROM "+plugin.localMutesTable+" WHERE muted = '"+username+"'");
+		ResultSet result = localConn.query("SELECT mute_id FROM "+localConn.mutesTable+" WHERE muted = '"+username+"'");
 		try {
 			if(result.next())
 				muted = true;
@@ -205,7 +197,7 @@ public class DbLogger {
 	
 	public MuteData getCurrentMute(String username) {
 		
-		ResultSet result = localConn.query("SELECT mute_id, mute_reason, muted_by, mute_time, mute_expires_on FROM "+plugin.localMutesTable+" WHERE muteed = '"+username+"'");
+		ResultSet result = localConn.query("SELECT mute_id, mute_reason, muted_by, mute_time, mute_expires_on FROM "+localConn.mutesTable+" WHERE muteed = '"+username+"'");
 		try {
 			if(result.next()) {
 				
@@ -226,7 +218,7 @@ public class DbLogger {
 	public String getCurrentBanInfo(String user) {
 		String message = "None";
 		
-		ResultSet result = localConn.query("SELECT ban_reason, ban_time, ban_expires_on, banned_by, server FROM "+bansTable+" WHERE banned = '"+user+"'");
+		ResultSet result = localConn.query("SELECT ban_reason, ban_time, ban_expires_on, banned_by, server FROM "+localConn.bansTable+" WHERE banned = '"+user+"'");
 		try {
 			if(result.next()) {
 				message = plugin.viewReason(result.getString("ban_reason"))+"\n"+ChatColor.RED+"Banned By: "+result.getString("banned_by");
@@ -258,7 +250,7 @@ public class DbLogger {
 	public String getCurrentMuteInfo(String user) {
 		String message = "None";
 		
-		ResultSet result = localConn.query("SELECT mute_reason, mute_time, mute_expires_on, muted_by, server FROM "+plugin.localMutesTable+" WHERE muted = '"+user+"'");
+		ResultSet result = localConn.query("SELECT mute_reason, mute_time, mute_expires_on, muted_by, server FROM "+localConn.mutesTable+" WHERE muted = '"+user+"'");
 		try {
 			if(result.next()) {
 				message = plugin.viewReason(result.getString("mute_reason"))+"\n"+ChatColor.RED+"Muted By: "+result.getString("muted_by");
@@ -288,7 +280,7 @@ public class DbLogger {
 	}
 	
 	public int getPastBanCount(String user) {
-		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+recordsTable+" WHERE banned = '"+user+"'");
+		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+localConn.bansRecordTable+" WHERE banned = '"+user+"'");
 		int count = 0;
 		try {
 			if(result.next())
@@ -302,7 +294,7 @@ public class DbLogger {
 	}
 	
 	public int getPastMuteCount(String user) {
-		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+plugin.localMutesRecordTable+" WHERE muted = '"+user+"'");
+		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+localConn.mutesRecordTable+" WHERE muted = '"+user+"'");
 		int count = 0;
 		try {
 			if(result.next())
@@ -317,31 +309,31 @@ public class DbLogger {
 	
 	private void banRemove(int id, String by) {
 		// First copy it into ban records
-		plugin.asyncQuery("INSERT INTO "+recordsTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+bansTable+" b WHERE b.ban_id = '"+id+"'");
+		plugin.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.ban_id = '"+id+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+bansTable+" WHERE ban_id = '"+id+"'");
+		plugin.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE ban_id = '"+id+"'");
 	}
 	
 	public void banRemove(String name, String by) {
-		plugin.asyncQuery("INSERT INTO "+recordsTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+bansTable+" b WHERE b.banned = '"+name+"'");
+		plugin.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.banned = '"+name+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+bansTable+" WHERE banned = '"+name+"'");
+		plugin.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE banned = '"+name+"'");
 	}
 	
 	public void ipRemove(String ip, String by) {
-		plugin.asyncQuery("INSERT INTO "+ipRecordsTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+ipBansTable+" b WHERE b.banned = '"+ip+"'");
+		plugin.asyncQuery("INSERT INTO "+localConn.ipBansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.ipBansTable+" b WHERE b.banned = '"+ip+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+ipBansTable+" WHERE banned = '"+ip+"'");
+		plugin.asyncQuery("DELETE FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
 	}
 	
 	public void muteRemove(String name, String by) {
-		plugin.asyncQuery("INSERT INTO "+plugin.localMutesRecordTable+" (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+plugin.localMutesTable+" b WHERE b.muted = '"+name+"'");
+		plugin.asyncQuery("INSERT INTO "+localConn.mutesRecordTable+" (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.mutesTable+" b WHERE b.muted = '"+name+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+plugin.localMutesTable+" WHERE muted = '"+name+"'");
+		plugin.asyncQuery("DELETE FROM "+localConn.mutesTable+" WHERE muted = '"+name+"'");
 	}
 
 	public boolean playerInTable(String player) {
-		ResultSet result = localConn.query("SELECT banned FROM "+bansTable+" WHERE banned = '"+player+"'");
+		ResultSet result = localConn.query("SELECT banned FROM "+localConn.bansTable+" WHERE banned = '"+player+"'");
 		try {
 			if(result.next()) {
 				result.close();
@@ -355,7 +347,7 @@ public class DbLogger {
 	}
 	
 	public boolean ipInTable(String ip) {
-		ResultSet result = localConn.query("SELECT banned FROM "+ipBansTable+" WHERE banned = '"+ip+"'");
+		ResultSet result = localConn.query("SELECT banned FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
 		try {
 			if(result.next()) {
 				result.close();
@@ -369,7 +361,7 @@ public class DbLogger {
 	}
 
 	public void create_tables() throws SQLException {
-		boolean Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+bansTable+" ("+
+		boolean Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.bansTable+" ("+
 		 "ban_id int(255) NOT NULL AUTO_INCREMENT,"+
 		 "banned varchar(32) NOT NULL,"+
 		 "banned_by varchar(32) NOT NULL,"+
@@ -384,7 +376,7 @@ public class DbLogger {
 		if(!Table)
 			plugin.logger.severe("Unable to create local BanManagement table");
 		else {
-			Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+recordsTable+" ("+
+			Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.bansRecordTable+" ("+
 			 "ban_record_id int(255) NOT NULL AUTO_INCREMENT,"+
 			 "banned varchar(32) NOT NULL,"+
 			 "banned_by varchar(32) NOT NULL,"+
@@ -401,7 +393,7 @@ public class DbLogger {
 			if(!Table)
 				plugin.logger.severe("Unable to create local BanManagement table");
 			else {
-				Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+ipBansTable+" ("+
+				Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.ipBansTable+" ("+
 				 "ban_id int(255) NOT NULL AUTO_INCREMENT,"+
 				 "banned varchar(32) NOT NULL,"+
 				 "banned_by varchar(32) NOT NULL,"+
@@ -416,7 +408,7 @@ public class DbLogger {
 				if(!Table)
 					plugin.logger.severe("Unable to create local BanManagement table");
 				else {
-					Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+ipRecordsTable+" ("+
+					Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.ipBansRecordTable+" ("+
 					 "ban_record_id int(255) NOT NULL AUTO_INCREMENT,"+
 					 "banned varchar(32) NOT NULL,"+
 					 "banned_by varchar(32) NOT NULL,"+
@@ -433,7 +425,7 @@ public class DbLogger {
 					if(!Table)
 						plugin.logger.severe("Unable to create local BanManagement table");
 					else {
-						Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+plugin.localKicksTable+" ("+
+						Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.kicksTable+" ("+
 						 "kick_id int(255) NOT NULL AUTO_INCREMENT,"+
 						 "kicked varchar(32) NOT NULL,"+
 						 "kicked_by varchar(32) NOT NULL,"+
@@ -446,7 +438,7 @@ public class DbLogger {
 						if(!Table)
 							plugin.logger.severe("Unable to create local BanManagement table");
 						else {
-							Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+plugin.localMutesTable+" ("+
+							Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.mutesTable+" ("+
 									 "mute_id int(255) NOT NULL AUTO_INCREMENT,"+
 									 "muted varchar(32) NOT NULL,"+
 									 "muted_by varchar(32) NOT NULL,"+
@@ -461,7 +453,7 @@ public class DbLogger {
 									if(!Table)
 										plugin.logger.severe("Unable to create local BanManagement table");
 									else {
-										Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+plugin.localMutesRecordTable+" ("+
+										Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.mutesRecordTable+" ("+
 										 "mute_record_id int(255) NOT NULL AUTO_INCREMENT,"+
 										 "muted varchar(32) NOT NULL,"+
 										 "muted_by varchar(32) NOT NULL,"+
@@ -478,7 +470,7 @@ public class DbLogger {
 										if(!Table)
 											plugin.logger.severe("Unable to create local BanManagement table");
 										else {
-											Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+plugin.localPlayerIpsTable+" ("+
+											Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.playerIpsTable+" ("+
 											 "`player` varchar(25) NOT NULL,"+
 											 "`ip` int UNSIGNED NOT NULL," +
 											 "`last_seen` int(10) NOT NULL,"+
@@ -505,13 +497,13 @@ public class DbLogger {
 	}
 	
 	public void setIP(String name, InetAddress ip) {
-		plugin.asyncQuery("INSERT INTO "+plugin.localPlayerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
+		plugin.asyncQuery("INSERT INTO "+localConn.playerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
 	}
 	
 	public String getIP(String name) {
 		String ip = "";
 		
-		ResultSet result = localConn.query("SELECT INET_NTOA(ip) AS ipAddress FROM "+plugin.localPlayerIpsTable+" WHERE player = '"+name+"'");
+		ResultSet result = localConn.query("SELECT INET_NTOA(ip) AS ipAddress FROM "+localConn.playerIpsTable+" WHERE player = '"+name+"'");
 		
 		try {
 			if(result.next())
@@ -530,13 +522,13 @@ public class DbLogger {
 	}
 	
 	public void serverExists() {
-		if(!localConn.colExists(bansTable, "server")) {
+		if(!localConn.colExists(localConn.bansTable, "server")) {
 			// Hmm, they don't exist, lets add them!
-			localConn.query("ALTER TABLE "+bansTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+recordsTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+ipBansTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+ipRecordsTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+plugin.localKicksTable+" ADD server VARCHAR(30) NOT NULL");
+			localConn.query("ALTER TABLE "+localConn.bansTable+" ADD server VARCHAR(30) NOT NULL");
+			localConn.query("ALTER TABLE "+localConn.bansRecordTable+" ADD server VARCHAR(30) NOT NULL");
+			localConn.query("ALTER TABLE "+localConn.ipBansTable+" ADD server VARCHAR(30) NOT NULL");
+			localConn.query("ALTER TABLE "+localConn.ipBansRecordTable+" ADD server VARCHAR(30) NOT NULL");
+			localConn.query("ALTER TABLE "+localConn.kicksTable+" ADD server VARCHAR(30) NOT NULL");
 		}
 	}
 }

@@ -21,7 +21,7 @@ public class muteAsync implements Runnable {
 	@Override
 	public void run() {
 		// Check for new mutes
-		ResultSet result = localConn.query("SELECT * FROM "+plugin.localMutesTable+" WHERE mute_time > "+lastRun+"");
+		ResultSet result = localConn.query("SELECT * FROM "+localConn.mutesTable+" WHERE mute_time > "+lastRun+"");
 		
 		long now = System.currentTimeMillis() / 1000;
 		
@@ -52,7 +52,7 @@ public class muteAsync implements Runnable {
 		}
 		
 		// Check for old mutes and remove them!
-		ResultSet result1 = localConn.query("SELECT * FROM "+plugin.localMutesRecordTable+" WHERE mute_time > "+lastRun+"");
+		ResultSet result1 = localConn.query("SELECT * FROM "+localConn.mutesRecordTable+" WHERE mute_time > "+lastRun+"");
 		
 		try {
 			while(result1.next()) {

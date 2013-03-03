@@ -52,21 +52,7 @@ public class BanManager extends JavaPlugin {
 	public Logger logger = Logger.getLogger("Minecraft");
 	public BanManager plugin;
 	public static BanManager staticPlugin;
-	private String localUser;
-	private String localPass;
-	private String localHost;
-	private String localDatabase;
-	private String localPort;
-	private String localUrl;
-	public String localBansTable;
-	public String localBanRecordTable;
 	public Database localConn;
-	public String localIpBansTable;
-	public String localIpBanRecordTable;
-	public String localKicksTable;
-	public String localMutesTable;
-	public String localMutesRecordTable;
-	public String localPlayerIpsTable;
 	public String serverName;
 	public boolean importInProgress = false;
 	public Map<String, String> banMessages = new HashMap<String, String>();
@@ -111,6 +97,10 @@ public class BanManager extends JavaPlugin {
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 
+		String localHost = null;
+		String localPort = null;
+		String localDatabase = null;
+		
 		if (getConfig().getString("localDatabase.url") != null) {
 			// Old config, need to migrate!
 
@@ -140,24 +130,11 @@ public class BanManager extends JavaPlugin {
 		localHost = getConfig().getString("localDatabase.host");
 		localPort = getConfig().getString("localDatabase.port");
 		localDatabase = getConfig().getString("localDatabase.database");
-		localUser = getConfig().getString("localDatabase.username");
-		localPass = getConfig().getString("localDatabase.password");
+		String localUser = getConfig().getString("localDatabase.username");
+		String localPass = getConfig().getString("localDatabase.password");
 
 		// localUrl = getConfig().getString("localDatabase.url");
-		localUrl = "jdbc:mysql://" + localHost + ":" + localPort + "/" + localDatabase + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10";
-
-		localBansTable = getConfig().getString("localDatabase.bansTable");
-		localBanRecordTable = getConfig().getString("localDatabase.bansRecordTable");
-
-		localIpBansTable = getConfig().getString("localDatabase.ipBansTable");
-		localIpBanRecordTable = getConfig().getString("localDatabase.ipBansRecordTable");
-
-		localKicksTable = getConfig().getString("localDatabase.kicksTable");
-
-		localMutesTable = getConfig().getString("localDatabase.mutesTable");
-		localMutesRecordTable = getConfig().getString("localDatabase.mutesRecordTable");
-
-		localPlayerIpsTable = getConfig().getString("localDatabase.playerIpsTable");
+		String localUrl = "jdbc:mysql://" + localHost + ":" + localPort + "/" + localDatabase + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10";
 
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("keepKicks");
@@ -189,7 +166,7 @@ public class BanManager extends JavaPlugin {
 
 		localConn = new Database(localUser, localPass, localUrl, this);
 
-		plugin.dbLogger = new DbLogger(localConn, localBansTable, localBanRecordTable, localIpBansTable, localIpBanRecordTable, plugin);
+		plugin.dbLogger = new DbLogger(localConn, plugin);
 
 		if (!localConn.checkConnection()) {
 			this.logger.info("[" + pdfFile.getName() + "] is unable to connect to the database, it has been disabled");
@@ -197,7 +174,7 @@ public class BanManager extends JavaPlugin {
 			return;
 		}
 
-		if (!localConn.checkTable(localPlayerIpsTable)) {
+		if (!localConn.checkTable(localConn.playerIpsTable)) {
 			this.logger.info("[" + pdfFile.getName() + "] creating tables");
 			try {
 				plugin.dbLogger.create_tables();
@@ -270,7 +247,7 @@ public class BanManager extends JavaPlugin {
 		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, 150L);
 		
 		// Load all the player & ip bans into the array
-		ResultSet result = localConn.query("SELECT * FROM " + plugin.localBansTable);
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable);
 		
 		int playerBans = 0;
 		
@@ -288,7 +265,7 @@ public class BanManager extends JavaPlugin {
 		
 		this.logger.info("[" + pdfFile.getName() + "] " + " Loaded " + playerBans + " player bans");
 		
-		ResultSet result1 = localConn.query("SELECT banned FROM " + plugin.localIpBansTable);
+		ResultSet result1 = localConn.query("SELECT banned FROM " + localConn.ipBansTable);
 		
 		int ipBans = 0;
 		

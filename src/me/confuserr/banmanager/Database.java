@@ -24,12 +24,34 @@ public class Database {
 	private Connection connection;
 	private BanManager plugin;
 	private boolean queryInProgress = false;
+	
+	public String bansTable;
+	public String bansRecordTable;
+	public String ipBansTable;
+	public String ipBansRecordTable;
+	public String kicksTable;
+	public String mutesTable;
+	public String mutesRecordTable;
+	public String playerIpsTable;
 
 	public Database(String user, String pass, String url, BanManager instance) {
 		this.user = user;
 		this.pass = pass;
 		this.url = url;
 		plugin = instance;
+		
+		bansTable = plugin.getConfig().getString("localDatabase.bansTable");
+		bansRecordTable = plugin.getConfig().getString("localDatabase.bansRecordTable");
+
+		ipBansTable = plugin.getConfig().getString("localDatabase.ipBansTable");
+		ipBansRecordTable = plugin.getConfig().getString("localDatabase.ipBansRecordTable");
+
+		kicksTable = plugin.getConfig().getString("localDatabase.kicksTable");
+
+		mutesTable = plugin.getConfig().getString("localDatabase.mutesTable");
+		mutesRecordTable = plugin.getConfig().getString("localDatabase.mutesRecordTable");
+
+		playerIpsTable = plugin.getConfig().getString("localDatabase.playerIpsTable");
 	}
 
 	private boolean initialize() {

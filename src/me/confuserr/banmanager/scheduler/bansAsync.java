@@ -20,7 +20,7 @@ public class bansAsync implements Runnable {
 	@Override
 	public void run() {
 		// Check for new bans
-		ResultSet result = localConn.query("SELECT * FROM " + plugin.localBansTable + " WHERE ban_time > " + lastRun + "");
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable + " WHERE ban_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -40,14 +40,14 @@ public class bansAsync implements Runnable {
 		}
 
 		// Check for old bans and remove them!
-		ResultSet result1 = localConn.query("SELECT * FROM " + plugin.localBanRecordTable + " WHERE ban_time > " + lastRun + "");
+		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.bansRecordTable + " WHERE unbanned_time > " + lastRun + "");
 
 		try {
 			while (result1.next()) {
 				// Remove them from the list
 
 				synchronized (plugin.bannedPlayers) {
-					if (!plugin.bannedPlayers.contains(result1.getString("banned"))) {
+					if (plugin.bannedPlayers.contains(result1.getString("banned"))) {
 						plugin.bannedPlayers.remove(result1.getString("banned"));
 						
 						if(plugin.bukkitBan) {
