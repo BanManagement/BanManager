@@ -21,30 +21,30 @@ public class DbLogger {
 	}
 	
 	public void logBan(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logTempBan(String banned, String banned_by, String reason, long expires) {
-		plugin.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logIpBan(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+localConn.ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 		plugin.bannedIps.add(banned);
 	}
 	
 	public void logKick(String banned, String banned_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+localConn.kicksTable+" (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.kicksTable+" (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
 	}
 	
 	public void logMute(String muted, String muted_by, String reason) {
-		plugin.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 	}
 	
 	public void logTempMute(String muted, String muted_by, String reason, long expires) {
-		plugin.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		Util.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 	}
 	
 	public BanData getCurrentBan(String username) {
@@ -79,7 +79,7 @@ public class DbLogger {
 					plugin.getServer().getOfflinePlayer(username).setBanned(true);
 				}
 				long expires = result.getInt("ban_expires_on");
-				String reason = plugin.viewReason(result.getString("ban_reason"));
+				String reason = Util.viewReason(result.getString("ban_reason"));
 				String by = result.getString("banned_by");
 				
 				if(expires == 0) {
@@ -132,7 +132,7 @@ public class DbLogger {
 					plugin.getServer().banIP(ip);
 				
 				long expires = result.getInt("ban_expires_on");
-				String reason = plugin.viewReason(result.getString("ban_reason"));
+				String reason = Util.viewReason(result.getString("ban_reason"));
 				String by = result.getString("banned_by");
 				
 				if(expires == 0) {
@@ -160,7 +160,7 @@ public class DbLogger {
 		
 		try {
 			if(result.next()) {
-				String reason = plugin.viewReason(result.getString("mute_reason"));
+				String reason = Util.viewReason(result.getString("mute_reason"));
 				String by = result.getString("muted_by");
 				long length = result.getLong("mute_expires_on");
 				
@@ -221,7 +221,7 @@ public class DbLogger {
 		ResultSet result = localConn.query("SELECT ban_reason, ban_time, ban_expires_on, banned_by, server FROM "+localConn.bansTable+" WHERE banned = '"+user+"'");
 		try {
 			if(result.next()) {
-				message = plugin.viewReason(result.getString("ban_reason"))+"\n"+ChatColor.RED+"Banned By: "+result.getString("banned_by");
+				message = Util.viewReason(result.getString("ban_reason"))+"\n"+ChatColor.RED+"Banned By: "+result.getString("banned_by");
 				String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date (result.getLong("ban_time")*1000));
 				message += "\n"+ChatColor.RED+"Banned at: "+date;
 				long expires = result.getInt("ban_expires_on");
@@ -253,7 +253,7 @@ public class DbLogger {
 		ResultSet result = localConn.query("SELECT mute_reason, mute_time, mute_expires_on, muted_by, server FROM "+localConn.mutesTable+" WHERE muted = '"+user+"'");
 		try {
 			if(result.next()) {
-				message = plugin.viewReason(result.getString("mute_reason"))+"\n"+ChatColor.RED+"Muted By: "+result.getString("muted_by");
+				message = Util.viewReason(result.getString("mute_reason"))+"\n"+ChatColor.RED+"Muted By: "+result.getString("muted_by");
 				String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date (result.getLong("mute_time")*1000));
 				message += "\n"+ChatColor.RED+"Muted at: "+date;
 				long expires = result.getInt("mute_expires_on");
@@ -309,27 +309,27 @@ public class DbLogger {
 	
 	private void banRemove(int id, String by) {
 		// First copy it into ban records
-		plugin.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.ban_id = '"+id+"'");
+		Util.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.ban_id = '"+id+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE ban_id = '"+id+"'");
+		Util.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE ban_id = '"+id+"'");
 	}
 	
 	public void banRemove(String name, String by) {
-		plugin.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.banned = '"+name+"'");
+		Util.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.banned = '"+name+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE banned = '"+name+"'");
+		Util.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE banned = '"+name+"'");
 	}
 	
 	public void ipRemove(String ip, String by) {
-		plugin.asyncQuery("INSERT INTO "+localConn.ipBansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.ipBansTable+" b WHERE b.banned = '"+ip+"'");
+		Util.asyncQuery("INSERT INTO "+localConn.ipBansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.ipBansTable+" b WHERE b.banned = '"+ip+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
+		Util.asyncQuery("DELETE FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
 	}
 	
 	public void muteRemove(String name, String by) {
-		plugin.asyncQuery("INSERT INTO "+localConn.mutesRecordTable+" (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.mutesTable+" b WHERE b.muted = '"+name+"'");
+		Util.asyncQuery("INSERT INTO "+localConn.mutesRecordTable+" (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.mutesTable+" b WHERE b.muted = '"+name+"'");
 		// Now delete it
-		plugin.asyncQuery("DELETE FROM "+localConn.mutesTable+" WHERE muted = '"+name+"'");
+		Util.asyncQuery("DELETE FROM "+localConn.mutesTable+" WHERE muted = '"+name+"'");
 	}
 
 	public boolean playerInTable(String player) {
@@ -497,7 +497,7 @@ public class DbLogger {
 	}
 	
 	public void setIP(String name, InetAddress ip) {
-		plugin.asyncQuery("INSERT INTO "+localConn.playerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
+		Util.asyncQuery("INSERT INTO "+localConn.playerIpsTable+" (`player`, `ip`, `last_seen`) VALUES ('" + name + "', INET_ATON('"+plugin.getIp(ip)+"'), '"+System.currentTimeMillis() / 1000+"') ON DUPLICATE KEY UPDATE ip = INET_ATON('"+plugin.getIp(ip)+"'), last_seen = '"+System.currentTimeMillis() / 1000+"'");
 	}
 	
 	public String getIP(String name) {
@@ -519,16 +519,5 @@ public class DbLogger {
 
 	public void closeConnection() {
 		localConn.close();		
-	}
-	
-	public void serverExists() {
-		if(!localConn.colExists(localConn.bansTable, "server")) {
-			// Hmm, they don't exist, lets add them!
-			localConn.query("ALTER TABLE "+localConn.bansTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+localConn.bansRecordTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+localConn.ipBansTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+localConn.ipBansRecordTable+" ADD server VARCHAR(30) NOT NULL");
-			localConn.query("ALTER TABLE "+localConn.kicksTable+" ADD server VARCHAR(30) NOT NULL");
-		}
 	}
 }

@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +22,7 @@ public class ReloadCommand implements CommandExecutor {
 			Player player = (Player) sender;
 
 			if(!player.hasPermission("bm.reload")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}

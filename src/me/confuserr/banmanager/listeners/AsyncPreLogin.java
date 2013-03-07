@@ -2,6 +2,7 @@ package me.confuserr.banmanager.listeners;
 
 import java.net.InetAddress;
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -56,14 +57,14 @@ public class AsyncPreLogin implements Listener {
 		
 		String banReason = plugin.dbLogger.isBanned(name);
 		if(!banReason.isEmpty()) {
-			banReason = BanManager.colorize(banReason);
+			banReason = Util.colorize(banReason);
 			// Oh dear, they've been banned
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banReason);
 			return;
 		} else {
 			String ipReason = plugin.dbLogger.isBanned(ip);
 			if(!ipReason.isEmpty()) {
-				ipReason = BanManager.colorize(ipReason);
+				ipReason = Util.colorize(ipReason);
 				// Oh dear, they've been banned
 				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ipReason);
 				return;

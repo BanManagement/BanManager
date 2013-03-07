@@ -17,35 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.confuserr.banmanager.Database;
-import me.confuserr.banmanager.Commands.BanCommand;
-import me.confuserr.banmanager.Commands.BanImportCommand;
-import me.confuserr.banmanager.Commands.BanIpCommand;
-import me.confuserr.banmanager.Commands.BmInfoCommand;
-import me.confuserr.banmanager.Commands.KickCommand;
-import me.confuserr.banmanager.Commands.LoglessKickCommand;
-import me.confuserr.banmanager.Commands.MuteCommand;
-import me.confuserr.banmanager.Commands.ReloadCommand;
-import me.confuserr.banmanager.Commands.TempBanCommand;
-import me.confuserr.banmanager.Commands.TempMuteCommand;
-import me.confuserr.banmanager.Commands.UnBanCommand;
-import me.confuserr.banmanager.Commands.UnBanIpCommand;
-import me.confuserr.banmanager.Commands.UnMuteCommand;
-import me.confuserr.banmanager.listeners.AsyncChat;
-import me.confuserr.banmanager.listeners.AsyncPreLogin;
-import me.confuserr.banmanager.listeners.MutedBlacklistCheck;
-import me.confuserr.banmanager.listeners.SyncChat;
-import me.confuserr.banmanager.listeners.SyncLogin;
-import me.confuserr.banmanager.listeners.UpdateNotify;
-import me.confuserr.banmanager.scheduler.bansAsync;
-import me.confuserr.banmanager.scheduler.bukkitUnbanSync;
-import me.confuserr.banmanager.scheduler.databaseAsync;
-import me.confuserr.banmanager.scheduler.ipBansAsync;
-import me.confuserr.banmanager.scheduler.muteAsync;
+import me.confuserr.banmanager.Commands.*;
+import me.confuserr.banmanager.listeners.*;
+import me.confuserr.banmanager.scheduler.*;
 import net.h31ix.updater.Updater;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
@@ -54,13 +30,12 @@ public class BanManager extends JavaPlugin {
 	public static BanManager staticPlugin;
 	public Database localConn;
 	public String serverName;
-	public boolean importInProgress = false;
+
 	public Map<String, String> banMessages = new HashMap<String, String>();
 	public boolean logKicks;
 	public List<String> toUnbanPlayer = Collections.synchronizedList(new ArrayList<String>());
 	public List<String> toUnbanIp = Collections.synchronizedList(new ArrayList<String>());
 	public int keepKicks;
-	public boolean onlineMode;
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
 	public List<String> mutedBlacklist;
@@ -73,7 +48,7 @@ public class BanManager extends JavaPlugin {
 	public ConcurrentHashMap<String, Long> mutedPlayersLength = new ConcurrentHashMap<String, Long>();
 	public ConcurrentHashMap<String, String> mutedPlayersReason = new ConcurrentHashMap<String, String>();
 	public ConcurrentHashMap<String, String> mutedPlayersBy = new ConcurrentHashMap<String, String>();
-	
+
 	public List<String> bannedPlayers = Collections.synchronizedList(new ArrayList<String>());
 	public List<String> bannedIps = Collections.synchronizedList(new ArrayList<String>());
 
@@ -82,10 +57,12 @@ public class BanManager extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		PluginDescriptionFile pdfFile = this.getDescription();
+		// Cancel all BanManager tasks
 		getServer().getScheduler().cancelTasks(this);
-		this.logger.info("[" + pdfFile.getName() + "] has been disabled");
+		// Close the database connection
 		localConn.close();
+
+		logger.info("[BanManager] has been disabled");
 	}
 
 	@Override
@@ -95,96 +72,27 @@ public class BanManager extends JavaPlugin {
 		plugin = this;
 		staticPlugin = this;
 
-		PluginDescriptionFile pdfFile = this.getDescription();
+		// Load config
+		configReload();
 
-		String localHost = null;
-		String localPort = null;
-		String localDatabase = null;
-		
-		if (getConfig().getString("localDatabase.url") != null) {
-			// Old config, need to migrate!
-
-			String oldUrl = getConfig().getString("localDatabase.url");
-
-			Pattern p = Pattern.compile("jdbc:mysql:\\/\\/(.*):(.*)\\/(.*)");
-			Matcher m = p.matcher(oldUrl);
-
-			while (m.find()) {
-				localHost = m.group(1);
-				localPort = m.group(2);
-				localDatabase = m.group(3);
-			}
-
-			this.logger.info("[" + pdfFile.getName() + "] Old config found, migrating!");
-
-			getConfig().set("localDatabase.url", null);
-
-			getConfig().set("localDatabase.host", localHost);
-			getConfig().set("localDatabase.port", localPort);
-			getConfig().set("localDatabase.database", localDatabase);
-
-			this.saveConfig();
-		}
-
-		// Set the database variables from the config
-		localHost = getConfig().getString("localDatabase.host");
-		localPort = getConfig().getString("localDatabase.port");
-		localDatabase = getConfig().getString("localDatabase.database");
-		String localUser = getConfig().getString("localDatabase.username");
-		String localPass = getConfig().getString("localDatabase.password");
-
-		// localUrl = getConfig().getString("localDatabase.url");
-		String localUrl = "jdbc:mysql://" + localHost + ":" + localPort + "/" + localDatabase + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10";
-
-		logKicks = getConfig().getBoolean("logKicks");
-		keepKicks = getConfig().getInt("keepKicks");
-
-		serverName = getConfig().getString("serverName");
-
-		checkForUpdates = getConfig().getBoolean("checkForUpdates");
-
-		usePartialNames = getConfig().getBoolean("use-partial-names");
-
-		bukkitBan = getConfig().getBoolean("bukkit-ban");
-
-		for (String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
-			banMessages.put(key, colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
-		}
-
-		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
-
-		// Loop through the time limits
-		for (String key : getConfig().getConfigurationSection("timeLimits.mutes").getKeys(false)) {
-			String path = "timeLimits.mutes." + key;
-			timeLimitsMutes.put(key, getConfig().getString(path));
-		}
-
-		for (String key : getConfig().getConfigurationSection("timeLimits.bans").getKeys(false)) {
-			String path = "timeLimits.bans." + key;
-			timeLimitsBans.put(key, getConfig().getString(path));
-		}
-
-		localConn = new Database(localUser, localPass, localUrl, this);
+		// Initilise database
+		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10", this);
 
 		plugin.dbLogger = new DbLogger(localConn, plugin);
 
 		if (!localConn.checkConnection()) {
-			this.logger.info("[" + pdfFile.getName() + "] is unable to connect to the database, it has been disabled");
+			this.logger.severe("[BanManager] is unable to connect to the database, it has been disabled");
 			plugin.getPluginLoader().disablePlugin(this);
 			return;
 		}
 
 		if (!localConn.checkTable(localConn.playerIpsTable)) {
-			this.logger.info("[" + pdfFile.getName() + "] creating tables");
+			this.logger.info("[BanManager] creating tables");
 			try {
 				plugin.dbLogger.create_tables();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		} else {
-			// Check to see if they need updating to include the new server
-			// column
-			plugin.dbLogger.serverExists();
 		}
 
 		getCommand("ban").setExecutor(new BanCommand(this));
@@ -201,19 +109,13 @@ public class BanManager extends JavaPlugin {
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
 
-		// Is the server in online mode?
-		onlineMode = getServer().getOnlineMode();
-
-		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
-														// Sync events
+		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use Sync events
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new SyncChat(plugin), this);
-		} else if (onlineMode) { // If server is in online mode and syncChat is
-									// off, use async events
+		} else if (getServer().getOnlineMode()) { // If server is in online mode and syncChat is off, use async events
 			getServer().getPluginManager().registerEvents(new AsyncPreLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
-		} else { // Otherwise use the normal sync login event and use Async chat
-					// even for mutes.
+		} else { // Otherwise use the normal sync login event and use Async chat even for mutes.
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
 		}
@@ -228,29 +130,29 @@ public class BanManager extends JavaPlugin {
 			// Failed to submit the stats :-(
 		}
 
-		this.logger.info("[" + pdfFile.getName() + "] Version:" + pdfFile.getVersion() + " has been enabled");
+		logger.info("[BanManager] Version:" + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
-		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, 6000L);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, 6000L);
 		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Bukkit unban bans those that have expired
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, 50L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, 50L);
 
 		// Check the muted table for new mutes
-		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, 150L);
-		
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, 150L);
+
 		// Check the banned tables for new player bans
-		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this), 21L, 150L);
-		
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this), 21L, 150L);
+
 		// Check the ip table for new ip bans
-		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, 150L);
-		
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, 150L);
+
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable);
-		
+
 		int playerBans = 0;
-		
+
 		try {
 			while (result.next()) {
 				// Add them to the banned list
@@ -262,13 +164,13 @@ public class BanManager extends JavaPlugin {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		this.logger.info("[" + pdfFile.getName() + "] " + " Loaded " + playerBans + " player bans");
-		
+
+		logger.info("[BanManager] " + " Loaded " + playerBans + " player bans");
+
 		ResultSet result1 = localConn.query("SELECT banned FROM " + localConn.ipBansTable);
-		
+
 		int ipBans = 0;
-		
+
 		try {
 			while (result1.next()) {
 				// Add them to the banned list
@@ -280,16 +182,20 @@ public class BanManager extends JavaPlugin {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		this.logger.info("[" + pdfFile.getName() + "] " + " Loaded " + ipBans + " ip bans");
+
+		logger.info("[BanManager] " + " Loaded " + ipBans + " ip bans");
 
 		// Check for an update
 		if (checkForUpdates) {
 			Updater updater = new Updater(this, "ban-management", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE; // Determine if there is an update ready for us
-			updateVersion = updater.getLatestVersionString(); // Get the latest version
+			// Determine if there is an update ready for us
+			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
+
 			if (updateAvailable) {
-				this.logger.info("[" + pdfFile.getName() + "] " + updateVersion + " update available");
+				// Get the latest version
+				updateVersion = updater.getLatestVersionString();
+				
+				logger.info("[BanManager] " + updateVersion + " update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}
 		}
@@ -309,7 +215,7 @@ public class BanManager extends JavaPlugin {
 		banMessages.clear();
 
 		for (String key : getConfig().getConfigurationSection("messages").getKeys(false)) {
-			banMessages.put(key, colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
+			banMessages.put(key, Util.colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
 		}
 
 		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
@@ -326,83 +232,6 @@ public class BanManager extends JavaPlugin {
 			String path = "timeLimits.bans." + key;
 			timeLimitsBans.put(key, getConfig().getString(path));
 		}
-	}
-
-	public void sendMessage(CommandSender sender, String message) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			String[] s = message.split("\\\\n");
-			for (String m : s) {
-				player.sendMessage(m);
-			}
-		} else {
-			String[] s = message.split("\\\\n");
-			for (String m : s) {
-				sender.sendMessage(m);
-			}
-		}
-	}
-
-	public void sendMessageWithPerm(String message, String perm) {
-		for (Player onlinePlayer : getServer().getOnlinePlayers()) {
-			if (onlinePlayer.hasPermission(perm))
-				onlinePlayer.sendMessage(message);
-		}
-	}
-
-	public String viewReason(String reason) {
-		return reason.replace("&quot;", "\"").replace("&#039;", "'");
-	}
-
-	public String parseReason(String[] args) {
-		String reason = plugin.implodeArray(args, " ").replace("\"", "&quot;").replace("'", "&#039;");
-		return reason;
-	}
-
-	public static String colorize(String string) {
-		return string.replaceAll("(?i)&([a-k0-9])", "\u00A7$1");
-	}
-
-	public String implodeArray(String[] inputArray, String glueString) {
-		/** Output variable */
-		String output = "";
-
-		if (inputArray.length > 0) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(inputArray[0]);
-
-			for (int i = 1; i < inputArray.length; i++) {
-				sb.append(glueString);
-				sb.append(inputArray[i]);
-			}
-
-			output = sb.toString();
-		}
-
-		return output;
-	}
-
-	public String getReason(String[] args, int start) {
-		// Basically ignore the first item in the array
-		String[] newArgs = new String[args.length - start];
-		System.arraycopy(args, start, newArgs, 0, args.length - start);
-		return plugin.parseReason(newArgs);
-	}
-
-	public final static boolean ValidateIPAddress(String ipAddress) {
-		String[] parts = ipAddress.split("\\.");
-
-		if (parts.length != 4)
-			return false;
-
-		for (String s : parts) {
-			int i = Integer.parseInt(s);
-
-			if ((i < 0) || (i > 255))
-				return false;
-		}
-
-		return true;
 	}
 
 	public final String getIp(InetAddress ip) {
@@ -454,32 +283,6 @@ public class BanManager extends JavaPlugin {
 
 	public static BanManager getPlugin() {
 		return staticPlugin;
-	}
-
-	public void asyncQuery(final String query) {
-		if (getConfig().getBoolean("useSyncChat")) {
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
-
-				@Override
-				public void run() {
-					localConn.query(query);
-				}
-
-			});
-		} else {
-			try {
-				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						localConn.query(query);
-					}
-
-				});
-			} catch (NoSuchMethodError e) {
-
-			}
-		}
 	}
 
 	// Copyright essentials, all credits to them, this is here to remove
@@ -554,7 +357,7 @@ public class BanManager extends JavaPlugin {
 
 		StringBuilder sb = new StringBuilder();
 		int[] types = new int[] { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
-		String[] names = new String[] { plugin.banMessages.get("timeYear"), plugin.banMessages.get("timeYears"), plugin.banMessages.get("timeMonth"), plugin.banMessages.get("timeMonths"), plugin.banMessages.get("timeDay"), plugin.banMessages.get("timeDays"), plugin.banMessages.get("timeHour"), plugin.banMessages.get("timeHours"), plugin.banMessages.get("timeMinute"), plugin.banMessages.get("timeMinutes"), plugin.banMessages.get("timeSecond"), plugin.banMessages.get("timeSeconds") };
+		String[] names = new String[] { banMessages.get("timeYear"), banMessages.get("timeYears"), banMessages.get("timeMonth"), banMessages.get("timeMonths"), banMessages.get("timeDay"), banMessages.get("timeDays"), banMessages.get("timeHour"), banMessages.get("timeHours"), banMessages.get("timeMinute"), banMessages.get("timeMinutes"), banMessages.get("timeSecond"), banMessages.get("timeSeconds") };
 		for (int i = 0; i < types.length; i++) {
 			int diff = dateDiff(types[i], fromDate, toDate, future);
 			if (diff > 0) {

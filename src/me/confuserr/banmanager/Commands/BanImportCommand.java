@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -14,7 +15,8 @@ import org.bukkit.entity.Player;
 public class BanImportCommand implements CommandExecutor {
 
 	private BanManager plugin;
-
+	public static boolean importInProgress = false;
+	
 	public BanImportCommand(BanManager instance) {
 		plugin = instance;
 	}
@@ -25,8 +27,8 @@ public class BanImportCommand implements CommandExecutor {
 			return false;
 		else if(!args[0].equals("player") && !args[0].equals("ip"))
 			return false;
-		else if(plugin.importInProgress) {
-			plugin.sendMessage(sender, plugin.banMessages.get("importInProgressError"));
+		else if(BanImportCommand.importInProgress) {
+			Util.sendMessage(sender, plugin.banMessages.get("importInProgressError"));
 			return true;
 		}
 		
@@ -37,7 +39,7 @@ public class BanImportCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.import")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
@@ -45,14 +47,14 @@ public class BanImportCommand implements CommandExecutor {
 		String type = args[0];
 		String reason = args[1];
 		
-		plugin.importInProgress = true;
+		BanImportCommand.importInProgress = true;
 		
 		if(type.equals("player")) {
-			plugin.sendMessage(sender, plugin.banMessages.get("beginingPlayerImport"));
+			Util.sendMessage(sender, plugin.banMessages.get("beginingPlayerImport"));
 			
 			Set<OfflinePlayer> banned = plugin.getServer().getBannedPlayers();
 			
-			plugin.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
+			Util.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
 			
 			Iterator<OfflinePlayer> it = banned.iterator();
 			
@@ -62,10 +64,10 @@ public class BanImportCommand implements CommandExecutor {
 					it.remove();
 			}
 			
-			plugin.sendMessage(sender, plugin.banMessages.get("scanPlayersFound").replace("[found]", Integer.toString(banned.size())));
+			Util.sendMessage(sender, plugin.banMessages.get("scanPlayersFound").replace("[found]", Integer.toString(banned.size())));
 			
 			if(banned.size() == 0)
-				plugin.sendMessage(sender, plugin.banMessages.get("noPlayersImport"));
+				Util.sendMessage(sender, plugin.banMessages.get("noPlayersImport"));
 			else {
 				int done = 0;
 				double percent = 0;
@@ -76,19 +78,19 @@ public class BanImportCommand implements CommandExecutor {
 					done++;
 					percent = Math.round((double) (done * 100) / totalPlayers);
 					if(percent % 10 == 0 && (int) percent != 100)
-						plugin.sendMessage(sender, plugin.banMessages.get("percentagePlayersImported").replace("[percent]", Double.toString(percent)));
+						Util.sendMessage(sender, plugin.banMessages.get("percentagePlayersImported").replace("[percent]", Double.toString(percent)));
 				}
 				
 				banned.clear();
 				
-				plugin.sendMessage(sender, plugin.banMessages.get("playerImportComplete"));
+				Util.sendMessage(sender, plugin.banMessages.get("playerImportComplete"));
 			}
 		} else if(type.equals("ip")) {
-			plugin.sendMessage(sender, plugin.banMessages.get("beginingIpImport"));
+			Util.sendMessage(sender, plugin.banMessages.get("beginingIpImport"));
 			
 			Set<String> banned = plugin.getServer().getIPBans();
 			
-			plugin.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
+			Util.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
 			
 			Iterator<String> it = banned.iterator();
 			
@@ -98,10 +100,10 @@ public class BanImportCommand implements CommandExecutor {
 					it.remove();
 			}
 			
-			plugin.sendMessage(sender, plugin.banMessages.get("scanIpsFound").replace("[found]", Integer.toString(banned.size())));
+			Util.sendMessage(sender, plugin.banMessages.get("scanIpsFound").replace("[found]", Integer.toString(banned.size())));
 			
 			if(banned.size() == 0)
-				plugin.sendMessage(sender, plugin.banMessages.get("noIpsImport"));
+				Util.sendMessage(sender, plugin.banMessages.get("noIpsImport"));
 			else {
 				int done = 0;
 				double percent = 0;
@@ -112,15 +114,15 @@ public class BanImportCommand implements CommandExecutor {
 					done++;
 					percent = Math.round((double) (done * 100) / totalPlayers);
 					if(percent % 10 == 0 && (int) percent != 100)
-						plugin.sendMessage(sender, plugin.banMessages.get("percentageIpsImported").replace("[percent]", Double.toString(percent)));
+						Util.sendMessage(sender, plugin.banMessages.get("percentageIpsImported").replace("[percent]", Double.toString(percent)));
 				}
 				
 				banned.clear();
 				
-				plugin.sendMessage(sender, plugin.banMessages.get("ipImportComplete"));
+				Util.sendMessage(sender, plugin.banMessages.get("ipImportComplete"));
 			}
 		}
-		plugin.importInProgress = false;
+		BanImportCommand.importInProgress = false;
 		
 		return true;
 	}

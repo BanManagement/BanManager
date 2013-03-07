@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,12 +28,12 @@ public class UnBanIpCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.unbanip")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
 
-		if (BanManager.ValidateIPAddress(args[0])) {
+		if (Util.ValidateIPAddress(args[0])) {
 			// Its an IP
 			String ip = args[0];
 			if (plugin.bannedIps.contains(ip)) {
@@ -40,9 +41,9 @@ public class UnBanIpCommand implements CommandExecutor {
 					plugin.getServer().unbanIP(ip);
 
 				plugin.dbLogger.ipRemove(ip, playerName);
-				plugin.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
+				Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
 			} else {
-				plugin.sendMessage(sender, plugin.banMessages.get("ipNotBannedError").replace("[ip]", ip));
+				Util.sendMessage(sender, plugin.banMessages.get("ipNotBannedError").replace("[ip]", ip));
 			}
 
 		} else {
@@ -56,14 +57,14 @@ public class UnBanIpCommand implements CommandExecutor {
 					String ip = plugin.dbLogger.getIP(offlineName);
 
 					if (ip.isEmpty())
-						plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlineName));
+						Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlineName));
 					else {
 						// Ok, we have their IP, lets ban it
 						if(plugin.bukkitBan)
 							plugin.getServer().unbanIP(ip);
 						
 						plugin.dbLogger.ipRemove(ip, byName);
-						plugin.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
+						Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
 					}
 				}
 			});

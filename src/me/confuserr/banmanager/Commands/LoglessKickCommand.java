@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +31,7 @@ public class LoglessKickCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.kick")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
@@ -39,9 +40,9 @@ public class LoglessKickCommand implements CommandExecutor {
 		if(list.size() == 1) {
 			Player target = list.get(0);
 			if(target.getName().equals(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("kickSelfError"));
+				Util.sendMessage(sender, plugin.banMessages.get("kickSelfError"));
 			} else if(target.hasPermission("bm.exempt")) {
-				plugin.sendMessage(sender, plugin.banMessages.get("kickExemptError"));
+				Util.sendMessage(sender, plugin.banMessages.get("kickExemptError"));
 			} else {
 				
 				String reason = "";
@@ -49,9 +50,9 @@ public class LoglessKickCommand implements CommandExecutor {
 				String message = "";
 				
 				if(args.length > 1)
-					reason = plugin.getReason(args, 1);
+					reason = Util.getReason(args, 1);
 				
-				String viewReason = plugin.viewReason(reason);
+				String viewReason = Util.viewReason(reason);
 				
 				if(reason.isEmpty())
 					kick = plugin.banMessages.get("kickNoReason").replace("[name]", target.getDisplayName()).replace("[by]", playerName);
@@ -70,14 +71,14 @@ public class LoglessKickCommand implements CommandExecutor {
 				else
 					message = plugin.banMessages.get("kicked").replace("[name]", target.getDisplayName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				
-				plugin.sendMessageWithPerm(message, "bm.notify");
+				Util.sendMessageWithPerm(message, "bm.notify");
 			}
 		}
 		else if(list.size() > 1) {
-			plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+			Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 			return false;
 		} else {
-			plugin.sendMessage(sender, plugin.banMessages.get("playerNotOnline"));
+			Util.sendMessage(sender, plugin.banMessages.get("playerNotOnline"));
 			return false;
 		}
 		

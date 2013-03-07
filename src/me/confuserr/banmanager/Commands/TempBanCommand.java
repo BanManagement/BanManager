@@ -2,6 +2,7 @@ package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -31,7 +32,7 @@ public class TempBanCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.tempban")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			} else {
 				if (!player.hasPermission("bm.timelimit.bans.bypass")) {
@@ -40,7 +41,7 @@ public class TempBanCommand implements CommandExecutor {
 							long timeLimit = getTimeStamp(plugin.timeLimitsBans.get(k));
 							if (timeLimit < timeExpires) {
 								// Erm, they tried to ban for too long
-								plugin.sendMessage(player, plugin.banMessages.get("banTimeLimitError"));
+								Util.sendMessage(player, plugin.banMessages.get("banTimeLimitError"));
 								return true;
 							}
 						}
@@ -50,12 +51,12 @@ public class TempBanCommand implements CommandExecutor {
 		}
 
 		if (timeExpires == 0) {
-			plugin.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
+			Util.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
 			return true;
 		}
 
-		String reason = plugin.getReason(args, 2);
-		String viewReason = plugin.viewReason(reason);
+		String reason = Util.getReason(args, 2);
+		String viewReason = Util.viewReason(reason);
 
 		timeExpires = timeExpires / 1000;
 		String formatExpires = plugin.formatDateDiff(timeExpires * 1000);
@@ -66,7 +67,7 @@ public class TempBanCommand implements CommandExecutor {
 				Player target = list.get(0);
 				ban(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason, timeExpires, formatExpires);
 			} else if (list.size() > 1) {
-				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// Offline
@@ -91,18 +92,18 @@ public class TempBanCommand implements CommandExecutor {
 			Player player = plugin.getServer().getPlayer(playerName);
 
 			if (playerName.equals(bannedByName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banSelfError"));
+				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
 			} else if (player.hasPermission("bm.exempt.tempban")) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
+				Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
 			} else if (plugin.bukkitBan) {
 				if (player.isBanned()) {
-					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
 			} else if (plugin.bannedPlayers.contains(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+				Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
 
@@ -116,11 +117,11 @@ public class TempBanCommand implements CommandExecutor {
 
 			if (plugin.bukkitBan) {
 				if (offlinePlayer.isBanned()) {
-					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
 			} else if (plugin.bannedPlayers.contains(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+				Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
 
@@ -135,10 +136,10 @@ public class TempBanCommand implements CommandExecutor {
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))
-			plugin.sendMessage(sender, infoMessage);
+			Util.sendMessage(sender, infoMessage);
 
 		String message = plugin.banMessages.get("tempBan").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", bannedByName);
-		plugin.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify");
 	}
 
 	private long getTimeStamp(String time) {

@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -30,13 +31,13 @@ public class BanCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.ban")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
 
-		String reason = plugin.getReason(args, 1);
-		String viewReason = plugin.viewReason(reason);
+		String reason = Util.getReason(args, 1);
+		String viewReason = Util.viewReason(reason);
 
 		if (plugin.usePartialNames) {
 			List<Player> list = plugin.getServer().matchPlayer(args[0]);
@@ -44,7 +45,7 @@ public class BanCommand implements CommandExecutor {
 				Player target = list.get(0);
 				ban(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason);
 			} else if (list.size() > 1) {
-				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// Offline
@@ -69,18 +70,18 @@ public class BanCommand implements CommandExecutor {
 			Player player = plugin.getServer().getPlayer(playerName);
 
 			if (playerName.equals(bannedByName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banSelfError"));
+				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
 			} else if (player.hasPermission("bm.exempt.ban")) {
-				plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
+				Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
 			} else if (plugin.bukkitBan) {
 				if (player.isBanned()) {
-					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
 			} else if (plugin.bannedPlayers.contains(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+				Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
 
@@ -94,11 +95,11 @@ public class BanCommand implements CommandExecutor {
 
 			if (plugin.bukkitBan) {
 				if (offlinePlayer.isBanned()) {
-					plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 					return;
 				}
 			} else if (plugin.bannedPlayers.contains(playerName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
+				Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));
 				return;
 			}
 
@@ -113,9 +114,9 @@ public class BanCommand implements CommandExecutor {
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))
-			plugin.sendMessage(sender, infoMessage);
+			Util.sendMessage(sender, infoMessage);
 
 		String message = plugin.banMessages.get("ban").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", bannedByName);
-		plugin.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify");
 	}
 }

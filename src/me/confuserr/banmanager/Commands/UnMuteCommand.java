@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -28,7 +29,7 @@ public class UnMuteCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.unmute")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
@@ -36,7 +37,7 @@ public class UnMuteCommand implements CommandExecutor {
 		String offlineName = offlinePlayer.getName();
 
 		if(!plugin.dbLogger.isMuted(offlineName)) {
-			plugin.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
+			Util.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
 		} else {			
 			plugin.removeMute(offlineName, playerName);
 		
@@ -45,9 +46,9 @@ public class UnMuteCommand implements CommandExecutor {
 			plugin.logger.info(message);
 			
 			if(!sender.hasPermission("bm.notify"))
-				plugin.sendMessage(sender, message);
+				Util.sendMessage(sender, message);
 			
-			plugin.sendMessageWithPerm(message, "bm.notify");
+			Util.sendMessageWithPerm(message, "bm.notify");
 		}
 		return true;
 	}

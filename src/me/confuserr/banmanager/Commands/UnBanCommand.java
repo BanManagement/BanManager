@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -28,13 +29,13 @@ public class UnBanCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.unban")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
 		if(!plugin.bannedPlayers.contains(offlinePlayer.getName())) {
-			plugin.sendMessage(sender, plugin.banMessages.get("unbanError"));
+			Util.sendMessage(sender, plugin.banMessages.get("unbanError"));
 		} else {
 			if(plugin.bukkitBan)
 				offlinePlayer.setBanned(false);
@@ -46,9 +47,9 @@ public class UnBanCommand implements CommandExecutor {
 			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName);
 			
 			if(!sender.hasPermission("bm.notify"))
-				plugin.sendMessage(sender, message);
+				Util.sendMessage(sender, message);
 			
-			plugin.sendMessageWithPerm(message, "bm.notify");
+			Util.sendMessageWithPerm(message, "bm.notify");
 		}
 		return true;
 	}

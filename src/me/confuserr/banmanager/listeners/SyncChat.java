@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.listeners;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +26,7 @@ public class SyncChat implements Listener {
 		if(plugin.mutedPlayersBy.containsKey(playerName)) {
 
 			long time = plugin.mutedPlayersLength.get(playerName);
-			String reason = plugin.viewReason(plugin.mutedPlayersReason.get(playerName));
+			String reason = Util.viewReason(plugin.mutedPlayersReason.get(playerName));
 			String by = plugin.mutedPlayersBy.get(playerName);
 			String expires = plugin.formatDateDiff(time);
 			

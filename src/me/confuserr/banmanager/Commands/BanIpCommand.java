@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -30,15 +31,15 @@ public class BanIpCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.banip")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
 
-		final String reason = plugin.getReason(args, 1);
-		final String viewReason = plugin.viewReason(reason);
+		final String reason = Util.getReason(args, 1);
+		final String viewReason = Util.viewReason(reason);
 
-		if (BanManager.ValidateIPAddress(args[0])) {
+		if (Util.ValidateIPAddress(args[0])) {
 			// Its an IP
 			String ip = args[0];
 
@@ -62,7 +63,7 @@ public class BanIpCommand implements CommandExecutor {
 							String ip = plugin.dbLogger.getIP(pName);
 
 							if (ip.isEmpty())
-								plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+								Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
 							else {
 								// Ok, we have their IP, lets ban it
 								ban(sender, ip, byName, reason, viewReason);
@@ -91,9 +92,9 @@ public class BanIpCommand implements CommandExecutor {
 			if (list.size() == 1) {
 				Player target = list.get(0);
 				if (target.getName().equals(playerName)) {
-					plugin.sendMessage(sender, plugin.banMessages.get("ipSelfError"));
+					Util.sendMessage(sender, plugin.banMessages.get("ipSelfError"));
 				} else if (target.hasPermission("bm.exempt.banip")) {
-					plugin.sendMessage(sender, plugin.banMessages.get("banExemptError"));
+					Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				} else {
 
 					final String targetIp = target.getAddress().getAddress().toString();
@@ -108,7 +109,7 @@ public class BanIpCommand implements CommandExecutor {
 					});
 				}
 			} else if (list.size() > 1) {
-				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// They're offline, lets check the database
@@ -122,7 +123,7 @@ public class BanIpCommand implements CommandExecutor {
 						String ip = plugin.dbLogger.getIP(pName);
 
 						if (ip.isEmpty())
-							plugin.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+							Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
 						else {
 							// Ok, we have their IP, lets ban it
 							ban(sender, ip, byName, reason, viewReason);
@@ -158,9 +159,9 @@ public class BanIpCommand implements CommandExecutor {
 		plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify"))
-			plugin.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+			Util.sendMessage(sender, plugin.banMessages.get("ipBanned").replace("[ip]", ip));
 
 		String message = plugin.banMessages.get("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
-		plugin.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify");
 	}
 }

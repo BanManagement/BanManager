@@ -2,6 +2,7 @@ package me.confuserr.banmanager.Commands;
 
 import java.util.List;
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +31,7 @@ public class TempMuteCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.tempmute")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			} else {
 				if (!player.hasPermission("bm.timelimit.mutes.bypass")) {
@@ -39,7 +40,7 @@ public class TempMuteCommand implements CommandExecutor {
 							long timeLimit = getTimeStamp(plugin.timeLimitsMutes.get(k));
 							if (timeLimit < timeExpires) {
 								// Erm, they tried to ban for too long
-								plugin.sendMessage(player, plugin.banMessages.get("muteTimeLimitError"));
+								Util.sendMessage(player, plugin.banMessages.get("muteTimeLimitError"));
 								return true;
 							}
 						}
@@ -48,11 +49,11 @@ public class TempMuteCommand implements CommandExecutor {
 			}
 		}
 
-		String reason = plugin.getReason(args, 2);
-		String viewReason = plugin.viewReason(reason);
+		String reason = Util.getReason(args, 2);
+		String viewReason = Util.viewReason(reason);
 
 		if (timeExpires == 0) {
-			plugin.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
+			Util.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
 			return true;
 		}
 		timeExpires = timeExpires / 1000;
@@ -64,7 +65,7 @@ public class TempMuteCommand implements CommandExecutor {
 				Player target = list.get(0);
 				mute(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason, timeExpires, formatExpires);
 			} else if (list.size() > 1) {
-				plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// Offline
@@ -89,17 +90,17 @@ public class TempMuteCommand implements CommandExecutor {
 			Player player = plugin.getServer().getPlayer(playerName);
 
 			if (playerName.equals(mutedByName)) {
-				plugin.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
+				Util.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
 				return;
 			} else if (player.hasPermission("bm.exempt.tempmute")) {
-				plugin.sendMessage(sender, plugin.banMessages.get("muteExemptError"));
+				Util.sendMessage(sender, plugin.banMessages.get("muteExemptError"));
 				return;
 			}
 
 		}
 
 		if (plugin.mutedPlayersBy.containsKey(playerName)) {
-			plugin.sendMessage(sender, plugin.banMessages.get("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
+			Util.sendMessage(sender, plugin.banMessages.get("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
 		}
 
 		plugin.addMute(playerName, reason, mutedByName, timeExpires);
@@ -110,10 +111,10 @@ public class TempMuteCommand implements CommandExecutor {
 		plugin.logger.info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify"))
-			plugin.sendMessage(sender, infoMessage);
+			Util.sendMessage(sender, infoMessage);
 
 		String message = plugin.banMessages.get("tempMute").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
-		plugin.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify");
 		
 		if(online) {
 			// Inform the player they have been muted

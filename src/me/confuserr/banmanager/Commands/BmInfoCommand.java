@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +29,7 @@ public class BmInfoCommand implements CommandExecutor {
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			if (!player.hasPermission("bm.bminfo")) {
-				plugin.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
@@ -37,18 +38,18 @@ public class BmInfoCommand implements CommandExecutor {
 
 			public void run() {
 				if (!plugin.usePartialNames) {
-					plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", args[0]).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(args[0])).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(args[0]))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(args[0])).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(args[0]))));
+					Util.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", args[0]).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(args[0])).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(args[0]))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(args[0])).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(args[0]))));
 				} else {
 					List<Player> list = plugin.getServer().matchPlayer(args[0]);
 					if (list.size() == 1) {
 						String target = list.get(0).getName();
-						plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
+						Util.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
 					} else if (list.size() > 1) {
-						plugin.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+						Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
 					} else {
 						// Possible offline player
 						String target = args[0];
-						plugin.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
+						Util.sendMessage(sender, plugin.banMessages.get("bmInfo").replace("[name]", target).replace("[currentBan]", plugin.dbLogger.getCurrentBanInfo(target)).replace("[previousBans]", Integer.toString(plugin.dbLogger.getPastBanCount(target))).replace("[currentMute]", plugin.dbLogger.getCurrentMuteInfo(target)).replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(target))));
 					}
 				}
 			}
