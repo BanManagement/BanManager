@@ -349,7 +349,7 @@ public class BanManager extends JavaPlugin {
 	public String formatDateDiff(Calendar fromDate, Calendar toDate) {
 		boolean future = false;
 		if (toDate.equals(fromDate)) {
-			return "now";
+			return banMessages.get("timeNow");
 		}
 		if (toDate.after(fromDate)) {
 			future = true;
