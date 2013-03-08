@@ -48,7 +48,7 @@ else {
 	
 	// Check past bans!
 	if(!$excluderecords) {
-		$result = cache("SELECT banned FROM ".$server['recordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
+		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['recordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		$rows = count($result);
@@ -61,7 +61,9 @@ else {
 		else if($rows > 0) {
 			foreach($result as $r) {
 				if(!isset($found[$r['banned']]))
-					$found[$r['banned']] = array('by' => '', 'reason' => '', 'type' => 'Ban', 'time' => '', 'expires' => 0);
+					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
+				else if($found[$r['banned']]['time'] < $r['ban_time'])
+					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
 			}
 		}
 	}
@@ -87,7 +89,7 @@ else {
 	
 	// Check past mutes!
 	if(!$excluderecords) {
-		$result = cache("SELECT muted FROM ".$server['mutesRecordTable']." WHERE muted LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
+		$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on FROM ".$server['mutesRecordTable']." WHERE muted LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		$rows = count($result);
@@ -98,9 +100,11 @@ else {
 		} else if($rows == 0)
 			$noneMutesPast = true;
 		else if($rows > 0) {
-			foreach($result as $r)
-				if(!isset($found[$r['muted']])) {
-					$found[$r['muted']] = array('by' => '', 'reason' => '', 'type' => 'Mute', 'time' => '', 'expires' => 0);
+			foreach($result as $r) {
+				if(!isset($found[$r['muted']]))
+					$found[$r['muted']] = array('by' => $r['muted_by'], 'reason' => $r['mute_reason'], 'type' => 'Mute', 'time' => $r['mute_time'], 'expires' => $r['mute_expired_on'], 'past' => true);
+				else if($found[$r['muted']]['time'] < $r['mute_time'])
+					$found[$r['muted']] = array('by' => $r['muted_by'], 'reason' => $r['mute_reason'], 'type' => 'Mute', 'time' => $r['mute_time'], 'expires' => $r['mute_expired_on'], 'past' => true);
 			}
 		}
 	}
@@ -120,7 +124,9 @@ else {
 		else if($rows > 0) {
 			foreach($result as $r) {
 				if(!isset($found[$r['kicked']]))
-					$found[$r['kicked']] = array('by' => $r['kicked_by'], 'reason' => $r['kick_reason'], 'type' => 'Kick', 'time' => $r['kick_time'], 'expires' => 0);
+					$found[$r['kicked']] = array('by' => $r['kicked_by'], 'reason' => $r['kick_reason'], 'type' => 'Kick', 'time' => $r['kick_time'], 'expires' => 0, 'past' => true);
+				else if($found[$r['kicked']]['time'] < $r['kick_time'])
+					$found[$r['kicked']] = array('by' => $r['kicked_by'], 'reason' => $r['kick_reason'], 'type' => 'Kick', 'time' => $r['kick_time'], 'expires' => 0, 'past' => true);
 			}
 		}
 	}
@@ -139,7 +145,7 @@ else {
 			<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
 			<input type="hidden" name="player" value="<?php echo $_GET['player']; ?>" />
 			<label class="checkbox">
-				Exclude Previous<input type="checkbox" name="excluderecords" value="1" <?php
+				Exclude Past<input type="checkbox" name="excluderecords" value="1" <?php
 				if(isset($_GET['excluderecords']))
 					echo 'checked="checked"';
 				?>/>
@@ -172,31 +178,47 @@ else {
 			}
 		
 			echo '
-				<tr'.(empty($f['by']) ? ' class="warning"' : '').'>
-					<td'.(empty($f['by']) ? ' colspan="6"' : '').'><a href="index.php?action=viewplayer&player='.$player.'&server='.$_GET['server'].'">'.$player.'</a></td>';
-			if(!empty($f['by'])) {
-				echo '
+				<tr'.(isset($f['past']) ? ' class="warning"' : '').'>
+					<td><a href="index.php?action=viewplayer&player='.$player.'&server='.$_GET['server'].'">'.$player.'</a></td>
 					<td>'.$f['type'].'</td>
 					<td>'.$f['by'].'</td>
 					<td>'.$f['reason'].'</td>
-					<td>';
-			
-				if($f['type'] != 'Kick') {
-					if($f['expires'] == 0)
-						echo '<span class="label label-important">Never</span>';
-					else if(isset($expires) && $expires > 0) {
-						echo '<span class="label label-warning">'.secs_to_hmini($expires).'</span>';
-						unset($expires);
-					} else
-						echo '<span class="label label-success">Now</span>';
-				}
-				echo '</td>
-					<td>'.(!empty($f['time']) ? date('jS F Y h:i:s A', $f['time']) : '').'</td>
-				</tr>';
+					<td>';		
+			if($f['type'] != 'Kick') {
+				if($f['expires'] == 0)
+					echo '<span class="label label-important">Never</span>';
+				else if(isset($expires) && $expires > 0) {
+					echo '<span class="label label-warning">'.secs_to_hmini($expires).'</span>';
+					unset($expires);
+				} else
+					echo '<span class="label label-success">Past</span>';
 			}
+			echo '</td>
+					<td>'.(!empty($f['time']) ? date('j F Y h:i:s A', $f['time']) : '').'</td>';
+			
+			echo '
+				</tr>';
 		}
 		?>
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="7" class="pager form-horizontal">
+					<button class="btn first"><i class="icon-step-backward"></i></button>
+					<button class="btn prev"><i class="icon-arrow-left"></i></button>
+					<span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+					<button class="btn next"><i class="icon-arrow-right"></i></button>
+					<button class="btn last"><i class="icon-step-forward"></i></button>
+					<select class="pagesize input-mini" title="Select page size">
+						<option selected="selected" value="10">10</option>
+						<option value="20">20</option>
+						<option value="30">30</option>
+						<option value="40">40</option>
+					</select>
+					<select class="pagenum input-mini" title="Select page number"></select>
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 		<?php
 	}

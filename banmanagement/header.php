@@ -41,7 +41,10 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<script src="//<?php echo $path; ?>js/bootstrap.min.js"></script>
 		<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 		<script src="//<?php echo $path; ?>js/heartcode-canvasloader-min.js"></script>
-		<script src="//<?php echo $path; ?>js/jquery.countdown.min.js"></script><?php
+		<script src="//<?php echo $path; ?>js/jquery.countdown.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script><?php
 if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	echo '
 		<script type="text/javascript">
