@@ -35,6 +35,11 @@ public class DbLogger {
 		plugin.bannedIps.add(banned);
 	}
 	
+	public void logTempIpBan(String banned, String banned_by, String reason, long expires) {
+		Util.asyncQuery("INSERT INTO "+localConn.ipBansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
+		plugin.bannedIps.add(banned);
+	}
+	
 	public void logKick(String banned, String banned_by, String reason) {
 		Util.asyncQuery("INSERT INTO "+localConn.kicksTable+" (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
 	}
@@ -75,10 +80,12 @@ public class DbLogger {
 			if(result.next()) {
 				// Found, check to see if perma banned
 				// But first, we see if they are bukkit banned, if not we make it so
-				if(!plugin.getServer().getOfflinePlayer(username).isBanned()) {
-					plugin.getServer().getOfflinePlayer(username).setBanned(true);
+				if(plugin.bukkitBan) {
+					if(!plugin.getServer().getOfflinePlayer(username).isBanned()) {
+						plugin.getServer().getOfflinePlayer(username).setBanned(true);
+					}
 				}
-				long expires = result.getInt("ban_expires_on");
+				long expires = result.getLong("ban_expires_on");
 				String reason = Util.viewReason(result.getString("ban_reason"));
 				String by = result.getString("banned_by");
 				
@@ -98,7 +105,7 @@ public class DbLogger {
 						if(plugin.bukkitBan)
 							plugin.getServer().getOfflinePlayer(username).setBanned(false);
 
-						banRemove(result.getInt("ban_id"), "Console automated");
+						banRemove(username, "Console automated");
 					}
 				}
 			} else if(plugin.getServer().getOfflinePlayer(username).isBanned() && plugin.bukkitBan) {
@@ -128,22 +135,40 @@ public class DbLogger {
 			if(result.next()) {
 				// Found, check to see if perma banned
 				// But first, we see if they are bukkit banned, if not we make it so
-				if(!ipBanned(ip))
-					plugin.getServer().banIP(ip);
+				if(plugin.bukkitBan) {
+					if(!ipBanned(ip))
+						plugin.getServer().banIP(ip);
+				}
 				
-				long expires = result.getInt("ban_expires_on");
+				long expires = result.getLong("ban_expires_on");
 				String reason = Util.viewReason(result.getString("ban_reason"));
 				String by = result.getString("banned_by");
 				
 				if(expires == 0) {
 					// Perma banned
 					message = plugin.banMessages.get("disconnectIpBan").replace("[ip]", ip).replace("[reason]", reason).replace("[by]", by);
+				} else {
+					// Temp ban, check to see if expired
+					long timestampNow = System.currentTimeMillis()/1000;
+					if(timestampNow < expires) {
+						// Still banned
+						expires = (long) expires * 1000;
+						String formatExpires = plugin.formatDateDiff(expires);
+						message = plugin.banMessages.get("disconnectTempIpBan").replace("[ip]", ip).replace("[expires]", formatExpires).replace("[reason]", reason).replace("[by]", by);
+					} else {
+						// No longer banned, remove the ban!
+						if(plugin.bukkitBan)
+							plugin.getServer().unbanIP(ip);
+
+						ipRemove(ip, "Console automated");
+					}
 				}
 			} else if(ipBanned(ip) && plugin.bukkitBan) {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed
 				ResultSet result2 = localConn.query("SELECT banned FROM "+localConn.ipBansRecordTable+" WHERE banned = '"+ip+"'");
+				
 				if(result2.next())
 					plugin.getServer().unbanIP(ip);
 				result2.close();
@@ -224,7 +249,7 @@ public class DbLogger {
 				message = Util.viewReason(result.getString("ban_reason"))+"\n"+ChatColor.RED+"Banned By: "+result.getString("banned_by");
 				String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date (result.getLong("ban_time")*1000));
 				message += "\n"+ChatColor.RED+"Banned at: "+date;
-				long expires = result.getInt("ban_expires_on");
+				long expires = result.getLong("ban_expires_on");
 				if(expires == 0)
 					message += "\n"+ChatColor.RED+"Expires: Never";
 				else {
@@ -256,7 +281,7 @@ public class DbLogger {
 				message = Util.viewReason(result.getString("mute_reason"))+"\n"+ChatColor.RED+"Muted By: "+result.getString("muted_by");
 				String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date (result.getLong("mute_time")*1000));
 				message += "\n"+ChatColor.RED+"Muted at: "+date;
-				long expires = result.getInt("mute_expires_on");
+				long expires = result.getLong("mute_expires_on");
 				if(expires == 0)
 					message += "\n"+ChatColor.RED+"Expires: Never";
 				else {
@@ -307,23 +332,18 @@ public class DbLogger {
 		return count;
 	}
 	
-	private void banRemove(int id, String by) {
-		// First copy it into ban records
-		Util.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.ban_id = '"+id+"'");
-		// Now delete it
-		Util.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE ban_id = '"+id+"'");
-	}
-	
 	public void banRemove(String name, String by) {
 		Util.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.banned = '"+name+"'");
 		// Now delete it
 		Util.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE banned = '"+name+"'");
+		plugin.bannedPlayers.remove(name);
 	}
-	
+
 	public void ipRemove(String ip, String by) {
 		Util.asyncQuery("INSERT INTO "+localConn.ipBansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.ipBansTable+" b WHERE b.banned = '"+ip+"'");
 		// Now delete it
 		Util.asyncQuery("DELETE FROM "+localConn.ipBansTable+" WHERE banned = '"+ip+"'");
+		plugin.bannedIps.remove(ip);
 	}
 	
 	public void muteRemove(String name, String by) {

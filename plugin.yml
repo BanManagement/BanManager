@@ -19,6 +19,10 @@ commands:
     description: "ban an ip"
     usage: "/banip <username || IP Address> <reason>"
     aliases: [bmbanip]
+  tempbanip: 
+    description: "tempban an ip"
+    usage: "/tempbanip <username || IP Address> <timeDiff> <reason>"
+    aliases: [bmtempbanip]
   unbanip:
     description: "unban's an ip"
     usage: "/unbanip <IP Address>"
@@ -63,6 +67,7 @@ permissions:
             bm.bminfo: true
             bm.notify: true
             bm.banip: true
+            bm.tempbanip: true
             bm.unbanip: true
             bm.import: true
             bm.kick: true
@@ -90,6 +95,9 @@ permissions:
         default: op
     bm.banip:
         description: Allows you to ban an ip
+        default: op
+    bm.tempbanip:
+        description: Allows you to temban an ip
         default: op
     bm.unbanip:
         description: Allows you to unban an ip
