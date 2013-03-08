@@ -139,6 +139,11 @@ public class BanIpCommand implements CommandExecutor {
 
 	private void ban(CommandSender sender, final String ip, String bannedByName, String reason, String viewReason) {
 
+		if (plugin.bannedIps.contains(ip)) {
+			Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", ip));
+			return;
+		}
+		
 		final String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
