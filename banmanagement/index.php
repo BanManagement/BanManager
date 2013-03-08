@@ -332,6 +332,7 @@ $actions = array(
 	'deleteserver',
 	'editserver',
 	'logout',
+	'reorderserver',
 	'searchplayer',
 	'searchip',
 	'servers',

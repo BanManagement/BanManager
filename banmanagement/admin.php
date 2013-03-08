@@ -45,11 +45,29 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	else {
 		$id = array_keys($settings['servers']);
 		$i = 0;
+		$count = count($settings['servers']) - 1;
+		
 		foreach($settings['servers'] as $server) {
 			echo '
 				<tr>
 					<td>'.$server['name'].'</td>
-					<td><!-- <a href="#" class="btn btn-warning editServer"><i class="icon-edit icon-white"></i></a> --> <a href="#" class="btn btn-danger deleteServer" data-serverid="'.$id[$i].'"><i class="icon-trash icon-white"></i></a></td>
+					<td>
+						<a href="#" class="btn btn-danger deleteServer" data-serverid="'.$id[$i].'"><i class="icon-trash icon-white"></i></a>';
+			if($count > 0) {
+				if($i == 0)
+					echo '
+					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><i class="icon-arrow-down"></i></a>';
+				else if($i == $count)
+					echo '
+					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><i class="icon-arrow-up"></i></a>';
+				else {
+					echo '
+					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><i class="icon-arrow-up"></i></a>
+					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><i class="icon-arrow-down"></i></a>';
+				}
+			}
+			echo '
+					</td>
 				</tr>';
 			++$i;
 		}
