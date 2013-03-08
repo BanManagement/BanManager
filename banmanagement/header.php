@@ -52,7 +52,7 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		</script>';
 	if(isset($_GET['action']) && $_GET['action'] != 'admin')
 		echo '
-		<script src="//js/admin.js"></script>
+		<script src="//'.$path.'js/admin.js"></script>
 ';
 }
 		?>
