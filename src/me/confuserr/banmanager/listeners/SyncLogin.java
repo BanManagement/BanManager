@@ -69,7 +69,8 @@ public class SyncLogin implements Listener {
 				// Oh dear, they've been banned
 				event.disallow(Result.KICK_BANNED, ipReason);
 				return;
-			}
+			} else
+				event.allow();
 		}
 	}
 }
