@@ -22,6 +22,12 @@ else {
 	// Clear old ip
 	clearCache($_GET['server'].'/ips', 300);
 	
+	// Check if they are logged in as an admin
+	if(isset($_SESSION['admin']) && $_SESSION['admin'])
+		$admin = true;
+	else
+		$admin = false;
+	
 	// Check if the player exists
 	$currentBans = cache("SELECT * FROM ".$server['ipTable']." WHERE banned = '".$_GET['ip']."'", 300, $_GET['server'].'/ips', $server);
 	$pastBans = cache("SELECT * FROM ".$server['ipRecordTable']." WHERE banned = '".$_GET['ip']."'", 300, $_GET['server'].'/ips', $server);
@@ -110,7 +116,7 @@ else {
 				</tbody>
 			</table>
 			<br />
-			<table class="table table-striped table-bordered">
+			<table class="table table-striped table-bordered" id="previous-ip-bans">
 				<caption>Previous Bans</caption>
 				<thead>
 					<th>ID</th>
@@ -160,7 +166,8 @@ else {
 						<td>'.($r['ban_expired_on'] == 0 ? 'Never' : secs_to_h($r['ban_expired_on'] - $r['ban_time'])).'</td>
 						<td>'.$r['unbanned_by'].'</td>
 						<td>'.date('H:i:s d/m/y', $r['unbanned_time']).'</td>'.($serverName ? '
-						<td>'.$r['server'].'</td>' : '').'
+						<td>'.$r['server'].'</td>' : '').($admin ? '
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['ban_record_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
 					</tr>';
 				++$i;
 			}
