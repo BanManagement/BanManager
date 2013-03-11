@@ -45,13 +45,12 @@ public class bansAsync implements Runnable {
 		try {
 			while (result1.next()) {
 				// Remove them from the list
-
 				synchronized (plugin.bannedPlayers) {
 					if (plugin.bannedPlayers.contains(result1.getString("banned"))) {
 						plugin.bannedPlayers.remove(result1.getString("banned"));
 						
 						if(plugin.bukkitBan) {
-							plugin.toUnbanPlayer.add(result.getString("banned"));
+							plugin.toUnbanPlayer.add(result1.getString("banned"));
 						}
 					}
 				}
