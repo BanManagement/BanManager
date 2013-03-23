@@ -91,6 +91,8 @@ public class TempBanCommand implements CommandExecutor {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
 
+			playerName = player.getName();
+			
 			if (playerName.equals(bannedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
@@ -115,6 +117,8 @@ public class TempBanCommand implements CommandExecutor {
 		} else {
 			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
 
+			playerName = offlinePlayer.getName();
+			
 			if (plugin.bukkitBan) {
 				if (offlinePlayer.isBanned()) {
 					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));

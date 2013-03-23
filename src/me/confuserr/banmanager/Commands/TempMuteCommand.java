@@ -4,6 +4,7 @@ import java.util.List;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -89,6 +90,8 @@ public class TempMuteCommand implements CommandExecutor {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
 
+			playerName = player.getName();
+			
 			if (playerName.equals(mutedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
 				return;
@@ -97,6 +100,10 @@ public class TempMuteCommand implements CommandExecutor {
 				return;
 			}
 
+		} else {
+			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
+
+			playerName = offlinePlayer.getName();
 		}
 
 		if (plugin.mutedPlayersBy.containsKey(playerName)) {
