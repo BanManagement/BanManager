@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +39,7 @@ public class BanManager extends JavaPlugin {
 	public int keepKicks;
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
-	public List<String> mutedBlacklist;
+	public HashSet<String> mutedBlacklist;
 	public HashMap<String, String> timeLimitsMutes = new HashMap<String, String>();
 	public HashMap<String, String> timeLimitsBans = new HashMap<String, String>();
 
@@ -219,7 +220,7 @@ public class BanManager extends JavaPlugin {
 			banMessages.put(key, Util.colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
 		}
 
-		mutedBlacklist = getConfig().getStringList("mutedCommandBlacklist");
+		mutedBlacklist.addAll(getConfig().getStringList("mutedCommandBlacklist"));
 
 		timeLimitsMutes.clear();
 		// Loop through the time limits
