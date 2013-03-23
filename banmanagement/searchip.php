@@ -112,7 +112,7 @@ else {
 			
 			echo '
 				<tr'.(isset($f['past']) ? ' class="warning"' : '').'>
-					<td><a href="index.php?action=viewip&player='.$ip.'&server='.$_GET['server'].'">'.$ip.'</a></td>
+					<td><a href="index.php?action=viewip&ip='.$ip.'&server='.$_GET['server'].'">'.$ip.'</a></td>
 					<td>'.$f['type'].'</td>
 					<td>'.$f['by'].'</td>
 					<td>'.$f['reason'].'</td>
