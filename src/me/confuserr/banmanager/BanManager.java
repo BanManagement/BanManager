@@ -116,6 +116,7 @@ public class BanManager extends JavaPlugin {
 		getCommand("tempmute").setExecutor(new TempMuteCommand(this));
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
+		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
 
 		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use Sync events
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);

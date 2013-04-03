@@ -54,6 +54,9 @@ commands:
   bmreload:
     description: "Reloads from the config everything except database connection info"
     usage: "/bmreload"
+  bmtools:
+    description: "Collection of random utilities"
+    usage: "/bmtools <tool>"
 main: me.confuserr.banmanager.BanManager
 name: BanManager
 permissions:
