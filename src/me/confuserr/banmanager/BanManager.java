@@ -60,6 +60,12 @@ public class BanManager extends JavaPlugin {
 	public void onDisable() {
 		// Cancel all BanManager tasks
 		getServer().getScheduler().cancelTasks(this);
+		
+		// Check to see if any bukkit unbans must take place
+		if(plugin.toUnbanPlayer.size() > 0 || plugin.toUnbanIp.size() > 0) {
+			new bukkitUnbanSync(plugin).run();
+		}
+		
 		// Close the database connection
 		localConn.close();
 
