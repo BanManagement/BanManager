@@ -41,7 +41,7 @@ public class UnMuteCommand implements CommandExecutor {
 		} else {			
 			plugin.removeMute(offlineName, playerName);
 		
-			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName);
+			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName).replace("[by]", playerName);
 		
 			plugin.logger.info(message);
 			

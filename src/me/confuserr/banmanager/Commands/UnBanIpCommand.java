@@ -22,16 +22,18 @@ public class UnBanIpCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String consoleName = plugin.banMessages.get("consoleName");
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
-			playerName = player.getName();
+			consoleName = player.getName();
 			if (!player.hasPermission("bm.unbanip")) {
 				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
+		
+		final String playerName = consoleName;
 
 		if (Util.ValidateIPAddress(args[0])) {
 			// Its an IP
@@ -41,7 +43,7 @@ public class UnBanIpCommand implements CommandExecutor {
 					plugin.getServer().unbanIP(ip);
 
 				plugin.dbLogger.ipRemove(ip, playerName);
-				Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
+				Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
 			} else {
 				Util.sendMessage(sender, plugin.banMessages.get("ipNotBannedError").replace("[ip]", ip));
 			}
@@ -64,7 +66,7 @@ public class UnBanIpCommand implements CommandExecutor {
 							plugin.getServer().unbanIP(ip);
 						
 						plugin.dbLogger.ipRemove(ip, byName);
-						Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip));
+						Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
 					}
 				}
 			});

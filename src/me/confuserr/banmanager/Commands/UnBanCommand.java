@@ -42,9 +42,10 @@ public class UnBanCommand implements CommandExecutor {
 			
 			String offlineName = offlinePlayer.getName();
 			plugin.dbLogger.banRemove(offlinePlayer.getName(), playerName);
-			plugin.logger.info(plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName));
-
-			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName);
+			
+			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName).replace("[by]", playerName);
+			
+			plugin.logger.info(message);
 			
 			if(!sender.hasPermission("bm.notify"))
 				Util.sendMessage(sender, message);
