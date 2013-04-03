@@ -1,5 +1,7 @@
 package me.confuserr.banmanager;
 
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -7,7 +9,8 @@ import org.bukkit.entity.Player;
 public class Util {
 
 	private static BanManager plugin = BanManager.getPlugin();
-
+	private static final Random generator = new Random();
+	
 	public static String viewReason(String reason) {
 		return reason.replace("&quot;", "\"").replace("&#039;", "'");
 	}
@@ -109,5 +112,9 @@ public class Util {
 		}
 
 		return true;
+	}
+	
+	public static int generatePin() {
+		 return 100000 + generator.nextInt(900000); 
 	}
 }
