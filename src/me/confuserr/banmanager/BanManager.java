@@ -39,7 +39,7 @@ public class BanManager extends JavaPlugin {
 	public int keepKicks;
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
-	public HashSet<String> mutedBlacklist;
+	public HashSet<String> mutedBlacklist = new HashSet<String>();
 	public HashMap<String, String> timeLimitsMutes = new HashMap<String, String>();
 	public HashMap<String, String> timeLimitsBans = new HashMap<String, String>();
 
@@ -220,7 +220,9 @@ public class BanManager extends JavaPlugin {
 			banMessages.put(key, Util.colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
 		}
 
-		mutedBlacklist.addAll(getConfig().getStringList("mutedCommandBlacklist"));
+		for(String cmd : getConfig().getStringList("mutedCommandBlacklist")) {
+			mutedBlacklist.add(cmd);
+		}
 
 		timeLimitsMutes.clear();
 		// Loop through the time limits
