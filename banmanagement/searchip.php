@@ -45,7 +45,7 @@ else {
 	}
 	// Check past bans!
 	if(!$excluderecords) {
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_onFROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
+		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		$rows = count($result);
