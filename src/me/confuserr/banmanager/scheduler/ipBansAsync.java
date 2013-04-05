@@ -47,9 +47,9 @@ public class ipBansAsync implements Runnable {
 			while (result1.next()) {
 				// Remove them from the list
 
-				synchronized (plugin.bannedPlayers) {
-					if (!plugin.bannedPlayers.contains(result1.getString("banned"))) {
-						plugin.bannedPlayers.remove(result1.getString("banned"));
+				synchronized (plugin.bannedIps) {
+					if (!plugin.bannedIps.contains(result1.getString("banned"))) {
+						plugin.bannedIps.remove(result1.getString("banned"));
 						
 						if(plugin.bukkitBan) {
 							plugin.toUnbanIp.add(result.getString("banned"));
