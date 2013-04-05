@@ -166,7 +166,7 @@ public class BanManager extends JavaPlugin {
 		try {
 			while (result.next()) {
 				// Add them to the banned list
-				plugin.bannedPlayers.add(result.getString("banned"));
+				plugin.bannedPlayers.add(result.getString("banned").toLowerCase());
 				playerBans++;
 			}
 

@@ -34,7 +34,7 @@ public class UnBanCommand implements CommandExecutor {
 			}
 		}
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-		if(!plugin.bannedPlayers.contains(offlinePlayer.getName())) {
+		if(!plugin.bannedPlayers.contains(offlinePlayer.getName().toLowerCase())) {
 			Util.sendMessage(sender, plugin.banMessages.get("unbanError"));
 		} else {
 			if(plugin.bukkitBan)

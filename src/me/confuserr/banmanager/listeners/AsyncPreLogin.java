@@ -53,7 +53,7 @@ public class AsyncPreLogin implements Listener {
 			plugin.dbLogger.setIP(name, ip);
 		
 		// Check to see if they are banned
-		if(!plugin.bannedPlayers.contains(name) && !plugin.bannedIps.contains(ipStr))
+		if(!plugin.bannedPlayers.contains(name.toLowerCase()) && !plugin.bannedIps.contains(ipStr))
 			return;
 		
 		String banReason = plugin.dbLogger.isBanned(name);

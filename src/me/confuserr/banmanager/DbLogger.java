@@ -21,11 +21,15 @@ public class DbLogger {
 	}
 	
 	public void logBan(String banned, String banned_by, String reason) {
+		banned = banned.toLowerCase();
+		
 		Util.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '0', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
 	
 	public void logTempBan(String banned, String banned_by, String reason, long expires) {
+		banned = banned.toLowerCase();
+		
 		Util.asyncQuery("INSERT INTO "+localConn.bansTable+" (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('"+banned+"', '"+banned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 		plugin.bannedPlayers.add(banned);
 	}
@@ -75,7 +79,7 @@ public class DbLogger {
 	public String isBanned(String username) {
 		String message = "";
 		
-		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.bansTable+" WHERE banned = '"+username+"'");
+		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.bansTable+" WHERE banned = '"+username.toLowerCase()+"'");
 		try {
 			if(result.next()) {
 				// Found, check to see if perma banned
@@ -112,7 +116,7 @@ public class DbLogger {
 				// Not in the current bans, but they are banned by bukkit
 				// Check if they've been previously banned, if they have, unban them
 				// Not unbanning without this check in case they were banned before the plugin was installed
-				ResultSet result2 = localConn.query("SELECT banned FROM "+localConn.bansRecordTable+" WHERE banned = '"+username+"'");
+				ResultSet result2 = localConn.query("SELECT banned FROM "+localConn.bansRecordTable+" WHERE banned = '"+username.toLowerCase()+"'");
 				if(result2.next())
 					plugin.getServer().getOfflinePlayer(username).setBanned(false);
 				
@@ -333,6 +337,8 @@ public class DbLogger {
 	}
 	
 	public void banRemove(String name, String by) {
+		name = name.toLowerCase();
+		
 		Util.asyncQuery("INSERT INTO "+localConn.bansRecordTable+" (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \""+by+"\", UNIX_TIMESTAMP(now()), b.server FROM "+localConn.bansTable+" b WHERE b.banned = '"+name+"'");
 		// Now delete it
 		Util.asyncQuery("DELETE FROM "+localConn.bansTable+" WHERE banned = '"+name+"'");
@@ -498,11 +504,52 @@ public class DbLogger {
 											 "KEY `ip` (`ip`)"+
 											") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 											
-											if(!Table)
+											/*if(!Table)
 												plugin.logger.severe("Unable to create local BanManagement table");
+											else {
+												Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.banAppealsTable+" ("+
+												 "`appeal_id` int(255) NOT NULL AUTO_INCREMENT,"+
+												 "`ban_id` int(255) NOT NULL," +
+												 "`ban_type` int(1) NOT NULL,"+
+												 "`appeal_time` int(10) NOT NULL,"+
+												 "PRIMARY KEY `player` (`player`),"+
+												 "KEY `ip` (`ip`)"+
+												") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+												
+												if(!Table)
+													plugin.logger.severe("Unable to create local BanManagement table");
+												else {
+													Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.pinsTable+" ("+
+													 "`pin_id` int(255) UNSIGNED NOT NULL AUTO_INCREMENT,"+
+													 "`player` varchar(25) NOT NULL," +
+													 "`ban_type` int(1) NOT NULL,"+
+													 "`appeal_time` int(10) NOT NULL,"+
+													 "PRIMARY KEY `player` (`player`),"+
+													 "KEY `ip` (`ip`)"+
+													") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+													
+													if(!Table)
+														plugin.logger.severe("Unable to create local BanManagement table");
+													else {
+														Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.staffTable+" ("+
+														 "`staff_id` int(255) UNSIGNED NOT NULL AUTO_INCREMENT,"+
+														 "`ssid` varchar(32) NOT NULL,"+
+														 "`player` varchar(25) NOT NULL," +
+														 "`permissions` int(255) UNSIGNED NOT NULL,"+
+														 "`password_hash` varchar(40) NOT NULL,"+
+														 "`password_salt` varchar(10),"+
+														 "PRIMARY KEY `staff_id` (`staff_id`),"+
+														 "KEY `ssid` (`ssid`)"+
+														") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+														
+														if(!Table)
+															plugin.logger.severe("Unable to create local BanManagement table");
+													}
+												}
+											}*/
 										}
 									}
-						}
+							}
 					}
 				}
 			}

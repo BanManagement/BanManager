@@ -28,8 +28,8 @@ public class bansAsync implements Runnable {
 				synchronized (plugin.bannedPlayers) {
 					// First check to see if they aren't already in it, don't
 					// want duplicates!
-					if (!plugin.bannedPlayers.contains(result.getString("banned"))) {
-						plugin.bannedPlayers.add(result.getString("banned"));
+					if (!plugin.bannedPlayers.contains(result.getString("banned").toLowerCase())) {
+						plugin.bannedPlayers.add(result.getString("banned").toLowerCase());
 					}
 				}
 			}
@@ -46,8 +46,8 @@ public class bansAsync implements Runnable {
 			while (result1.next()) {
 				// Remove them from the list
 				synchronized (plugin.bannedPlayers) {
-					if (plugin.bannedPlayers.contains(result1.getString("banned"))) {
-						plugin.bannedPlayers.remove(result1.getString("banned"));
+					if (plugin.bannedPlayers.contains(result1.getString("banned").toLowerCase())) {
+						plugin.bannedPlayers.remove(result1.getString("banned").toLowerCase());
 						
 						if(plugin.bukkitBan) {
 							plugin.toUnbanPlayer.add(result1.getString("banned"));

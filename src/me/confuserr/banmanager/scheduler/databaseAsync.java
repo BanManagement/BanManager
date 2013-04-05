@@ -33,7 +33,7 @@ public class databaseAsync implements Runnable {
 			result = localConn.query("SELECT banned FROM " + localConn.bansTable + " WHERE ban_expires_on != 0 AND ban_expires_on < '" + now + "'");
 			try {
 				while (result.next()) {
-					plugin.toUnbanPlayer.add(result.getString("banned"));
+					plugin.toUnbanPlayer.add(result.getString("banned").toLowerCase());
 				}
 				result.close();
 			} catch (SQLException e) {
