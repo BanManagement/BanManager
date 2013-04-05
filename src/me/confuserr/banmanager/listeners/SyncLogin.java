@@ -50,7 +50,8 @@ public class SyncLogin implements Listener {
 		}
 		
 		// Here we log their IP to the database
-		plugin.dbLogger.setIP(name, ip);
+		if(plugin.logIPs)
+			plugin.dbLogger.setIP(name, ip);
 		
 		// Check to see if they are banned
 		if(!plugin.bannedPlayers.contains(name) && !plugin.bannedIps.contains(ipStr))

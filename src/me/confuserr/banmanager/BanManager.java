@@ -55,6 +55,7 @@ public class BanManager extends JavaPlugin {
 
 	public boolean usePartialNames = true;
 	public boolean bukkitBan = true;
+	public boolean logIPs;
 
 	@Override
 	public void onDisable() {
@@ -214,6 +215,8 @@ public class BanManager extends JavaPlugin {
 	public void configReload() {
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("keepKicks");
+		
+		logIPs = getConfig().getBoolean("logIPs");
 
 		serverName = getConfig().getString("serverName");
 

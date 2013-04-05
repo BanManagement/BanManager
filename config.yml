@@ -17,6 +17,8 @@ localDatabase:
 # Enable for foreign characters
 useUTF8: false
 
+logIPs: true
+
 # Only fill in if you are syncing bans accross servers
 serverName: ''
 checkForUpdates: true
