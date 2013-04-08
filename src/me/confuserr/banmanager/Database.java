@@ -124,7 +124,8 @@ public class Database {
 					return result;
 			}
 		} catch (SQLException e) {
-			plugin.logger.info("Error in SQL query: " + e.getMessage());
+			plugin.logger.warning("Error in SQL query: " + e.getMessage());
+			plugin.logger.warning(query);
 			Util.sendMessageWithPerm("Error in SQL query: " + e.getMessage(), "bm.sqlnotify");
 		}
 		return result;
@@ -139,7 +140,8 @@ public class Database {
 			int result = statement.executeUpdate(query);
 			return result;
 		} catch (SQLException e) {
-			plugin.logger.info("Error in SQL query: " + e.getMessage());
+			plugin.logger.warning("Error in SQL query: " + e.getMessage());
+			plugin.logger.warning(query);
 		}
 		return 0;
 	}
@@ -152,8 +154,10 @@ public class Database {
 			ps = connection.prepareStatement(query);
 			return ps;
 		} catch (SQLException e) {
-			if (!e.toString().contains("not return ResultSet"))
-				plugin.logger.info("Error in SQL prepare() query: " + e.getMessage());
+			if (!e.toString().contains("not return ResultSet")) {
+				plugin.logger.warning("Error in SQL prepare() query: " + e.getMessage());
+				plugin.logger.warning(query);
+			}
 		}
 		return ps;
 	}
