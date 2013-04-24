@@ -1,5 +1,6 @@
 package me.confuserr.banmanager.Commands;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import me.confuserr.banmanager.BanManager;
@@ -74,7 +75,7 @@ public class BanIpCommand implements CommandExecutor {
 					// Online
 					Player target = plugin.getServer().getPlayerExact(args[0]);
 
-					final String targetIp = target.getAddress().getAddress().toString();
+					final InetAddress targetIp = target.getAddress().getAddress();
 
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
@@ -97,7 +98,7 @@ public class BanIpCommand implements CommandExecutor {
 					Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				} else {
 
-					final String targetIp = target.getAddress().getAddress().toString();
+					final InetAddress targetIp = target.getAddress().getAddress();
 
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 

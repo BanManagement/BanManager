@@ -252,7 +252,7 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public final String getIp(InetAddress ip) {
-		return ip.toString().replace("/", "");
+		return ip.getHostAddress().replace("/", "");
 	}
 
 	public String getIp(String ip) {
