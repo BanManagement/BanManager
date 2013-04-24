@@ -49,12 +49,22 @@ public class BanCommand implements CommandExecutor {
 				return false;
 			} else {
 				// Offline
+				if (!player.hasPermission("bm.banoffline")) {
+					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+					return true;
+				}
+
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason);
 			}
 		} else {
 			// Must be exact name
 			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
+				if (!player.hasPermission("bm.banoffline")) {
+					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+					return true;
+				}
+
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason);
 			} else {
 				// Online
@@ -68,9 +78,9 @@ public class BanCommand implements CommandExecutor {
 	private void ban(CommandSender sender, String playerName, String playerDisplayName, String bannedByName, boolean online, String reason, String viewReason) {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
-			
+
 			playerName = player.getName();
-			
+
 			if (playerName.equals(bannedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
@@ -96,7 +106,7 @@ public class BanCommand implements CommandExecutor {
 			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
 
 			playerName = offlinePlayer.getName();
-			
+
 			if (plugin.bukkitBan) {
 				if (offlinePlayer.isBanned()) {
 					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));

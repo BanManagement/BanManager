@@ -78,14 +78,22 @@ permissions:
             bm.mute: true
             bm.tempmute: true
             bm.unmute: true
+            bm.banoffline: true
+            bm.tempbanoffline: true
     bm.unban:
         description: Allows you to unban a user
         default: op
     bm.ban:
         description: Allows you to ban a user
         default: op
+    bm.banoffline:
+        description: Allows you to ban an offline user
+        default: op
     bm.tempban:
         description: Allows you to tempban a user
+        default: op
+    bm.tempbanoffline:
+        description: Allows you to tempban an offline user
         default: op
     bm.exempt:
         description: Prevents this user from being banned or kicked

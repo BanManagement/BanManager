@@ -71,12 +71,22 @@ public class TempBanCommand implements CommandExecutor {
 				return false;
 			} else {
 				// Offline
+				if (!player.hasPermission("bm.tempbanoffline")) {
+					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+					return true;
+				}
+				
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			}
 		} else {
 			// Must be exact name
 			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
+				if (!player.hasPermission("bm.tempbanoffline")) {
+					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+					return true;
+				}
+				
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			} else {
 				// Online
