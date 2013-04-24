@@ -7,9 +7,15 @@
 	may be available at http://creativecommons.org/licenses/by-nc-sa/2.0/uk/.
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
+
+// Disable errors to prevent invalid JSON
+error_reporting(0);
+@ini_set('display_errors', 0); // Fallback incase error_reporting(0) fails
+
 if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin']))
 	die('Hacking attempt');
-error_reporting(0);
+else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
+	die('Hacking attempt');
 
 function tableExists($name) {
 	if(!@mysql_query("SELECT * FROM $name"))

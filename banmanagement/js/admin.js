@@ -17,7 +17,7 @@ $(function() {
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Testing connection</div>');
 		showLoading('loadingSmall');
 		$.ajax({
-			url: 'index.php?action=addserver&ajax=true',
+			url: 'index.php?action=addserver&ajax=true&authid='+authid,
 			data: form.serialize(),
 			type: 'post',
 			dataType: 'json',
