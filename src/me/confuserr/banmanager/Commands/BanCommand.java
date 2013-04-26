@@ -5,6 +5,7 @@ import java.util.List;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,6 +35,11 @@ public class BanCommand implements CommandExecutor {
 				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
+		}
+		
+		if(!StringUtils.isAlphanumeric(args[0])) {
+			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+			return true;
 		}
 
 		String reason = Util.getReason(args, 1);

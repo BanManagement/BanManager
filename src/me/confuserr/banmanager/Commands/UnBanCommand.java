@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,43 +17,49 @@ public class UnBanCommand implements CommandExecutor {
 	public UnBanCommand(BanManager instance) {
 		plugin = instance;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
-		if(args.length < 1)
+		if (args.length < 1)
 			return false;
-		
+
 		Player player = null;
 		String playerName = plugin.banMessages.get("consoleName");
-		
-		if(sender instanceof Player) {
+
+		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
-			if(!player.hasPermission("bm.unban")) {
+			if (!player.hasPermission("bm.unban")) {
 				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
+		
+		if(!StringUtils.isAlphanumeric(args[0])) {
+			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+			return true;
+		}
+		
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-		if(!plugin.bannedPlayers.contains(offlinePlayer.getName().toLowerCase())) {
+		if (!plugin.bannedPlayers.contains(offlinePlayer.getName().toLowerCase())) {
 			Util.sendMessage(sender, plugin.banMessages.get("unbanError"));
 		} else {
-			if(plugin.bukkitBan)
+			if (plugin.bukkitBan)
 				offlinePlayer.setBanned(false);
-			
+
 			String offlineName = offlinePlayer.getName();
 			plugin.dbLogger.banRemove(offlinePlayer.getName(), playerName);
-			
+
 			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName).replace("[by]", playerName);
-			
+
 			plugin.logger.info(message);
-			
-			if(!sender.hasPermission("bm.notify"))
+
+			if (!sender.hasPermission("bm.notify"))
 				Util.sendMessage(sender, message);
-			
+
 			Util.sendMessageWithPerm(message, "bm.notify");
 		}
 		return true;
 	}
-	
+
 }

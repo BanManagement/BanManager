@@ -5,6 +5,7 @@ import java.util.List;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -69,6 +70,12 @@ public class TempBanIpCommand implements CommandExecutor {
 			ban(sender, ip, playerName, reason, viewReason, timeExpires2, formatExpires);
 
 		} else {
+
+			if(!StringUtils.isAlphanumeric(args[0])) {
+				Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+				return true;
+			}
+			
 			final String byName = playerName;
 
 			// Its a player!

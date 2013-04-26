@@ -3,6 +3,7 @@ package me.confuserr.banmanager.Commands;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,41 +17,47 @@ public class UnMuteCommand implements CommandExecutor {
 	public UnMuteCommand(BanManager instance) {
 		plugin = instance;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
-		if(args.length < 1)
+		if (args.length < 1)
 			return false;
-		
+
 		Player player = null;
 		String playerName = plugin.banMessages.get("consoleName");
-		
-		if(sender instanceof Player) {
+
+		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
-			if(!player.hasPermission("bm.unmute")) {
+			if (!player.hasPermission("bm.unmute")) {
 				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 				return true;
 			}
 		}
+		
+		if(!StringUtils.isAlphanumeric(args[0])) {
+			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+			return true;
+		}
+		
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
 		String offlineName = offlinePlayer.getName();
 
-		if(!plugin.dbLogger.isMuted(offlineName)) {
+		if (!plugin.dbLogger.isMuted(offlineName)) {
 			Util.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
-		} else {			
+		} else {
 			plugin.removeMute(offlineName, playerName);
-		
+
 			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName).replace("[by]", playerName);
-		
+
 			plugin.logger.info(message);
-			
-			if(!sender.hasPermission("bm.notify"))
+
+			if (!sender.hasPermission("bm.notify"))
 				Util.sendMessage(sender, message);
-			
+
 			Util.sendMessageWithPerm(message, "bm.notify");
 		}
 		return true;
 	}
-	
+
 }

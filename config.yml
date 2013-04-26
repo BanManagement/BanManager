@@ -13,6 +13,9 @@ localDatabase:
     mutesTable: 'mb_mutes'
     mutesRecordTable: 'mb_mutes_records'
     playerIpsTable: 'mb_player_ips'
+    banAppealsTable: 'mb_ban_appeals'
+    pinsTable: 'mb_pins'
+    staffTable: 'mb_staff'
 
 # Enable for foreign characters
 useUTF8: false
@@ -110,6 +113,7 @@ messages:
     ipUnbanned: '[ip] has been unbanned'
     ipNotBannedError: '&c[ip] is not currently banned. You can''t unban someone who isn''t banned!'
     invalidIp: '&cInvalid IP!'
+    invalidPlayer: '&cInvalid Player!'
     playerUnmuted: '[name] has been unmuted'
     playerNotMutedError: '&cYou can''t unmute someone who isn''t muted!'
     updateAvailable: '&A[version] update available'
