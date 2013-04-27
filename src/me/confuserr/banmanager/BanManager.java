@@ -178,7 +178,7 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		logger.info("[BanManager] " + " Loaded " + playerBans + " player bans");
+		logger.info("[BanManager] " + "Loaded " + playerBans + " player bans");
 
 		ResultSet result1 = localConn.query("SELECT banned FROM " + localConn.ipBansTable);
 
@@ -196,7 +196,7 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		logger.info("[BanManager] " + " Loaded " + ipBans + " ip bans");
+		logger.info("[BanManager] " + "Loaded " + ipBans + " ip bans");
 
 		// Check for an update
 		if (checkForUpdates) {
