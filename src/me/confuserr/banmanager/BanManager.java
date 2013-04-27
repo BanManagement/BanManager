@@ -73,6 +73,7 @@ public class BanManager extends JavaPlugin {
 		logger.info("[BanManager] has been disabled");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
 		this.getConfig().options().copyDefaults(true);

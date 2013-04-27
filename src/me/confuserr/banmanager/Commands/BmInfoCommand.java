@@ -19,6 +19,7 @@ public class BmInfoCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String args[]) {
 

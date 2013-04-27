@@ -17,6 +17,7 @@ public class UnBanIpCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 1)

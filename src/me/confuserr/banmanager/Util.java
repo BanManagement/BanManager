@@ -72,6 +72,7 @@ public class Util {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void asyncQuery(final String query) {
 		if (plugin.getConfig().getBoolean("useSyncChat")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {

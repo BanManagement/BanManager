@@ -21,6 +21,7 @@ public class BanIpCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 2)
@@ -66,6 +67,7 @@ public class BanIpCommand implements CommandExecutor {
 
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
+						@Override
 						public void run() {
 							String ip = plugin.dbLogger.getIP(pName);
 
@@ -85,6 +87,7 @@ public class BanIpCommand implements CommandExecutor {
 
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
+						@Override
 						public void run() {
 							String ip = plugin.getIp(targetIp);
 
@@ -108,6 +111,7 @@ public class BanIpCommand implements CommandExecutor {
 
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
+						@Override
 						public void run() {
 							String ip = plugin.getIp(targetIp);
 
@@ -126,6 +130,7 @@ public class BanIpCommand implements CommandExecutor {
 
 				plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
+					@Override
 					public void run() {
 						String ip = plugin.dbLogger.getIP(pName);
 
@@ -154,6 +159,7 @@ public class BanIpCommand implements CommandExecutor {
 		final String kick = plugin.banMessages.get("ipBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			@Override
 			public void run() {
 				for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
 					if (plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip)) {
