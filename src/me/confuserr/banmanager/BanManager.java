@@ -227,6 +227,8 @@ public class BanManager extends JavaPlugin {
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
 
 		usePartialNames = getConfig().getBoolean("use-partial-names");
+		
+		bukkitBan = getConfig().getBoolean("bukkit-ban");
 
 		banMessages.clear();
 
