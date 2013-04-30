@@ -273,7 +273,7 @@ else {
 				?>
 			
 			</table><?php
-		if($admin && count($currentBans) != 0) {?>
+		if($admin && count($currentMutes) != 0) {?>
 			
 			<div class="modal hide fade" id="editmute">
 				<form class="form-horizontal" action="" method="post">
