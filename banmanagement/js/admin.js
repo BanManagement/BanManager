@@ -363,6 +363,46 @@ $(function() {
 			}
 		});
 	});
+	
+	$("[data-role=confirm]").click(function(e) {
+		e.preventDefault();
+		$("body").append('<div class="modal" id="confirmModal"><div class="modal-header"><a class="close" data-dismiss="modal">&times;</a><h3>'+$(this).data("confirm-title")+'</h3></div><div class="modal-body"><p>'+$(this).data("confirm-body")+'</p></div><div class="modal-footer"><a href="#" class="btn cancel" data-dismiss="modal">Cancel</a><a href="'+$(this).attr("href")+'" class="btn btn-primary">Confirm</a></div></div>');
+		$("#confirmModal").modal().find(".cancel").focus();
+		$('#confirmModal').on('hidden', function () {
+			$(this).remove();
+		});
+		return false;
+	});
+	
+	$("#confirmModal a.btn-primary").live('click', function(e) {
+		e.preventDefault();
+		var formBody = $("#confirmModal .modal-body");
+		$this = $(this);
+		
+		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Removing</div>');
+		showLoading('loadingSmall');
+		$.ajax({
+			url: $this.attr('href'),
+			type: 'get',
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				hideLoading();
+				formBody.show();
+				if(data.error) {
+					formBody.prepend(error(data.error));
+				} else {
+					$("#confirmModal").modal('hide');
+					location.reload();
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				hideLoading();
+				$this.removeClass('disabled').find('i').show();
+				formBody.prepend(error('Invalid response from server, try again<br />Response: '+jqXHR.responseText));
+			}
+		});
+	});
+	
 });
 
 function showLoading(element) {

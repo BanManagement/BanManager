@@ -124,6 +124,7 @@ else {
 					<tr>
 						<td colspan="2">
 							<a class="btn btn-warning edit" title="Edit" href="#editban" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
+							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deleteban&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentBans['ban_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unban '.$_GET['player'].'?<br />This cannot be undone"><i class="icon-trash icon-white"></i> Unban</a>
 						</td>
 					</tr>
 				</tfoot>';
@@ -266,6 +267,7 @@ else {
 					<tr>
 						<td colspan="2">
 							<a class="btn btn-warning edit" title="Edit" href="#editmute" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
+							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deletemute&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentMutes['mute_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unmute '.$_GET['player'].'?<br />This cannot be undone"><i class="icon-trash icon-white"></i> Unmute</a>
 						</td>
 					</tr>
 				</tfoot>';
