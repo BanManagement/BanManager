@@ -336,6 +336,7 @@ $actions = array(
 	'searchplayer',
 	'searchip',
 	'servers',
+	'updateban',
 	'viewip',
 	'viewplayer'
 );
