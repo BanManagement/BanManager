@@ -107,7 +107,7 @@ $(function() {
 	
 	$(".yourtime").html(dateFormat(new Date(), "dd/mm/yyyy HH:MM:ss"));
 	
-	$("#editban form .bantype").click(function(e) {
+	$("#editban form .bantype, #editmute form .bantype").click(function(e) {
 		e.preventDefault();
 		if($(this).html() == 'Never') {
 			$(this).html('Temp');
@@ -155,6 +155,56 @@ $(function() {
 					else {
 						$("#current-ban .expires").countdown({
 							until: $("#editban form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
+							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
+							onExpiry: function() {
+								location.reload();
+							}
+						});
+					}
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				hideLoading();
+				formBody.show();
+				formBody.prepend(error('Invalid response from server, try again<br />Response: '+jqXHR.responseText));
+			}
+		});
+		return false;
+	});
+	
+	$("#editmute form").submit(function(e) {
+		e.preventDefault();
+
+		var form = $(this);
+		var formBody = form.find(".modal-body");
+		if(!form.valid())
+			return false;
+		errorRemove();
+		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
+		showLoading('loadingSmall');
+		$("#editmute form input[name=expiresTimestamp]").val($("#editmute form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
+		$.ajax({
+			url: 'index.php?action=updatemute&ajax=true&authid='+authid,
+			data: form.serialize(),
+			type: 'post',
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				hideLoading();
+				formBody.show();
+				if(data.error) {
+					formBody.prepend(error(data.error));
+				} else {
+					errorRemove();
+					$("#editmute").modal('hide');
+					$("#current-mute .reason").html($("#editmute form textarea[name=reason]").text());
+					
+					var expires = $("#editmute form input[name=expires]").val();
+					
+					if(expires == "")
+						$("#current-mute .expires").html('<span class="label label-important">Never</span>');
+					else {
+						$("#current-mute .expires").countdown({
+							until: $("#editmute form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
 							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
 							onExpiry: function() {
 								location.reload();

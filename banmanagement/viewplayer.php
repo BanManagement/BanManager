@@ -207,7 +207,7 @@ else {
 		}
 			?>
 			<br />
-			<table class="table table-striped table-bordered">
+			<table id="current-mute" class="table table-striped table-bordered">
 				<caption>Current Mute</caption>
 				<tbody>
 				<?php
@@ -221,7 +221,7 @@ else {
 			echo '
 					<tr>
 						<td>Expires in:</td>
-						<td>';
+						<td class="expires">';
 			if($currentMutes['mute_expires_on'] == 0)
 				echo '<span class="label label-important">Never</span>';
 			else {
@@ -245,7 +245,7 @@ else {
 					</tr>
 					<tr>
 						<td>Reason:</td>
-						<td>'.$currentMutes['mute_reason'].'</td>
+						<td class="reason">'.$currentMutes['mute_reason'].'</td>
 					</tr>
 					<tr>';
 			if(!empty($currentMutes['server'])) {
@@ -259,7 +259,97 @@ else {
 				?>
 				
 				</tbody>
-			</table>
+				<?php
+		if($admin && count($currentMutes) != 0) {
+			echo '
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<a class="btn btn-warning edit" title="Edit" href="#editmute" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
+						</td>
+					</tr>
+				</tfoot>';
+		}
+				?>
+			
+			</table><?php
+		if($admin && count($currentBans) != 0) {?>
+			
+			<div class="modal hide fade" id="editmute">
+				<form class="form-horizontal" action="" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h3>Edit Ban</h3>
+					</div>
+					<div class="modal-body">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="yourtime">Your Time:</label>
+								<div class="controls">
+									<span class="yourtime"></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="servertime">Server Time:</label>
+								<div class="controls">
+									<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="mutedatetime">Expires Server Time:</label>
+								<div class="controls">
+									<div class="input-append datetimepicker date"><?php
+			echo '						
+										<div class="input-prepend">
+											<button class="btn btn-danger bantype" type="button">';
+			if($currentMutes['mute_expires_on'] == 0)
+				echo 'Never';
+			else
+				echo 'Temp';
+			
+			echo '</button>
+											<input type="text" class="required';
+			
+			if($currentMutes['mute_expires_on'] == 0)
+				echo ' disabled" disabled="disabled"';
+			else
+				echo '"'; 
+			
+			echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
+
+			if($currentMutes['mute_expires_on'] == 0)
+				echo '';
+			else
+				echo date('d/m/Y H:i:s', $currentMutes['mute_expires_on']);
+				
+			echo '" id="mutedatetime" />';
+										?>
+											<span class="add-on">
+												<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="mutereason">Reason:</label>
+								<div class="controls">
+									<textarea id="mutereason" name="reason" rows="4"><?php echo $currentMutes['mute_reason']; ?></textarea>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">Close</a>
+						<input type="submit" class="btn btn-primary" value="Save" />
+					</div>
+					<input type="hidden" name="id" value="<?php echo $currentMutes['mute_id']; ?>" />
+					<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
+					<input type="hidden" name="expiresTimestamp" value="" />
+				</form>
+			</div><?php
+		}
+		?>
 			<br />
 			<table class="table table-striped table-bordered" id="previous-bans">
 				<caption>Previous Bans</caption>
