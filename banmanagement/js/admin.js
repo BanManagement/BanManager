@@ -130,6 +130,11 @@ $(function() {
 		if(!form.valid())
 			return false;
 		errorRemove();
+		
+		if($(this).find("input[name=expires]").attr('disabled') == 'disabled') {
+			$(this).find("input[name=expires]").val('');
+		}
+		
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
 		showLoading('loadingSmall');
 		$("#editban form input[name=expiresTimestamp]").val($("#editban form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
@@ -180,6 +185,11 @@ $(function() {
 		if(!form.valid())
 			return false;
 		errorRemove();
+		
+		if($(this).find("input[name=expires]").attr('disabled') == 'disabled') {
+			$(this).find("input[name=expires]").val('');
+		}
+		
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
 		showLoading('loadingSmall');
 		$("#editmute form input[name=expiresTimestamp]").val($("#editmute form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
