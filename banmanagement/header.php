@@ -52,10 +52,12 @@ if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 		</script>';
 	if(isset($_GET['action']) && $_GET['action'] != 'admin')
 		echo '
+		<script src="//'.$path.'js/bootstrap-datetimepicker.min.js"></script>
 		<script src="//'.$path.'js/admin.js"></script>
 ';
 }
 		?>
+		
 		<script src="//<?php echo $path; ?>js/core.js"></script>
 	</head>
 	<body>
