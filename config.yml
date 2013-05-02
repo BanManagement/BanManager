@@ -20,6 +20,7 @@ localDatabase:
 # Enable for foreign characters
 useUTF8: false
 
+# Enable to log player IPs to allow for offline player ip banning
 logIPs: true
 
 # Only fill in if you are syncing bans accross servers
