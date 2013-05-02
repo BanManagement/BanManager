@@ -147,20 +147,20 @@ public class BanManager extends JavaPlugin {
 		logger.info("[BanManager] Version:" + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, 6000L);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, getConfig().getInt("scheduler.expiresCheck", 300) * 20);
 		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Bukkit unban bans those that have expired
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, 50L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, getConfig().getInt("scheduler.bukkitUnban", 3) * 20);
 
 		// Check the muted table for new mutes
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, 150L);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, getConfig().getInt("scheduler.newMutes", 8) * 20);
 
 		// Check the banned tables for new player bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this), 21L, 150L);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this), 21L, getConfig().getInt("scheduler.newBans", 8) * 20);
 
 		// Check the ip table for new ip bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, 150L);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable);

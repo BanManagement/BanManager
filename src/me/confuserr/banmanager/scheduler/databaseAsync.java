@@ -25,7 +25,6 @@ public class databaseAsync implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		// Get current time as a unix timestamp
 		long now = System.currentTimeMillis() / 1000;
 

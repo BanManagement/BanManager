@@ -36,11 +36,20 @@ cleanUp:
     muteRecords: 0
     playerIPs: 30
 
+# Scheduler intervals in seconds, recommended to leave as default values.
+# Only change if you know what you are doing!
+scheduler:
+    expiresCheck: 300
+    bukkitUnban: 3
+    newMutes: 8
+    newBans: 8
+    newIPBans: 8
+
 # Blacklist commands for muted players
 mutedCommandBlacklist:
     - msg
 
-# Leave false, this is for Tekkit servers
+# Leave false, this is for Tekkit Classic servers
 useSyncChat: false
 
 # Simply give the permission bm.timelimit.mutes.X or bm.timelimit.bans.X to apply the time limits
