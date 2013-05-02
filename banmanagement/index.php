@@ -327,6 +327,7 @@ $actions = array(
 	'admin',
 	'deleteban',
 	'deletebanrecord',
+	'deleteipban',
 	'deleteipbanrecord',
 	'deletekickrecord',
 	'deletemute',
@@ -339,6 +340,7 @@ $actions = array(
 	'searchip',
 	'servers',
 	'updateban',
+	'updateipban',
 	'updatemute',
 	'viewip',
 	'viewplayer'

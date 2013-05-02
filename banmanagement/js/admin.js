@@ -232,6 +232,61 @@ $(function() {
 		return false;
 	});
 	
+	$("#editbanip form").submit(function(e) {
+		e.preventDefault();
+
+		var form = $(this);
+		var formBody = form.find(".modal-body");
+		if(!form.valid())
+			return false;
+		errorRemove();
+		
+		if($(this).find("input[name=expires]").attr('disabled') == 'disabled') {
+			$(this).find("input[name=expires]").val('');
+		}
+		
+		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
+		showLoading('loadingSmall');
+		$("#editipban form input[name=expiresTimestamp]").val($("#editipban form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
+		$.ajax({
+			url: 'index.php?action=updateipban&ajax=true&authid='+authid,
+			data: form.serialize(),
+			type: 'post',
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				hideLoading();
+				formBody.show();
+				if(data.error) {
+					formBody.prepend(error(data.error));
+				} else {
+					errorRemove();
+					$("#editipban").modal('hide');
+					$("#current-ban .reason").html($("#editipban form textarea[name=reason]").text());
+					
+					var expires = $("#editipban form input[name=expires]").val();
+					
+					if(expires == "")
+						$("#current-ban .expires").html('<span class="label label-important">Never</span>');
+					else {
+						$("#current-ban .expires").countdown({
+							until: $("#editipban form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
+							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
+							onExpiry: function() {
+								location.reload();
+							}
+						});
+					}
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				hideLoading();
+				formBody.show();
+				formBody.prepend(error('Invalid response from server, try again<br />Response: '+jqXHR.responseText));
+			}
+		});
+		return false;
+	});
+	
 	$("#previous-bans a.delete").live('click', function(e) {
 		e.preventDefault();
 		var id = $(this).data('record-id');

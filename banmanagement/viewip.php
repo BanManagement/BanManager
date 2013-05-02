@@ -55,7 +55,7 @@ else {
 			<h5>Change Server: ';
 			foreach($settings['servers'] as $serv) {
 				if($serv['name'] != $server['name']) {
-					$html .= '<a href="index.php?action=viewplayer&player='.$_GET['player'].'&server='.$id[$i].'">'.$serv['name'].'</a>, ';
+					$html .= '<a href="index.php?action=viewplayer&ip='.$_GET['ip'].'&server='.$id[$i].'">'.$serv['name'].'</a>, ';
 				}
 				++$i;
 			}
@@ -114,18 +114,109 @@ else {
 		}
 				?>
 				</tbody>
+		<?php
+		if($admin && count($currentBans) != 0) {
+			echo '
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<a class="btn btn-warning edit" title="Edit" href="#editipban" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
+							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deleteipban&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentBans['ban_id'].'" data-confirm-title="Unban '.$_GET['ip'].'" data-confirm-body="Are you sure you want to unban '.$_GET['ip'].'?<br />This cannot be undone"><i class="icon-trash icon-white"></i> Unban</a>
+						</td>
+					</tr>
+				</tfoot>';
+		}
+				?>
 			</table>
+		<?php
+		if($admin && count($currentBans) != 0) {?>
+			<div class="modal hide fade" id="editipban">
+				<form class="form-horizontal" action="" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h3>Edit IP Ban</h3>
+					</div>
+					<div class="modal-body">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="yourtime">Your Time:</label>
+								<div class="controls">
+									<span class="yourtime"></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="servertime">Server Time:</label>
+								<div class="controls">
+									<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="bandatetime">Expires Server Time:</label>
+								<div class="controls">
+									<div class="input-append datetimepicker date"><?php
+			echo '						
+										<div class="input-prepend">
+											<button class="btn btn-danger bantype" type="button">';
+			if($currentBans['ban_expires_on'] == 0)
+				echo 'Never';
+			else
+				echo 'Temp';
+			
+			echo '</button>
+											<input type="text" class="required';
+			
+			if($currentBans['ban_expires_on'] == 0)
+				echo ' disabled" disabled="disabled"';
+			else
+				echo '"'; 
+			
+			echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
+
+			if($currentBans['ban_expires_on'] == 0)
+				echo '';
+			else
+				echo date('d/m/Y H:i:s', $currentBans['ban_expires_on']);
+				
+			echo '" id="bandatetime" />';
+										?>
+											<span class="add-on">
+												<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="banreason">Reason:</label>
+								<div class="controls">
+									<textarea id="banreason" name="reason" rows="4"><?php echo $currentBans['ban_reason']; ?></textarea>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">Close</a>
+						<input type="submit" class="btn btn-primary" value="Save" />
+					</div>
+					<input type="hidden" name="id" value="<?php echo $currentBans['ban_id']; ?>" />
+					<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
+					<input type="hidden" name="expiresTimestamp" value="" />
+				</form>
+			</div><?php
+		}
+			?>
 			<br />
 			<table class="table table-striped table-bordered" id="previous-ip-bans">
 				<caption>Previous Bans</caption>
 				<thead>
-					<th>ID</th>
-					<th>Reason</th>
-					<th>By</th>
-					<th>On</th>
-					<th>Length</th>
-					<th>Unbanned By</th>
-					<th>At</th><?php
+					<tr>
+						<th>ID</th>
+						<th>Reason</th>
+						<th>By</th>
+						<th>On</th>
+						<th>Length</th>
+						<th>Unbanned By</th>
+						<th>At</th><?php
 		if(!is_array($pastBans[0]))
 			$pastBans = array($pastBans);
 		$serverName = false;
@@ -140,6 +231,8 @@ else {
 					<th>Server</th>';
 		}		
 				?>
+				
+					</tr>
 				</thead>
 				<tbody><?php
 		if(isset($pastBans[0]) && count($pastBans[0]) == 0) {
@@ -173,6 +266,7 @@ else {
 			}
 		}
 				?>
+				
 				</tbody>
 			</table>
 		</div>
