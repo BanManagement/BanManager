@@ -27,8 +27,14 @@ logIPs: true
 serverName: ''
 checkForUpdates: true
 logKicks: false
-# Keep kicks for number of days, use 0 to never delete
-keepKicks: 30
+
+# Keep records for number of days, use 0 to never delete
+cleanUp:
+    kicks: 30
+    banRecords: 0
+    ipBanRecords: 0
+    muteRecords: 0
+    playerIPs: 30
 
 # Blacklist commands for muted players
 mutedCommandBlacklist:

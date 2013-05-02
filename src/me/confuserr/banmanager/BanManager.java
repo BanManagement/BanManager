@@ -36,7 +36,7 @@ public class BanManager extends JavaPlugin {
 	public boolean logKicks;
 	public List<String> toUnbanPlayer = Collections.synchronizedList(new ArrayList<String>());
 	public List<String> toUnbanIp = Collections.synchronizedList(new ArrayList<String>());
-	public int keepKicks;
+	public int keepKicks, keepBanRecords, keepIPBanRecords, keepIPs, keepMuteRecords;
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
 	public HashSet<String> mutedBlacklist = new HashSet<String>();
@@ -218,9 +218,14 @@ public class BanManager extends JavaPlugin {
 	// Reloads everything in the config except the database details
 	public void configReload() {
 		logKicks = getConfig().getBoolean("logKicks");
-		keepKicks = getConfig().getInt("keepKicks");
+		keepKicks = getConfig().getInt("cleanUp.keepKicks");
 		
 		logIPs = getConfig().getBoolean("logIPs");
+		keepIPs = getConfig().getInt("cleanUp.playerIPs");
+		
+		keepBanRecords = getConfig().getInt("cleanUp.banRecords");
+		keepIPBanRecords = getConfig().getInt("cleanUp.ipBanRecords");
+		keepMuteRecords = getConfig().getInt("cleanUp.muteRecords");
 
 		serverName = getConfig().getString("serverName");
 
