@@ -319,6 +319,10 @@ function connect($server) {
 	else if(!mysql_select_db($server['database']))
 		return false;
 	$settings['last_connection'] = $server;
+	
+	if(isset($settings['utf8']) && $settings['utf8'])
+		mysql_query("SET NAMES 'utf8'");
+	
 	return true;
 }
 
