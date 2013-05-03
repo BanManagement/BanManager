@@ -125,4 +125,60 @@ if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($sett
 	} else
 		echo '<p>None</p>';
 }
+
+if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
+?>
+<br />
+<h2>Latest Mutes</h2>
+<?php
+	if(!empty($settings['servers'])) {
+		echo '
+	<div class="row">';
+		$id = array_keys($settings['servers']);
+		$i = 0;
+		foreach($settings['servers'] as $server) {
+			echo '
+			<div class="span4">
+				<h3>'.$server['name'].'</h3>
+				<ul class="nav nav-tabs nav-stacked">';			
+			// Clear old latest mutes cache's
+			clearCache($i.'/latestmutes', 300);
+		
+			$result = cache("SELECT muted, muted_by, mute_reason, mute_expires_on FROM ".$server['mutesTable']." ORDER BY mute_time DESC LIMIT 5", 300, $i.'/latestmutes', $server);
+		
+			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+				$result = array($result);
+			$rows = count($result);
+		
+			if($rows == 0)
+				echo '<li>None</li>';
+			else {
+				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i, $server); // Cache it for a few seconds
+		
+				$mysqlTime = $timeDiff['mysqlTime'];
+				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+				$mysqlSecs = ($mysqlTime * 60) * 60;
+				foreach($result as $r) {
+					$expires = ($r['mute_expires_on'] + $mysqlSecs)- time();
+					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" /> '.$r['muted'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
+					if($r['mute_expires_on'] == 0)
+						echo ' <span class=\'label label-important\'>Never</span>';
+					else if($expires > 0)
+						echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
+					else
+						echo ' <span class=\'label label-success\'>Now</span>';
+					echo '"><i class="icon-question-sign icon-white"></i></button></li>';
+				}
+			}
+		
+			echo '
+				</ul>
+			</div>';
+			++$i;
+		}
+		echo '
+	</div>';
+	} else
+		echo '<p>None</p>';
+}
 ?>
