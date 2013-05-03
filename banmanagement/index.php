@@ -346,6 +346,7 @@ $actions = array(
 	'updateban',
 	'updateipban',
 	'updatemute',
+	'updatesettings',
 	'viewip',
 	'viewplayer'
 );

@@ -99,6 +99,37 @@ $(function() {
 			}
 		});
 	});
+	$("#homepageform").submit(function(e) {
+		e.preventDefault();
+		var form = $(this);
+		var formBody = form.find("table");
+		if(!form.valid())
+			return false;
+		errorRemove();
+		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
+		showLoading('loadingSmall');
+		$.ajax({
+			url: 'index.php?action=updatesettings&ajax=true&authid='+authid,
+			data: form.serialize(),
+			type: 'post',
+			dataType: 'json',
+			success: function(data, textStatus, jqXHR) {
+				hideLoading();
+				formBody.show();
+				if(data.error) {
+					form.prepend(error(data.error));
+				} else {
+					errorRemove();
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				hideLoading();
+				formBody.show();
+				form.prepend(error('Invalid response from server, try again<br />Response: '+jqXHR.responseText));
+			}
+		});
+		return false;
+	});
 	
 	$(".datetimepicker").datetimepicker({
 		format: 'dd/MM/yyyy hh:mm:ss',

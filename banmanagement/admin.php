@@ -36,8 +36,10 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	?>
 	<table class="table table-striped table-bordered" id="servers">
 		<thead>
-			<th>Server Name</th>
-			<th>Options</th>
+			<tr>
+				<th>Server Name</th>
+				<th>Options</th>
+			</tr>
 		</thead>
 		<tbody><?php
 	if(empty($settings['servers']))
@@ -72,14 +74,23 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 			++$i;
 		}
 	}
-		?></tbody>
-	</table>
-	<?php
+		?>
+		
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="2">
+		<?php
 	if(!is_writable('settings.php')) {
 		echo '<a class="btn btn-primary btn-large disabled" href="#addserver" title="Settings file not writable">Add Server</a>';
 	} else
 		echo '<a class="btn btn-primary btn-large" href="#addserver" data-toggle="modal">Add Server</a>';
 	?>
+	
+				</td>
+			</tr>
+		</tfoot>
+	</table>
 	<div class="modal hide fade" id="addserver">
 		<form class="form-horizontal" action="" method="post">
 			<div class="modal-header">
@@ -168,6 +179,60 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 			</div>
 		</form>
 	</div>
+	<br />
+	<br />
+	<h3>Homepage Settings</h3>
+	<form class="form-horizontal" action="" method="post" id="homepageform">
+		<table class="table table-striped table-bordered table-hover" id="homepagesettings">
+			<thead>
+				<tr>
+					<th>Option</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+	<?php
+	if(!is_writable('settings.php')) {
+		echo '
+				<tr>
+					<td colspan="2">settings.php can not be written to</td>
+				</tr>';
+	} else {
+		echo '
+				<tr>
+					<td>UTF8</td>
+					<td><input type="checkbox" name="utf8"'.(isset($settings['utf8']) && $settings['utf8'] ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Footer</td>
+					<td><input type="text" name="footer" value="'.$settings['footer'].'" /></td>
+				</tr>
+				<tr>
+					<td>Latest Bans</td>
+					<td><input type="checkbox" name="latestbans"'.((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Latest Mutes</td>
+					<td><input type="checkbox" name="latestmutes"'.(isset($settings['latest_mutes']) && $settings['latest_mutes'] ? ' checked="checked"' : '').' /></td>
+				</tr>';
+	} ?>
+	
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+	<?php
+	if(!is_writable('settings.php')) {
+		echo '<input type="submit" class="btn btn-primary btn-large disabled" disabled="disabled" value="Save" />';
+	} else {
+		echo '<input type="submit" class="btn btn-primary btn-large" value="Save" />';
+	} ?>
+			
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</form>
 	<?php
 }
 ?>
