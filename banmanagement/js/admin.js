@@ -131,10 +131,12 @@ $(function() {
 		return false;
 	});
 	
-	$(".datetimepicker").datetimepicker({
-		format: 'dd/MM/yyyy hh:mm:ss',
-		startDate: new Date()
-	});
+	if(jQuery.fn.datetimepicker) {
+		$(".datetimepicker").datetimepicker({
+			format: 'dd/MM/yyyy hh:mm:ss',
+			startDate: new Date()
+		});
+	}
 	
 	$(".yourtime").html(dateFormat(new Date(), "dd/mm/yyyy HH:MM:ss"));
 	
