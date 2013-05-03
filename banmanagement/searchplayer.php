@@ -179,7 +179,7 @@ else {
 		
 			echo '
 				<tr'.(isset($f['past']) ? ' class="warning"' : '').'>
-					<td><a href="index.php?action=viewplayer&player='.$player.'&server='.$_GET['server'].'">'.$player.'</a></td>
+					<td><img src="https://minotar.net/avatar/'.$player.'/20" alt="'.$player.'" /> <a href="index.php?action=viewplayer&player='.$player.'&server='.$_GET['server'].'">'.$player.'</a></td>
 					<td>'.$f['type'].'</td>
 					<td>'.$f['by'].'</td>
 					<td>'.$f['reason'].'</td>
