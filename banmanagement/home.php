@@ -70,55 +70,59 @@
 		</fieldset>
     </form>
 </div>
+<?php
+if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans'])) {
+?>
 <h2>Latest Bans</h2>
 <?php
-if(!empty($settings['servers'])) {
-	echo '
-	<div class="row">';
-	$id = array_keys($settings['servers']);
-	$i = 0;
-	foreach($settings['servers'] as $server) {
+	if(!empty($settings['servers'])) {
 		echo '
+	<div class="row">';
+		$id = array_keys($settings['servers']);
+		$i = 0;
+		foreach($settings['servers'] as $server) {
+			echo '
 			<div class="span4">
 				<h3>'.$server['name'].'</h3>
 				<ul class="nav nav-tabs nav-stacked">';			
-		// Clear old latest bans cache's
-		clearCache($i.'/latestbans', 300);
+			// Clear old latest bans cache's
+			clearCache($i.'/latestbans', 300);
 		
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_expires_on FROM ".$server['bansTable']." ORDER BY ban_time DESC LIMIT 5", 300, $i.'/latestbans', $server);
+			$result = cache("SELECT banned, banned_by, ban_reason, ban_expires_on FROM ".$server['bansTable']." ORDER BY ban_time DESC LIMIT 5", 300, $i.'/latestbans', $server);
 		
-		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-			$result = array($result);
-		$rows = count($result);
+			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+				$result = array($result);
+			$rows = count($result);
 		
-		if($rows == 0)
-			echo '<li>None</li>';
-		else {
-			$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i, $server); // Cache it for a few seconds
+			if($rows == 0)
+				echo '<li>None</li>';
+			else {
+				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i, $server); // Cache it for a few seconds
 		
-			$mysqlTime = $timeDiff['mysqlTime'];
-			$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
-			$mysqlSecs = ($mysqlTime * 60) * 60;
-			foreach($result as $r) {
-				$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
-				echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" /> '.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
-				if($r['ban_expires_on'] == 0)
-					echo ' <span class=\'label label-important\'>Never</span>';
-				else if($expires > 0)
-					echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
-				else
-					echo ' <span class=\'label label-success\'>Now</span>';
-				echo '"><i class="icon-question-sign icon-white"></i></button></li>';
+				$mysqlTime = $timeDiff['mysqlTime'];
+				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+				$mysqlSecs = ($mysqlTime * 60) * 60;
+				foreach($result as $r) {
+					$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
+					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" /> '.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
+					if($r['ban_expires_on'] == 0)
+						echo ' <span class=\'label label-important\'>Never</span>';
+					else if($expires > 0)
+						echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
+					else
+						echo ' <span class=\'label label-success\'>Now</span>';
+					echo '"><i class="icon-question-sign icon-white"></i></button></li>';
+				}
 			}
-		}
 		
-		echo '
+			echo '
 				</ul>
 			</div>';
-		++$i;
-	}
-	echo '
+			++$i;
+		}
+		echo '
 	</div>';
-} else
-	echo '<p>None</p>';
+	} else
+		echo '<p>None</p>';
+}
 ?>
