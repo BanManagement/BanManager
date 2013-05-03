@@ -10,7 +10,7 @@ public class Util {
 
 	private static BanManager plugin = BanManager.getPlugin();
 	private static final Random generator = new Random();
-	
+
 	public static String viewReason(String reason) {
 		return reason.replace("&quot;", "\"").replace("&#039;", "'");
 	}
@@ -106,7 +106,13 @@ public class Util {
 			return false;
 
 		for (String s : parts) {
-			int i = Integer.parseInt(s);
+			int i;
+
+			try {
+				i = Integer.parseInt(s);
+			} catch (NumberFormatException e) {
+				return false;
+			}
 
 			if ((i < 0) || (i > 255))
 				return false;
@@ -114,8 +120,8 @@ public class Util {
 
 		return true;
 	}
-	
+
 	public static int generatePin() {
-		 return 100000 + generator.nextInt(900000); 
+		return 100000 + generator.nextInt(900000);
 	}
 }
