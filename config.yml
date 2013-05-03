@@ -36,6 +36,7 @@ cleanUp:
     ipBanRecords: 0
     muteRecords: 0
     playerIPs: 30
+    warnings: 0
 
 # Scheduler intervals in seconds, recommended to leave as default values.
 # Only change if you know what you are doing!

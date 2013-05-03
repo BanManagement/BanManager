@@ -38,7 +38,7 @@ public class BanManager extends JavaPlugin {
 	public List<String> toUnbanIp = Collections.synchronizedList(new ArrayList<String>());
 
 	public int keepKicks, keepBanRecords, keepIPBanRecords, keepIPs,
-			keepMuteRecords;
+			keepMuteRecords, keepWarnings;
 
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
@@ -238,6 +238,7 @@ public class BanManager extends JavaPlugin {
 		keepBanRecords = getConfig().getInt("cleanUp.banRecords");
 		keepIPBanRecords = getConfig().getInt("cleanUp.ipBanRecords");
 		keepMuteRecords = getConfig().getInt("cleanUp.muteRecords");
+		keepWarnings = getConfig().getInt("cleanUp.warnings");
 
 		serverName = getConfig().getString("serverName");
 

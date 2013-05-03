@@ -10,7 +10,7 @@ public class databaseAsync implements Runnable {
 	private Database localConn;
 	private ResultSet result;
 	private BanManager plugin;
-	int kickDays, banDays, ipDays, muteDays, playerIPDays;
+	int kickDays, banDays, ipDays, muteDays, playerIPDays, warnDays;
 
 	public databaseAsync(BanManager banManager) {
 		plugin = banManager;
@@ -21,6 +21,7 @@ public class databaseAsync implements Runnable {
 		ipDays = 86400 * plugin.keepIPBanRecords;
 		muteDays = 86400 * plugin.keepMuteRecords;
 		playerIPDays = 86400 * plugin.keepIPs;
+		warnDays = 86400 * plugin.keepWarnings;
 	}
 
 	@Override
@@ -95,13 +96,17 @@ public class databaseAsync implements Runnable {
 		if (plugin.keepBanRecords > 0) {
 			localConn.query("DELETE FROM " + localConn.bansRecordTable + " WHERE (unbanned_time + " + banDays + " ) < " + now + "");
 		}
-		
+
 		if (plugin.keepIPBanRecords > 0) {
 			localConn.query("DELETE FROM " + localConn.ipBansRecordTable + " WHERE (unbanned_time + " + ipDays + " ) < " + now + "");
 		}
-		
+
 		if (plugin.keepMuteRecords > 0) {
 			localConn.query("DELETE FROM " + localConn.mutesRecordTable + " WHERE (unmute_time + " + muteDays + " ) < " + now + "");
+		}
+
+		if (plugin.keepWarnings > 0) {
+			localConn.query("DELETE FROM " + localConn.warningsTable + " WHERE (warn_time + " + warnDays + " ) < " + now + "");
 		}
 
 	}
