@@ -331,6 +331,7 @@ $actions = array(
 	'admin',
 	'deleteban',
 	'deletebanrecord',
+	'deletecache',
 	'deleteipban',
 	'deleteipbanrecord',
 	'deletekickrecord',

@@ -233,6 +233,10 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 			</tfoot>
 		</table>
 	</form>
+	<br />
+	<br />
+	<h3>Miscellaneous</h3>
+	<a href="index.php?action=deletecache&authid=<?php echo sha1($settings['password']); ?>" class="btn btn-primary">Clear Cache</a>
 	<?php
 }
 ?>
