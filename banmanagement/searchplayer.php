@@ -23,6 +23,7 @@ else {
 	
 	// Clear old search cache's
 	clearCache($_GET['server'].'/search', 300);
+	clearCache($_GET['server'].'/mysqlTime', 300);
 	
 	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['bansTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
 	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
@@ -165,7 +166,7 @@ else {
 		<tbody>
 		<?php
 		
-		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $_GET['server'], $server); // Cache it for a few seconds
+		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $_GET['server'].'/mysqlTime', $server); // Cache it for a few seconds
 		
 		$mysqlTime = $timeDiff['mysqlTime'];
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);

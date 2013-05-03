@@ -21,6 +21,7 @@ else {
 
 	// Clear old ip
 	clearCache($_GET['server'].'/ips', 300);
+	clearCache($_GET['server'].'/mysqlTime', 300);
 	
 	// Check if they are logged in as an admin
 	if(isset($_SESSION['admin']) && $_SESSION['admin'])
@@ -37,7 +38,7 @@ else {
 	} else {
 		// They have been banned, naughty!
 		// Now check the time differences!
-		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $_GET['server'], $server); // Cache it for a few seconds
+		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $_GET['server'].'/mysqlTime', $server); // Cache it for a few seconds
 		
 		$mysqlTime = $timeDiff['mysqlTime'];
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);

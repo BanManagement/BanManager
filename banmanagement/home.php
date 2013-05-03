@@ -87,6 +87,7 @@ if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($sett
 				<ul class="nav nav-tabs nav-stacked">';			
 			// Clear old latest bans cache's
 			clearCache($i.'/latestbans', 300);
+			clearCache($i.'/mysqlTime', 300);
 		
 			$result = cache("SELECT banned, banned_by, ban_reason, ban_expires_on FROM ".$server['bansTable']." ORDER BY ban_time DESC LIMIT 5", 300, $i.'/latestbans', $server);
 		
@@ -97,7 +98,7 @@ if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($sett
 			if($rows == 0)
 				echo '<li>None</li>';
 			else {
-				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i, $server); // Cache it for a few seconds
+				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
 		
 				$mysqlTime = $timeDiff['mysqlTime'];
 				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
@@ -143,6 +144,7 @@ if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
 				<ul class="nav nav-tabs nav-stacked">';			
 			// Clear old latest mutes cache's
 			clearCache($i.'/latestmutes', 300);
+			clearCache($i.'/mysqlTime', 300);
 		
 			$result = cache("SELECT muted, muted_by, mute_reason, mute_expires_on FROM ".$server['mutesTable']." ORDER BY mute_time DESC LIMIT 5", 300, $i.'/latestmutes', $server);
 		
@@ -153,7 +155,7 @@ if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
 			if($rows == 0)
 				echo '<li>None</li>';
 			else {
-				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i, $server); // Cache it for a few seconds
+				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
 		
 				$mysqlTime = $timeDiff['mysqlTime'];
 				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
