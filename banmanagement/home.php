@@ -183,4 +183,53 @@ if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
 	} else
 		echo '<p>None</p>';
 }
+
+if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
+?>
+<br />
+<h2>Latest warnings</h2>
+<?php
+	if(!empty($settings['servers'])) {
+		echo '
+	<div class="row">';
+		$id = array_keys($settings['servers']);
+		$i = 0;
+		foreach($settings['servers'] as $server) {
+			echo '
+			<div class="span4">
+				<h3>'.$server['name'].'</h3>
+				<ul class="nav nav-tabs nav-stacked">';			
+			// Clear old latest warnings cache's
+			clearCache($i.'/latestwarnings', 300);
+			clearCache($i.'/mysqlTime', 300);
+		
+			$result = cache("SELECT warned, warned_by, warn_reason FROM ".$server['warningsTable']." ORDER BY warn_time DESC LIMIT 5", 300, $i.'/latestwarnings', $server);
+		
+			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+				$result = array($result);
+			$rows = count($result);
+		
+			if($rows == 0)
+				echo '<li>None</li>';
+			else {
+				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
+		
+				$mysqlTime = $timeDiff['mysqlTime'];
+				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+				$mysqlSecs = ($mysqlTime * 60) * 60;
+				foreach($result as $r) {
+					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" /> '.$r['warned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><i class="icon-question-sign icon-white"></i></button></li>';
+				}
+			}
+		
+			echo '
+				</ul>
+			</div>';
+			++$i;
+		}
+		echo '
+	</div>';
+	} else
+		echo '<p>None</p>';
+}
 ?>

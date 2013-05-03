@@ -220,6 +220,10 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				<tr>
 					<td>Latest Mutes</td>
 					<td><input type="checkbox" name="latestmutes"'.(isset($settings['latest_mutes']) && $settings['latest_mutes'] ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Latest Warnings</td>
+					<td><input type="checkbox" name="latestwarnings"'.(isset($settings['latest_warnings']) && $settings['latest_warnings'] ? ' checked="checked"' : '').' /></td>
 				</tr>';
 	} ?>
 	

@@ -22,11 +22,14 @@ else if(!isset($_POST['footer']))
 // Validate the data!
 $latestBans = 'false';
 $latestMutes = 'false';
+$latestWarnings = 'false';
 $utf8 = 'false';
 if(isset($_POST['latestbans']))
 	$latestBans = 'true';
 if(isset($_POST['latestmutes']))
 	$latestMutes = 'true';
+if(isset($_POST['latestwarnings']))
+	$latestWarnings = 'true';
 if(isset($_POST['utf8']))
 	$utf8 = 'true';
 	
@@ -35,23 +38,33 @@ $footer = htmlspecialchars_decode($_POST['footer'], ENT_QUOTES);
 // Save it
 $latest_bans = "['latest_bans'] = ".$latestBans.";".PHP_EOL;
 $latest_mutes = "['latest_mutes'] = ".$latestMutes.";".PHP_EOL;
+$latest_warnings = "['latest_warnings'] = ".$latestWarnings.";".PHP_EOL;
 $utf8 = "['utf8'] = ".$utf8.";".PHP_EOL;
 $footer = "['footer'] = '".$footer."';".PHP_EOL;
 
 $contents = file_get_contents('settings.php');
 
+// Latest bans
 $contents = preg_replace("/\['latest_bans'\] = (.*?)".PHP_EOL."/", $latest_bans, $contents, -1, $count);
 if($count == 0)
 	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_bans", $contents);
 	
+// Latest mutes
 $contents = preg_replace("/\['latest_mutes'\] = (.*?)".PHP_EOL."/", $latest_mutes, $contents, -1, $count);
 if($count == 0)
 	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_mutes", $contents);
+
+// Latest warnings
+$contents = preg_replace("/\['latest_warnings'\] = (.*?)".PHP_EOL."/", $latest_warnings, $contents, -1, $count);
+if($count == 0)
+	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_warnings", $contents);
 	
+// UTF8
 $contents = preg_replace("/\['utf8'\] = (.*?)".PHP_EOL."/", $utf8, $contents, -1, $count);
 if($count == 0)
 	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$utf8", $contents);
 	
+// Footer
 $contents = preg_replace("/\['footer'\] = (.*?)".PHP_EOL."/", $footer, $contents, -1, $count);
 if($count == 0)
 	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$footer", $contents);
