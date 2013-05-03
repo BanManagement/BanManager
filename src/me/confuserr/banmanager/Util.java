@@ -12,7 +12,7 @@ public class Util {
 	private static final Random generator = new Random();
 
 	public static String viewReason(String reason) {
-		return reason.replace("&quot;", "\"").replace("&#039;", "'");
+		return reason.replace("&quot;", "\"").replace("&#039;", "'").replace("\\n", "\n");
 	}
 
 	public static String parseReason(String[] args) {
