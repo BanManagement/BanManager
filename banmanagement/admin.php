@@ -171,6 +171,12 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 							<input type="text" class="input-xlarge required" name="kickstable" id="kickstable" value="mb_kicks">
 						</div>
 					</div>
+					<div class="control-group">
+						<label class="control-label" for="warningstable">Warnings Table:</label>
+						<div class="controls">
+							<input type="text" class="input-xlarge required" name="warningstable" id="warningstable" value="mb_warnings">
+						</div>
+					</div>
 				</fieldset>
 			</div>
 			<div class="modal-footer">

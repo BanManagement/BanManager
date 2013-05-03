@@ -47,8 +47,10 @@ else {
 		'ipRecordTable' => $_POST['iprecordtable'],
 		'mutesTable' => $_POST['mutestable'],
 		'mutesRecordTable' => $_POST['mutesrecordtable'],
-		'kicksTable' => $_POST['kickstable']
+		'kicksTable' => $_POST['kickstable'],
+		'warningsTable' => $_POST['warningstable']
 	);
+
 	$settings['servers'] = $servers;
 	$servers = serialize($servers);
 	$servers = "['servers'] = '".$servers;

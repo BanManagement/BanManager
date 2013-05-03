@@ -35,6 +35,7 @@ else {
 	$currentMutes = cache("SELECT * FROM ".$server['mutesTable']." WHERE muted = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
 	$pastMutes = cache("SELECT * FROM ".$server['mutesRecordTable']." WHERE muted = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
 	$pastKicks = cache("SELECT * FROM ".$server['kicksTable']." WHERE kicked = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
+	$pastWarnings = cache("SELECT * FROM ".$server['warningsTable']." WHERE warned = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
 
 	if(count($currentBans) == 0 && count($pastBans) == 0 && count($currentMutes) == 0 && count($pastMutes) == 0 && count($pastKicks) == 0) {
 		errors('Player does not exist');
@@ -473,6 +474,63 @@ else {
 						<td>'.date('d/m/y', $r['unmuted_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
 						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['mute_record_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
+					</tr>';
+				++$i;
+			}
+		}
+				?>
+				
+				</tbody>
+			</table>
+				<br />
+			<table class="table table-striped table-bordered" id="previous-warnings">
+				<caption>Warnings</caption>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Reason</th>
+						<th>By</th>
+						<th>On</th><?php
+		if(!isset($pastWarnings[0]) || (isset($pastWarnings[0]) && !is_array($pastWarnings[0])))
+			$pastWarnings = array($pastWarnings);
+		$serverName = false;
+		foreach($pastWarnings as $r) {
+			if(!empty($r['server'])) {
+				$serverName = true;
+				break;
+			}
+		}
+		if($serverName) {
+			echo '
+						<th>Server</th>';
+		}
+		if($admin)
+			echo '
+						<th></th>';
+				?>
+				
+					</tr>
+				</thead>
+				<tbody><?php
+		if(isset($pastWarnings[0]) && count($pastWarnings[0]) == 0) {
+			echo '
+					<tr>
+						<td colspan="8">None</td>
+					</tr>';
+		} else {
+			$i = 1;
+			foreach($pastWarnings as $r) {
+				$r['warn_reason'] = str_replace(array('&quot;', '"'), array('&#039;', '\''), $r['warn_reason']);
+				$r['warn_time'] = $r['warn_time'] + $mysqlSecs;
+
+				echo '
+					<tr>
+						<td>'.$i.'</td>
+						<td>'.$r['warn_reason'].'</td>
+						<td>'.$r['warned_by'].'</td>
+						<td>'.date('H:i:s d/m/y', $r['warn_time']).'</td>'.($serverName ? '
+						<td>'.$r['server'].'</td>' : '').($admin ? '
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['warn_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
 					</tr>';
 				++$i;
 			}
