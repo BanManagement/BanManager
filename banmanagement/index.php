@@ -338,6 +338,7 @@ $actions = array(
 	'deletemute',
 	'deletemuterecord',
 	'deleteserver',
+	'deletewarning',
 	'editserver',
 	'logout',
 	'reorderserver',
