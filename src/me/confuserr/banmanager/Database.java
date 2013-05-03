@@ -33,6 +33,7 @@ public class Database {
 	public String mutesTable;
 	public String mutesRecordTable;
 	public String playerIpsTable;
+	public String warningsTable;
 
 	public Database(String user, String pass, String url, BanManager instance) {
 		this.user = user;
@@ -52,6 +53,8 @@ public class Database {
 		mutesRecordTable = plugin.getConfig().getString("localDatabase.mutesRecordTable");
 
 		playerIpsTable = plugin.getConfig().getString("localDatabase.playerIpsTable");
+		
+		warningsTable = plugin.getConfig().getString("localDatabase.warningsTable");
 	}
 
 	private boolean initialize() {

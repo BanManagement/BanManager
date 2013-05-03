@@ -36,7 +36,10 @@ public class BanManager extends JavaPlugin {
 	public boolean logKicks;
 	public List<String> toUnbanPlayer = Collections.synchronizedList(new ArrayList<String>());
 	public List<String> toUnbanIp = Collections.synchronizedList(new ArrayList<String>());
-	public int keepKicks, keepBanRecords, keepIPBanRecords, keepIPs, keepMuteRecords;
+
+	public int keepKicks, keepBanRecords, keepIPBanRecords, keepIPs,
+			keepMuteRecords;
+
 	public boolean checkForUpdates = true;
 	public boolean updateAvailable = false;
 	public HashSet<String> mutedBlacklist = new HashSet<String>();
@@ -61,12 +64,12 @@ public class BanManager extends JavaPlugin {
 	public void onDisable() {
 		// Cancel all BanManager tasks
 		getServer().getScheduler().cancelTasks(this);
-		
+
 		// Check to see if any bukkit unbans must take place
-		if(plugin.toUnbanPlayer.size() > 0 || plugin.toUnbanIp.size() > 0) {
+		if (plugin.toUnbanPlayer.size() > 0 || plugin.toUnbanIp.size() > 0) {
 			new bukkitUnbanSync(plugin).run();
 		}
-		
+
 		// Close the database connection
 		localConn.close();
 
@@ -85,7 +88,7 @@ public class BanManager extends JavaPlugin {
 		configReload();
 
 		// Initilise database
-		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10"+ (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this);
+		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10" + (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this);
 
 		plugin.dbLogger = new DbLogger(localConn, plugin);
 
@@ -95,7 +98,11 @@ public class BanManager extends JavaPlugin {
 			return;
 		}
 
-		if (!localConn.checkTable(localConn.playerIpsTable)) {
+		if (!localConn.checkTable(localConn.warningsTable)) {
+			// Modify the bminfo message for warnings
+			getConfig().set("messages.bmInfo", getConfig().getString("messages.bmInfo") + "\n&cWarnings: [warningsCount]");
+			saveConfig();
+
 			this.logger.info("[BanManager] creating tables");
 			try {
 				plugin.dbLogger.create_tables();
@@ -104,7 +111,7 @@ public class BanManager extends JavaPlugin {
 			}
 		} else {
 			// Convert player names to lowercase
-			localConn.query("UPDATE "+localConn.bansTable+" SET banned = LOWER(banned)");
+			localConn.query("UPDATE " + localConn.bansTable + " SET banned = LOWER(banned)");
 		}
 
 		getCommand("ban").setExecutor(new BanCommand(this));
@@ -122,14 +129,19 @@ public class BanManager extends JavaPlugin {
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
 		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
+		getCommand("warn").setExecutor(new WarnCommand(this));
 
-		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use Sync events
+		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
+														// Sync events
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new SyncChat(plugin), this);
-		} else if (getServer().getOnlineMode()) { // If server is in online mode and syncChat is off, use async events
+		} else if (getServer().getOnlineMode()) { // If server is in online mode
+													// and syncChat is off, use
+													// async events
 			getServer().getPluginManager().registerEvents(new AsyncPreLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
-		} else { // Otherwise use the normal sync login event and use Async chat even for mutes.
+		} else { // Otherwise use the normal sync login event and use Async chat
+					// even for mutes.
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
 		}
@@ -208,7 +220,7 @@ public class BanManager extends JavaPlugin {
 			if (updateAvailable) {
 				// Get the latest version
 				updateVersion = updater.getLatestVersionString();
-				
+
 				logger.info("[BanManager] " + updateVersion + " update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}
@@ -219,10 +231,10 @@ public class BanManager extends JavaPlugin {
 	public void configReload() {
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("cleanUp.keepKicks");
-		
+
 		logIPs = getConfig().getBoolean("logIPs");
 		keepIPs = getConfig().getInt("cleanUp.playerIPs");
-		
+
 		keepBanRecords = getConfig().getInt("cleanUp.banRecords");
 		keepIPBanRecords = getConfig().getInt("cleanUp.ipBanRecords");
 		keepMuteRecords = getConfig().getInt("cleanUp.muteRecords");
@@ -232,7 +244,7 @@ public class BanManager extends JavaPlugin {
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
 
 		usePartialNames = getConfig().getBoolean("use-partial-names");
-		
+
 		bukkitBan = getConfig().getBoolean("bukkit-ban");
 
 		banMessages.clear();
@@ -241,7 +253,7 @@ public class BanManager extends JavaPlugin {
 			banMessages.put(key, Util.colorize(getConfig().getString("messages." + key).replace("\\n", "\n")));
 		}
 
-		for(String cmd : getConfig().getStringList("mutedCommandBlacklist")) {
+		for (String cmd : getConfig().getStringList("mutedCommandBlacklist")) {
 			mutedBlacklist.add(cmd);
 		}
 

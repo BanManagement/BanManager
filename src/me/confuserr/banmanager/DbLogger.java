@@ -56,6 +56,10 @@ public class DbLogger {
 		Util.asyncQuery("INSERT INTO "+localConn.mutesTable+" (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('"+muted+"', '"+muted_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+expires+"', '"+plugin.serverName+"')");
 	}
 	
+	public void logWarning(String warned, String warned_by, String reason) {
+		Util.asyncQuery("INSERT INTO "+localConn.warningsTable+" (warned, warned_by, warn_reason, warn_time, server) VALUES ('"+warned+"', '"+warned_by+"', '"+reason+"', UNIX_TIMESTAMP(now()), '"+plugin.serverName+"')");
+	}
+	
 	public BanData getCurrentBan(String username) {
 		
 		ResultSet result = localConn.query("SELECT ban_id, ban_reason, banned_by, ban_time, ban_expires_on FROM "+localConn.bansTable+" WHERE banned = '"+username+"'");
@@ -336,6 +340,20 @@ public class DbLogger {
 		return count;
 	}
 	
+	public int getWarningCount(String user) {
+		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM "+localConn.warningsTable+" WHERE warned = '"+user+"'");
+		int count = 0;
+		try {
+			if(result.next())
+				count = result.getInt("numb");
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+	
 	public void banRemove(String name, String by) {
 		name = name.toLowerCase();
 		
@@ -504,6 +522,25 @@ public class DbLogger {
 											 "KEY `ip` (`ip`)"+
 											") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 											
+											
+											if(!Table)
+												plugin.logger.severe("Unable to create local BanManagement table");
+											else {
+												Table = localConn.createTable("CREATE TABLE IF NOT EXISTS "+localConn.warningsTable+" ("+
+													"warn_id int(255) NOT NULL AUTO_INCREMENT,"+
+													"warned varchar(32) NOT NULL,"+
+													"warned_by varchar(32) NOT NULL,"+
+													"warn_reason text NOT NULL,"+
+													"warn_time int(10) NOT NULL,"+
+													"server varchar(30) NOT NULL,"+
+													"PRIMARY KEY (warn_id),"+
+													"KEY `kicked` (`warned`)"+
+												") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+												
+												if(!Table)
+													plugin.logger.severe("Unable to create local BanManagement table");
+											}
+
 											/*if(!Table)
 												plugin.logger.severe("Unable to create local BanManagement table");
 											else {

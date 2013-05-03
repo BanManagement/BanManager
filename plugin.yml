@@ -1,3 +1,6 @@
+main: me.confuserr.banmanager.BanManager
+name: BanManager
+version: 2.4
 commands: 
   ban: 
     description: "ban a player"
@@ -57,8 +60,10 @@ commands:
   bmtools:
     description: "Collection of random utilities"
     usage: "/bmtools <tool>"
-main: me.confuserr.banmanager.BanManager
-name: BanManager
+  warn:
+    description: "warn a player"
+    usage: "/warn <player> <reason>"
+    aliases: [bmwarn]
 permissions:
     bm.*:
         description: Gives access to all BanManager commands
@@ -80,6 +85,7 @@ permissions:
             bm.unmute: true
             bm.banoffline: true
             bm.tempbanoffline: true
+            bm.warn: true
     bm.unban:
         description: Allows you to unban a user
         default: op
@@ -131,4 +137,6 @@ permissions:
     bm.unmute:
         description: Allows you to unmute a player
         default: op
-version: 2.4
+    bm.warn:
+        description: Allows you to warn a player
+        default: op
