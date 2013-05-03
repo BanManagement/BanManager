@@ -620,6 +620,37 @@ public class DbLogger {
 		
 		return ip;
 	}
+	
+	public String findPlayerIpDuplicates(String ip, String player) {
+		ResultSet result = localConn.query("SELECT ip.player FROM "+localConn.bansTable+" b LEFT JOIN " + localConn.playerIpsTable + " ip ON ip.player = b.banned WHERE ip.ip = INET_ATON('" + ip + "')");
+
+		try {
+			if (!result.isBeforeFirst()) {
+				result.close();
+				return "";
+			} else {
+				
+				String players = "";
+				
+				while(result.next()) {
+					if(!result.getString("player").equals(player)) {
+						players += result.getString("player") + ", ";
+					}
+				}
+				
+				result.close();
+				
+				if(players.isEmpty())
+					return "";
+				
+				return players.substring(0, players.length() - 2);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
 
 	public void closeConnection() {
 		localConn.close();		
