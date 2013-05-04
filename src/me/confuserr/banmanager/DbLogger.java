@@ -3,6 +3,7 @@ package me.confuserr.banmanager;
 import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import me.confuserr.banmanager.data.BanData;
@@ -630,18 +631,24 @@ public class DbLogger {
 				return "";
 			} else {
 				
-				String players = "";
+				ArrayList<String> playerList = new ArrayList<String>();
 				
 				while(result.next()) {
-					if(!result.getString("player").equals(player)) {
-						players += result.getString("player") + ", ";
+					if(!playerList.contains(result.getString("player")) && !result.getString("player").equals(player)) {
+						playerList.add(result.getString("player"));
 					}
 				}
 				
 				result.close();
 				
-				if(players.isEmpty())
+				if(playerList.size() == 0)
 					return "";
+				
+				String players = "";
+				
+				for(String p : playerList) {
+					players += p + ", ";
+				}
 				
 				return players.substring(0, players.length() - 2);
 			}
