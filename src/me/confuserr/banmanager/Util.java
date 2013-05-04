@@ -124,4 +124,8 @@ public class Util {
 	public static int generatePin() {
 		return 100000 + generator.nextInt(900000);
 	}
+	
+	public static boolean isValidPlayerName(String name) {
+		return name.matches("^[a-zA-Z0-9_]*$");
+	}
 }
