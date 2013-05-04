@@ -66,12 +66,14 @@ public class AsyncPreLogin implements Listener {
 				banReason = Util.colorize(banReason);
 				// Oh dear, they've been banned
 				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banReason);
+				return;
 			} else {
 				String ipReason = plugin.dbLogger.isBanned(ip);
 				if (!ipReason.isEmpty()) {
 					ipReason = Util.colorize(ipReason);
 					// Oh dear, they've been banned
 					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ipReason);
+					return;
 				}
 			}
 		}
