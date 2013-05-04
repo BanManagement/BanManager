@@ -86,7 +86,7 @@ public class SyncLogin implements Listener {
 					String players = plugin.dbLogger.findPlayerIpDuplicates(ipStr, name);
 
 					if (!players.isEmpty()) {
-						Util.sendMessageWithPerm(plugin.banMessages.get("duplicateIP").replace("[player]", name).replace("[players]", players), "bm.notify");
+						Util.sendMessageWithPerm(plugin.banMessages.get("duplicateIP").replace("[player]", name).replace("[players]", players), "bm.notify.duplicateips");
 					}
 				}
 			}, 20L);
