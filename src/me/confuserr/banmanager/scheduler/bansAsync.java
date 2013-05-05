@@ -30,6 +30,19 @@ public class bansAsync implements Runnable {
 					// want duplicates!
 					if (!plugin.bannedPlayers.contains(result.getString("banned").toLowerCase())) {
 						plugin.bannedPlayers.add(result.getString("banned").toLowerCase());
+
+						if (plugin.getServer().getPlayer(result.getString("banned")) != null) {
+							// Oh, they're online, lets kick em!
+							final String banned = result.getString("banned");
+
+							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+								@Override
+								public void run() {
+									plugin.getServer().getPlayer(banned).kickPlayer("Banned");
+								}
+							});
+						}
 					}
 				}
 			}
@@ -48,8 +61,8 @@ public class bansAsync implements Runnable {
 				synchronized (plugin.bannedPlayers) {
 					if (plugin.bannedPlayers.contains(result1.getString("banned").toLowerCase())) {
 						plugin.bannedPlayers.remove(result1.getString("banned").toLowerCase());
-						
-						if(plugin.bukkitBan) {
+
+						if (plugin.bukkitBan) {
 							plugin.toUnbanPlayer.add(result1.getString("banned"));
 						}
 					}
