@@ -37,7 +37,7 @@ else {
 	$pastKicks = cache("SELECT * FROM ".$server['kicksTable']." WHERE kicked = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
 	$pastWarnings = cache("SELECT * FROM ".$server['warningsTable']." WHERE warned = '".$_GET['player']."'", 300, $_GET['server'].'/players', $server);
 
-	if(count($currentBans) == 0 && count($pastBans) == 0 && count($currentMutes) == 0 && count($pastMutes) == 0 && count($pastKicks) == 0) {
+	if(count($currentBans) == 0 && count($pastBans) == 0 && count($currentMutes) == 0 && count($pastMutes) == 0 && count($pastKicks) == 0 && $pastWarnings == 0) {
 		errors('Player does not exist');
 		?><a href="index.php" class="btn btn-primary">New Search</a><?php
 	} else {
