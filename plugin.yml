@@ -1,6 +1,6 @@
 main: me.confuserr.banmanager.BanManager
 name: BanManager
-version: 2.5
+version: 2.51
 commands: 
   ban: 
     description: "ban a player"
