@@ -62,7 +62,7 @@ else {
 if(isset($error))
 	$array['error'] = $error;
 else {
-	$array['success'] = array('id' => key(end($settings['servers'])), 'serverName' => $_POST['servername']);
+	$array['success'] = array('id' => count($settings['servers']) - 1, 'serverName' => $_POST['servername']);
 }
 echo json_encode($array);
 ?>
