@@ -63,8 +63,8 @@ public class TempBanCommand implements CommandExecutor {
 		String reason = Util.getReason(args, 2);
 		String viewReason = Util.viewReason(reason);
 
+		String formatExpires = plugin.formatDateDiff(timeExpires);
 		timeExpires = timeExpires / 1000;
-		String formatExpires = plugin.formatDateDiff(timeExpires * 1000);
 
 		if (plugin.usePartialNames) {
 			List<Player> list = plugin.getServer().matchPlayer(args[0]);
