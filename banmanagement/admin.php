@@ -206,6 +206,10 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	} else {
 		echo '
 				<tr>
+					<td>iFrame Protection (Recommended)</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
 					<td>UTF8</td>
 					<td><input type="checkbox" name="utf8"'.(isset($settings['utf8']) && $settings['utf8'] ? ' checked="checked"' : '').' /></td>
 				</tr>
