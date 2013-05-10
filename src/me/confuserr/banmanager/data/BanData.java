@@ -13,6 +13,7 @@ public class BanData {
 		expires = dexpires;
 		reason = dreason;
 		by = dby;
+		time = dtime;
 	}
 	
 	public String getBanned() {
