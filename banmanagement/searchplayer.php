@@ -25,114 +25,9 @@ else {
 	clearCache($_GET['server'].'/search', 300);
 	clearCache($_GET['server'].'/mysqlTime', 300);
 	
-	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['bansTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-		$result = array($result);
-	
-	$rows = count($result);
-	$found = array();
-	$noneCurrent = false;
-	$nonePast = false;
-	$noneMuted = false;
-	$noneMutesPast = false;
-	
-	if($rows == 1 && $_GET['player'] != '%') {
-		// Found the player! Redirect
-		$fetch = $result[0];
-		redirect('index.php?action=viewplayer&player='.$fetch['banned'].'&server='.$_GET['server']);
-	} else if($rows == 0)
-		$noneCurrent = true;
-	else if($rows > 0) {
-		foreach($result as $r)
-			$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expires_on']);
-	}
-	
-	// Check past bans!
-	if(!$excluderecords) {
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['recordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-			$result = array($result);
-		$rows = count($result);
-		if($rows > 0 && $_GET['player'] != '%') {
-			// Found the player! Redirect
-			$fetch = $result[0];
-			redirect('index.php?action=viewplayer&player='.$fetch['banned'].'&server='.$_GET['server']);
-		} else if($rows == 0)
-			$nonePast = true;
-		else if($rows > 0) {
-			foreach($result as $r) {
-				if(!isset($found[$r['banned']]))
-					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
-				else if($found[$r['banned']]['time'] < $r['ban_time'])
-					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
-			}
-		}
-	}
-	
-	// Check current mutes
-	$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expires_on FROM ".$server['mutesTable']." WHERE muted LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-		$result = array($result);
-	$rows = count($result);
-	
-	if($rows == 1 && $_GET['player'] != '%') {
-		// Found the player! Redirect
-		$fetch = $result[0];
-		redirect('index.php?action=viewplayer&player='.$fetch['muted'].'&server='.$_GET['server']);
-	} else if($rows == 0)
-		$noneMuted = true;
-	else if($rows > 0) {
-		foreach($result as $r) {
-			if(!isset($found[$r['muted']]))
-				$found[$r['muted']] = array('by' => $r['muted_by'], 'reason' => $r['mute_reason'], 'type' => 'Mute', 'time' => $r['mute_time'], 'expires' => $r['mute_expires_on']);
-		}
-	}
-	
-	// Check past mutes!
-	if(!$excluderecords) {
-		$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on FROM ".$server['mutesRecordTable']." WHERE muted LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-			$result = array($result);
-		$rows = count($result);
-		if($rows > 0 && $_GET['player'] != '%') {
-			// Found the player! Redirect
-			$fetch = $result[0];
-			redirect('index.php?action=viewplayer&player='.$fetch['muted'].'&server='.$_GET['server']);
-		} else if($rows == 0)
-			$noneMutesPast = true;
-		else if($rows > 0) {
-			foreach($result as $r) {
-				if(!isset($found[$r['muted']]))
-					$found[$r['muted']] = array('by' => $r['muted_by'], 'reason' => $r['mute_reason'], 'type' => 'Mute', 'time' => $r['mute_time'], 'expires' => $r['mute_expired_on'], 'past' => true);
-				else if($found[$r['muted']]['time'] < $r['mute_time'])
-					$found[$r['muted']] = array('by' => $r['muted_by'], 'reason' => $r['mute_reason'], 'type' => 'Mute', 'time' => $r['mute_time'], 'expires' => $r['mute_expired_on'], 'past' => true);
-			}
-		}
-	}
-	
-	 // Check past kicks!
-	if(!$excluderecords) {
-		$result = cache("SELECT kicked, kicked_by, kick_reason, kick_time FROM ".$server['kicksTable']." WHERE kicked LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-			$result = array($result);
-		$rows = count($result);
-		if($rows > 0 && $_GET['player'] != '%') {
-			// Found the player! Redirect
-			$fetch = $result[0];
-			redirect('index.php?action=viewplayer&player='.$fetch['kicked'].'&server='.$_GET['server']);
-		} else if($rows == 0)
-			$noneKicksPast = true;
-		else if($rows > 0) {
-			foreach($result as $r) {
-				if(!isset($found[$r['kicked']]))
-					$found[$r['kicked']] = array('by' => $r['kicked_by'], 'reason' => $r['kick_reason'], 'type' => 'Kick', 'time' => $r['kick_time'], 'expires' => 0, 'past' => true);
-				else if($found[$r['kicked']]['time'] < $r['kick_time'])
-					$found[$r['kicked']] = array('by' => $r['kicked_by'], 'reason' => $r['kick_reason'], 'type' => 'Kick', 'time' => $r['kick_time'], 'expires' => 0, 'past' => true);
-			}
-		}
-	}
+	$found = searchPlayers($_GET['player'], $_GET['server'], $server, $excluderecords);
 
-	if($noneCurrent && $nonePast && $noneMuted && $noneMutesPast && $noneKicksPast) {
+	if(!$found) {
 		errors('No matched players found');
 		?><a href="index.php" class="btn btn-primary">New Search</a><?php
 	} else {
@@ -185,7 +80,7 @@ else {
 					<td>'.$f['by'].'</td>
 					<td>'.$f['reason'].'</td>
 					<td data-expires="'.(isset($expires) ? $expires : 0).'">';		
-			if($f['type'] != 'Kick') {
+			if($f['type'] != 'Kick' && $f['type'] != 'Warning') {
 				if($f['expires'] == 0)
 					echo '<span class="label label-important">Never</span>';
 				else if(isset($expires) && $expires > 0) {

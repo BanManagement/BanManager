@@ -25,48 +25,9 @@ else {
 	clearCache($_GET['server'].'/search', 300);
 	clearCache($_GET['server'].'/mysqlTime', 300);
 	
-	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['ipTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-		$result = array($result);
-	
-	$rows = count($result);
-	$found = array();
-	$noneCurrent = false;
-	$nonePast = false;
-	
-	if($rows == 1 && $_GET['player'] != '%') {
-		// Found the player! Redirect
-		$fetch = $result[0];
-		redirect('index.php?action=viewip&ip='.$fetch['banned'].'&server='.$_GET['server']);
-	} else if($rows == 0)
-		$noneCurrent = true;
-	else if($rows > 0) {
-		foreach($result as $r)
-			$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expires_on']);
-	}
-	// Check past bans!
-	if(!$excluderecords) {
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$_GET['player']."%'", 300, $_GET['server'].'/search', $server);
-		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-			$result = array($result);
-		$rows = count($result);
-		if($rows == 1 && $_GET['player'] != '%') {
-			// Found the player! Redirect
-			$fetch = $result[0];
-			redirect('index.php?action=viewip&ip='.$fetch['banned'].'&server='.$_GET['server']);
-		} else if($rows == 0)
-			$nonePast = true;
-		else if($rows > 0) {
-			foreach($result as $r) {
-				if(!isset($found[$r['banned']]))
-					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
-				else if($found[$r['banned']]['time'] < $r['ban_time'])
-					$found[$r['banned']] = array('by' => $r['banned_by'], 'reason' => $r['ban_reason'], 'type' => 'Ban', 'time' => $r['ban_time'], 'expires' => $r['ban_expired_on'], 'past' => true);
-			}
-		}
-	}
-	
-	if($noneCurrent && $nonePast) {
+	$found = searchIps($_GET['player'], $_GET['server'], $server, $excluderecords);
+
+	if(!$found) {
 		errors('No matched IPs found');
 		?><a href="index.php" class="btn btn-primary">New Search</a><?php
 	} else {
