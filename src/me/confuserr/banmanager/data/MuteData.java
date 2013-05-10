@@ -13,6 +13,7 @@ public class MuteData {
 		expires = dexpires;
 		reason = dreason;
 		by = dby;
+		time = dtime;
 	}
 	
 	public String getMuted() {
