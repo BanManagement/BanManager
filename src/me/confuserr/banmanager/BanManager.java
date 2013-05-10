@@ -409,9 +409,9 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public String formatDateDiff(long date) {
+		Calendar now = new GregorianCalendar();
 		Calendar c = new GregorianCalendar();
 		c.setTimeInMillis(date);
-		Calendar now = new GregorianCalendar();
 		return formatDateDiff(now, c);
 	}
 
