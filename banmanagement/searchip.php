@@ -117,7 +117,7 @@ else {
 					<td>'.$f['type'].'</td>
 					<td>'.$f['by'].'</td>
 					<td>'.$f['reason'].'</td>
-					<td>';		
+					<td data-expires="'.(isset($expires) ? $expires : 0).'">';		
 			if($f['expires'] == 0)
 				echo '<span class="label label-important">Never</span>';
 			else if(isset($expires) && $expires > 0) {

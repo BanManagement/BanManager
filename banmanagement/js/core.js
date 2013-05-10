@@ -38,11 +38,28 @@ $(function() {
 		odd        : ''  // even row zebra striping
 	});
 	
+	$.tablesorter.addParser({
+		// set a unique id
+		id: 'expires',
+		is: function(s, table, cell) {
+			// return false so this parser is not auto detected
+			return false;
+		},
+		format: function(s, table, cell, cellIndex) {
+			// format your data for normalization
+			return $(cell).data("expires");
+		},
+		// set type, either numeric or text
+		type: 'numeric'
+	});
+	
 	$("table.sortable").tablesorter({
 		theme : "bootstrap", // this will 
 
 		widthFixed: true,
 
+		headers: { 4: { sorter: 'expires' } },
+		
 		headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
 
 		// widget code contained in the jquery.tablesorter.widgets.js file
