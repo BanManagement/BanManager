@@ -7,6 +7,98 @@
 	may be available at http://creativecommons.org/licenses/by-nc-sa/2.0/uk/.
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
+
+function latestBans($server, $serverID) {	
+	// Clear old latest bans cache's
+	clearCache($serverID.'/latestbans', 300);
+	clearCache($serverID.'/mysqlTime', 300);
+
+	$result = cache("SELECT banned, banned_by, ban_reason, ban_expires_on FROM ".$server['bansTable']." ORDER BY ban_time DESC LIMIT 5", 300, $serverID.'/latestbans', $server);
+
+	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+		$result = array($result);
+	$rows = count($result);
+
+	if($rows == 0)
+		echo '<li>None</li>';
+	else {
+		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
+
+		$mysqlTime = $timeDiff['mysqlTime'];
+		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+		$mysqlSecs = ($mysqlTime * 60) * 60;
+		foreach($result as $r) {
+			$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
+			echo '
+					<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" /> '.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
+			if($r['ban_expires_on'] == 0)
+				echo ' <span class=\'label label-important\'>Never</span>';
+			else if($expires > 0)
+				echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
+			else
+				echo ' <span class=\'label label-success\'>Now</span>';
+			echo '"><i class="icon-question-sign icon-white"></i></button></li>';
+		}
+	}
+}
+
+function latestMutes($server, $serverID) {	
+	// Clear old latest mutes cache's
+	clearCache($serverID.'/latestmutes', 300);
+	clearCache($serverID.'/mysqlTime', 300);
+
+	$result = cache("SELECT muted, muted_by, mute_reason, mute_expires_on FROM ".$server['mutesTable']." ORDER BY mute_time DESC LIMIT 5", 300, $serverID.'/latestmutes', $server);
+
+	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+		$result = array($result);
+	$rows = count($result);
+
+	if($rows == 0)
+		echo '<li>None</li>';
+	else {
+		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
+
+		$mysqlTime = $timeDiff['mysqlTime'];
+		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+		$mysqlSecs = ($mysqlTime * 60) * 60;
+		foreach($result as $r) {
+			$expires = ($r['mute_expires_on'] + $mysqlSecs)- time();
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" /> '.$r['muted'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
+			if($r['mute_expires_on'] == 0)
+				echo ' <span class=\'label label-important\'>Never</span>';
+			else if($expires > 0)
+				echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
+			else
+				echo ' <span class=\'label label-success\'>Now</span>';
+			echo '"><i class="icon-question-sign icon-white"></i></button></li>';
+		}
+	}
+}
+
+function latestWarnings($server, $serverID) {		
+	// Clear old latest warnings cache's
+	clearCache($serverID.'/latestwarnings', 300);
+	clearCache($serverID.'/mysqlTime', 300);
+
+	$result = cache("SELECT warned, warned_by, warn_reason FROM ".$server['warningsTable']." ORDER BY warn_time DESC LIMIT 5", 300, $serverID.'/latestwarnings', $server);
+
+	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
+		$result = array($result);
+	$rows = count($result);
+
+	if($rows == 0)
+		echo '<li>None</li>';
+	else {
+		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
+
+		$mysqlTime = $timeDiff['mysqlTime'];
+		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
+		$mysqlSecs = ($mysqlTime * 60) * 60;
+		foreach($result as $r) {
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" /> '.$r['warned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><i class="icon-question-sign icon-white"></i></button></li>';
+		}
+	}
+}
 ?>
 <div class="hero-unit">
 	<h1>Ban Check</h1>
@@ -71,165 +163,140 @@
     </form>
 </div>
 <?php
-if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans'])) {
+if(count($settings['servers']) > 1) {
+	if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans'])) {
 ?>
 <h2>Latest Bans</h2>
 <?php
-	if(!empty($settings['servers'])) {
-		echo '
+		if(!empty($settings['servers'])) {
+			echo '
 	<div class="row">';
-		$id = array_keys($settings['servers']);
-		$i = 0;
-		foreach($settings['servers'] as $server) {
-			echo '
-			<div class="span4">
-				<h3>'.$server['name'].'</h3>
-				<ul class="nav nav-tabs nav-stacked">';			
-			// Clear old latest bans cache's
-			clearCache($i.'/latestbans', 300);
-			clearCache($i.'/mysqlTime', 300);
+			$id = array_keys($settings['servers']);
+			$i = 0;
+			foreach($settings['servers'] as $server) {
+				echo '
+		<div class="span4">
+			<h3>'.$server['name'].'</h3>
+			<ul class="nav nav-tabs nav-stacked">';	
+				latestBans($server, $i);
+				echo '
+			</ul>
+		</div>';
 		
-			$result = cache("SELECT banned, banned_by, ban_reason, ban_expires_on FROM ".$server['bansTable']." ORDER BY ban_time DESC LIMIT 5", 300, $i.'/latestbans', $server);
-		
-			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-				$result = array($result);
-			$rows = count($result);
-		
-			if($rows == 0)
-				echo '<li>None</li>';
-			else {
-				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
-		
-				$mysqlTime = $timeDiff['mysqlTime'];
-				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
-				$mysqlSecs = ($mysqlTime * 60) * 60;
-				foreach($result as $r) {
-					$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
-					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" /> '.$r['banned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
-					if($r['ban_expires_on'] == 0)
-						echo ' <span class=\'label label-important\'>Never</span>';
-					else if($expires > 0)
-						echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
-					else
-						echo ' <span class=\'label label-success\'>Now</span>';
-					echo '"><i class="icon-question-sign icon-white"></i></button></li>';
-				}
+				++$i;
 			}
-		
 			echo '
-				</ul>
-			</div>';
-			++$i;
-		}
-		echo '
 	</div>';
-	} else
-		echo '<p>None</p>';
+		} else
+			echo '<p>None</p>';
 }
 
-if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
+	if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
 ?>
 <br />
 <h2>Latest Mutes</h2>
 <?php
-	if(!empty($settings['servers'])) {
-		echo '
+		if(!empty($settings['servers'])) {
+			echo '
 	<div class="row">';
-		$id = array_keys($settings['servers']);
-		$i = 0;
-		foreach($settings['servers'] as $server) {
-			echo '
-			<div class="span4">
-				<h3>'.$server['name'].'</h3>
-				<ul class="nav nav-tabs nav-stacked">';			
-			// Clear old latest mutes cache's
-			clearCache($i.'/latestmutes', 300);
-			clearCache($i.'/mysqlTime', 300);
-		
-			$result = cache("SELECT muted, muted_by, mute_reason, mute_expires_on FROM ".$server['mutesTable']." ORDER BY mute_time DESC LIMIT 5", 300, $i.'/latestmutes', $server);
-		
-			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-				$result = array($result);
-			$rows = count($result);
-		
-			if($rows == 0)
-				echo '<li>None</li>';
-			else {
-				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
-		
-				$mysqlTime = $timeDiff['mysqlTime'];
-				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
-				$mysqlSecs = ($mysqlTime * 60) * 60;
-				foreach($result as $r) {
-					$expires = ($r['mute_expires_on'] + $mysqlSecs)- time();
-					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" /> '.$r['muted'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
-					if($r['mute_expires_on'] == 0)
-						echo ' <span class=\'label label-important\'>Never</span>';
-					else if($expires > 0)
-						echo ' <span class=\'label label-warning\'>'.secs_to_hmini($expires).'</span>';
-					else
-						echo ' <span class=\'label label-success\'>Now</span>';
-					echo '"><i class="icon-question-sign icon-white"></i></button></li>';
-				}
+			$id = array_keys($settings['servers']);
+			$i = 0;
+			foreach($settings['servers'] as $server) {
+				echo '
+		<div class="span4">
+			<h3>'.$server['name'].'</h3>
+			<ul class="nav nav-tabs nav-stacked">';	
+				latestMutes($server, $i);
+				echo '
+			</ul>
+		</div>';
+				
+				++$i;
 			}
-		
 			echo '
-				</ul>
-			</div>';
-			++$i;
-		}
-		echo '
 	</div>';
-	} else
-		echo '<p>None</p>';
+		} else
+			echo '<p>None</p>';
 }
 
-if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
+	if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
 ?>
 <br />
 <h2>Latest warnings</h2>
 <?php
-	if(!empty($settings['servers'])) {
-		echo '
+		if(!empty($settings['servers'])) {
+			echo '
 	<div class="row">';
-		$id = array_keys($settings['servers']);
-		$i = 0;
-		foreach($settings['servers'] as $server) {
+			$id = array_keys($settings['servers']);
+			$i = 0;
+			foreach($settings['servers'] as $server) {
+				echo '
+		<div class="span4">
+			<h3>'.$server['name'].'</h3>
+			<ul class="nav nav-tabs nav-stacked">';	
+				latestWarnings($server, $i);
+				echo '
+			</ul>
+		</div>';
+				
+				++$i;
+			}
+			echo '
+	</div>';
+		} else
+			echo '<p>None</p>';
+	}
+} else if(count($settings['servers']) == 1) {
+	$display = false;
+	
+	if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans']))
+		$display = true;
+	if((isset($settings['latest_mutes']) && $settings['latest_mutes']))
+		$display = true;
+	if((isset($settings['latest_warnings']) && $settings['latest_warnings']))
+		$display = true;
+		
+	if($display) {
+		$server = $settings['servers'][0];
+		echo '
+		<h2>'.$server['name'].'</h2>
+		<div class="row">';
+		
+		if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans'])) {
 			echo '
 			<div class="span4">
-				<h3>'.$server['name'].'</h3>
-				<ul class="nav nav-tabs nav-stacked">';			
-			// Clear old latest warnings cache's
-			clearCache($i.'/latestwarnings', 300);
-			clearCache($i.'/mysqlTime', 300);
-		
-			$result = cache("SELECT warned, warned_by, warn_reason FROM ".$server['warningsTable']." ORDER BY warn_time DESC LIMIT 5", 300, $i.'/latestwarnings', $server);
-		
-			if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
-				$result = array($result);
-			$rows = count($result);
-		
-			if($rows == 0)
-				echo '<li>None</li>';
-			else {
-				$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $i.'/mysqlTime', $server); // Cache it for a few seconds
-		
-				$mysqlTime = $timeDiff['mysqlTime'];
-				$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
-				$mysqlSecs = ($mysqlTime * 60) * 60;
-				foreach($result as $r) {
-					echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$i.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" /> '.$r['warned'].'</a><button class="btn btn-info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><i class="icon-question-sign icon-white"></i></button></li>';
-				}
-			}
-		
-			echo '
+				<h3>Latest Bans</h3>
+				<ul class="nav nav-tabs nav-stacked">';	
+					latestBans($server, 0);
+				echo '
 				</ul>
 			</div>';
-			++$i;
 		}
+		
+		if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
+			echo '
+			<div class="span4">
+				<h3>Latest Mutes</h3>
+				<ul class="nav nav-tabs nav-stacked">';	
+					latestMutes($server, 0);
+					echo '
+				</ul>
+			</div>';
+		}
+		
+		if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
+			echo '
+			<div class="span4">
+				<h3>Latest Warnings</h3>
+				<ul class="nav nav-tabs nav-stacked">';	
+					latestWarnings($server, 0);
+				echo '
+				</ul>
+			</div>';
+		}
+		
 		echo '
-	</div>';
-	} else
-		echo '<p>None</p>';
+		</div>';
+	}
 }
 ?>
