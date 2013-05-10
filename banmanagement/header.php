@@ -45,6 +45,12 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script><?php
+if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
+	echo '
+		<script type="text/javascript">
+			if (top.location != self.location) { top.location = self.location.href; }
+		</script>';
+}
 if(isset($_SESSION['admin']) && $_SESSION['admin']) {
 	echo '
 		<script type="text/javascript">

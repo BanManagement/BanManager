@@ -1,4 +1,3 @@
-if (top.location != self.location) { top.location = self.location.href; }
 $(function() {
 	jQuery.validator.setDefaults({
 		errorPlacement: function(error, placement) {

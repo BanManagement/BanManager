@@ -10,9 +10,6 @@
 session_start();
 ob_start();
 
-// IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
-header('X-FRAME-OPTIONS: SAMEORIGIN');
-
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
     $_SESSION['initiated'] = true;
@@ -357,6 +354,10 @@ if(file_exists('settings.php'))
 else
 	errors('You must rename settingsRename.php to settings.php');
 
+// IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
+if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']))
+	header('X-FRAME-OPTIONS: SAMEORIGIN');
+	
 $settings['servers'] = unserialize($settings['servers']);
 
 // Check if APC is enabled to use that instead of file cache
