@@ -12,11 +12,15 @@ if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin
 else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
 	die('Hacking attempt');
 else {
-	array_map('unlink', glob(IN_PATH.'cache/*.php'));
-	
-	$i = 0;
-	for($i = 0; $i < count($settings['servers']); ++$i) {
-		deleteDirectory(IN_PATH.'cache/'.$i);
+	if($settings['apc_enabled']) {
+		apc_clear_cache('user');
+	} else {
+		array_map('unlink', glob(IN_PATH.'cache/*.php'));
+		
+		$i = 0;
+		for($i = 0; $i < count($settings['servers']); ++$i) {
+			deleteDirectory(IN_PATH.'cache/'.$i);
+		}
 	}
 	
 	redirect('index.php?action=admin');
