@@ -119,7 +119,7 @@ function latestWarnings($server, $serverID) {
 				</label> -->
 					<div class="input-prepend">
 						<div class="btn-group">
-							<button id="player" class="btn dropdown-toggle" data-toggle="dropdown">
+							<button id="player" class="btn dropdown-toggle" data-toggle="dropdown" type="button">
 								Player
 								<span class="caret"></span>
 							</button>
