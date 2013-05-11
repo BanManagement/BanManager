@@ -21,10 +21,10 @@ localDatabase:
 # Enable for foreign characters
 useUTF8: false
 
-# Enable to log player IPs to allow for offline player ip banning
+# Enable to log player IPs to allow for offline player ip banning and ip duplicate check of banned players on player join
 logIPs: true
 
-# Only fill in if you are syncing bans accross servers
+# Only fill in if you are syncing bans across servers
 serverName: ''
 checkForUpdates: true
 logKicks: false
@@ -63,7 +63,7 @@ timeLimits:
         Moderator: 1d
 
 # If set to true, allows you to use partial player names in commands for online players
-# If set to false, you must specifiy the entire name of the player
+# If set to false, you must specify the entire name of the player
 use-partial-names: true
 
 # Bans the players and IP's within banned-players.txt & banned-ips.txt
