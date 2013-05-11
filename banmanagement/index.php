@@ -294,6 +294,11 @@ function rglob($pattern='*', $flags = 0, $path='') {
 }
 
 function clearCache($folder = '', $olderThan = 0) {
+	if($settings['apc_enabled']) {
+		apc_clear_cache('user');
+		return;
+	}
+	
 	$timeNow = time();
 	if(empty($folder))
 		$files = rglob('*.php', null, IN_PATH.'cache');
@@ -412,7 +417,8 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 		return false;
 	else if(count($found) == 1) {
 		// Redirect!
-		redirect('index.php?action=viewplayer&player='.array_keys($found)[0].'&server='.$serverID);
+		$p = array_keys($found);
+		redirect('index.php?action=viewplayer&player='.$p[0].'&server='.$serverID);
 	} else {
 		// STUFF
 		return $found;
@@ -452,7 +458,8 @@ function searchIps($search, $serverID, $server, $past = true) {
 		return false;
 	else if(count($found) == 1) {
 		// Redirect!
-		redirect('index.php?action=viewplayer&player='.array_keys($found)[0].'&server='.$serverID);
+		$p = array_keys($found);
+		redirect('index.php?action=viewplayer&player='.$p[0].'&server='.$serverID);
 	} else {
 		// STUFF
 		return $found;
