@@ -295,7 +295,7 @@ function rglob($pattern='*', $flags = 0, $path='') {
 
 function clearCache($folder = '', $olderThan = 0) {
 	if($settings['apc_enabled']) {
-		apc_clear_cache('user');
+		apc_delete($folder);
 		return;
 	}
 	
