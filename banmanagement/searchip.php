@@ -14,9 +14,9 @@ else if(!isset($settings['servers'][$_GET['server']]))
 else if(!isset($_GET['player']) || empty($_GET['player']))
 	redirect('index.php');
 else {
-	$excluderecords = false;
+	$pastbans = true;
 	if(isset($_GET['excluderecords']))
-		$excluderecords = true;
+		$pastbans = false;
 
 	// Get the server details
 	$server = $settings['servers'][$_GET['server']];
@@ -25,7 +25,7 @@ else {
 	clearCache($_GET['server'].'/search', 300);
 	clearCache($_GET['server'].'/mysqlTime', 300);
 	
-	$found = searchIps($_GET['player'], $_GET['server'], $server, $excluderecords);
+	$found = searchIps($_GET['player'], $_GET['server'], $server, $pastbans);
 
 	if(!$found) {
 		errors('No matched IPs found');
