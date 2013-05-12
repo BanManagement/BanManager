@@ -294,6 +294,8 @@ function rglob($pattern='*', $flags = 0, $path='') {
 }
 
 function clearCache($folder = '', $olderThan = 0) {
+	global $settings;
+
 	if($settings['apc_enabled']) {
 		apc_delete($folder);
 		return;
@@ -316,7 +318,7 @@ function clearCache($folder = '', $olderThan = 0) {
 function connect($server) {
 	global $settings;
 	
-	if($settings['last_connection']['host'] != $server['host'] && $settings['last_connection']['database'] != $server['database']) {
+	if(!isset($settings['last_connection']) || (isset($settings['last_connection']) && $settings['last_connection']['host'] != $server['host'] && $settings['last_connection']['database'] != $server['database'])) {
 		if(!mysql_connect($server['host'], $server['username'], $server['password']))
 			return false;
 		else if(!mysql_select_db($server['database']))
