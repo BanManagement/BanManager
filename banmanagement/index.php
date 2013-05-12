@@ -316,14 +316,16 @@ function clearCache($folder = '', $olderThan = 0) {
 function connect($server) {
 	global $settings;
 	
-	if(!mysql_connect($server['host'], $server['username'], $server['password']))
-		return false;
-	else if(!mysql_select_db($server['database']))
-		return false;
-	$settings['last_connection'] = $server;
-	
-	if(isset($settings['utf8']) && $settings['utf8'])
-		mysql_query("SET NAMES 'utf8'");
+	if($settings['last_connection']['host'] != $server['host'] && $settings['last_connection']['database'] != $server['database']) {
+		if(!mysql_connect($server['host'], $server['username'], $server['password']))
+			return false;
+		else if(!mysql_select_db($server['database']))
+			return false;
+		$settings['last_connection'] = $server;
+		
+		if(isset($settings['utf8']) && $settings['utf8'])
+			mysql_query("SET NAMES 'utf8'");
+	}
 	
 	return true;
 }
