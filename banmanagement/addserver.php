@@ -16,6 +16,22 @@ if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin
 	die('Hacking attempt');
 else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
 	die('Hacking attempt');
+else if(!is_alphanum($_POST['banstable'])) 
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['recordtable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['iptable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['iprecordtable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['mutestable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['mutesrecordtable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['kickstable']))
+	die('Hacking attempt');
+else if(!is_alphanum($_POST['warningstable']))
+	die('Hacking attempt');
 
 function tableExists($name) {
 	if(!@mysql_query("SELECT * FROM $name"))
@@ -32,6 +48,18 @@ else if(!tableExists($_POST['banstable']))
 	$error = 'Bans table not found';
 else if(!tableExists($_POST['recordtable']))
 	$error = 'Bans record table not found';
+else if(!tableExists($_POST['iptable']))
+	$error = 'IP table not found';
+else if(!tableExists($_POST['iprecordtable']))
+	$error = 'IP record table not found';
+else if(!tableExists($_POST['mutestable']))
+	$error = 'Mutes table not found';
+else if(!tableExists($_POST['mutesrecordtable']))
+	$error = 'Mutes record table not found';
+else if(!tableExists($_POST['kickstable']))
+	$error = 'Kicks table not found';
+else if(!tableExists($_POST['warningstable']))
+	$error = 'Warnings table not found';
 else {
 	// Success! Add it
 	$servers = $settings['servers'];

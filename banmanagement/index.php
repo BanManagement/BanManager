@@ -217,6 +217,13 @@ function secs_to_hmini($secs) {
 	return substr($s, 0, -2);
 }
 
+function is_alphanum($string) {
+	if(function_exists('ctype_alnum'))
+		return ctype_alnum($string);
+	else
+		return (preg_match("~^[a-z0-9]*$~iD", $string) !== 0 ? true : false);
+}
+
 function cache($query, $time, $folder = '', $server = array(), $name = '') {
 	global $settings;
 	$md5 = md5($query);
