@@ -102,7 +102,7 @@ public class databaseAsync implements Runnable {
 		}
 
 		if (plugin.keepMuteRecords > 0) {
-			localConn.query("DELETE FROM " + localConn.mutesRecordTable + " WHERE (unmute_time + " + muteDays + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.mutesRecordTable + " WHERE (unmuted_time + " + muteDays + " ) < " + now + "");
 		}
 
 		if (plugin.keepWarnings > 0) {
