@@ -27,6 +27,8 @@ public class ReloadCommand implements CommandExecutor {
 			}
 		}
 		
+		Util.sendMessage(sender, plugin.banMessages.get("configReloaded"));
+		
 		plugin.configReload();
 		
 		return true;

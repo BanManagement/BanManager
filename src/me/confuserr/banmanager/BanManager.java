@@ -229,6 +229,7 @@ public class BanManager extends JavaPlugin {
 
 	// Reloads everything in the config except the database details
 	public void configReload() {
+		reloadConfig();
 		logKicks = getConfig().getBoolean("logKicks");
 		keepKicks = getConfig().getInt("cleanUp.keepKicks");
 
