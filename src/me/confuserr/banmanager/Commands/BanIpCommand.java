@@ -102,7 +102,7 @@ public class BanIpCommand implements CommandExecutor {
 				Player target = list.get(0);
 				if (target.getName().equals(playerName)) {
 					Util.sendMessage(sender, plugin.banMessages.get("ipSelfError"));
-				} else if (target.hasPermission("bm.exempt.banip")) {
+				} else if (!sender.hasPermission("bm.exempt.override.banip") && target.hasPermission("bm.exempt.banip")) {
 					Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				} else {
 

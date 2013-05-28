@@ -46,7 +46,7 @@ public class WarnCommand implements CommandExecutor {
 			Player target = list.get(0);
 			if (target.getName().equals(playerName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("warnSelfError"));
-			} else if (target.hasPermission("bm.exempt.warn")) {
+			} else if (!sender.hasPermission("bm.exempt.override.warn") && target.hasPermission("bm.exempt.warn")) {
 				Util.sendMessage(sender, plugin.banMessages.get("warnExemptError"));
 			} else {
 

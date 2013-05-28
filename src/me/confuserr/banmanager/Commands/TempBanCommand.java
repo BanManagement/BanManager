@@ -49,8 +49,8 @@ public class TempBanCommand implements CommandExecutor {
 				}
 			}
 		}
-		
-		if(!Util.isValidPlayerName(args[0])) {
+
+		if (!Util.isValidPlayerName(args[0])) {
 			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
 			return true;
 		}
@@ -80,7 +80,7 @@ public class TempBanCommand implements CommandExecutor {
 					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 					return true;
 				}
-				
+
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			}
 		} else {
@@ -91,7 +91,7 @@ public class TempBanCommand implements CommandExecutor {
 					Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
 					return true;
 				}
-				
+
 				ban(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			} else {
 				// Online
@@ -107,11 +107,11 @@ public class TempBanCommand implements CommandExecutor {
 			Player player = plugin.getServer().getPlayer(playerName);
 
 			playerName = player.getName();
-			
+
 			if (playerName.equals(bannedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
-			} else if (player.hasPermission("bm.exempt.tempban")) {
+			} else if (!sender.hasPermission("bm.exempt.override.tempban") && player.hasPermission("bm.exempt.tempban")) {
 				Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
 			} else if (plugin.bukkitBan) {
@@ -133,7 +133,7 @@ public class TempBanCommand implements CommandExecutor {
 			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
 
 			playerName = offlinePlayer.getName();
-			
+
 			if (plugin.bukkitBan) {
 				if (offlinePlayer.isBanned()) {
 					Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", playerName));

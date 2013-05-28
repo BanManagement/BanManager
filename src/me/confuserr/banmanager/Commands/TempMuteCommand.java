@@ -100,7 +100,7 @@ public class TempMuteCommand implements CommandExecutor {
 			if (playerName.equals(mutedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
 				return;
-			} else if (player.hasPermission("bm.exempt.tempmute")) {
+			} else if (!sender.hasPermission("bm.exempt.override.tempmute") && player.hasPermission("bm.exempt.tempmute")) {
 				Util.sendMessage(sender, plugin.banMessages.get("muteExemptError"));
 				return;
 			}

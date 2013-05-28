@@ -89,7 +89,7 @@ public class BanCommand implements CommandExecutor {
 			if (playerName.equals(bannedByName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("banSelfError"));
 				return;
-			} else if (player.hasPermission("bm.exempt.ban")) {
+			} else if (!sender.hasPermission("bm.exempt.override.ban") && player.hasPermission("bm.exempt.ban")) {
 				Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
 				return;
 			} else if (plugin.bukkitBan) {

@@ -46,7 +46,7 @@ public class KickCommand implements CommandExecutor {
 			Player target = list.get(0);
 			if(target.getName().equals(playerName)) {
 				Util.sendMessage(sender, plugin.banMessages.get("kickSelfError"));
-			} else if(target.hasPermission("bm.exempt.kick")) {
+			} else if(!sender.hasPermission("bm.exempt.override.kick") && target.hasPermission("bm.exempt.kick")) {
 				Util.sendMessage(sender, plugin.banMessages.get("kickExemptError"));
 			} else {
 				
