@@ -123,6 +123,7 @@ messages:
     muteExemptError: '&cYou do not have permission to mute this player'
     alreadyMutedError: '&c[name] is already muted'
     playerMuted: '[name] has been muted'
+    mutedBlacklistedCommand: '&cYou may not use that command whilst muted!'
     illegalDateError: '&cIllegal Date Format'
     playerTempBanned: '[name] has been temporarily banned'
     playerTempMuted: '[name] has been temporarily muted'

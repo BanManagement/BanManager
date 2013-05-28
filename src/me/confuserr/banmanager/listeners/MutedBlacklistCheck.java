@@ -28,6 +28,7 @@ public class MutedBlacklistCheck implements Listener {
 	    if(plugin.mutedBlacklist.contains(cmd)) {
 	    	// Cancel it
 	    	event.setCancelled(true);
+	    	event.getPlayer().sendMessage(plugin.banMessages.get("mutedBlacklistedCommand"));
 	    }
 	}
 }
