@@ -34,7 +34,7 @@ if(isset($_POST['latestwarnings']))
 if(isset($_POST['utf8']))
 	$utf8 = 'true';
 if(isset($_POST['iframe']))
-	$irame = 'true';
+	$iframe = 'true';
 
 $footer = htmlspecialchars_decode($_POST['footer'], ENT_QUOTES);
 
