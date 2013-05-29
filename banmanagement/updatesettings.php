@@ -16,67 +16,72 @@ if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin
 	die('Hacking attempt');
 else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
 	die('Hacking attempt');
-else if(!isset($_POST['footer']))
+else if(!isset($_POST['type']))
 	die('Hacking attempt');
 
-// Validate the data!
-$latestBans = 'false';
-$latestMutes = 'false';
-$latestWarnings = 'false';
-$utf8 = 'false';
-$iframe = 'false';
-if(isset($_POST['latestbans']))
-	$latestBans = 'true';
-if(isset($_POST['latestmutes']))
-	$latestMutes = 'true';
-if(isset($_POST['latestwarnings']))
-	$latestWarnings = 'true';
-if(isset($_POST['utf8']))
-	$utf8 = 'true';
-if(isset($_POST['iframe']))
-	$iframe = 'true';
+if($_POST['type'] == 'mainsettings') {
+	// Validate the data!
+	$latest_bans = 'false';
+	$latest_mutes = 'false';
+	$latest_warnings = 'false';
+	$utf8 = 'false';
+	$iframe_protection = 'false';
+	
+	if(isset($_POST['latestbans']))
+		$latest_bans = 'true';
+	if(isset($_POST['latestmutes']))
+		$latest_mutes = 'true';
+	if(isset($_POST['latestwarnings']))
+		$latest_warnings = 'true';
+	if(isset($_POST['utf8']))
+		$utf8 = 'true';
+	if(isset($_POST['iframe']))
+		$iframe_protection = 'true';
 
-$footer = htmlspecialchars_decode($_POST['footer'], ENT_QUOTES);
+	$footer = htmlspecialchars_decode($_POST['footer'], ENT_QUOTES);
 
-// Save it
-$latest_bans = "['latest_bans'] = ".$latestBans.";".PHP_EOL;
-$latest_mutes = "['latest_mutes'] = ".$latestMutes.";".PHP_EOL;
-$latest_warnings = "['latest_warnings'] = ".$latestWarnings.";".PHP_EOL;
-$utf8 = "['utf8'] = ".$utf8.";".PHP_EOL;
-$footer = "['footer'] = '".$footer."';".PHP_EOL;
-$iframe = "['iframe_protection'] = ".$iframe.";".PHP_EOL;
+	$variables = array('latest_bans', 'latest_mutes', 'latest_warnings', 'utf8', 'footer', 'iframe_protection');
+	
+} else if($_POST['type'] == 'viewplayer') {
+	// Validate the data!
+	$player_current_ban = 'true';
+	$player_current_mute = 'true';
+	$player_previous_bans = 'true';
+	$player_previous_mutes = 'true';
+	$player_kicks = 'true';
+	$player_warnings = 'true';
+	
+	if(isset($_POST['ban']))
+		$player_current_ban = 'true';
+	if(isset($_POST['mute']))
+		$player_current_mute = 'true';
+	if(isset($_POST['prevbans']))
+		$player_previous_bans = 'true';
+	if(isset($_POST['prevmutes']))
+		$player_previous_mutes = 'true';
+	if(isset($_POST['warnings']))
+		$player_kicks = 'true';
+	if(isset($_POST['kicks']))
+		$player_warnings = 'true';
+
+	$variables = array('player_current_ban', 'player_current_mute', 'player_previous_bans', 'player_previous_mutes', 'player_kicks', 'player_warnings');
+}
+
+if(!isset($variables))
+	die('Hacking atempt');
 
 $contents = file_get_contents('settings.php');
 
-// Latest bans
-$contents = preg_replace("/\['latest_bans'\] = (.*?)".PHP_EOL."/", $latest_bans, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_bans", $contents);
+foreach($variables as $var) {
+	if($$var == 'true' || $$var == 'false')
+		$$var = "['".$var."'] = ".$$var.";".PHP_EOL;
+	else
+		$$var = "['".$var."'] = '".$$var."';".PHP_EOL;
 
-// Latest mutes
-$contents = preg_replace("/\['latest_mutes'\] = (.*?)".PHP_EOL."/", $latest_mutes, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_mutes", $contents);
-
-// Latest warnings
-$contents = preg_replace("/\['latest_warnings'\] = (.*?)".PHP_EOL."/", $latest_warnings, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$latest_warnings", $contents);
-
-// UTF8
-$contents = preg_replace("/\['utf8'\] = (.*?)".PHP_EOL."/", $utf8, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$utf8", $contents);
-
-// Footer
-$contents = preg_replace("/\['footer'\] = (.*?)".PHP_EOL."/", $footer, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$footer", $contents);
-
-// Iframe
-$contents = preg_replace("/\['iframe_protection'\] = (.*?)".PHP_EOL."/", $iframe, $contents, -1, $count);
-if($count == 0)
-	$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings$iframe", $contents);
+	$contents = preg_replace("/\['".$var."'\] = (.*?)".PHP_EOL."/", $$var, $contents, -1, $count);
+	if($count == 0)
+		$contents = str_replace("<?php".PHP_EOL, "<?php".PHP_EOL."$"."settings".$$var, $contents);
+}
 
 file_put_contents('settings.php', $contents);
 

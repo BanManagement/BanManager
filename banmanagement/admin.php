@@ -188,8 +188,8 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	<br />
 	<br />
 	<h3>Homepage Settings</h3>
-	<form class="form-horizontal" action="" method="post" id="homepageform">
-		<table class="table table-striped table-bordered table-hover" id="homepagesettings">
+	<form class="form-horizontal settings" action="" method="post">
+		<table class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
 					<th>Option</th>
@@ -207,7 +207,7 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 		echo '
 				<tr>
 					<td>iFrame Protection (Recommended)</td>
-					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+					<td><input type="hidden" name="type" value="mainsettings" /><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
 				</tr>
 				<tr>
 					<td>UTF8</td>
@@ -228,6 +228,72 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				<tr>
 					<td>Latest Warnings</td>
 					<td><input type="checkbox" name="latestwarnings"'.(isset($settings['latest_warnings']) && $settings['latest_warnings'] ? ' checked="checked"' : '').' /></td>
+				</tr>';
+	} ?>
+	
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+	<?php
+	if(!is_writable('settings.php')) {
+		echo '<input type="submit" class="btn btn-primary btn-large disabled" disabled="disabled" value="Save" />';
+	} else {
+		echo '<input type="submit" class="btn btn-primary btn-large" value="Save" />';
+	} ?>
+			
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</form>
+	<br />
+	<br />
+	<h3>View Player Settings</h3>
+	<form class="form-horizontal settings" action="" method="post">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<th>Visible</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+	<?php
+	if(!is_writable('settings.php')) {
+		echo '
+				<tr>
+					<td colspan="2">settings.php can not be written to</td>
+				</tr>';
+	} else {
+		echo '
+				<tr>
+					<td>Current Ban</td>
+					<td><input type="hidden" name="type" value="viewplayer" /><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Current Mute</td>
+					<td><input type="checkbox" name="utf8"'.(isset($settings['utf8']) && $settings['utf8'] ? ' checked="checked"' : '').' /></td>
+				</tr>				
+				<tr>
+					<td>Previous Bans</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Previous Mutes</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Warnings</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Kicks</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>Search All Servers Option</td>
+					<td><input type="checkbox" name="iframe"'.((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']) ? ' checked="checked"' : '').' /></td>
 				</tr>';
 	} ?>
 	

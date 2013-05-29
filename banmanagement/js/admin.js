@@ -99,7 +99,7 @@ $(function() {
 			}
 		});
 	});
-	$("#homepageform").submit(function(e) {
+	$("form.settings").submit(function(e) {
 		e.preventDefault();
 		var form = $(this);
 		var formBody = form.find("table");
