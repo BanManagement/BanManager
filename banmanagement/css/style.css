@@ -34,6 +34,10 @@ td.admin-options {
 #search {
 	position: relative;
 }
+.minihead {
+	width: 20px;
+	display: inline-block;
+}
 /*************
   Bootstrap theme
  *************/
