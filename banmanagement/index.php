@@ -339,11 +339,55 @@ function connect($server) {
 	return true;
 }
 
-function searchPlayers($search, $serverID, $server, $past = true) {
+function searchPlayers($search, $serverID, $server, $sortByCol = 'name', $sortBy = 'ASC', $past = true) {
+
+	switch($sortByCol) {
+		default:
+		case 0: // Name
+			$sort['bans'] = $sort['banrecords'] = 'banned';
+			$sort['mutes'] = $sort['muterecords'] = 'muted';
+			$sort['kicks'] = 'kicked';
+			$sort['warnings'] = 'warned';
+		break;
+		case 1: // Type
+			$sort['bans'] = $sort['banrecords'] = 'banned';
+			$sort['mutes'] = $sort['muterecords'] = 'muted';
+			$sort['kicks'] = 'kicked';
+			$sort['warnings'] = 'warned';
+		break;
+		case 2: // By
+			$sort['bans'] = $sort['banrecords'] = 'banned_by';
+			$sort['mutes'] = $sort['muterecords'] = 'muted_by';
+			$sort['kicks'] = 'kicked_by';
+			$sort['warnings'] = 'warned_by';
+		break;
+		case 3: // Reason
+			$sort['bans'] = $sort['banrecords'] = 'ban_reason';
+			$sort['mutes'] = $sort['muterecords'] = 'mute_reason';
+			$sort['kicks'] = 'kick_reason';
+			$sort['warnings'] = 'warn_reason';
+		break;
+		case 4: // Expires
+			$sort['bans'] = 'ban_expires_on';
+			$sort['banrecords'] = 'ban_expired_on';
+			$sort['mutes'] = 'mute_expires_on';
+			$sort['muterecords'] = 'mute_expired_on';
+			$sort['kicks'] = 'kick_id';
+			$sort['warnings'] = 'warn_id';
+		break;
+		case 5: // Date
+			$sort['bans'] = $sort['banrecords'] = 'ban_time';
+			$sort['mutes'] = $sort['muterecords'] = 'mute_time';
+			$sort['kicks'] = 'kick_time';
+			$sort['warnings'] = 'warn_time';
+		break;
+	}
+
+	// Found results
 	$found = array();
 
 	// Current Bans
-	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['bansTable']." WHERE banned LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['bansTable']." WHERE banned LIKE '%".$search."%' ORDER BY ".$sort['bans']." $sortBy", 300, $serverID.'/search', $server);
 	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 		$result = array($result);
 	
@@ -354,7 +398,7 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 	
 	if($past) {
 		// Past Bans
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['recordTable']." WHERE banned LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['recordTable']." WHERE banned LIKE '%".$search."%' ORDER BY ".$sort['banrecords']." $sortBy", 300, $serverID.'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		
@@ -369,7 +413,7 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 	}
 	
 	// Current Mutes
-	$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expires_on FROM ".$server['mutesTable']." WHERE muted LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+	$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expires_on FROM ".$server['mutesTable']." WHERE muted LIKE '%".$search."%' ORDER BY ".$sort['mutes']." $sortBy", 300, $serverID.'/search', $server);
 	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 		$result = array($result);
 	
@@ -382,7 +426,7 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 	
 	if($past) {
 		// Past Mutes
-		$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on FROM ".$server['mutesRecordTable']." WHERE muted LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+		$result = cache("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on FROM ".$server['mutesRecordTable']." WHERE muted LIKE '%".$search."%' ORDER BY ".$sort['muterecords']." $sortBy", 300, $serverID.'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		
@@ -396,7 +440,7 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 		}
 
 		// Kicks
-		$result = cache("SELECT kicked, kicked_by, kick_reason, kick_time FROM ".$server['kicksTable']." WHERE kicked LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+		$result = cache("SELECT kicked, kicked_by, kick_reason, kick_time FROM ".$server['kicksTable']." WHERE kicked LIKE '%".$search."%' ORDER BY ".$sort['kicks']." $sortBy", 300, $serverID.'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 			
@@ -411,7 +455,7 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 	}
 	
 	// Warnings
-	$result = cache("SELECT warned, warned_by, warn_reason, warn_time FROM ".$server['warningsTable']." WHERE warned LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+	$result = cache("SELECT warned, warned_by, warn_reason, warn_time FROM ".$server['warningsTable']." WHERE warned LIKE '%".$search."%' ORDER BY ".$sort['warnings']." $sortBy", 300, $serverID.'/search', $server);
 	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 		$result = array($result);
 	
@@ -436,11 +480,38 @@ function searchPlayers($search, $serverID, $server, $past = true) {
 	}
 }
 
-function searchIps($search, $serverID, $server, $past = true) {
+function searchIps($search, $serverID, $server, $sortByCol = 'name', $sortBy = 'ASC', $past = true) {
+	$found = array();
+
+	switch($sortByCol) {
+		default:
+		case 0: // Name
+			$sort['bans'] = $sort['banrecords'] = 'banned';
+		break;
+		case 1: // Type
+			$sortByType = true;
+			$sort['bans'] = $sort['banrecords'] = 'banned';
+		break;
+		case 2: // By
+			$sort['bans'] = $sort['banrecords'] = 'banned_by';
+		break;
+		case 3: // Reason
+			$sort['bans'] = $sort['banrecords'] = 'ban_reason';
+		break;
+		case 4: // Expires
+			$sort['bans'] = 'ban_expires_on';
+			$sort['banrecords'] = 'ban_expired_on';
+		break;
+		case 5: // Date
+			$sort['bans'] = $sort['banrecords'] = 'ban_time';
+		break;
+	}
+
+	// Found results
 	$found = array();
 
 	// Current Bans
-	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['ipTable']." WHERE banned LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+	$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM ".$server['ipTable']." WHERE banned LIKE '%".$search."%' ORDER BY ".$sort['bans']." $sortBy", 300, $serverID.'/search', $server);
 	if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 		$result = array($result);
 	
@@ -451,7 +522,7 @@ function searchIps($search, $serverID, $server, $past = true) {
 	
 	if($past) {
 		// Past Bans
-		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$search."%'", 300, $serverID.'/search', $server);
+		$result = cache("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on FROM ".$server['ipRecordTable']." WHERE banned LIKE '%".$search."%' ORDER BY ".$sort['banrecords']." $sortBy", 300, $serverID.'/search', $server);
 		if(isset($result[0]) && !is_array($result[0]) && !empty($result[0]))
 			$result = array($result);
 		
@@ -471,6 +542,17 @@ function searchIps($search, $serverID, $server, $past = true) {
 		// Redirect!
 		$p = array_keys($found);
 		redirect('index.php?action=viewplayer&player='.$p[0].'&server='.$serverID);
+	} else {
+		// STUFF
+		return $found;
+	}
+	
+	if(count($found) == 0)
+		return false;
+	else if(count($found) == 1) {
+		// Redirect!
+		$p = array_keys($found);
+		redirect('index.php?action=viewip&ip='.$p[0].'&server='.$serverID);
 	} else {
 		// STUFF
 		return $found;

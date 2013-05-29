@@ -2,6 +2,9 @@
 .settings
 .classpath
 bin
+.project
+.externalToolBuilders
+build.xml
 
 # Package Files #
 *.jar
