@@ -228,6 +228,14 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				<tr>
 					<td>Latest Warnings</td>
 					<td><input type="checkbox" name="latestwarnings"'.(isset($settings['latest_warnings']) && $settings['latest_warnings'] ? ' checked="checked"' : '').' /></td>
+				</tr>
+				<tr>
+					<td>HTML Before Buttons</td>
+					<td><input type="text" name="buttons_before" value="'.(isset($settings['submit_buttons_before_html']) ? $settings['submit_buttons_before_html'] : '').'" /></td>
+				</tr>
+				<tr>
+					<td>HTML After Buttons</td>
+					<td><input type="text" name="buttons_after" value="'.(isset($settings['submit_buttons_after_html']) ? $settings['submit_buttons_after_html'] : '').'" /></td>
 				</tr>';
 	} ?>
 	

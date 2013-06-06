@@ -26,6 +26,8 @@ if($_POST['type'] == 'mainsettings') {
 	$latest_warnings = 'false';
 	$utf8 = 'false';
 	$iframe_protection = 'false';
+	$submit_buttons_before_html = '';
+	$submit_buttons_after_html = '';
 	
 	if(isset($_POST['latestbans']))
 		$latest_bans = 'true';
@@ -37,10 +39,14 @@ if($_POST['type'] == 'mainsettings') {
 		$utf8 = 'true';
 	if(isset($_POST['iframe']))
 		$iframe_protection = 'true';
+	if(isset($_POST['buttons_before']))
+		$submit_buttons_before_html = $_POST['buttons_before'];
+	if(isset($_POST['buttons_after']))
+		$submit_buttons_after_html = $_POST['buttons_after'];
 
 	$footer = htmlspecialchars_decode($_POST['footer'], ENT_QUOTES);
 
-	$variables = array('latest_bans', 'latest_mutes', 'latest_warnings', 'utf8', 'footer', 'iframe_protection');
+	$variables = array('latest_bans', 'latest_mutes', 'latest_warnings', 'utf8', 'footer', 'iframe_protection', 'submit_buttons_before_html', 'submit_buttons_after_html');
 	
 } else if($_POST['type'] == 'viewplayer') {
 	// Validate the data!

@@ -154,10 +154,17 @@ function latestWarnings($server, $serverID) {
 			echo '<input type="hidden" value="0" name="server" />';
 		}
 		?>
-			<div class="form-actions">
+			<div class="form-actions"><?php
+				if(isset($settings['submit_buttons_before_html']))
+					echo htmlspecialchars_decode($settings['submit_buttons_before_html'], ENT_QUOTES);
+				?>
 				<input type="submit" class="btn btn-primary" value="Search" />
 				<input type="hidden" name="action" value="searchplayer" />
 				<a href="#" class="btn" id="viewall">View All</a>
+				<?php
+				if(isset($settings['submit_buttons_after_html']))
+					echo htmlspecialchars_decode($settings['submit_buttons_after_html'], ENT_QUOTES);
+				?>
 			</div>
 		</fieldset>
     </form>
