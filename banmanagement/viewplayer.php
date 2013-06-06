@@ -137,6 +137,15 @@ else {
 			}
 				?>
 			</table><?php
+			if(isset($settings['player_current_ban_extra_html'])) {
+				$extra = htmlspecialchars_decode($settings['player_current_ban_extra_html'], ENT_QUOTES);
+				$extra = str_replace(array('{SERVER}', '{SERVERID}', '{NAME}'), array($server['name'], $_GET['server'], $_GET['player']), $extra);
+				
+				echo '
+			<div id="current-ban-extra">
+				'.$extra.'
+			</div>';
+			}
 			if($admin && count($currentBans) != 0) {?>
 			<div class="modal hide fade" id="editban">
 				<form class="form-horizontal" action="" method="post">
@@ -285,6 +294,15 @@ else {
 				?>
 			
 			</table><?php
+			if(isset($settings['player_current_mute_extra_html'])) {
+				$extra = htmlspecialchars_decode($settings['player_current_mute_extra_html'], ENT_QUOTES);
+				$extra = str_replace(array('{SERVER}', '{SERVERID}', '{NAME}'), array($server['name'], $_GET['server'], $_GET['player']), $extra);
+				
+				echo '
+			<div id="current-mute-extra">
+				'.$extra.'
+			</div>';
+			}
 			if($admin && count($currentMutes) != 0) {?>
 			
 			<div class="modal hide fade" id="editmute">
