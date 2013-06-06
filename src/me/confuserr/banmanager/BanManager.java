@@ -1,5 +1,6 @@
 package me.confuserr.banmanager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.ResultSet;
@@ -48,6 +49,7 @@ public class BanManager extends JavaPlugin {
 
 	public DbLogger dbLogger;
 	public String updateVersion;
+	public File jarFile;
 
 	public ConcurrentHashMap<String, Long> mutedPlayersLength = new ConcurrentHashMap<String, Long>();
 	public ConcurrentHashMap<String, String> mutedPlayersReason = new ConcurrentHashMap<String, String>();
@@ -221,6 +223,8 @@ public class BanManager extends JavaPlugin {
 				// Get the latest version
 				updateVersion = updater.getLatestVersionString();
 
+				jarFile = getFile();
+				
 				logger.info("[BanManager] " + updateVersion + " update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}

@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import me.confuserr.banmanager.BanManager;
+import net.h31ix.updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,6 +16,7 @@ public class BmToolsCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String args[]) {
 
@@ -54,6 +56,24 @@ public class BmToolsCommand implements CommandExecutor {
 							sender.sendMessage(bannedList.substring(0, bannedList.length() - 2));
 						else
 							sender.sendMessage("None");
+					}
+				}
+			break;
+
+			case "update":
+				if (sender.hasPermission("bm.tools.update")) {
+					if (!plugin.checkForUpdates)
+						sender.sendMessage(ChatColor.RED + "[BanManager] Please enable update checking within your config!");
+					if (plugin.updateAvailable) {
+						plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+							public void run() {
+								new Updater(plugin, "ban-management", plugin.jarFile, Updater.UpdateType.NO_VERSION_CHECK, true);
+
+								sender.sendMessage(ChatColor.GREEN + "[BanManager] Updating, please restart server in a moment to apply the update");
+							}
+						});
+					} else {
+						sender.sendMessage(ChatColor.RED + "No updates available.");
 					}
 				}
 			break;
