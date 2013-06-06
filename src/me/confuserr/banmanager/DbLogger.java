@@ -114,7 +114,7 @@ public class DbLogger {
 						if(plugin.bukkitBan)
 							plugin.getServer().getOfflinePlayer(username).setBanned(false);
 
-						banRemove(username, "Console automated");
+						banRemove(username, plugin.banMessages.get("consoleName"));
 					}
 				}
 			} else if(plugin.getServer().getOfflinePlayer(username).isBanned() && plugin.bukkitBan) {
@@ -169,7 +169,7 @@ public class DbLogger {
 						if(plugin.bukkitBan)
 							plugin.getServer().unbanIP(ip);
 
-						ipRemove(ip, "Console automated");
+						ipRemove(ip, plugin.banMessages.get("consoleName"));
 					}
 				}
 			} else if(ipBanned(ip) && plugin.bukkitBan) {
