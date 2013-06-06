@@ -63,7 +63,7 @@ public class bansAsync implements Runnable {
 						plugin.bannedPlayers.remove(result1.getString("banned").toLowerCase());
 
 						if (plugin.bukkitBan) {
-							plugin.toUnbanPlayer.add(result1.getString("banned"));
+							plugin.toUnbanPlayer.add(result1.getString("banned").toLowerCase());
 						}
 					}
 				}
