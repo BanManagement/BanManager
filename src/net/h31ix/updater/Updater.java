@@ -8,6 +8,7 @@ package net.h31ix.updater;
 
 import java.io.*;
 import java.lang.Runnable;
+import java.lang.Thread;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -50,12 +51,12 @@ public class Updater
     private boolean announce; // Whether to announce file downloads
     private URL url; // Connecting to RSS
     private File file; // The plugin's file
+    private Thread thread; // Updater thread
     private static final String DBOUrl = "http://dev.bukkit.org/server-mods/"; // Slugs will be appended to this to get to the project's RSS feed
-    private String [] noUpdateTag = {"-DEV","-PRE"}; // If the version number contains one of these, don't update.
+    private String [] noUpdateTag = {"-DEV","-PRE","-SNAPSHOT"}; // If the version number contains one of these, don't update.
     private static final int BYTE_SIZE = 1024; // Used for downloading files
     private String updateFolder = YamlConfiguration.loadConfiguration(new File("bukkit.yml")).getString("settings.update-folder"); // The folder that downloads will be placed in
     private Updater.UpdateResult result = Updater.UpdateResult.SUCCESS; // Used for determining the outcome of the update process
-
     // Strings for reading RSS
     private static final String TITLE = "title";
     private static final String LINK = "link";
@@ -147,7 +148,8 @@ public class Updater
             plugin.getLogger().warning("The project slug given ('" + slug + "') is invalid. Please nag the author about this.");
             result = Updater.UpdateResult.FAIL_BADSLUG; // Bad slug! Bad!
         }
-        new Thread(new UpdateRunnable()).start();
+        thread = new Thread(new UpdateRunnable());
+        thread.start();
     }
 
     /**
@@ -155,6 +157,7 @@ public class Updater
      */
     public Updater.UpdateResult getResult()
     {
+        waitForThread();
         return result;
     }
 
@@ -163,6 +166,7 @@ public class Updater
      */
     public long getFileSize()
     {
+        waitForThread();
         return totalSize;
     }
 
@@ -171,7 +175,22 @@ public class Updater
      */
     public String getLatestVersionString()
     {
+        waitForThread();
         return versionTitle;
+    }
+
+    /**
+     * As the result of Updater output depends on the thread's completion, it is necessary to wait for the thread to finish
+     * before alloowing anyone to check the result.
+     */
+    public void waitForThread() {
+        if(thread.isAlive()) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
