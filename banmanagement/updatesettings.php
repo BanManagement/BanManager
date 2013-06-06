@@ -44,12 +44,12 @@ if($_POST['type'] == 'mainsettings') {
 	
 } else if($_POST['type'] == 'viewplayer') {
 	// Validate the data!
-	$player_current_ban = 'true';
-	$player_current_mute = 'true';
-	$player_previous_bans = 'true';
-	$player_previous_mutes = 'true';
-	$player_kicks = 'true';
-	$player_warnings = 'true';
+	$player_current_ban = 'false';
+	$player_current_mute = 'false';
+	$player_previous_bans = 'false';
+	$player_previous_mutes = 'false';
+	$player_kicks = 'false';
+	$player_warnings = 'false';
 	
 	if(isset($_POST['ban']))
 		$player_current_ban = 'true';
