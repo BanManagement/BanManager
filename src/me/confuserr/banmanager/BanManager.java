@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
 
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.*;
-import me.confuserr.banmanager.listeners.*;
-import me.confuserr.banmanager.scheduler.*;
+import me.confuserr.banmanager.Listeners.*;
+import me.confuserr.banmanager.Scheduler.*;
 import net.h31ix.updater.Updater;
 
 import org.bukkit.plugin.java.JavaPlugin;

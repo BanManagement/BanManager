@@ -1,4 +1,4 @@
-package me.confuserr.banmanager.scheduler;
+package me.confuserr.banmanager.Scheduler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

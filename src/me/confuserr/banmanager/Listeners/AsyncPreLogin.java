@@ -1,28 +1,26 @@
-package me.confuserr.banmanager.listeners;
+package me.confuserr.banmanager.Listeners;
 
 import java.net.InetAddress;
-
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-public class SyncLogin implements Listener {
+public class AsyncPreLogin implements Listener {
 
 	private BanManager plugin;
 
-	public SyncLogin(BanManager instance) {
+	public AsyncPreLogin(BanManager instance) {
 		plugin = instance;
 	}
 
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerLogin(final PlayerLoginEvent event) {
-		final String name = event.getPlayer().getName();
+	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
+		final String name = event.getName();
 		final InetAddress ip = event.getAddress();
 		final String ipStr = plugin.getIp(ip);
 
@@ -32,6 +30,9 @@ public class SyncLogin implements Listener {
 				// Ok they are, no need to do additional checks!
 				// But we unban them now otherwise they'll get the Ban Hammer
 				// message
+				// This is experimental, as its an async event, shouldn't really
+				// be calling a main thread method, shall see how it goes for
+				// now!
 				plugin.getServer().getOfflinePlayer(name).setBanned(false);
 				return;
 			}
@@ -64,17 +65,16 @@ public class SyncLogin implements Listener {
 			if (!banReason.isEmpty()) {
 				banReason = Util.colorize(banReason);
 				// Oh dear, they've been banned
-				event.disallow(Result.KICK_BANNED, banReason);
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banReason);
 				return;
 			} else {
 				String ipReason = plugin.dbLogger.isBanned(ip);
 				if (!ipReason.isEmpty()) {
 					ipReason = Util.colorize(ipReason);
 					// Oh dear, they've been banned
-					event.disallow(Result.KICK_BANNED, ipReason);
+					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ipReason);
 					return;
-				} else
-					event.allow();
+				}
 			}
 		}
 

@@ -1,4 +1,4 @@
-package me.confuserr.banmanager.listeners;
+package me.confuserr.banmanager.Listeners;
 
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
