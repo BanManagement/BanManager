@@ -76,6 +76,11 @@ public class AsyncPreLogin implements Listener {
 					return;
 				}
 			}
+		} else if (plugin.bukkitBan) {
+			if (plugin.getServer().getOfflinePlayer(name).isBanned()) {
+				if (plugin.dbLogger.handleBukkitBan(name))
+					event.allow();
+			}
 		}
 
 		if (plugin.logIPs) {
