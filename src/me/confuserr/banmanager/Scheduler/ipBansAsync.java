@@ -53,7 +53,7 @@ public class ipBansAsync implements Runnable {
 					plugin.getIPBans().remove(result1.getString("banned"));
 
 					if (plugin.useBukkitBans())
-						plugin.getServer().banIP(result1.getString("banned"));
+						plugin.getServer().unbanIP(result1.getString("banned"));
 
 				}
 
