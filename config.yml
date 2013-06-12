@@ -5,19 +5,19 @@ localDatabase:
     database: 'frostcast'
     username: 'root'
     password: ''
-    bansTable: 'mb_bans'
-    bansRecordTable: 'mb_ban_records'
-    ipBansTable: 'mb_ip_bans'
-    ipBansRecordTable: 'mb_ip_records'
-    kicksTable: 'mb_kicks'
-    mutesTable: 'mb_mutes'
-    mutesRecordTable: 'mb_mutes_records'
-    playerIpsTable: 'mb_player_ips'
-    warningsTable: 'mb_warnings'
-    banAppealsTable: 'mb_ban_appeals'
-    pinsTable: 'mb_pins'
-    staffTable: 'mb_staff'
-
+    bansTable: 'bm_bans'
+    bansRecordTable: 'bm_ban_records'
+    ipBansTable: 'bm_ip_bans'
+    ipBansRecordTable: 'bm_ip_records'
+    kicksTable: 'bm_kicks'
+    mutesTable: 'bm_mutes'
+    mutesRecordTable: 'bm_mutes_records'
+    playerIpsTable: 'bm_player_ips'
+    warningsTable: 'bm_warnings'
+    banAppealsTable: 'bm_ban_appeals'
+    pinsTable: 'bm_pins'
+    staffTable: 'bm_staff'
+	
 # Enable for foreign characters
 useUTF8: false
 

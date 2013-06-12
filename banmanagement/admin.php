@@ -132,49 +132,49 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 					<div class="control-group">
 						<label class="control-label" for="banstable">Bans Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="banstable" id="banstable" value="mb_bans">
+							<input type="text" class="input-xlarge required" name="banstable" id="banstable" value="bm_bans">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="recordtable">Bans Record Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="recordtable" id="recordtable" value="mb_ban_records">
+							<input type="text" class="input-xlarge required" name="recordtable" id="recordtable" value="bm_ban_records">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="iptable">IP Bans Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="iptable" id="iptable" value="mb_ip_bans">
+							<input type="text" class="input-xlarge required" name="iptable" id="iptable" value="bm_ip_bans">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="iprecordtable">IP Record Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="iprecordtable" id="iprecordtable" value="mb_ip_records">
+							<input type="text" class="input-xlarge required" name="iprecordtable" id="iprecordtable" value="bm_ip_records">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="mutestable">Mutes Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="mutestable" id="mutestable" value="mb_mutes">
+							<input type="text" class="input-xlarge required" name="mutestable" id="mutestable" value="bm_mutes">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="mutesrecordtable">Mutes Record Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="mutesrecordtable" id="mutesrecordtable" value="mb_mutes_records">
+							<input type="text" class="input-xlarge required" name="mutesrecordtable" id="mutesrecordtable" value="bm_mutes_records">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="kickstable">Kicks Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="kickstable" id="kickstable" value="mb_kicks">
+							<input type="text" class="input-xlarge required" name="kickstable" id="kickstable" value="bm_kicks">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="warningstable">Warnings Table:</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge required" name="warningstable" id="warningstable" value="mb_warnings">
+							<input type="text" class="input-xlarge required" name="warningstable" id="warningstable" value="bm_warnings">
 						</div>
 					</div>
 				</fieldset>
