@@ -81,7 +81,7 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("[BanManager] has been disabled");
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "serial" })
 	@Override
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
@@ -93,7 +93,19 @@ public class BanManager extends JavaPlugin {
 		configReload();
 
 		// Initialise database
-		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10" + (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this);
+		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10" + (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this, new HashMap<String, String>() {
+			{
+				put("bans", plugin.getConfig().getString("localDatabase.bansTable"));
+				put("banRecords", plugin.getConfig().getString("localDatabase.bansRecordTable"));
+				put("ipBans", plugin.getConfig().getString("localDatabase.ipBansTable"));
+				put("ipBanRecords", plugin.getConfig().getString("localDatabase.ipBansRecordTable"));
+				put("kicks", plugin.getConfig().getString("localDatabase.kicksTable"));
+				put("mutes", plugin.getConfig().getString("localDatabase.mutesTable"));
+				put("mutesRecord", plugin.getConfig().getString("localDatabase.mutesRecordTable"));
+				put("playerIps", plugin.getConfig().getString("localDatabase.playerIpsTable"));
+				put("warnings", plugin.getConfig().getString("localDatabase.warningsTable"));
+			}
+		});
 
 		plugin.dbLogger = new DbLogger(localConn, plugin);
 
@@ -103,7 +115,7 @@ public class BanManager extends JavaPlugin {
 			return;
 		}
 
-		if (!localConn.checkTable(localConn.warningsTable)) {
+		if (!localConn.checkTable(localConn.getTable("warnings"))) {
 			// Modify the bminfo message for warnings
 			getConfig().set("messages.bmInfo", getConfig().getString("messages.bmInfo") + "\n&cWarnings: [warningsCount]");
 			saveConfig();
@@ -116,7 +128,7 @@ public class BanManager extends JavaPlugin {
 			}
 		} else {
 			// Convert player names to lowercase
-			localConn.query("UPDATE " + localConn.bansTable + " SET banned = LOWER(banned)");
+			localConn.query("UPDATE " + localConn.getTable("bans") + " SET banned = LOWER(banned)");
 		}
 
 		getCommand("ban").setExecutor(new BanCommand(this));
@@ -177,7 +189,7 @@ public class BanManager extends JavaPlugin {
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
-		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.bansTable);
+		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
 
 		try {
 			while (result.next()) {
@@ -192,7 +204,7 @@ public class BanManager extends JavaPlugin {
 
 		getLogger().info("Loaded " + playerBans.size() + " player bans");
 
-		ResultSet result1 = localConn.query("SELECT  banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.ipBansTable);
+		ResultSet result1 = localConn.query("SELECT  banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("ipBans"));
 
 		try {
 			while (result1.next()) {
@@ -434,7 +446,7 @@ public class BanManager extends JavaPlugin {
 
 		if (playerMutes.get(name) != null)
 			return playerMutes.get(name.toLowerCase());
-		
+
 		return dbLogger.getMute(name);
 	}
 

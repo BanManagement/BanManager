@@ -21,7 +21,7 @@ public class bansAsync implements Runnable {
 	@Override
 	public void run() {
 		// Check for new bans
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable + " WHERE ban_time > " + lastRun + "");
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("bans") + " WHERE ban_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -55,7 +55,7 @@ public class bansAsync implements Runnable {
 		}
 
 		// Check for old bans and remove them!
-		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.bansRecordTable + " WHERE unbanned_time > " + lastRun + "");
+		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.getTable("banRecords") + " WHERE unbanned_time > " + lastRun + "");
 
 		try {
 			while (result1.next()) {

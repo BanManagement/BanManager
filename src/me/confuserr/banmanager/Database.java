@@ -7,7 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.logging.Logger;
+
+import com.google.common.collect.ImmutableMap;
 
 public class Database {
 	protected enum Statements {
@@ -24,37 +27,15 @@ public class Database {
 	private Connection connection;
 	private BanManager plugin;
 	private boolean queryInProgress = false;
-	
-	public String bansTable;
-	public String bansRecordTable;
-	public String ipBansTable;
-	public String ipBansRecordTable;
-	public String kicksTable;
-	public String mutesTable;
-	public String mutesRecordTable;
-	public String playerIpsTable;
-	public String warningsTable;
+	private ImmutableMap<String, String> tables;
 
-	public Database(String user, String pass, String url, BanManager instance) {
+	public Database(String user, String pass, String url, BanManager instance, Map<String, String> tables) {
 		this.user = user;
 		this.pass = pass;
 		this.url = url;
 		plugin = instance;
 		
-		bansTable = plugin.getConfig().getString("localDatabase.bansTable");
-		bansRecordTable = plugin.getConfig().getString("localDatabase.bansRecordTable");
-
-		ipBansTable = plugin.getConfig().getString("localDatabase.ipBansTable");
-		ipBansRecordTable = plugin.getConfig().getString("localDatabase.ipBansRecordTable");
-
-		kicksTable = plugin.getConfig().getString("localDatabase.kicksTable");
-
-		mutesTable = plugin.getConfig().getString("localDatabase.mutesTable");
-		mutesRecordTable = plugin.getConfig().getString("localDatabase.mutesRecordTable");
-
-		playerIpsTable = plugin.getConfig().getString("localDatabase.playerIpsTable");
-		
-		warningsTable = plugin.getConfig().getString("localDatabase.warningsTable");
+		this.tables = ImmutableMap.copyOf(tables);
 	}
 
 	private boolean initialize() {
@@ -65,6 +46,10 @@ public class Database {
 			plugin.getLogger().severe("MySQL driver class missing: " + e.getMessage() + ".");
 			return false;
 		}
+	}
+	
+	public String getTable(String name) {
+		return tables.get(name);
 	}
 
 	public boolean checkConnection() {

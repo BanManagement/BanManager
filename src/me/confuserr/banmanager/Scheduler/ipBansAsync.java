@@ -22,7 +22,7 @@ public class ipBansAsync implements Runnable {
 	@Override
 	public void run() {
 		// Check for new bans
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.ipBansTable + " WHERE ban_time > " + lastRun + "");
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("ipBans") + " WHERE ban_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -44,7 +44,7 @@ public class ipBansAsync implements Runnable {
 		}
 
 		// Check for old bans and remove them!
-		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.ipBansRecordTable + " WHERE ban_time > " + lastRun + "");
+		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.getTable("ipBanRecords") + " WHERE ban_time > " + lastRun + "");
 
 		try {
 			while (result1.next()) {

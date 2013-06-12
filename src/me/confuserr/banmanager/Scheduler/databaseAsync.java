@@ -26,10 +26,10 @@ public class databaseAsync implements Runnable {
 		long now = System.currentTimeMillis() / 1000;
 
 		// First, the player bans
-		localConn.query("INSERT INTO " + localConn.bansRecordTable + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.bansTable + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
+		localConn.query("INSERT INTO " + localConn.getTable("banRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.getTable("bans") + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
 
 		// Now we need to unban them
-		result = localConn.query("SELECT banned FROM " + localConn.bansTable + " WHERE ban_expires_on != 0 AND ban_expires_on < '" + now + "'");
+		result = localConn.query("SELECT banned FROM " + localConn.getTable("bans") + " WHERE ban_expires_on != 0 AND ban_expires_on < '" + now + "'");
 
 		try {
 			while (result.next()) {
@@ -58,13 +58,13 @@ public class databaseAsync implements Runnable {
 		}
 
 		// Now remove it from the database
-		localConn.query("DELETE FROM " + localConn.bansTable + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
+		localConn.query("DELETE FROM " + localConn.getTable("bans") + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
 
 		// Now, the IP bans
-		localConn.query("INSERT INTO " + localConn.ipBansRecordTable + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.ipBansTable + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
+		localConn.query("INSERT INTO " + localConn.getTable("ipBanRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.getTable("ipBans") + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
 
 		// Now we need to unban them
-		result = localConn.query("SELECT banned FROM " + localConn.ipBansTable + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
+		result = localConn.query("SELECT banned FROM " + localConn.getTable("ipBans") + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
 		try {
 			while (result.next()) {
 				final String address = result.getString("banned");
@@ -90,13 +90,13 @@ public class databaseAsync implements Runnable {
 		}
 
 		// Now remove it from the database
-		localConn.query("DELETE FROM " + localConn.ipBansTable + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
+		localConn.query("DELETE FROM " + localConn.getTable("ipBans") + " WHERE ban_expires_on != '0' AND ban_expires_on < '" + now + "'");
 
 		// Now, the mutes
-		localConn.query("INSERT INTO " + localConn.mutesRecordTable + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.mutesTable + " b WHERE b.mute_expires_on != '0' AND b.mute_expires_on < '" + now + "'");
+		localConn.query("INSERT INTO " + localConn.getTable("muteRecords") + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.getTable("mutes") + " b WHERE b.mute_expires_on != '0' AND b.mute_expires_on < '" + now + "'");
 
 		// Now we need to unmute them
-		result = localConn.query("SELECT muted FROM " + localConn.mutesTable + " WHERE mute_expires_on != '0' AND mute_expires_on < '" + now + "'");
+		result = localConn.query("SELECT muted FROM " + localConn.getTable("mutes") + " WHERE mute_expires_on != '0' AND mute_expires_on < '" + now + "'");
 		try {
 			while (result.next()) {
 				plugin.getPlayerMutes().remove(result.getString("muted").toLowerCase());
@@ -107,31 +107,31 @@ public class databaseAsync implements Runnable {
 		}
 
 		// Now remove it from the database
-		localConn.query("DELETE FROM " + localConn.mutesTable + " WHERE mute_expires_on != '0' AND mute_expires_on < '" + now + "'");
+		localConn.query("DELETE FROM " + localConn.getTable("mutes") + " WHERE mute_expires_on != '0' AND mute_expires_on < '" + now + "'");
 
 		// Now the kick logs if enabled
 		if (CleanUp.Kicks.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.kicksTable + " WHERE (kick_time + " + CleanUp.Kicks.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("kicks") + " WHERE (kick_time + " + CleanUp.Kicks.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 		if (CleanUp.PlayerIPs.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.playerIpsTable + " WHERE (last_seen + " + CleanUp.PlayerIPs.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("playerIps") + " WHERE (last_seen + " + CleanUp.PlayerIPs.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 		if (CleanUp.BanRecords.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.bansRecordTable + " WHERE (unbanned_time + " + CleanUp.BanRecords.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("banRecords") + " WHERE (unbanned_time + " + CleanUp.BanRecords.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 		if (CleanUp.IPBanRecords.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.ipBansRecordTable + " WHERE (unbanned_time + " + CleanUp.IPBanRecords.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("ipBanRecords") + " WHERE (unbanned_time + " + CleanUp.IPBanRecords.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 		if (CleanUp.MuteRecords.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.mutesRecordTable + " WHERE (unmuted_time + " + CleanUp.MuteRecords.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("muteRecords") + " WHERE (unmuted_time + " + CleanUp.MuteRecords.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 		if (CleanUp.Warnings.getDays() > 0) {
-			localConn.query("DELETE FROM " + localConn.warningsTable + " WHERE (warn_time + " + CleanUp.Warnings.getDaysInMilliseconds() + " ) < " + now + "");
+			localConn.query("DELETE FROM " + localConn.getTable("warnings") + " WHERE (warn_time + " + CleanUp.Warnings.getDaysInMilliseconds() + " ) < " + now + "");
 		}
 
 	}
