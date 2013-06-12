@@ -15,7 +15,7 @@ public class MutedBlacklistCheck implements Listener {
 	
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent event) {
-		if(!plugin.mutedPlayersBy.containsKey(event.getPlayer().getName()))
+		if(!plugin.isPlayerMuted(event.getPlayer().getName()))
 			return;
 		
 		// Split the command
@@ -25,10 +25,10 @@ public class MutedBlacklistCheck implements Listener {
 		String cmd = args[0].replace("/", "");
 		
 		// Check to see if its blacklisted
-	    if(plugin.mutedBlacklist.contains(cmd)) {
+	    if(plugin.getMutedBlacklist().contains(cmd)) {
 	    	// Cancel it
 	    	event.setCancelled(true);
-	    	event.getPlayer().sendMessage(plugin.banMessages.get("mutedBlacklistedCommand"));
+	    	event.getPlayer().sendMessage(plugin.getMessage("mutedBlacklistedCommand"));
 	    }
 	}
 }

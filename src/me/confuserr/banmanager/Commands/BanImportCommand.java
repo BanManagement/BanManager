@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 import me.confuserr.banmanager.data.BanData;
+import me.confuserr.banmanager.data.IPBanData;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,7 +35,7 @@ public class BanImportCommand implements CommandExecutor {
 		else if (!args[0].equals("player") && !args[0].equals("ip"))
 			return false;
 		else if (BanImportCommand.importInProgress) {
-			Util.sendMessage(sender, plugin.banMessages.get("importInProgressError"));
+			Util.sendMessage(sender, plugin.getMessage("importInProgressError"));
 			return true;
 		}
 
@@ -45,7 +46,7 @@ public class BanImportCommand implements CommandExecutor {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.import")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
@@ -58,7 +59,7 @@ public class BanImportCommand implements CommandExecutor {
 		BanImportCommand.importInProgress = true;
 
 		if (type.equals("player")) {
-			Util.sendMessage(sender, plugin.banMessages.get("beginingPlayerImport"));
+			Util.sendMessage(sender, plugin.getMessage("beginingPlayerImport"));
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
@@ -71,7 +72,7 @@ public class BanImportCommand implements CommandExecutor {
 						return;
 					}
 
-					Util.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
+					Util.sendMessage(sender, plugin.getMessage("scanningDatabase"));
 
 					String nextLine = "";
 
@@ -85,16 +86,16 @@ public class BanImportCommand implements CommandExecutor {
 								continue;
 							else {
 								String[] details = nextLine.split("\\|");
+								String pName = details[0].toLowerCase();
 
 								if (details.length < 4)
 									continue;
-								else if (!Util.isValidPlayerName(details[0]))
+								else if (!Util.isValidPlayerName(pName))
 									continue;
-								else if (plugin.dbLogger.playerInTable(details[0]))
+								else if (plugin.isPlayerBanned(pName))
 									continue;
 								else {
 
-									String pName = details[0];
 									long date = dateFormat.parse(details[1]).getTime() / 1000;
 									String by = details[2];
 									long expires = 0;
@@ -109,7 +110,7 @@ public class BanImportCommand implements CommandExecutor {
 									if (!details[3].equals("Forever"))
 										expires = dateFormat.parse(details[3]).getTime() / 1000;
 
-									toBan.add(new BanData(pName, expires, pReason, date, by));
+									toBan.add(new BanData(pName, by, pReason, date, expires));
 								}
 							}
 						}
@@ -119,10 +120,10 @@ public class BanImportCommand implements CommandExecutor {
 						return;
 					}
 
-					Util.sendMessage(sender, plugin.banMessages.get("scanPlayersFound").replace("[found]", Integer.toString(toBan.size())));
+					Util.sendMessage(sender, plugin.getMessage("scanPlayersFound").replace("[found]", Integer.toString(toBan.size())));
 
 					if (toBan.size() == 0) {
-						Util.sendMessage(sender, plugin.banMessages.get("noPlayersImport"));
+						Util.sendMessage(sender, plugin.getMessage("noPlayersImport"));
 						return;
 					} else {
 
@@ -132,10 +133,7 @@ public class BanImportCommand implements CommandExecutor {
 						int totalPlayers = toBan.size();
 
 						for (BanData p : toBan) {
-							if (p.getExpires() == 0)
-								plugin.dbLogger.logBan(p.getBanned(), p.getBy(), p.getReason());
-							else
-								plugin.dbLogger.logTempBan(p.getBanned(), p.getBy(), p.getReason(), p.getExpires());
+								plugin.addPlayerBan(p);
 
 							done++;
 
@@ -143,20 +141,20 @@ public class BanImportCommand implements CommandExecutor {
 							if (newPercent != percent) {
 								percent = newPercent;
 								if (percent % 10 == 0 && (int) percent != 100)
-									Util.sendMessage(sender, plugin.banMessages.get("percentagePlayersImported").replace("[percent]", Double.toString(percent)));
+									Util.sendMessage(sender, plugin.getMessage("percentagePlayersImported").replace("[percent]", Double.toString(percent)));
 							}
 						}
 
 						toBan.clear();
 
-						Util.sendMessage(sender, plugin.banMessages.get("playerImportComplete"));
+						Util.sendMessage(sender, plugin.getMessage("playerImportComplete"));
 
 						BanImportCommand.importInProgress = false;
 					}
 				}
 			});
 		} else if (type.equals("ip")) {
-			Util.sendMessage(sender, plugin.banMessages.get("beginingIpImport"));
+			Util.sendMessage(sender, plugin.getMessage("beginingIpImport"));
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
@@ -169,13 +167,13 @@ public class BanImportCommand implements CommandExecutor {
 						return;
 					}
 
-					Util.sendMessage(sender, plugin.banMessages.get("scanningDatabase"));
+					Util.sendMessage(sender, plugin.getMessage("scanningDatabase"));
 
 					String nextLine = "";
 
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-					ArrayList<BanData> toBan = new ArrayList<BanData>();
+					ArrayList<IPBanData> toBan = new ArrayList<IPBanData>();
 
 					try {
 						while ((nextLine = banned.readLine()) != null) {
@@ -188,7 +186,7 @@ public class BanImportCommand implements CommandExecutor {
 									continue;
 								else if (!Util.ValidateIPAddress(details[0]))
 									continue;
-								else if (plugin.dbLogger.ipInTable(details[0]))
+								else if (plugin.isIPBanned(details[0]))
 									continue;
 								else {
 
@@ -207,7 +205,7 @@ public class BanImportCommand implements CommandExecutor {
 									if (!details[3].equals("Forever"))
 										expires = dateFormat.parse(details[3]).getTime() / 1000;
 
-									toBan.add(new BanData(pName, expires, pReason, date, by));
+									toBan.add(new IPBanData(pName, pReason, by, date, expires));
 								}
 							}
 						}
@@ -217,10 +215,10 @@ public class BanImportCommand implements CommandExecutor {
 						return;
 					}
 
-					Util.sendMessage(sender, plugin.banMessages.get("scanPlayersFound").replace("[found]", Integer.toString(toBan.size())));
+					Util.sendMessage(sender, plugin.getMessage("scanPlayersFound").replace("[found]", Integer.toString(toBan.size())));
 
 					if (toBan.size() == 0) {
-						Util.sendMessage(sender, plugin.banMessages.get("noIpsImport"));
+						Util.sendMessage(sender, plugin.getMessage("noIpsImport"));
 						return;
 					} else {
 
@@ -229,7 +227,7 @@ public class BanImportCommand implements CommandExecutor {
 						double newPercent;
 						int totalPlayers = toBan.size();
 
-						for (BanData p : toBan) {
+						for (IPBanData p : toBan) {
 							if (p.getExpires() == 0)
 								plugin.dbLogger.logIpBan(p.getBanned(), p.getBy(), p.getReason());
 							else
@@ -241,13 +239,13 @@ public class BanImportCommand implements CommandExecutor {
 							if (newPercent != percent) {
 								percent = newPercent;
 								if (percent % 10 == 0 && (int) percent != 100)
-									Util.sendMessage(sender, plugin.banMessages.get("percentageIpsImported").replace("[percent]", Double.toString(percent)));
+									Util.sendMessage(sender, plugin.getMessage("percentageIpsImported").replace("[percent]", Double.toString(percent)));
 							}
 						}
 
 						toBan.clear();
 
-						Util.sendMessage(sender, plugin.banMessages.get("ipImportComplete"));
+						Util.sendMessage(sender, plugin.getMessage("ipImportComplete"));
 
 						BanImportCommand.importInProgress = false;
 					}

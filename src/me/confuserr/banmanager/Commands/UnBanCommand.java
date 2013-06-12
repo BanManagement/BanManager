@@ -23,35 +23,33 @@ public class UnBanCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.unban")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
-		
-		if(!Util.isValidPlayerName(args[0])) {
-			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+
+		if (!Util.isValidPlayerName(args[0])) {
+			Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 			return true;
 		}
-		
+
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-		if (!plugin.bannedPlayers.contains(offlinePlayer.getName().toLowerCase())) {
-			Util.sendMessage(sender, plugin.banMessages.get("unbanError"));
+		if (!plugin.isPlayerBanned(offlinePlayer.getName().toLowerCase())) {
+			Util.sendMessage(sender, plugin.getMessage("unbanError"));
 		} else {
-			if (plugin.bukkitBan)
-				offlinePlayer.setBanned(false);
+			final String offlineName = offlinePlayer.getName();
 
-			String offlineName = offlinePlayer.getName();
-			plugin.dbLogger.banRemove(offlinePlayer.getName(), playerName);
+			plugin.removePlayerBan(offlineName, playerName, true);
 
-			String message = plugin.banMessages.get("playerUnbanned").replace("[name]", offlineName).replace("[by]", playerName);
+			String message = plugin.getMessage("playerUnbanned").replace("[name]", offlineName).replace("[by]", playerName);
 
-			plugin.logger.info(message);
+			plugin.getLogger().info(message);
 
 			if (!sender.hasPermission("bm.notify"))
 				Util.sendMessage(sender, message);

@@ -24,32 +24,32 @@ public class MuteCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.mute")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
-		
-		if(!Util.isValidPlayerName(args[0])) {
-			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+
+		if (!Util.isValidPlayerName(args[0])) {
+			Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 			return true;
 		}
 
 		String reason = Util.getReason(args, 1);
 		String viewReason = Util.viewReason(reason);
 
-		if (plugin.usePartialNames) {
+		if (plugin.usePartialNames()) {
 			List<Player> list = plugin.getServer().matchPlayer(args[0]);
 			if (list.size() == 1) {
 				Player target = list.get(0);
 				mute(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason);
 			} else if (list.size() > 1) {
-				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.getMessage("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// Offline
@@ -57,7 +57,7 @@ public class MuteCommand implements CommandExecutor {
 			}
 		} else {
 			// Must be exact name
-			if(plugin.getServer().getPlayerExact(args[0]) == null) {
+			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
 				mute(sender, args[0], args[0], playerName, false, reason, viewReason);
 			} else {
@@ -69,43 +69,51 @@ public class MuteCommand implements CommandExecutor {
 		return true;
 	}
 
-	private void mute(CommandSender sender, String playerName, String playerDisplayName, String mutedByName, boolean online, String reason, String viewReason) {
+	@SuppressWarnings("deprecation")
+	private void mute(final CommandSender sender, final String playerName, final String playerDisplayName, final String mutedByName, final boolean online, final String reason, final String viewReason) {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
 
 			if (playerName.equals(mutedByName)) {
-				Util.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
+				Util.sendMessage(sender, plugin.getMessage("muteSelfError"));
 				return;
 			} else if (!sender.hasPermission("bm.exempt.override.mute") && player.hasPermission("bm.exempt.mute")) {
-				Util.sendMessage(sender, plugin.banMessages.get("muteExemptError"));
+				Util.sendMessage(sender, plugin.getMessage("muteExemptError"));
 				return;
 			}
 
 		}
 
-		if (plugin.mutedPlayersBy.containsKey(playerName)) {
-			Util.sendMessage(sender, plugin.banMessages.get("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
-		}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-		plugin.addMute(playerName, reason, mutedByName, (long) 0);
-		plugin.dbLogger.logMute(playerName, mutedByName, reason);
+			@Override
+			public void run() {
+				if (plugin.isPlayerMuted(playerName)) {
+					Util.sendMessage(sender, plugin.getMessage("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
+					return;
+				}
 
-		String infoMessage = plugin.banMessages.get("playerMuted").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
+				plugin.addPlayerMute(playerName, mutedByName, reason);
 
-		plugin.logger.info(infoMessage);
+				String infoMessage = plugin.getMessage("playerMuted").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-		if (!sender.hasPermission("bm.notify"))
-			Util.sendMessage(sender, infoMessage);
+				plugin.getLogger().info(infoMessage);
 
-		String message = plugin.banMessages.get("mute").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
-		Util.sendMessageWithPerm(message, "bm.notify");
-		
-		if(online) {
-			// Inform the player they have been muted
-			Player player = plugin.getServer().getPlayer(playerName);
-			
-			String mutedMessage = plugin.banMessages.get("muted").replace("[reason]", viewReason).replace("[by]", mutedByName);
-			player.sendMessage(mutedMessage);
-		}
+				if (!sender.hasPermission("bm.notify"))
+					Util.sendMessage(sender, infoMessage);
+
+				String message = plugin.getMessage("mute").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
+				Util.sendMessageWithPerm(message, "bm.notify");
+
+				if (online) {
+					// Inform the player they have been muted
+					// Not sure if below is thread safe or not, experimental!
+					Player player = plugin.getServer().getPlayer(playerName);
+
+					String mutedMessage = plugin.getMessage("muted").replace("[reason]", viewReason).replace("[by]", mutedByName);
+					player.sendMessage(mutedMessage);
+				}
+			}
+		});
 	}
 }

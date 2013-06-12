@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
+import me.confuserr.banmanager.data.IPBanData;
 
 public class ipBansAsync implements Runnable {
 
@@ -26,13 +27,15 @@ public class ipBansAsync implements Runnable {
 		try {
 			while (result.next()) {
 				// Add them to the banned list
-				synchronized (plugin.bannedIps) {
-					// First check to see if they aren't already in it, don't
-					// want duplicates!
-					if (!plugin.bannedIps.contains(result.getString("banned"))) {
-						plugin.bannedIps.add(result.getString("banned"));
-					}
+				// First check to see if they aren't already in it, don't
+				// want duplicates!
+				if (!plugin.isIPBanned(result.getString("banned"))) {
+					plugin.addIPBan(new IPBanData(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
+
+					if (plugin.useBukkitBans())
+						plugin.getServer().banIP(result.getString("banned"));
 				}
+
 			}
 
 			result.close();
@@ -46,16 +49,14 @@ public class ipBansAsync implements Runnable {
 		try {
 			while (result1.next()) {
 				// Remove them from the list
+				if (plugin.isIPBanned(result1.getString("banned"))) {
+					plugin.getIPBans().remove(result1.getString("banned"));
 
-				synchronized (plugin.bannedIps) {
-					if (!plugin.bannedIps.contains(result1.getString("banned"))) {
-						plugin.bannedIps.remove(result1.getString("banned"));
-						
-						if(plugin.bukkitBan) {
-							plugin.toUnbanIp.add(result.getString("banned"));
-						}
-					}
+					if (plugin.useBukkitBans())
+						plugin.getServer().banIP(result1.getString("banned"));
+
 				}
+
 			}
 
 			result1.close();

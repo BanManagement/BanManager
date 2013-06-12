@@ -4,7 +4,6 @@ import java.util.List;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,24 +23,24 @@ public class TempMuteCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 
-		Long timeExpires = getTimeStamp(args[1]);
+		Long timeExpires = Util.getTimeStamp(args[1]);
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.tempmute")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			} else {
 				if (!player.hasPermission("bm.timelimit.mutes.bypass")) {
-					for (String k : plugin.timeLimitsMutes.keySet()) {
+					for (String k : plugin.getTimeLimitsMutes().keySet()) {
 						if (player.hasPermission("bm.timelimit.mutes." + k)) {
-							long timeLimit = getTimeStamp(plugin.timeLimitsMutes.get(k));
+							long timeLimit = Util.getTimeStamp(plugin.getTimeLimitsMutes().get(k));
 							if (timeLimit < timeExpires) {
 								// Erm, they tried to ban for too long
-								Util.sendMessage(player, plugin.banMessages.get("muteTimeLimitError"));
+								Util.sendMessage(player, plugin.getMessage("muteTimeLimitError"));
 								return true;
 							}
 						}
@@ -49,9 +48,9 @@ public class TempMuteCommand implements CommandExecutor {
 				}
 			}
 		}
-		
-		if(!Util.isValidPlayerName(args[0])) {
-			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+
+		if (!Util.isValidPlayerName(args[0])) {
+			Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 			return true;
 		}
 
@@ -59,19 +58,19 @@ public class TempMuteCommand implements CommandExecutor {
 		String viewReason = Util.viewReason(reason);
 
 		if (timeExpires == 0) {
-			Util.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
+			Util.sendMessage(sender, plugin.getMessage("illegalDateError"));
 			return true;
 		}
 		timeExpires = timeExpires / 1000;
-		String formatExpires = plugin.formatDateDiff(timeExpires * 1000);
+		String formatExpires = Util.formatDateDiff(timeExpires * 1000);
 
-		if (plugin.usePartialNames) {
+		if (plugin.usePartialNames()) {
 			List<Player> list = plugin.getServer().matchPlayer(args[0]);
 			if (list.size() == 1) {
 				Player target = list.get(0);
 				mute(sender, target.getName(), target.getDisplayName(), playerName, true, reason, viewReason, timeExpires, formatExpires);
 			} else if (list.size() > 1) {
-				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.getMessage("multiplePlayersFoundError"));
 				return false;
 			} else {
 				// Offline
@@ -79,7 +78,7 @@ public class TempMuteCommand implements CommandExecutor {
 			}
 		} else {
 			// Must be exact name
-			if(plugin.getServer().getPlayerExact(args[0]) == null) {
+			if (plugin.getServer().getPlayerExact(args[0]) == null) {
 				// Offline player
 				mute(sender, args[0], args[0], playerName, false, reason, viewReason, timeExpires, formatExpires);
 			} else {
@@ -91,61 +90,51 @@ public class TempMuteCommand implements CommandExecutor {
 		return true;
 	}
 
-	private void mute(CommandSender sender, String playerName, String playerDisplayName, String mutedByName, boolean online, String reason, String viewReason, Long timeExpires, String formatExpires) {
+	@SuppressWarnings("deprecation")
+	private void mute(final CommandSender sender, final String playerName, final String playerDisplayName, final String mutedByName, final boolean online, final String reason, final String viewReason, final Long timeExpires, final String formatExpires) {
 		if (online) {
 			Player player = plugin.getServer().getPlayer(playerName);
 
-			playerName = player.getName();
-			
 			if (playerName.equals(mutedByName)) {
-				Util.sendMessage(sender, plugin.banMessages.get("muteSelfError"));
+				Util.sendMessage(sender, plugin.getMessage("muteSelfError"));
 				return;
 			} else if (!sender.hasPermission("bm.exempt.override.tempmute") && player.hasPermission("bm.exempt.tempmute")) {
-				Util.sendMessage(sender, plugin.banMessages.get("muteExemptError"));
+				Util.sendMessage(sender, plugin.getMessage("muteExemptError"));
 				return;
 			}
 
-		} else {
-			OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(playerName);
-
-			playerName = offlinePlayer.getName();
 		}
 
-		if (plugin.mutedPlayersBy.containsKey(playerName)) {
-			Util.sendMessage(sender, plugin.banMessages.get("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
-		}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-		plugin.addMute(playerName, reason, mutedByName, timeExpires);
-		plugin.dbLogger.logTempMute(playerName, mutedByName, reason, timeExpires);
+			@Override
+			public void run() {
+				if (plugin.isPlayerMuted(playerName)) {
+					Util.sendMessage(sender, plugin.getMessage("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));
+					return;
+				}
 
-		String infoMessage = plugin.banMessages.get("playerTempMuted").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
+				plugin.addPlayerMute(playerName, mutedByName, reason, timeExpires);
 
-		plugin.logger.info(infoMessage);
+				String infoMessage = plugin.getMessage("playerTempMuted").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-		if (!sender.hasPermission("bm.notify"))
-			Util.sendMessage(sender, infoMessage);
+				plugin.getLogger().info(infoMessage);
 
-		String message = plugin.banMessages.get("tempMute").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
-		Util.sendMessageWithPerm(message, "bm.notify");
-		
-		if(online) {
-			// Inform the player they have been muted
-			Player player = plugin.getServer().getPlayer(playerName);
-			
-			String mutedMessage = plugin.banMessages.get("tempMuted").replace("[expires]", formatExpires).replace("[reason]", viewReason).replace("[by]", mutedByName);
-			player.sendMessage(mutedMessage);
-		}
-	}
+				if (!sender.hasPermission("bm.notify"))
+					Util.sendMessage(sender, infoMessage);
 
-	private long getTimeStamp(String time) {
-		// TODO Auto-generated method stub
-		long timeReturn;
-		try {
-			timeReturn = plugin.parseDateDiff(time, true);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			timeReturn = 0;
-		}
-		return timeReturn;
+				String message = plugin.getMessage("tempMute").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
+				Util.sendMessageWithPerm(message, "bm.notify");
+
+				if (online) {
+					// Inform the player they have been muted
+					// Not sure if below is thread safe or not, experimental!
+					Player player = plugin.getServer().getPlayer(playerName);
+
+					String mutedMessage = plugin.getMessage("tempMuted").replace("[expires]", formatExpires).replace("[reason]", viewReason).replace("[by]", mutedByName);
+					player.sendMessage(mutedMessage);
+				}
+			}
+		});
 	}
 }

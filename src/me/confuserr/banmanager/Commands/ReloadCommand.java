@@ -22,12 +22,12 @@ public class ReloadCommand implements CommandExecutor {
 			Player player = (Player) sender;
 
 			if(!player.hasPermission("bm.reload")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
 		
-		Util.sendMessage(sender, plugin.banMessages.get("configReloaded"));
+		Util.sendMessage(sender, plugin.getMessage("configReloaded"));
 		
 		plugin.configReload();
 		

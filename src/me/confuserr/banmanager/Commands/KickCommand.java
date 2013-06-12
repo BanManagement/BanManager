@@ -25,19 +25,19 @@ public class KickCommand implements CommandExecutor {
 			return false;
 		
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 		
 		if(sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if(!player.hasPermission("bm.kick")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
 		
 		if(!Util.isValidPlayerName(args[0])) {
-			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+			Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 			return true;
 		}
 		
@@ -45,9 +45,9 @@ public class KickCommand implements CommandExecutor {
 		if(list.size() == 1) {
 			Player target = list.get(0);
 			if(target.getName().equals(playerName)) {
-				Util.sendMessage(sender, plugin.banMessages.get("kickSelfError"));
+				Util.sendMessage(sender, plugin.getMessage("kickSelfError"));
 			} else if(!sender.hasPermission("bm.exempt.override.kick") && target.hasPermission("bm.exempt.kick")) {
-				Util.sendMessage(sender, plugin.banMessages.get("kickExemptError"));
+				Util.sendMessage(sender, plugin.getMessage("kickExemptError"));
 			} else {
 				
 				String reason = "";
@@ -60,33 +60,33 @@ public class KickCommand implements CommandExecutor {
 				String viewReason = Util.viewReason(reason);
 				
 				if(reason.isEmpty())
-					kick = plugin.banMessages.get("kickNoReason").replace("[name]", target.getDisplayName()).replace("[by]", playerName);
+					kick = plugin.getMessage("kickNoReason").replace("[name]", target.getDisplayName()).replace("[by]", playerName);
 				else
-					kick = plugin.banMessages.get("kickReason").replace("[name]", target.getDisplayName()).replace("[reason]", viewReason).replace("[by]", playerName);
+					kick = plugin.getMessage("kickReason").replace("[name]", target.getDisplayName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				
 				target.kickPlayer(kick);
 				
 				if(plugin.logKicks)
 					plugin.dbLogger.logKick(target.getName(), playerName, reason);
 				
-				plugin.logger.info(plugin.banMessages.get("playerKicked").replace("[name]", target.getName()));
+				plugin.getLogger().info(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
 				
 				if(!sender.hasPermission("bm.notify"))
-					Util.sendMessage(sender, plugin.banMessages.get("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName));
+					Util.sendMessage(sender, plugin.getMessage("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName));
 				
 				if(reason.isEmpty())
-					message = plugin.banMessages.get("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName);
+					message = plugin.getMessage("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName);
 				else
-					message = plugin.banMessages.get("kicked").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
+					message = plugin.getMessage("kicked").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				
 				Util.sendMessageWithPerm(message, "bm.notify");
 			}
 		}
 		else if(list.size() > 1) {
-			Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+			Util.sendMessage(sender, plugin.getMessage("multiplePlayersFoundError"));
 			return false;
 		} else {
-			Util.sendMessage(sender, plugin.banMessages.get("playerNotOnline"));
+			Util.sendMessage(sender, plugin.getMessage("playerNotOnline"));
 			return false;
 		}
 		

@@ -1,6 +1,10 @@
 package me.confuserr.banmanager.Commands;
 
+import java.util.Map.Entry;
+
 import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.data.BanData;
+import me.confuserr.banmanager.data.IPBanData;
 import net.h31ix.updater.Updater;
 
 import org.bukkit.ChatColor;
@@ -34,8 +38,8 @@ public class BmToolsCommand implements CommandExecutor {
 
 					if (type.equals("all") || type.equals("players")) {
 						String bannedList = "";
-						for (String banned : plugin.bannedPlayers) {
-							bannedList += banned + ", ";
+						for (Entry<String, BanData> banned : plugin.getPlayerBans().entrySet()) {
+							bannedList += banned.getKey() + ", ";
 						}
 
 						sender.sendMessage(ChatColor.UNDERLINE + "Banned Players List");
@@ -47,8 +51,8 @@ public class BmToolsCommand implements CommandExecutor {
 
 					if (type.equals("all") || type.equals("ips")) {
 						String bannedList = "";
-						for (String banned : plugin.bannedIps) {
-							bannedList += banned + ", ";
+						for (Entry<String, IPBanData> banned : plugin.getIPBans().entrySet()) {
+							bannedList += banned.getKey() + ", ";
 						}
 
 						sender.sendMessage(ChatColor.UNDERLINE + "Banned IPs List");
@@ -62,9 +66,9 @@ public class BmToolsCommand implements CommandExecutor {
 
 			case "update":
 				if (sender.hasPermission("bm.tools.update")) {
-					if (!plugin.checkForUpdates)
+					if (!plugin.checkForUpdates())
 						sender.sendMessage(ChatColor.RED + "[BanManager] Please enable update checking within your config!");
-					if (plugin.updateAvailable) {
+					if (plugin.isUpdateAvailable()) {
 						plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 							public void run() {
 								new Updater(plugin, "ban-management", plugin.jarFile, Updater.UpdateType.NO_VERSION_CHECK, true);

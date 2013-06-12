@@ -62,7 +62,7 @@ public class Database {
 			Class.forName("com.mysql.jdbc.Driver");
 			return true;
 		} catch (ClassNotFoundException e) {
-			plugin.logger.severe("MySQL driver class missing: " + e.getMessage() + ".");
+			plugin.getLogger().severe("MySQL driver class missing: " + e.getMessage() + ".");
 			return false;
 		}
 	}
@@ -86,8 +86,8 @@ public class Database {
 				return DriverManager.getConnection(this.url, this.user, this.pass);
 			}
 		} catch (SQLException e) {
-			plugin.logger.severe(this.url);
-			plugin.logger.severe("Could not be resolved because of an SQL Exception: " + e.getMessage() + ".");
+			plugin.getLogger().severe(this.url);
+			plugin.getLogger().severe("Could not be resolved because of an SQL Exception: " + e.getMessage() + ".");
 		}
 		return null;
 	}
@@ -103,7 +103,7 @@ public class Database {
 				connection = null;
 			}
 		} catch (Exception e) {
-			plugin.logger.severe("Failed to close database connection: " + e.getMessage());
+			plugin.getLogger().severe("Failed to close database connection: " + e.getMessage());
 		}
 	}
 
@@ -127,8 +127,8 @@ public class Database {
 					return result;
 			}
 		} catch (SQLException e) {
-			plugin.logger.warning("Error in SQL query: " + e.getMessage());
-			plugin.logger.warning(query);
+			plugin.getLogger().warning("Error in SQL query: " + e.getMessage());
+			plugin.getLogger().warning(query);
 			Util.sendMessageWithPerm("Error in SQL query: " + e.getMessage(), "bm.sqlnotify");
 		}
 		return result;
@@ -143,8 +143,8 @@ public class Database {
 			int result = statement.executeUpdate(query);
 			return result;
 		} catch (SQLException e) {
-			plugin.logger.warning("Error in SQL query: " + e.getMessage());
-			plugin.logger.warning(query);
+			plugin.getLogger().warning("Error in SQL query: " + e.getMessage());
+			plugin.getLogger().warning(query);
 		}
 		return 0;
 	}
@@ -158,8 +158,8 @@ public class Database {
 			return ps;
 		} catch (SQLException e) {
 			if (!e.toString().contains("not return ResultSet")) {
-				plugin.logger.warning("Error in SQL prepare() query: " + e.getMessage());
-				plugin.logger.warning(query);
+				plugin.getLogger().warning("Error in SQL prepare() query: " + e.getMessage());
+				plugin.getLogger().warning(query);
 			}
 		}
 		return ps;
@@ -204,17 +204,17 @@ public class Database {
 		try {
 			this.connection = this.open();
 			if (query.equals("") || query == null) {
-				plugin.logger.severe("SQL query empty: createTable(" + query + ")");
+				plugin.getLogger().severe("SQL query empty: createTable(" + query + ")");
 				return false;
 			}
 			statement = connection.createStatement();
 			statement.execute(query);
 			return true;
 		} catch (SQLException e) {
-			plugin.logger.severe(e.getMessage());
+			plugin.getLogger().severe(e.getMessage());
 			return false;
 		} catch (Exception e) {
-			plugin.logger.severe(e.getMessage());
+			plugin.getLogger().severe(e.getMessage());
 			return false;
 		}
 	}
@@ -224,7 +224,7 @@ public class Database {
 			connection = open();
 			// this.connection = this.open();
 			if (connection == null) {
-				plugin.logger.severe("Unable to check if tables exist");
+				plugin.getLogger().severe("Unable to check if tables exist");
 				return false;
 			}
 			Statement statement = connection.createStatement();
@@ -239,7 +239,7 @@ public class Database {
 			if (e.getMessage().contains("exist")) {
 				return false;
 			} else {
-				plugin.logger.info("Error in SQL query: " + e.getMessage());
+				plugin.getLogger().info("Error in SQL query: " + e.getMessage());
 			}
 		}
 
@@ -253,7 +253,7 @@ public class Database {
 			connection = open();
 			// this.connection = this.open();
 			if (connection == null) {
-				plugin.logger.severe("Unable to check if tables exist");
+				plugin.getLogger().severe("Unable to check if tables exist");
 				return false;
 			}
 
@@ -272,7 +272,7 @@ public class Database {
 			if (e.getMessage().contains("exist")) {
 				return false;
 			} else {
-				plugin.logger.info("Error in SQL query: " + e.getMessage());
+				plugin.getLogger().info("Error in SQL query: " + e.getMessage());
 			}
 		}
 

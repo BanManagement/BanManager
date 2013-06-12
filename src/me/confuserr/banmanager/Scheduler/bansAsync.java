@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
+import me.confuserr.banmanager.data.BanData;
 
 public class bansAsync implements Runnable {
 
@@ -25,24 +26,25 @@ public class bansAsync implements Runnable {
 		try {
 			while (result.next()) {
 				// Add them to the banned list
-				synchronized (plugin.bannedPlayers) {
-					// First check to see if they aren't already in it, don't
-					// want duplicates!
-					if (!plugin.bannedPlayers.contains(result.getString("banned").toLowerCase())) {
-						plugin.bannedPlayers.add(result.getString("banned").toLowerCase());
+				// First check to see if they aren't already in it, don't
+				// want duplicates!
+				if (!plugin.isPlayerBanned(result.getString("banned").toLowerCase())) {
+					plugin.addPlayerBan(new BanData(result.getString("banned").toLowerCase(), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
 
-						if (plugin.getServer().getPlayer(result.getString("banned")) != null) {
-							// Oh, they're online, lets kick em!
-							final String banned = result.getString("banned");
+					if (plugin.getServer().getPlayer(result.getString("banned")) != null) {
+						// Oh, they're online, lets kick em!
+						final String banned = result.getString("banned");
 
-							plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-								@Override
-								public void run() {
-									plugin.getServer().getPlayer(banned).kickPlayer("Banned");
-								}
-							});
-						}
+							@Override
+							public void run() {
+								if (plugin.useBukkitBans())
+									plugin.getServer().getPlayer(banned).setBanned(true);
+
+								plugin.getServer().getPlayer(banned).kickPlayer("Banned");
+							}
+						});
 					}
 				}
 			}
@@ -58,15 +60,13 @@ public class bansAsync implements Runnable {
 		try {
 			while (result1.next()) {
 				// Remove them from the list
-				synchronized (plugin.bannedPlayers) {
-					if (plugin.bannedPlayers.contains(result1.getString("banned").toLowerCase())) {
-						plugin.bannedPlayers.remove(result1.getString("banned").toLowerCase());
+				if (plugin.isPlayerBanned(result1.getString("banned").toLowerCase())) {
+					plugin.getPlayerBans().remove(result1.getString("banned").toLowerCase());
 
-						if (plugin.bukkitBan) {
-							plugin.toUnbanPlayer.add(result1.getString("banned").toLowerCase());
-						}
-					}
+					if (plugin.useBukkitBans())
+						plugin.getServer().getOfflinePlayer(result1.getString("banned").toLowerCase()).setBanned(false);
 				}
+
 			}
 
 			result1.close();

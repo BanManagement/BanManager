@@ -2,100 +2,103 @@ package me.confuserr.banmanager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.*;
 import me.confuserr.banmanager.Listeners.*;
 import me.confuserr.banmanager.Scheduler.*;
+import me.confuserr.banmanager.data.*;
 import net.h31ix.updater.Updater;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
-	public Logger logger = Logger.getLogger("Minecraft");
 	public BanManager plugin;
 	public static BanManager staticPlugin;
 	public Database localConn;
 	public String serverName;
 
-	public Map<String, String> banMessages = new HashMap<String, String>();
+	private Map<String, String> banMessages = new HashMap<String, String>();
 	public boolean logKicks;
-	public List<String> toUnbanPlayer = Collections.synchronizedList(new ArrayList<String>());
-	public List<String> toUnbanIp = Collections.synchronizedList(new ArrayList<String>());
 
-	public int keepKicks, keepBanRecords, keepIPBanRecords, keepIPs,
-			keepMuteRecords, keepWarnings;
+	public enum CleanUp {
+		Kicks(30), PlayerIPs(0), Warnings(0), BanRecords(0), IPBanRecords(0), MuteRecords(0);
 
-	public boolean checkForUpdates = true;
-	public boolean updateAvailable = false;
-	public HashSet<String> mutedBlacklist = new HashSet<String>();
-	public HashMap<String, String> timeLimitsMutes = new HashMap<String, String>();
-	public HashMap<String, String> timeLimitsBans = new HashMap<String, String>();
+		private int days = 0;
+		private long millis = 0;
+
+		private CleanUp(int length) {
+			days = length;
+			millis = days * 86400;
+		}
+
+		public int getDays() {
+			return days;
+		}
+
+		public void setDays(int length) {
+			days = length;
+			millis = days * 86400;
+		}
+
+		public long getDaysInMilliseconds() {
+			return millis;
+		}
+	}
+
+	private boolean checkForUpdates = true;
+	private boolean updateAvailable = false;
+	private HashSet<String> mutedBlacklist = new HashSet<String>();
+	private HashMap<String, String> timeLimitsMutes = new HashMap<String, String>();
+	private HashMap<String, String> timeLimitsBans = new HashMap<String, String>();
 
 	public DbLogger dbLogger;
 	public String updateVersion;
 	public File jarFile;
 
-	public ConcurrentHashMap<String, Long> mutedPlayersLength = new ConcurrentHashMap<String, Long>();
-	public ConcurrentHashMap<String, String> mutedPlayersReason = new ConcurrentHashMap<String, String>();
-	public ConcurrentHashMap<String, String> mutedPlayersBy = new ConcurrentHashMap<String, String>();
+	private ConcurrentHashMap<String, MuteData> playerMutes = new ConcurrentHashMap<String, MuteData>();
+	private ConcurrentHashMap<String, BanData> playerBans = new ConcurrentHashMap<String, BanData>();
+	private ConcurrentHashMap<String, IPBanData> ipBans = new ConcurrentHashMap<String, IPBanData>();
 
-	public List<String> bannedPlayers = Collections.synchronizedList(new ArrayList<String>());
-	public List<String> bannedIps = Collections.synchronizedList(new ArrayList<String>());
-
-	public boolean usePartialNames = true;
-	public boolean bukkitBan = true;
-	public boolean logIPs;
+	private boolean usePartialNames = true;
+	private boolean bukkitBans = true;
+	private boolean logIPs = true;
 
 	@Override
 	public void onDisable() {
 		// Cancel all BanManager tasks
 		getServer().getScheduler().cancelTasks(this);
 
-		// Check to see if any bukkit unbans must take place
-		if (plugin.toUnbanPlayer.size() > 0 || plugin.toUnbanIp.size() > 0) {
-			new bukkitUnbanSync(plugin).run();
-		}
-
 		// Close the database connection
 		localConn.close();
 
-		logger.info("[BanManager] has been disabled");
+		getLogger().info("[BanManager] has been disabled");
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
-		this.getConfig().options().copyDefaults(true);
-		this.saveConfig();
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 		plugin = this;
 		staticPlugin = this;
 
 		// Load config
 		configReload();
 
-		// Initilise database
+		// Initialise database
 		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10" + (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this);
 
 		plugin.dbLogger = new DbLogger(localConn, plugin);
 
 		if (!localConn.checkConnection()) {
-			this.logger.severe("[BanManager] is unable to connect to the database, it has been disabled");
+			getLogger().severe("Unable to connect to the database, it has been disabled");
 			plugin.getPluginLoader().disablePlugin(this);
 			return;
 		}
@@ -105,7 +108,7 @@ public class BanManager extends JavaPlugin {
 			getConfig().set("messages.bmInfo", getConfig().getString("messages.bmInfo") + "\n&cWarnings: [warningsCount]");
 			saveConfig();
 
-			this.logger.info("[BanManager] creating tables");
+			getLogger().info("[BanManager] creating tables");
 			try {
 				plugin.dbLogger.create_tables();
 			} catch (SQLException e) {
@@ -158,14 +161,11 @@ public class BanManager extends JavaPlugin {
 			// Failed to submit the stats :-(
 		}
 
-		logger.info("[BanManager] Version:" + getDescription().getVersion() + " has been enabled");
+		getLogger().info("Version:" + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, getConfig().getInt("scheduler.expiresCheck", 300) * 20);
 		// 2 minute delay before it starts, runs every 5 minutes
-
-		// Bukkit unban bans those that have expired
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new bukkitUnbanSync(this), 10L, getConfig().getInt("scheduler.bukkitUnban", 3) * 20);
 
 		// Check the muted table for new mutes
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this), 20L, getConfig().getInt("scheduler.newMutes", 8) * 20);
@@ -177,15 +177,12 @@ public class BanManager extends JavaPlugin {
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this), 22L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.bansTable);
-
-		int playerBans = 0;
+		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.bansTable);
 
 		try {
 			while (result.next()) {
 				// Add them to the banned list
-				plugin.bannedPlayers.add(result.getString("banned").toLowerCase());
-				playerBans++;
+				playerBans.put(result.getString("banned").toLowerCase(), new BanData(result.getString("banned").toLowerCase(), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
 			}
 
 			result.close();
@@ -193,17 +190,14 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		logger.info("[BanManager] " + "Loaded " + playerBans + " player bans");
+		getLogger().info("Loaded " + playerBans.size() + " player bans");
 
-		ResultSet result1 = localConn.query("SELECT banned FROM " + localConn.ipBansTable);
-
-		int ipBans = 0;
+		ResultSet result1 = localConn.query("SELECT  banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.ipBansTable);
 
 		try {
 			while (result1.next()) {
 				// Add them to the banned list
-				plugin.bannedIps.add(result1.getString("banned"));
-				ipBans++;
+				ipBans.put(result.getString("banned"), new IPBanData(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
 			}
 
 			result1.close();
@@ -211,7 +205,7 @@ public class BanManager extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		logger.info("[BanManager] " + "Loaded " + ipBans + " ip bans");
+		getLogger().info("Loaded " + ipBans.size() + " ip bans");
 
 		// Check for an update
 		if (checkForUpdates) {
@@ -224,8 +218,8 @@ public class BanManager extends JavaPlugin {
 				updateVersion = updater.getLatestVersionString();
 
 				jarFile = getFile();
-				
-				logger.info("[BanManager] " + updateVersion + " update available");
+
+				getLogger().info("[BanManager] " + updateVersion + " update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}
 		}
@@ -234,16 +228,17 @@ public class BanManager extends JavaPlugin {
 	// Reloads everything in the config except the database details
 	public void configReload() {
 		reloadConfig();
+
 		logKicks = getConfig().getBoolean("logKicks");
-		keepKicks = getConfig().getInt("cleanUp.keepKicks");
+		CleanUp.Kicks.setDays(getConfig().getInt("cleanUp.keepKicks"));
 
 		logIPs = getConfig().getBoolean("logIPs");
-		keepIPs = getConfig().getInt("cleanUp.playerIPs");
+		CleanUp.PlayerIPs.setDays(getConfig().getInt("cleanUp.playerIPs"));
 
-		keepBanRecords = getConfig().getInt("cleanUp.banRecords");
-		keepIPBanRecords = getConfig().getInt("cleanUp.ipBanRecords");
-		keepMuteRecords = getConfig().getInt("cleanUp.muteRecords");
-		keepWarnings = getConfig().getInt("cleanUp.warnings");
+		CleanUp.BanRecords.setDays(getConfig().getInt("cleanUp.banRecords"));
+		CleanUp.IPBanRecords.setDays(getConfig().getInt("cleanUp.ipBanRecords"));
+		CleanUp.MuteRecords.setDays(getConfig().getInt("cleanUp.muteRecords"));
+		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
 
 		serverName = getConfig().getString("serverName");
 
@@ -251,7 +246,7 @@ public class BanManager extends JavaPlugin {
 
 		usePartialNames = getConfig().getBoolean("use-partial-names");
 
-		bukkitBan = getConfig().getBoolean("bukkit-ban");
+		bukkitBans = getConfig().getBoolean("bukkit-ban");
 
 		banMessages.clear();
 
@@ -270,166 +265,211 @@ public class BanManager extends JavaPlugin {
 			timeLimitsMutes.put(key, getConfig().getString(path));
 		}
 
-		timeLimitsBans.clear();
+		getTimeLimitsBans().clear();
 		for (String key : getConfig().getConfigurationSection("timeLimits.bans").getKeys(false)) {
 			String path = "timeLimits.bans." + key;
-			timeLimitsBans.put(key, getConfig().getString(path));
+			getTimeLimitsBans().put(key, getConfig().getString(path));
 		}
 	}
 
-	public final String getIp(InetAddress ip) {
-		return ip.getHostAddress().replace("/", "");
+	public ConcurrentHashMap<String, BanData> getPlayerBans() {
+		return playerBans;
 	}
 
-	public String getIp(String ip) {
-		ip = ip.replace("/", "");
-
-		String[] withoutPort = ip.split(":");
-
-		if (withoutPort.length == 2)
-			return withoutPort[0];
-		else
-			return ip;
+	public ConcurrentHashMap<String, IPBanData> getIPBans() {
+		return ipBans;
 	}
 
-	public void addMute(String player, String reason, String by, long length) {
-		plugin.mutedPlayersBy.put(player, by);
-		plugin.mutedPlayersLength.put(player, length * 1000);
-		plugin.mutedPlayersReason.put(player, reason);
-	}
-
-	public void removeMute(String player) {
-		plugin.dbLogger.muteRemove(player, "Console automated");
-		if (plugin.mutedPlayersBy.containsKey(player)) {
-			plugin.mutedPlayersBy.remove(player);
-			plugin.mutedPlayersLength.remove(player);
-			plugin.mutedPlayersReason.remove(player);
-		}
-	}
-
-	public void removeMute(String player, String by) {
-		plugin.dbLogger.muteRemove(player, by);
-		if (plugin.mutedPlayersBy.containsKey(player)) {
-			plugin.mutedPlayersBy.remove(player);
-			plugin.mutedPlayersLength.remove(player);
-			plugin.mutedPlayersReason.remove(player);
-		}
-	}
-
-	public void removeHashMute(String player) {
-		if (plugin.mutedPlayersBy.containsKey(player)) {
-			plugin.mutedPlayersBy.remove(player);
-			plugin.mutedPlayersLength.remove(player);
-			plugin.mutedPlayersReason.remove(player);
-		}
+	public ConcurrentHashMap<String, MuteData> getPlayerMutes() {
+		return playerMutes;
 	}
 
 	public static BanManager getPlugin() {
 		return staticPlugin;
 	}
 
-	// Copyright essentials, all credits to them, this is here to remove
-	// dependency on it, I did not create these functions!
-	public long parseDateDiff(String time, boolean future) throws Exception {
-		Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
-		Matcher m = timePattern.matcher(time);
-		int years = 0;
-		int months = 0;
-		int weeks = 0;
-		int days = 0;
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		boolean found = false;
-		while (m.find()) {
-			if (m.group() == null || m.group().isEmpty()) {
-				continue;
-			}
-			for (int i = 0; i < m.groupCount(); i++) {
-				if (m.group(i) != null && !m.group(i).isEmpty()) {
-					found = true;
-					break;
-				}
-			}
-			if (found) {
-				if (m.group(1) != null && !m.group(1).isEmpty())
-					years = Integer.parseInt(m.group(1));
-				if (m.group(2) != null && !m.group(2).isEmpty())
-					months = Integer.parseInt(m.group(2));
-				if (m.group(3) != null && !m.group(3).isEmpty())
-					weeks = Integer.parseInt(m.group(3));
-				if (m.group(4) != null && !m.group(4).isEmpty())
-					days = Integer.parseInt(m.group(4));
-				if (m.group(5) != null && !m.group(5).isEmpty())
-					hours = Integer.parseInt(m.group(5));
-				if (m.group(6) != null && !m.group(6).isEmpty())
-					minutes = Integer.parseInt(m.group(6));
-				if (m.group(7) != null && !m.group(7).isEmpty())
-					seconds = Integer.parseInt(m.group(7));
-				break;
-			}
-		}
-		if (!found)
-			throw new Exception("Illegal Date");
-		Calendar c = new GregorianCalendar();
-		if (years > 0)
-			c.add(Calendar.YEAR, years * (future ? 1 : -1));
-		if (months > 0)
-			c.add(Calendar.MONTH, months * (future ? 1 : -1));
-		if (weeks > 0)
-			c.add(Calendar.WEEK_OF_YEAR, weeks * (future ? 1 : -1));
-		if (days > 0)
-			c.add(Calendar.DAY_OF_MONTH, days * (future ? 1 : -1));
-		if (hours > 0)
-			c.add(Calendar.HOUR_OF_DAY, hours * (future ? 1 : -1));
-		if (minutes > 0)
-			c.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
-		if (seconds > 0)
-			c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
-		return c.getTimeInMillis();
+	public boolean usePartialNames() {
+		return usePartialNames;
 	}
 
-	public String formatDateDiff(Calendar fromDate, Calendar toDate) {
-		boolean future = false;
-		if (toDate.equals(fromDate)) {
-			return banMessages.get("timeNow");
-		}
-		if (toDate.after(fromDate)) {
-			future = true;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		int[] types = new int[] { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
-		String[] names = new String[] { banMessages.get("timeYear"), banMessages.get("timeYears"), banMessages.get("timeMonth"), banMessages.get("timeMonths"), banMessages.get("timeDay"), banMessages.get("timeDays"), banMessages.get("timeHour"), banMessages.get("timeHours"), banMessages.get("timeMinute"), banMessages.get("timeMinutes"), banMessages.get("timeSecond"), banMessages.get("timeSeconds") };
-		for (int i = 0; i < types.length; i++) {
-			int diff = dateDiff(types[i], fromDate, toDate, future);
-			if (diff > 0) {
-				sb.append(" ").append(diff).append(" ").append(names[i * 2 + (diff > 1 ? 1 : 0)]);
-			}
-		}
-		if (sb.length() == 0) {
-			return "now";
-		}
-		return sb.toString().trim();
+	public boolean useBukkitBans() {
+		return bukkitBans;
 	}
 
-	public String formatDateDiff(long date) {
-		Calendar now = new GregorianCalendar();
-		Calendar c = new GregorianCalendar();
-		c.setTimeInMillis(date);
-		return formatDateDiff(now, c);
+	public boolean logIPs() {
+		return logIPs;
 	}
 
-	private static int dateDiff(int type, Calendar fromDate, Calendar toDate, boolean future) {
-		int diff = 0;
-		long savedDate = fromDate.getTimeInMillis();
-		while ((future && !fromDate.after(toDate)) || (!future && !fromDate.before(toDate))) {
-			savedDate = fromDate.getTimeInMillis();
-			fromDate.add(type, future ? 1 : -1);
-			diff++;
-		}
-		diff--;
-		fromDate.setTimeInMillis(savedDate);
-		return diff;
+	public boolean isUpdateAvailable() {
+		return updateAvailable;
+	}
+
+	public boolean checkForUpdates() {
+		return checkForUpdates;
+	}
+
+	public String getMessage(String message) {
+		return banMessages.get(message);
+	}
+
+	public HashMap<String, String> getTimeLimitsBans() {
+		return timeLimitsBans;
+	}
+
+	public HashMap<String, String> getTimeLimitsMutes() {
+		return timeLimitsMutes;
+	}
+
+	public HashSet<String> getMutedBlacklist() {
+		return mutedBlacklist;
+	}
+
+	public void addPlayerBan(String name, String bannedBy, String reason) {
+		name = name.toLowerCase();
+
+		playerBans.put(name, new BanData(name, bannedBy, reason, System.currentTimeMillis() / 1000, 0));
+
+		dbLogger.logBan(name, bannedBy, reason);
+	}
+
+	public void addPlayerBan(String name, String bannedBy, String reason, long expires) {
+		name = name.toLowerCase();
+
+		playerBans.put(name, new BanData(name, bannedBy, reason, System.currentTimeMillis() / 1000, expires));
+
+		dbLogger.logTempBan(name, bannedBy, reason, expires);
+	}
+
+	public void addPlayerBan(BanData data) {
+		playerBans.put(data.getBanned(), data);
+	}
+
+	public void removePlayerBan(String name, String by, boolean keepLog) {
+		name = name.toLowerCase();
+
+		playerBans.remove(name);
+		dbLogger.banRemove(name, by, keepLog);
+
+		if (useBukkitBans())
+			getServer().getOfflinePlayer(name).setBanned(false);
+	}
+
+	public BanData getPlayerBan(String name) {
+		return playerBans.get(name.toLowerCase());
+	}
+
+	public ArrayList<BanData> getPlayerPastBans(String name) {
+		return dbLogger.getPastBans(name.toLowerCase());
+	}
+
+	public boolean isPlayerBanned(String name) {
+		return playerBans.get(name.toLowerCase()) != null;
+	}
+
+	public void addIPBan(String ip, String bannedBy, String reason) {
+		ipBans.put(ip, new IPBanData(ip, bannedBy, reason, System.currentTimeMillis() / 1000, 0));
+
+		dbLogger.logIpBan(ip, bannedBy, reason);
+	}
+
+	public void addIPBan(String ip, String bannedBy, String reason, long expires) {
+		ipBans.put(ip, new IPBanData(ip, bannedBy, reason, System.currentTimeMillis() / 1000, expires));
+
+		dbLogger.logTempIpBan(ip, bannedBy, reason, expires);
+	}
+
+	public void addIPBan(IPBanData data) {
+		ipBans.put(data.getBanned(), data);
+	}
+
+	public void removeIPBan(String ip, String by, boolean keepLog) {
+		ipBans.remove(ip);
+		dbLogger.ipRemove(ip, by, keepLog);
+
+		if (useBukkitBans())
+			getServer().unbanIP(ip);
+	}
+
+	public IPBanData getIPBan(String ip) {
+		return ipBans.get(ip);
+	}
+
+	public ArrayList<IPBanData> getIPPastBans(String ip) {
+		return dbLogger.getPastIPBans(ip);
+	}
+
+	public boolean isIPBanned(String ip) {
+		return ipBans.get(ip) != null;
+	}
+
+	public void addPlayerMute(String name, String bannedBy, String reason) {
+		name = name.toLowerCase();
+
+		playerMutes.put(name, new MuteData(name, bannedBy, reason, System.currentTimeMillis() / 1000, 0));
+
+		dbLogger.logMute(name, bannedBy, reason);
+	}
+
+	public void addPlayerMute(String name, String bannedBy, String reason, long expires) {
+		name = name.toLowerCase();
+
+		playerMutes.put(name, new MuteData(name, bannedBy, reason, System.currentTimeMillis() / 1000, expires));
+
+		dbLogger.logTempMute(name, bannedBy, reason, expires);
+	}
+
+	public void addPlayerMute(MuteData data) {
+		playerMutes.put(data.getMuted(), data);
+	}
+
+	public void removePlayerMute(String name, String by, boolean keepLog) {
+		name = name.toLowerCase();
+
+		playerMutes.remove(name);
+		dbLogger.muteRemove(name, by, keepLog);
+	}
+
+	public MuteData getPlayerMute(String name) {
+		name = name.toLowerCase();
+
+		if (playerMutes.get(name) != null)
+			return playerMutes.get(name.toLowerCase());
+		
+		return dbLogger.getMute(name);
+	}
+
+	public ArrayList<MuteData> getPlayerPastMutes(String name) {
+		return dbLogger.getPastMutes(name.toLowerCase());
+	}
+
+	public boolean isPlayerMuted(String name) {
+		name = name.toLowerCase();
+
+		if (playerMutes.get(name) != null)
+			return true;
+
+		return dbLogger.isMuted(name);
+	}
+
+	public void addPlayerWarning(String name, String by, String reason) {
+		dbLogger.logWarning(name, by, reason);
+	}
+
+	/*
+	 * public void removePlayerWarning(String name) {
+	 * 
+	 * }
+	 */
+
+	public ArrayList<WarnData> getPlayerWarnings(String name) {
+		return dbLogger.getWarnings(name.toLowerCase());
+	}
+
+	public String getPlayerIP(String name) {
+		return dbLogger.getIP(name.toLowerCase());
+	}
+
+	public void setPlayerIP(String name, String ip) {
+		dbLogger.setIP(name.toLowerCase(), ip);
 	}
 }

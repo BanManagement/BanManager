@@ -11,14 +11,14 @@ public class BmAPI {
 	/**
 	 * Permanently ban a player
 	 * 
-	 * @param player - Name of player to ban
-	 * @param banned_by - Who the ban is by, can be anything
+	 * @param name - Name of player to ban
+	 * @param bannedBy - Who the ban is by, can be anything
 	 * @param reason - Why they are banned
 	 */
-	public static void ban(String player, String banned_by, String reason) {
-		plugin.dbLogger.logBan(player, banned_by, reason);
+	public static void ban(String name, String bannedBy, String reason) {
+		plugin.addPlayerBan(name, reason, bannedBy);
 
-		if (plugin.bukkitBan) {
+		if (plugin.useBukkitBans()) {
 			plugin.getServer().getOfflinePlayer(player).setBanned(true);
 		}
 	}
@@ -26,15 +26,15 @@ public class BmAPI {
 	/**
 	 * Temporarily ban a player
 	 * 
-	 * @param player - Name of player to ban
-	 * @param banned_by - Who the ban is by, can be anything
+	 * @param name - Name of player to ban
+	 * @param bannedBy - Who the ban is by, can be anything
 	 * @param reason - Why they are banned
 	 * @param expires - Unix Timestamp stating the time of when the ban ends
 	 */
-	public static void tempban(String player, String banned_by, String reason, long expires) {
-		plugin.dbLogger.logTempBan(player, banned_by, reason, expires);
+	public static void tempban(String name, String bannedBy, String reason, long expires) {
+		plugin.dbLogger.logTempBan(player, bannedBy, reason, expires);
 
-		if (plugin.bukkitBan) {
+		if (plugin.useBukkitBans()) {
 			plugin.getServer().getOfflinePlayer(player).setBanned(true);
 		}
 	}
@@ -42,13 +42,13 @@ public class BmAPI {
 	/**
 	 * Unban a player
 	 * 
-	 * @param player - Name of player to unban
+	 * @param name - Name of player to unban
 	 * @param by - Who the unban is by, can be anything
 	 */
-	public static void unban(String player, String by) {
+	public static void unban(String name, String by) {
 		plugin.dbLogger.banRemove(player, by);
 
-		if (plugin.bukkitBan) {
+		if (plugin.useBukkitBans()) {
 			plugin.getServer().getOfflinePlayer(player).setBanned(false);
 		}
 	}
@@ -67,10 +67,10 @@ public class BmAPI {
 	/**
 	 * Get ban information of a player
 	 * 
-	 * @param player - Name of player
+	 * @param name - Name of player
 	 * @return - BanData object, if the player is not banned, it returns null
 	 */
-	public static BanData getCurrentBan(String player) {
+	public static BanData getCurrentBan(String name) {
 		return plugin.dbLogger.getCurrentBan(player);
 	}
 
@@ -78,39 +78,39 @@ public class BmAPI {
 	/**
 	 * Permanently mute a player
 	 * 
-	 * @param player - Name of player to mute
-	 * @param muted_by - Who the mute is by, can be anything
+	 * @param name - Name of player to mute
+	 * @param mutedBy - Who the mute is by, can be anything
 	 * @param reason - Why they are muted
 	 */
-	public static void mute(String player, String muted_by, String reason) {
+	public static void mute(String name, String mutedBy, String reason) {
 		if (!plugin.dbLogger.isMuted(player)) {
-			plugin.addMute(player, reason, muted_by, (long) 0);
-			plugin.dbLogger.logMute(player, muted_by, reason);
+			plugin.addMute(player, reason, mutedBy, (long) 0);
+			plugin.dbLogger.logMute(player, mutedBy, reason);
 		}
 	}
 
 	/**
 	 * Temporarily mute a player
 	 * 
-	 * @param player - Name of player to mute
-	 * @param muted_by - Who the mute is by, can be anything
+	 * @param name - Name of player to mute
+	 * @param mutedBy - Who the mute is by, can be anything
 	 * @param reason - Why they are muted
 	 * @param expires - Unix Timestamp stating the time of when the ban ends
 	 */
-	public static void tempmute(String player, String muted_by, String reason, long expires) {
-		if (!plugin.dbLogger.isMuted(player)) {
-			plugin.addMute(player, reason, muted_by, expires);
-			plugin.dbLogger.logMute(player, muted_by, reason);
+	public static void tempmute(String name, String mutedBy, String reason, long expires) {
+		if (!plugin.dbLogger.isMuted(name)) {
+			plugin.addMute(player, reason, mutedBy, expires);
+			plugin.dbLogger.logMute(player, mutedBy, reason);
 		}
 	}
 
 	/**
 	 * Unmute a player
 	 * 
-	 * @param player - Name of player to unmute
+	 * @param name - Name of player to unmute
 	 * @param by - Who the unmute is by, can be anything
 	 */
-	public static void unmute(String player, String by) {
+	public static void unmute(String name, String by) {
 		if (plugin.dbLogger.isMuted(player))
 			plugin.removeMute(player, player);
 	}
@@ -118,20 +118,20 @@ public class BmAPI {
 	/**
 	 * Check if a player is muted
 	 * 
-	 * @param player - Name of player to check
+	 * @param name - Name of player to check
 	 * @return true if the player is currently muted, whether they are permanently muted or temporarily muted
 	 */
-	public static boolean isMuted(String player) {
+	public static boolean isMuted(String name) {
 		return plugin.dbLogger.isMuted(player);
 	}
 
 	/**
 	 * Get mute information of a player
 	 * 
-	 * @param player - Name of player
+	 * @param name - Name of player
 	 * @return - MuteData object, if the player is not banned, it returns null
 	 */
-	public static MuteData getCurrentMute(String player) {
+	public static MuteData getCurrentMute(String name) {
 		return plugin.dbLogger.getCurrentMute(player);
 	}
 }

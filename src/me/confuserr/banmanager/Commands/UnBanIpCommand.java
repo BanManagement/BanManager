@@ -23,56 +23,56 @@ public class UnBanIpCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String consoleName = plugin.banMessages.get("consoleName");
+		String consoleName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			consoleName = player.getName();
 			if (!player.hasPermission("bm.unbanip")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
-		
+
 		final String playerName = consoleName;
 
 		if (Util.ValidateIPAddress(args[0])) {
 			// Its an IP
 			String ip = args[0];
-			if (plugin.bannedIps.contains(ip)) {
-				if (plugin.bukkitBan)
-					plugin.getServer().unbanIP(ip);
-
-				plugin.dbLogger.ipRemove(ip, playerName);
-				Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
+			if (plugin.isIPBanned(ip)) {
+				plugin.removeIPBan(ip, playerName, true);
+				Util.sendMessage(sender, plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
 			} else {
-				Util.sendMessage(sender, plugin.banMessages.get("ipNotBannedError").replace("[ip]", ip));
+				Util.sendMessage(sender, plugin.getMessage("ipNotBannedError").replace("[ip]", ip));
 			}
 
 		} else {
 			// Assume its a player!
-			if(!Util.isValidPlayerName(args[0])) {
-				Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+			if (!Util.isValidPlayerName(args[0])) {
+				Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 				return true;
 			}
-			
+
 			final String offlineName = plugin.getServer().getOfflinePlayer(args[0]).getName();
 			final String byName = playerName;
-			
+
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 				public void run() {
 					String ip = plugin.dbLogger.getIP(offlineName);
 
 					if (ip.isEmpty())
-						Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", offlineName));
+						Util.sendMessage(sender, plugin.getMessage("ipPlayerOfflineError").replace("[name]", offlineName));
 					else {
-						// Ok, we have their IP, lets ban it
-						if(plugin.bukkitBan)
-							plugin.getServer().unbanIP(ip);
-						
-						plugin.dbLogger.ipRemove(ip, byName);
-						Util.sendMessage(sender, plugin.banMessages.get("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
+						// Ok, we have their IP, lets unban it
+						plugin.removeIPBan(ip, byName, true);
+
+						String message = plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName);
+
+						if (!sender.hasPermission("bm.notify"))
+							Util.sendMessage(sender, message);
+
+						Util.sendMessageWithPerm(message, "bm.notify");
 					}
 				}
 			});

@@ -1,27 +1,21 @@
 package me.confuserr.banmanager.data;
 
-public class BanData {
+public class WarnData {
 
 	private String banned;
-	private long expires;
 	private String reason;
 	private long time;
 	private String by;
 
-	public BanData(String name, String bannedBy, String reason, long time, long expires) {
+	public WarnData(String name, String warnedBy, String reason, long time) {
 		banned = name;
-		this.expires = expires;
 		this.reason = reason;
-		by = bannedBy;
+		by = warnedBy;
 		this.time = time;
 	}
 
-	public String getBanned() {
+	public String getWarned() {
 		return banned;
-	}
-
-	public long getExpires() {
-		return expires;
 	}
 
 	public String getReason() {

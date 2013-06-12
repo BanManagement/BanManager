@@ -17,46 +17,54 @@ public class UnMuteCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 1)
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.unmute")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			}
 		}
-		
-		if(!Util.isValidPlayerName(args[0])) {
-			Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+
+		if (!Util.isValidPlayerName(args[0])) {
+			Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 			return true;
 		}
-		
+
 		OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
-		String offlineName = offlinePlayer.getName();
+		final String offlineName = offlinePlayer.getName();
+		final String byName = playerName;
 
-		if (!plugin.dbLogger.isMuted(offlineName)) {
-			Util.sendMessage(sender, plugin.banMessages.get("playerNotMutedError"));
-		} else {
-			plugin.removeMute(offlineName, playerName);
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-			String message = plugin.banMessages.get("playerUnmuted").replace("[name]", offlineName).replace("[by]", playerName);
+			@Override
+			public void run() {
+				if (!plugin.isPlayerMuted(offlineName))
+					Util.sendMessage(sender, plugin.getMessage("playerNotMutedError"));
+				else {
+					plugin.removePlayerMute(offlineName, byName, true);
 
-			plugin.logger.info(message);
+					String message = plugin.getMessage("playerUnmuted").replace("[name]", offlineName).replace("[by]", byName);
 
-			if (!sender.hasPermission("bm.notify"))
-				Util.sendMessage(sender, message);
+					plugin.getLogger().info(message);
 
-			Util.sendMessageWithPerm(message, "bm.notify");
-		}
+					if (!sender.hasPermission("bm.notify"))
+						Util.sendMessage(sender, message);
+
+					Util.sendMessageWithPerm(message, "bm.notify");
+				}
+			}
+		});
+
 		return true;
 	}
-
 }

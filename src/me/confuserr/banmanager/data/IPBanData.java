@@ -1,23 +1,23 @@
 package me.confuserr.banmanager.data;
 
-public class MuteData {
+public class IPBanData {
 	
-	private String muted;
+	private String banned;
 	private long expires;
 	private String reason;
 	private long time;
 	private String by;
 	
-	public MuteData(String name, String bannedBy, String reason, long time, long expires) {
-		muted = name;
+	public IPBanData(String name, String bannedBy, String reason, long time, long expires) {
+		banned = name;
 		this.expires = expires;
 		this.reason = reason;
 		by = bannedBy;
 		this.time = time;
 	}
 	
-	public String getMuted() {
-		return muted;
+	public String getBanned() {
+		return banned;
 	}
 	
 	public long getExpires() {

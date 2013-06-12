@@ -1,9 +1,9 @@
 package me.confuserr.banmanager.Listeners;
 
-import java.net.InetAddress;
-
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
+import me.confuserr.banmanager.data.BanData;
+import me.confuserr.banmanager.data.IPBanData;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,76 +22,87 @@ public class SyncLogin implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
-		final String name = event.getPlayer().getName();
-		final InetAddress ip = event.getAddress();
-		final String ipStr = plugin.getIp(ip);
+		final String name = event.getPlayer().getName().toLowerCase();
+		final String ip = Util.getIP(event.getAddress());
 
-		if (plugin.bukkitBan) {
-			// Check to see if they are to be unbanned
-			if (plugin.toUnbanPlayer.contains(name)) {
-				// Ok they are, no need to do additional checks!
-				// But we unban them now otherwise they'll get the Ban Hammer
-				// message
-				plugin.getServer().getOfflinePlayer(name).setBanned(false);
-				return;
+		// Check to see if they are banned
+		if (plugin.isPlayerBanned(name)) {
+			BanData data = plugin.getPlayerBan(name);
+			String banReason = "";
+
+			long now = System.currentTimeMillis() / 1000;
+
+			if (data.getExpires() == 0)
+				banReason = plugin.getMessage("disconnectBan").replace("[reason]", data.getReason()).replace("[name]", name).replace("[by]", data.getBy());
+			else {
+				// Check to see if the temp ban has expired
+				if (now >= data.getExpires()) {
+					// It's expired, let them join!
+					plugin.removePlayerBan(name, plugin.getMessage("consoleName"), true);
+					event.allow();
+					return;
+				}
+
+				banReason = plugin.getMessage("disconnectTempBan").replace("[name]", name).replace("[expires]", Util.formatDateDiff((long) data.getExpires() * 1000)).replace("[reason]", data.getReason()).replace("[by]", data.getBy());
 			}
-		}
 
-		if (plugin.bukkitBan) {
-			// Do the same as above but for IP
-			if (plugin.toUnbanIp.contains(ipStr)) {
-				// But we unban them now otherwise they'll get the Ban Hammer
-				// message
-				plugin.getServer().unbanIP(ipStr);
-				return;
+			banReason = Util.colorize(banReason);
+			// Oh dear, they've been banned
+			event.disallow(Result.KICK_BANNED, banReason);
+			return;
+
+		} else if (plugin.isIPBanned(ip)) {
+			IPBanData data = plugin.getIPBan(ip);
+			String ipReason = "";
+
+			long now = System.currentTimeMillis() / 1000;
+
+			if (data.getExpires() == 0)
+				ipReason = plugin.getMessage("disconnectIpBan").replace("[reason]", data.getReason()).replace("[ip]", ip).replace("[by]", data.getBy());
+			else {
+				// Check to see if the temp ban has expired
+				if (now >= data.getExpires()) {
+					// It's expired, let them join!
+					plugin.removeIPBan(ip, plugin.getMessage("consoleName"), true);
+					event.allow();
+					return;
+				}
+
+				ipReason = plugin.getMessage("disconnectTempIpBan").replace("[ip]", ip).replace("[expires]", Util.formatDateDiff((long) data.getExpires() * 1000)).replace("[reason]", data.getReason()).replace("[by]", data.getBy());
+			}
+
+			ipReason = Util.colorize(ipReason);
+			// Oh dear, they've been banned
+			event.disallow(Result.KICK_BANNED, ipReason);
+		} else if (plugin.useBukkitBans()) {
+			if (plugin.getServer().getOfflinePlayer(name).isBanned()) {
+				if (plugin.dbLogger.handleBukkitBan(name))
+					event.allow();
 			}
 		}
 
 		// Here we check to see if player is muted, if they are, we add them to
 		// the list!
-		if (!plugin.mutedPlayersBy.containsKey(name)) {
-			plugin.dbLogger.isMutedThenAdd(name);
-		}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-		// Here we log their IP to the database
-		if (plugin.logIPs)
-			plugin.dbLogger.setIP(name, ip);
-
-		// Check to see if they are banned
-		if (plugin.bannedPlayers.contains(name.toLowerCase()) || plugin.bannedIps.contains(ipStr)) {
-
-			String banReason = plugin.dbLogger.isBanned(name);
-			if (!banReason.isEmpty()) {
-				banReason = Util.colorize(banReason);
-				// Oh dear, they've been banned
-				event.disallow(Result.KICK_BANNED, banReason);
-				return;
-			} else {
-				String ipReason = plugin.dbLogger.isBanned(ip);
-				if (!ipReason.isEmpty()) {
-					ipReason = Util.colorize(ipReason);
-					// Oh dear, they've been banned
-					event.disallow(Result.KICK_BANNED, ipReason);
-					return;
-				} else
-					event.allow();
+			@Override
+			public void run() {
+				if (plugin.dbLogger.isMuted(name)) {
+					plugin.getPlayerMutes().put(name, plugin.dbLogger.getMute(name));
+				}
 			}
-		} else if (plugin.bukkitBan) {
-			if (plugin.getServer().getOfflinePlayer(name).isBanned()) {
-				if(plugin.dbLogger.handleBukkitBan(name))
-					event.allow();
-			}
-		}
 
-		if (plugin.logIPs) {
+		}, 2L);
+
+		if (plugin.logIPs()) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 				public void run() {
 					// Check for duplicates!
-					String players = plugin.dbLogger.findPlayerIpDuplicates(ipStr, name);
+					String players = plugin.dbLogger.findPlayerIpDuplicates(ip, name);
 
 					if (!players.isEmpty()) {
-						Util.sendMessageWithPerm(plugin.banMessages.get("duplicateIP").replace("[player]", name).replace("[players]", players), "bm.notify.duplicateips");
+						Util.sendMessageWithPerm(plugin.getMessage("duplicateIP").replace("[player]", name).replace("[players]", players), "bm.notify.duplicateips");
 					}
 				}
 			}, 20L);

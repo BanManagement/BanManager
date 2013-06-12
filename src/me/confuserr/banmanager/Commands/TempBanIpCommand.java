@@ -26,24 +26,24 @@ public class TempBanIpCommand implements CommandExecutor {
 			return false;
 
 		Player player = null;
-		String playerName = plugin.banMessages.get("consoleName");
+		String playerName = plugin.getMessage("consoleName");
 
-		long timeExpires = getTimeStamp(args[1]);
+		long timeExpires = Util.getTimeStamp(args[1]);
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			playerName = player.getName();
 			if (!player.hasPermission("bm.tempbanip")) {
-				Util.sendMessage(player, plugin.banMessages.get("commandPermissionError"));
+				Util.sendMessage(player, plugin.getMessage("commandPermissionError"));
 				return true;
 			} else {
 				if (!player.hasPermission("bm.timelimit.bans.bypass")) {
-					for (String k : plugin.timeLimitsBans.keySet()) {
+					for (String k : plugin.getTimeLimitsBans().keySet()) {
 						if (player.hasPermission("bm.timelimit.bans." + k)) {
-							long timeLimit = getTimeStamp(plugin.timeLimitsBans.get(k));
+							long timeLimit = Util.getTimeStamp(plugin.getTimeLimitsBans().get(k));
 							if (timeLimit < timeExpires) {
 								// Erm, they tried to ban for too long
-								Util.sendMessage(player, plugin.banMessages.get("banTimeLimitError"));
+								Util.sendMessage(player, plugin.getMessage("banTimeLimitError"));
 								return true;
 							}
 						}
@@ -53,7 +53,7 @@ public class TempBanIpCommand implements CommandExecutor {
 		}
 
 		if (timeExpires == 0) {
-			Util.sendMessage(sender, plugin.banMessages.get("illegalDateError"));
+			Util.sendMessage(sender, plugin.getMessage("illegalDateError"));
 			return true;
 		}
 
@@ -61,7 +61,7 @@ public class TempBanIpCommand implements CommandExecutor {
 		final String viewReason = Util.viewReason(reason);
 
 		final long timeExpires2 = timeExpires / 1000;
-		final String formatExpires = plugin.formatDateDiff(timeExpires);
+		final String formatExpires = Util.formatDateDiff(timeExpires);
 		
 		if (Util.ValidateIPAddress(args[0])) {
 			// Its an IP
@@ -72,14 +72,14 @@ public class TempBanIpCommand implements CommandExecutor {
 		} else {
 
 			if(!Util.isValidPlayerName(args[0])) {
-				Util.sendMessage(sender, plugin.banMessages.get("invalidPlayer"));
+				Util.sendMessage(sender, plugin.getMessage("invalidPlayer"));
 				return true;
 			}
 			
 			final String byName = playerName;
 
 			// Its a player!
-			if (!plugin.usePartialNames) {
+			if (!plugin.usePartialNames()) {
 				if (plugin.getServer().getPlayerExact(args[0]) == null) {
 					// Offline player
 					OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(args[0]);
@@ -92,7 +92,7 @@ public class TempBanIpCommand implements CommandExecutor {
 							String ip = plugin.dbLogger.getIP(pName);
 
 							if (ip.isEmpty())
-								Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+								Util.sendMessage(sender, plugin.getMessage("ipPlayerOfflineError").replace("[name]", pName));
 							else {
 								// Ok, we have their IP, lets ban it
 								ban(sender, ip, byName, reason, viewReason, timeExpires2, formatExpires);
@@ -108,7 +108,7 @@ public class TempBanIpCommand implements CommandExecutor {
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 						public void run() {
-							String ip = plugin.getIp(targetIp);
+							String ip = Util.getIP(targetIp);
 
 							ban(sender, ip, byName, reason, viewReason, timeExpires2, formatExpires);
 						}
@@ -121,9 +121,9 @@ public class TempBanIpCommand implements CommandExecutor {
 			if (list.size() == 1) {
 				Player target = list.get(0);
 				if (target.getName().equals(playerName)) {
-					Util.sendMessage(sender, plugin.banMessages.get("ipSelfError"));
+					Util.sendMessage(sender, plugin.getMessage("ipSelfError"));
 				} else if (!sender.hasPermission("bm.exempt.override.banip") && target.hasPermission("bm.exempt.banip")) {
-					Util.sendMessage(sender, plugin.banMessages.get("banExemptError"));
+					Util.sendMessage(sender, plugin.getMessage("banExemptError"));
 				} else {
 
 					final InetAddress targetIp = target.getAddress().getAddress();
@@ -131,14 +131,14 @@ public class TempBanIpCommand implements CommandExecutor {
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 						public void run() {
-							String ip = plugin.getIp(targetIp);
+							String ip = Util.getIP(targetIp);
 
 							ban(sender, ip, byName, reason, viewReason, timeExpires2, formatExpires);
 						}
 					});
 				}
 			} else if (list.size() > 1) {
-				Util.sendMessage(sender, plugin.banMessages.get("multiplePlayersFoundError"));
+				Util.sendMessage(sender, plugin.getMessage("multiplePlayersFoundError"));
 				return true;
 			} else {
 				// They're offline, lets check the database
@@ -152,7 +152,7 @@ public class TempBanIpCommand implements CommandExecutor {
 						String ip = plugin.dbLogger.getIP(pName);
 
 						if (ip.isEmpty())
-							Util.sendMessage(sender, plugin.banMessages.get("ipPlayerOfflineError").replace("[name]", pName));
+							Util.sendMessage(sender, plugin.getMessage("ipPlayerOfflineError").replace("[name]", pName));
 						else {
 							// Ok, we have their IP, lets ban it
 							ban(sender, ip, byName, reason, viewReason, timeExpires2, formatExpires);
@@ -167,17 +167,17 @@ public class TempBanIpCommand implements CommandExecutor {
 
 	private void ban(CommandSender sender, final String ip, String bannedByName, String reason, String viewReason, Long timeExpires, String formatExpires) {
 		
-		if (plugin.bannedIps.contains(ip)) {
-			Util.sendMessage(sender, plugin.banMessages.get("alreadyBannedError").replace("[name]", ip));
+		if (plugin.getIPBans().get(ip) != null) {
+			Util.sendMessage(sender, plugin.getMessage("alreadyBannedError").replace("[name]", ip));
 			return;
 		}
 		
-		final String kick = plugin.banMessages.get("ipTempBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName).replace("[expires]", formatExpires);
+		final String kick = plugin.getMessage("ipTempBanKick").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName).replace("[expires]", formatExpires);
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			public void run() {
 				for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-					if (plugin.getIp(onlinePlayer.getAddress().toString()).equals(ip)) {
+					if (Util.getIP(onlinePlayer.getAddress().toString()).equals(ip)) {
 
 						onlinePlayer.kickPlayer(kick);
 					}
@@ -185,28 +185,16 @@ public class TempBanIpCommand implements CommandExecutor {
 			}
 		});
 
-		if (plugin.bukkitBan)
+		if (plugin.useBukkitBans())
 			plugin.getServer().banIP(ip);
 
 		plugin.dbLogger.logTempIpBan(ip, bannedByName, reason, timeExpires);
-		plugin.logger.info(plugin.banMessages.get("ipBanned").replace("[ip]", ip));
+		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify"))
-			Util.sendMessage(sender, plugin.banMessages.get("ipTempBanned").replace("[ip]", ip).replace("[expires]", formatExpires));
+			Util.sendMessage(sender, plugin.getMessage("ipTempBanned").replace("[ip]", ip).replace("[expires]", formatExpires));
 
-		String message = plugin.banMessages.get("ipTempBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
+		String message = plugin.getMessage("ipTempBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
 		Util.sendMessageWithPerm(message, "bm.notify");
-	}
-
-	private long getTimeStamp(String time) {
-		// TODO Auto-generated method stub
-		long timeReturn;
-		try {
-			timeReturn = plugin.parseDateDiff(time, true);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			timeReturn = 0;
-		}
-		return timeReturn;
 	}
 }
