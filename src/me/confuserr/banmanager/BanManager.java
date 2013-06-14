@@ -122,7 +122,7 @@ public class BanManager extends JavaPlugin {
 			getConfig().set("messages.bmInfo", getConfig().getString("messages.bmInfo") + "\n&cWarnings: [warningsCount]");
 			saveConfig();
 
-			getLogger().info("[BanManager] creating tables");
+			getLogger().info("[BanManager] Creating tables");
 			try {
 				plugin.dbLogger.create_tables();
 			} catch (SQLException e) {
@@ -140,7 +140,7 @@ public class BanManager extends JavaPlugin {
 					put("bans", plugin.getConfig().getString("externalDatabase.bansTable"));
 					put("unbans", plugin.getConfig().getString("externalDatabase.unbansTable"));
 					put("ipBans", plugin.getConfig().getString("externalDatabase.ipBansTable"));
-					put("ipUnbans", plugin.getConfig().getString("externalDatabase.ipUnbansRecordTable"));
+					put("ipUnbans", plugin.getConfig().getString("externalDatabase.ipUnbansTable"));
 					put("mutes", plugin.getConfig().getString("externalDatabase.mutesTable"));
 					put("unmutes", plugin.getConfig().getString("externalDatabase.unmutesTable"));
 				}
@@ -163,7 +163,7 @@ public class BanManager extends JavaPlugin {
 				getCommand("unbanall").setExecutor(new UnBanAllCommand(this));
 				// Ip bans
 				getCommand("banipall").setExecutor(new BanIpAllCommand(this));
-				getCommand("tempipbanall").setExecutor(new TempBanIpAllCommand(this));
+				getCommand("tempbanipall").setExecutor(new TempBanIpAllCommand(this));
 				getCommand("unbanipall").setExecutor(new UnBanIpAllCommand(this));
 				// Mutes
 				getCommand("muteall").setExecutor(new MuteAllCommand(this));
@@ -189,7 +189,9 @@ public class BanManager extends JavaPlugin {
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
 		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
-		getCommand("warn").setExecutor(new WarnCommand(this));
+		getCommand("warn").setExecutor(new WarnCommand(this));		
+		/*getCommand("bmpurge")
+		getCommand("bmclear")*/
 
 		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
 														// Sync events
@@ -216,7 +218,7 @@ public class BanManager extends JavaPlugin {
 			// Failed to submit the stats :-(
 		}
 
-		getLogger().info("Version:" + getDescription().getVersion() + " has been enabled");
+		getLogger().info("Version " + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, getConfig().getInt("scheduler.expiresCheck", 300) * 20);

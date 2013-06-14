@@ -61,7 +61,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("unbans") + " WHERE unbanned_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("unbans") + " WHERE unban_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -103,7 +103,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("ipUnbans") + " WHERE unbanned_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("ipUnbans") + " WHERE unban_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -145,7 +145,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("unmutes") + " WHERE unmuted_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("unmutes") + " WHERE unmute_time > " + lastRun + "");
 
 		try {
 			while (result.next()) {
