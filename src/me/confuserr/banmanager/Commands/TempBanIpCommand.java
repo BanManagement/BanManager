@@ -167,7 +167,7 @@ public class TempBanIpCommand implements CommandExecutor {
 
 	private void ban(CommandSender sender, final String ip, String bannedByName, String reason, String viewReason, Long timeExpires, String formatExpires) {
 		
-		if (plugin.getIPBans().get(ip) != null) {
+		if (plugin.isIPBanned(ip)) {
 			Util.sendMessage(sender, plugin.getMessage("alreadyBannedError").replace("[name]", ip));
 			return;
 		}
@@ -188,7 +188,7 @@ public class TempBanIpCommand implements CommandExecutor {
 		if (plugin.useBukkitBans())
 			plugin.getServer().banIP(ip);
 
-		plugin.dbLogger.logTempIpBan(ip, bannedByName, reason, timeExpires);
+		plugin.addIPBan(ip, bannedByName, reason, timeExpires);
 		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify"))

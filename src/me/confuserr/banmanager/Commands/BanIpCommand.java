@@ -150,7 +150,7 @@ public class BanIpCommand implements CommandExecutor {
 
 	private void ban(CommandSender sender, final String ip, String bannedByName, String reason, String viewReason) {
 
-		if (plugin.getIPBans().get(ip) != null) {
+		if (plugin.isIPBanned(ip)) {
 			Util.sendMessage(sender, plugin.getMessage("alreadyBannedError").replace("[name]", ip));
 			return;
 		}
@@ -172,7 +172,7 @@ public class BanIpCommand implements CommandExecutor {
 		if (plugin.useBukkitBans())
 			plugin.getServer().banIP(ip);
 
-		plugin.dbLogger.logIpBan(ip, bannedByName, reason);
+		plugin.addIPBan(ip, bannedByName, reason);
 		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify"))

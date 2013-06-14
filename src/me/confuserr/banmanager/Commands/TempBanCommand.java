@@ -148,7 +148,7 @@ public class TempBanCommand implements CommandExecutor {
 				offlinePlayer.setBanned(true);
 		}
 
-		plugin.dbLogger.logTempBan(playerName, bannedByName, reason, timeExpires);
+		plugin.addPlayerBan(playerName, bannedByName, reason, timeExpires);
 
 		String infoMessage = plugin.getMessage("playerTempBanned").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
