@@ -2,8 +2,12 @@ package me.confuserr.banmanager.Scheduler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.bukkit.entity.Player;
+
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
+import me.confuserr.banmanager.Util;
 
 public class externalAsync implements Runnable {
 
@@ -48,7 +52,7 @@ public class externalAsync implements Runnable {
 					}
 				} else {
 					// Perma bans override temp bans!
-					if(plugin.getPlayerBan(result.getString("banned")).getExpires() != 0 && result.getLong("ban_expires_on") == 0) {
+					if (plugin.getPlayerBan(result.getString("banned")).getExpires() != 0 && result.getLong("ban_expires_on") == 0) {
 						plugin.removePlayerBan(result.getString("banned"), plugin.getMessage("consoleName"), true);
 						plugin.addPlayerBan(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on"));
 					}
@@ -83,18 +87,30 @@ public class externalAsync implements Runnable {
 
 		try {
 			while (result.next()) {
+				final String ip = result.getString("banned");
 				// Add them to the banned list
 				// First check to see if they aren't already in it, don't
 				// want duplicates!
-				if (!plugin.isIPBanned(result.getString("banned"))) {
-					plugin.addIPBan(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on"));
+				if (!plugin.isIPBanned(ip)) {
+					plugin.addIPBan(ip, result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on"));
 				} else {
 					// Perma bans override temp bans!
-					if(plugin.getIPBan(result.getString("banned")).getExpires() != 0 && result.getLong("ban_expires_on") == 0) {
-						plugin.removeIPBan(result.getString("banned"), plugin.getMessage("consoleName"), true);
-						plugin.addIPBan(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on"));
+					if (plugin.getIPBan(ip).getExpires() != 0 && result.getLong("ban_expires_on") == 0) {
+						plugin.removeIPBan(ip, plugin.getMessage("consoleName"), true);
+						plugin.addIPBan(ip, result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on"));
 					}
 				}
+
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					@Override
+					public void run() {
+						for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+							if (Util.getIP(onlinePlayer.getAddress().toString()).equals(ip)) {
+								onlinePlayer.kickPlayer("Banned");
+							}
+						}
+					}
+				});
 			}
 
 			result.close();
@@ -132,7 +148,7 @@ public class externalAsync implements Runnable {
 					plugin.addPlayerMute(result.getString("muted"), result.getString("muted_by"), result.getString("mute_reason"), result.getLong("mute_time"), result.getLong("mute_expires_on"));
 				} else {
 					// Perma bans override temp bans!
-					if(plugin.getPlayerMute(result.getString("muted")).getExpires() != 0 && result.getLong("mute_expires_on") == 0) {
+					if (plugin.getPlayerMute(result.getString("muted")).getExpires() != 0 && result.getLong("mute_expires_on") == 0) {
 						plugin.removePlayerMute(result.getString("muted"), plugin.getMessage("consoleName"), true);
 						plugin.addPlayerMute(result.getString("muted"), result.getString("muted_by"), result.getString("mute_reason"), result.getLong("mute_time"), result.getLong("mute_expires_on"));
 					}
@@ -162,11 +178,11 @@ public class externalAsync implements Runnable {
 		}
 
 		extConn.close();
-		
+
 		lastRun = System.currentTimeMillis() / 1000;
 		save();
 	}
-	
+
 	private synchronized void save() {
 		plugin.getConfig().set("externalDatabase.lastChecked", lastRun);
 		plugin.saveConfig();
