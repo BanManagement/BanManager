@@ -17,6 +17,23 @@ localDatabase:
     banAppealsTable: 'bm_ban_appeals'
     pinsTable: 'bm_pins'
     staffTable: 'bm_staff'
+
+# Enable for /banall & /unbanall commands
+# Allows (un)banning across multiple servers
+externalDatabase:
+    enabled: false
+    host: 'localhost'
+    port: 3306
+    database: 'frostcast'
+    username: 'root'
+    password: ''
+    bansTable: 'bm_ban_all'
+    unbansTable: 'bm_unban_all'
+    ipBansTable: 'bm_ipban_all'
+    ipUnbansTable: 'bm_ipunban_all'
+    mutesTable: 'bm_mute_all'
+    unmutesTable: 'bm_unmute_all'
+    lastChecked: 0
 	
 # Enable for foreign characters
 useUTF8: false
@@ -46,6 +63,7 @@ scheduler:
     newMutes: 8
     newBans: 8
     newIPBans: 8
+    external: 120
 
 # Blacklist commands for muted players
 mutedCommandBlacklist:

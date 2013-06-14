@@ -104,6 +104,33 @@ public class Util {
 			}
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public static void asyncQuery(final String query, final Database extConn) {
+		if (plugin.getConfig().getBoolean("useSyncChat")) {
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					extConn.query(query);
+				}
+
+			});
+		} else {
+			try {
+				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						extConn.query(query);
+					}
+
+				});
+			} catch (NoSuchMethodError e) {
+
+			}
+		}
+	}
 
 	public final static boolean ValidateIPAddress(String ipAddress) {
 		String[] parts = ipAddress.split("\\.");

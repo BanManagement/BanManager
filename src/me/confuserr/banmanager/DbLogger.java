@@ -23,12 +23,20 @@ public class DbLogger {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
 	}
 
+	public void logTempBan(String name, String bannedBy, String reason, long time, long expires) {
+		Util.asyncQuery("INSERT INTO " + localConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
+	}
+
 	public void logIpBan(String name, String bannedBy, String reason) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0', '" + plugin.serverName + "')");
 	}
 
 	public void logTempIpBan(String name, String bannedBy, String reason, long expires) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
+	}
+
+	public void logTempIpBan(String name, String bannedBy, String reason, long time, long expires) {
+		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
 	}
 
 	public void logKick(String name, String bannedBy, String reason) {
@@ -43,8 +51,37 @@ public class DbLogger {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
 	}
 
+	public void logTempMute(String name, String mutedBy, String reason, long time, long expires) {
+		Util.asyncQuery("INSERT INTO " + localConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
+	}
+
 	public void logWarning(String name, String warnedBy, String reason) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("warnings") + " (warned, warned_by, warn_reason, warn_time, server) VALUES ('" + name + "', '" + warnedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + plugin.serverName + "')");
+	}
+
+	// External Logs
+	public void logBanAll(Database extConn, String name, String bannedBy, String reason) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("bans") + " ((banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', 'UNIX_TIMESTAMP(now())', '0')", extConn);
+	}
+
+	public void logTempBanAll(Database extConn, String name, String bannedBy, String reason, long expires) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "')", extConn);
+	}
+
+	public void logIPBanAll(Database extConn, String name, String bannedBy, String reason) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0')", extConn);
+	}
+
+	public void logTempIPBanAll(Database extConn, String name, String bannedBy, String reason, long expires) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "')", extConn);
+	}
+
+	public void logMuteAll(Database extConn, String name, String mutedBy, String reason) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0')", extConn);
+	}
+
+	public void logTempMuteAll(Database extConn, String name, String mutedBy, String reason, long expires) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "')", extConn);
 	}
 
 	public boolean handleBukkitBan(String name) {
@@ -150,7 +187,7 @@ public class DbLogger {
 
 		return data;
 	}
-	
+
 	public ArrayList<BanData> getPastBans(String name) {
 		ArrayList<BanData> data = new ArrayList<BanData>();
 
@@ -167,7 +204,7 @@ public class DbLogger {
 
 		return data;
 	}
-	
+
 	public ArrayList<IPBanData> getPastIPBans(String ip) {
 		ArrayList<IPBanData> data = new ArrayList<IPBanData>();
 
@@ -184,7 +221,7 @@ public class DbLogger {
 
 		return data;
 	}
-	
+
 	public ArrayList<WarnData> getWarnings(String name) {
 		ArrayList<WarnData> data = new ArrayList<WarnData>();
 
@@ -210,6 +247,10 @@ public class DbLogger {
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("bans") + " WHERE banned = '" + name + "'");
 	}
 
+	public void banExternalRemove(Database extConn, String name, String by) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("unbans") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("bans") + " b WHERE b.banned = '" + name + "'", extConn);
+	}
+
 	public void ipRemove(String ip, String by, boolean keepLog) {
 		if (keepLog)
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBanRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'");
@@ -218,12 +259,20 @@ public class DbLogger {
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("ipBans") + " WHERE banned = '" + ip + "'");
 	}
 
+	public void ipExternalRemove(Database extConn, String ip, String by) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("ipUnbans") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'", extConn);
+	}
+
 	public void muteRemove(String name, String by, boolean keepLog) {
 		if (keepLog)
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("muteRecords") + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("mutes") + " b WHERE b.muted = '" + name + "'");
 
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("mutes") + " WHERE muted = '" + name + "'");
+	}
+	
+	public void muteExternalRemove(Database extConn, String name, String by) {
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("unmutes") + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("mutes") + " b WHERE b.muted = '" + name + "'", extConn);
 	}
 
 	public void create_tables() throws SQLException {
@@ -324,6 +373,40 @@ public class DbLogger {
 									 */
 								}
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void createExternalTables(Database extConn) throws SQLException {
+		boolean Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("bans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+
+		if (!Table)
+			plugin.getLogger().severe("Unable to create external BanManagement table");
+		else {
+			Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("unbans") + " (" + "unban_id int(255) NOT NULL AUTO_INCREMENT," + "unbanned varchar(32) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unban_time int(10) NOT NULL," + "PRIMARY KEY (unban_id)," + "KEY `unbanned` (`unbanned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+
+			if (!Table)
+				plugin.getLogger().severe("Unable to create external BanManagement table");
+			else {
+				Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("ipBans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+
+				if (!Table)
+					plugin.getLogger().severe("Unable to create external BanManagement table");
+				else {
+					Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("ipUnbans") + " (" + "unban_id int(255) NOT NULL AUTO_INCREMENT," + "unbanned varchar(32) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unban_time int(10) NOT NULL," + "PRIMARY KEY (unban_id)," + "KEY `unbanned` (`unbanned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+
+					if (!Table)
+						plugin.getLogger().severe("Unable to create external BanManagement table");
+					else {
+						Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("mutes") + " (" + "mute_id int(255) NOT NULL AUTO_INCREMENT," + "muted varchar(32) NOT NULL," + "muted_by varchar(32) NOT NULL," + "mute_reason text NOT NULL," + "mute_time int(10) NOT NULL," + "mute_expires_on int(10) NOT NULL," + "PRIMARY KEY (mute_id)," + "KEY `muted` (`muted`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+
+						if (!Table)
+							plugin.getLogger().severe("Unable to create external BanManagement table");
+						else {
+							Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("unmutes") + " (" + "unmute_id int(255) NOT NULL AUTO_INCREMENT," + "unmuted varchar(32) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmute_time int(10) NOT NULL," + "PRIMARY KEY (unmute_id)," + "KEY `unmute` (`unmute`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 						}
 					}
 				}
