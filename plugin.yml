@@ -6,14 +6,26 @@ commands:
     description: "ban a player"
     usage: "/ban <username> <reason>"
     aliases: [bmban]
+  banall: 
+    description: "ban a player across multiple servers"
+    usage: "/banall <username> <reason>"
+    aliases: [bmbanall]
   tempban: 
     description: "tempban a player"
     usage: "/tempban <username> <timeDiff> <reason>"
     aliases: [bmtempban]
+  tempbanall: 
+    description: "tempban a player across multiple servers"
+    usage: "/tempbanall <username> <timeDiff> <reason>"
+    aliases: [bmtempbanall]
   unban:
     description: "unban a player"
     usage: "/unban <username>"
     aliases: [bmunban]
+  unbanall:
+    description: "unban a player across multiple servers"
+    usage: "/unbanall <username>"
+    aliases: [bmunbanall]
   bminfo:
     description: "see information on a player"
     usage: "/bminfo <username>"
@@ -22,14 +34,26 @@ commands:
     description: "ban an ip"
     usage: "/banip <username || IP Address> <reason>"
     aliases: [bmbanip]
+  banipall:
+    description: "ban an ip across multiple servers"
+    usage: "/banipall <username || IP Address> <reason>"
+    aliases: [bmbanipall]
   tempbanip: 
     description: "tempban an ip"
     usage: "/tempbanip <username || IP Address> <timeDiff> <reason>"
     aliases: [bmtempbanip]
+  tempbanipall: 
+    description: "tempban an ip across multiple servers"
+    usage: "/tempbanipall <username || IP Address> <timeDiff> <reason>"
+    aliases: [bmtempbanipall]
   unbanip:
     description: "unban's an ip"
     usage: "/unbanip <IP Address>"
     aliases: [bmunbanip]
+  unbanipall:
+    description: "unban's an ip across multiple servers"
+    usage: "/unbanipall <IP Address>"
+    aliases: [bmunbanipall]
   banimport:
     description: "imports bans"
     usage: "/banimport <player || ip> <reason>"
@@ -42,14 +66,26 @@ commands:
     description: "mutes a player"
     usage: "/mute <player> <reason>"
     aliases: [bmmute]
+  muteall:
+    description: "mutes a player across multiple servers"
+    usage: "/muteall <player> <reason>"
+    aliases: [bmmuteall]
   tempmute:
     description: "temp mutes a player"
     usage: "/tempmute <player> <timeDiff> <reason>"
     aliases: [bmtempmute]
+  tempmuteall:
+    description: "temp mutes a player across multiple servers"
+    usage: "/tempmuteall <player> <timeDiff> <reason>"
+    aliases: [bmtempmuteall]
   unmute:
     description: "unmute a player"
     usage: "/unmute <username>"
     aliases: [bmunmute]
+  unmuteall:
+    description: "unmute a player across multiple servers"
+    usage: "/unmuteall <username>"
+    aliases: [bmunmuteall]
   nlkick:
     description: "kick a player without logging"
     usage: "/nlkick <player> <reason>"
