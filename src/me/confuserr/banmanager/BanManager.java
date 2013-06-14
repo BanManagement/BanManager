@@ -103,7 +103,7 @@ public class BanManager extends JavaPlugin {
 				put("ipBanRecords", plugin.getConfig().getString("localDatabase.ipBansRecordTable"));
 				put("kicks", plugin.getConfig().getString("localDatabase.kicksTable"));
 				put("mutes", plugin.getConfig().getString("localDatabase.mutesTable"));
-				put("mutesRecord", plugin.getConfig().getString("localDatabase.mutesRecordTable"));
+				put("muteRecords", plugin.getConfig().getString("localDatabase.mutesRecordTable"));
 				put("playerIps", plugin.getConfig().getString("localDatabase.playerIpsTable"));
 				put("warnings", plugin.getConfig().getString("localDatabase.warningsTable"));
 			}
