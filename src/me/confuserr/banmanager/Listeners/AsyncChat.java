@@ -25,12 +25,13 @@ public class AsyncChat implements Listener {
 		if(plugin.getPlayerMutes().get(playerName) != null) {
 
 			MuteData muteData = plugin.getPlayerMutes().get(playerName);
-			String expires = Util.formatDateDiff(muteData.getExpires());
+			long expires = muteData.getExpires() * 1000;
+			String expiresFormat = Util.formatDateDiff(expires);
 			
 			if(muteData.getExpires() != 0) {
-				if(System.currentTimeMillis() < muteData.getExpires()) {
+				if(System.currentTimeMillis() < expires) {
 					event.setCancelled(true);
-					String mutedMessage = plugin.getMessage("tempMuted").replace("[expires]", expires).replace("[reason]", muteData.getReason()).replace("[by]", muteData.getBy());
+					String mutedMessage = plugin.getMessage("tempMuted").replace("[expires]", expiresFormat).replace("[reason]", muteData.getReason()).replace("[by]", muteData.getBy());
 					player.sendMessage(mutedMessage);
 				} else {
 					// Removes them from the database and the HashMap
