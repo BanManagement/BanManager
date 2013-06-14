@@ -150,7 +150,7 @@ public class BanManager extends JavaPlugin {
 				getLogger().severe("Unable to connect to the external database!");
 			else {
 				if (!extConn.checkTable(extConn.getTable("bans"))) {
-					getLogger().info("[BanManager] creating external tables");
+					getLogger().info("[BanManager] Creating external tables");
 					try {
 						plugin.dbLogger.createExternalTables(extConn);
 					} catch (SQLException e) {

@@ -61,7 +61,7 @@ public class DbLogger {
 
 	// External Logs
 	public void logBanAll(Database extConn, String name, String bannedBy, String reason) {
-		Util.asyncQuery("INSERT INTO " + extConn.getTable("bans") + " ((banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', 'UNIX_TIMESTAMP(now())', '0')", extConn);
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0')", extConn);
 	}
 
 	public void logTempBanAll(Database extConn, String name, String bannedBy, String reason, long expires) {
@@ -248,19 +248,19 @@ public class DbLogger {
 	}
 
 	public void banExternalRemove(Database extConn, String name, String by) {
-		Util.asyncQuery("INSERT INTO " + extConn.getTable("unbans") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("bans") + " b WHERE b.banned = '" + name + "'", extConn);
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("unbans") + " (unbanned, unbanned_by, unban_time) VALUES ('" + name + "', '" + by + "', UNIX_TIMESTAMP(now()))", extConn);
 	}
 
 	public void ipRemove(String ip, String by, boolean keepLog) {
 		if (keepLog)
-			Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBanRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'");
+			Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBanRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server  FROM " + localConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'");
 
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("ipBans") + " WHERE banned = '" + ip + "'");
 	}
 
 	public void ipExternalRemove(Database extConn, String ip, String by) {
-		Util.asyncQuery("INSERT INTO " + extConn.getTable("ipUnbans") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'", extConn);
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("ipUnbans") + " (unbanned, unbanned_by, unban_time) VALUES ('" + ip + "', '" + by + "', UNIX_TIMESTAMP(now()))", extConn);
 	}
 
 	public void muteRemove(String name, String by, boolean keepLog) {
@@ -272,7 +272,7 @@ public class DbLogger {
 	}
 	
 	public void muteExternalRemove(Database extConn, String name, String by) {
-		Util.asyncQuery("INSERT INTO " + extConn.getTable("unmutes") + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + extConn.getTable("mutes") + " b WHERE b.muted = '" + name + "'", extConn);
+		Util.asyncQuery("INSERT INTO " + extConn.getTable("unmutes") + " (unmuted, unmuted_by, unmute_time) VALUES ('" + name + "', '" + by + "', UNIX_TIMESTAMP(now()))", extConn);
 	}
 
 	public void create_tables() throws SQLException {
@@ -406,7 +406,7 @@ public class DbLogger {
 						if (!Table)
 							plugin.getLogger().severe("Unable to create external BanManagement table");
 						else {
-							Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("unmutes") + " (" + "unmute_id int(255) NOT NULL AUTO_INCREMENT," + "unmuted varchar(32) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmute_time int(10) NOT NULL," + "PRIMARY KEY (unmute_id)," + "KEY `unmute` (`unmute`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+							Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("unmutes") + " (" + "unmute_id int(255) NOT NULL AUTO_INCREMENT," + "unmuted varchar(32) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmute_time int(10) NOT NULL," + "PRIMARY KEY (unmute_id)," + "KEY `unmuted` (`unmuted`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 						}
 					}
 				}
