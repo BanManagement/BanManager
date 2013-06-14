@@ -34,7 +34,7 @@ externalDatabase:
     mutesTable: 'bm_mute_all'
     unmutesTable: 'bm_unmute_all'
     lastChecked: 0
-	
+
 # Enable for foreign characters
 useUTF8: false
 
