@@ -126,7 +126,7 @@ public class BanCommand implements CommandExecutor {
 				offlinePlayer.setBanned(true);
 		}
 
-		plugin.addPlayerBan(playerName, reason, bannedByName);
+		plugin.addPlayerBan(playerName, bannedByName, reason);
 
 		String infoMessage = plugin.getMessage("playerBanned").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
