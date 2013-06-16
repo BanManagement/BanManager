@@ -16,21 +16,21 @@ if(!isset($_SESSION['admin']) || (isset($_SESSION['admin']) && !$_SESSION['admin
 	die('Hacking attempt');
 else if(!isset($_GET['authid']) || (isset($_GET['authid']) && $_GET['authid'] != sha1($settings['password'])))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['banstable'])) 
+else if(!is_alphanumdash($_POST['banstable'])) 
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['recordtable']))
+else if(!is_alphanumdash($_POST['recordtable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['iptable']))
+else if(!is_alphanumdash($_POST['iptable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['iprecordtable']))
+else if(!is_alphanumdash($_POST['iprecordtable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['mutestable']))
+else if(!is_alphanumdash($_POST['mutestable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['mutesrecordtable']))
+else if(!is_alphanumdash($_POST['mutesrecordtable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['kickstable']))
+else if(!is_alphanumdash($_POST['kickstable']))
 	die('Hacking attempt');
-else if(!is_alphanum($_POST['warningstable']))
+else if(!is_alphanumdash($_POST['warningstable']))
 	die('Hacking attempt');
 
 function tableExists($name) {

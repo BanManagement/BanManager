@@ -224,6 +224,10 @@ function is_alphanum($string) {
 		return (preg_match("~^[a-z0-9]*$~iD", $string) !== 0 ? true : false);
 }
 
+function is_alphanumdash($string) {
+	return (preg_match("~^[a-z0-9_-]*$~iD", $string) !== 0 ? true : false);
+}
+
 function cache($query, $time, $folder = '', $server = array(), $name = '') {
 	global $settings;
 	$md5 = md5($query);
