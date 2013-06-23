@@ -78,7 +78,10 @@ public class BanManager extends JavaPlugin {
 
 		// Close the database connection
 		localConn.close();
-		extConn.close();
+
+		if(extConn != null) {
+			extConn.close();
+		}
 
 		getLogger().info("[BanManager] has been disabled");
 	}
