@@ -23,9 +23,9 @@ public class SyncChat implements Listener {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		
-		if(plugin.getPlayerMutes().get(playerName) != null) {
+		if(plugin.getPlayerMute(playerName) != null) {
 
-			MuteData muteData = plugin.getPlayerMutes().get(playerName);
+			MuteData muteData = plugin.getPlayerMute(playerName);
 			long expires = muteData.getExpires() * 1000;
 			String expiresFormat = Util.formatDateDiff(expires);
 			
