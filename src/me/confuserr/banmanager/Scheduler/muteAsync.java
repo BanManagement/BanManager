@@ -19,7 +19,6 @@ public class muteAsync implements Runnable {
 		lastRun = System.currentTimeMillis() / 1000;
 	}
 
-	@Override
 	public void run() {
 		// Check for new mutes
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("mutes") + " WHERE mute_time > " + lastRun + "");

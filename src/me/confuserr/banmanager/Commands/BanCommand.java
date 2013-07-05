@@ -19,7 +19,6 @@ public class BanCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
-	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 2)
 			return false;

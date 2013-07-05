@@ -18,7 +18,6 @@ public class UnMuteCommand implements CommandExecutor {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 1)
 			return false;
@@ -46,7 +45,6 @@ public class UnMuteCommand implements CommandExecutor {
 
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-			@Override
 			public void run() {
 				if (!plugin.isPlayerMuted(offlineName))
 					Util.sendMessage(sender, plugin.getMessage("playerNotMutedError"));

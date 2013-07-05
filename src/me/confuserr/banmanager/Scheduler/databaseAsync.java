@@ -20,7 +20,6 @@ public class databaseAsync implements Runnable {
 		localConn = plugin.localConn;
 	}
 
-	@Override
 	public void run() {
 		// Get current time as a unix timestamp
 		long now = System.currentTimeMillis() / 1000;
@@ -44,7 +43,6 @@ public class databaseAsync implements Runnable {
 				if (plugin.useBukkitBans()) {
 					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-						@Override
 						public void run() {
 							Bukkit.getOfflinePlayer(playerName).setBanned(false);
 						}
@@ -77,7 +75,6 @@ public class databaseAsync implements Runnable {
 				if (plugin.useBukkitBans()) {
 					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-						@Override
 						public void run() {
 							Bukkit.unbanIP(address);
 						}

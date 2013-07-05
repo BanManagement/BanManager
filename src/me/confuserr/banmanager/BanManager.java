@@ -169,7 +169,7 @@ public class BanManager extends JavaPlugin {
 				getCommand("muteall").setExecutor(new MuteAllCommand(this));
 				getCommand("tempmuteall").setExecutor(new TempMuteAllCommand(this));
 				getCommand("unmuteall").setExecutor(new UnMuteAllCommand(this));
-				
+
 				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new externalAsync(this, extConn, getConfig().getLong("externalDatabase.lastChecked", 0)), 22L, getConfig().getInt("scheduler.external", 8) * 20);
 			}
 		}
@@ -189,9 +189,8 @@ public class BanManager extends JavaPlugin {
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
 		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
-		getCommand("warn").setExecutor(new WarnCommand(this));		
-		/*getCommand("bmpurge")
-		getCommand("bmclear")*/
+		getCommand("warn").setExecutor(new WarnCommand(this));
+		getCommand("bmclear").setExecutor(new ClearCommand(this));
 
 		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
 														// Sync events
@@ -249,15 +248,15 @@ public class BanManager extends JavaPlugin {
 
 		getLogger().info("Loaded " + playerBans.size() + " player bans");
 
-		ResultSet result1 = localConn.query("SELECT  banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("ipBans"));
+		result = localConn.query("SELECT  banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("ipBans"));
 
 		try {
-			while (result1.next()) {
+			while (result.next()) {
 				// Add them to the banned list
 				ipBans.put(result.getString("banned"), new IPBanData(result.getString("banned"), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
 			}
 
-			result1.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -382,11 +381,23 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addPlayerBan(String name, String bannedBy, String reason) {
+		addPlayerBan(name, bannedBy, reason, System.currentTimeMillis() / 1000, 0);
+	}
+	
+	public void addPlayerBan(String name, String bannedBy, String reason, long expires) {
+		addPlayerBan(name, bannedBy, reason, System.currentTimeMillis() / 1000, expires);
+	}
+	
+	public void addPlayerBan(String name, String bannedBy, String reason, long time, long expires) {
 		name = name.toLowerCase();
 
-		playerBans.put(name, new BanData(name, bannedBy, reason, System.currentTimeMillis() / 1000, 0));
+		playerBans.put(name, new BanData(name, bannedBy, reason, time, expires));
 
-		dbLogger.logBan(name, bannedBy, reason);
+		dbLogger.logBan(name, bannedBy, reason, time, expires);
+	}
+
+	public void addPlayerBan(BanData data) {
+		playerBans.put(data.getBanned(), data);
 	}
 
 	public void addExternalPlayerBan(String name, String bannedBy, String reason) {
@@ -395,30 +406,10 @@ public class BanManager extends JavaPlugin {
 		dbLogger.logBanAll(extConn, name, bannedBy, reason);
 	}
 
-	public void addPlayerBan(String name, String bannedBy, String reason, long expires) {
-		name = name.toLowerCase();
-
-		playerBans.put(name, new BanData(name, bannedBy, reason, System.currentTimeMillis() / 1000, expires));
-
-		dbLogger.logTempBan(name, bannedBy, reason, expires);
-	}
-
 	public void addExternalPlayerBan(String name, String bannedBy, String reason, long expires) {
 		addPlayerBan(name, bannedBy, reason, expires);
 
 		dbLogger.logTempBanAll(extConn, name, bannedBy, reason, expires);
-	}
-
-	public void addPlayerBan(String name, String bannedBy, String reason, long time, long expires) {
-		name = name.toLowerCase();
-
-		playerBans.put(name, new BanData(name, bannedBy, reason, time, expires));
-
-		dbLogger.logTempBan(name, bannedBy, reason, time, expires);
-	}
-
-	public void addPlayerBan(BanData data) {
-		playerBans.put(data.getBanned(), data);
 	}
 
 	public void removePlayerBan(String name, String by, boolean keepLog) {
@@ -429,6 +420,10 @@ public class BanManager extends JavaPlugin {
 
 		if (useBukkitBans())
 			getServer().getOfflinePlayer(name).setBanned(false);
+	}
+
+	public void removePlayerBanRecords(String name) {
+		dbLogger.banRemoveRecords(name);
 	}
 
 	public void removeExternalPlayerBan(String name, String by) {
@@ -451,9 +446,7 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addIPBan(String ip, String bannedBy, String reason) {
-		ipBans.put(ip, new IPBanData(ip, bannedBy, reason, System.currentTimeMillis() / 1000, 0));
-
-		dbLogger.logIpBan(ip, bannedBy, reason);
+		addIPBan(ip, bannedBy, reason, System.currentTimeMillis() / 1000, 0);
 	}
 
 	public void addExternalIPBan(String ip, String bannedBy, String reason) {
@@ -463,11 +456,9 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addIPBan(String ip, String bannedBy, String reason, long expires) {
-		ipBans.put(ip, new IPBanData(ip, bannedBy, reason, System.currentTimeMillis() / 1000, expires));
-
-		dbLogger.logTempIpBan(ip, bannedBy, reason, expires);
+		addIPBan(ip, bannedBy, reason, System.currentTimeMillis() / 1000, expires);
 	}
-	
+
 	public void addExternalIPBan(String ip, String bannedBy, String reason, long expires) {
 		addIPBan(ip, bannedBy, reason, expires);
 
@@ -477,7 +468,7 @@ public class BanManager extends JavaPlugin {
 	public void addIPBan(String ip, String bannedBy, String reason, long time, long expires) {
 		ipBans.put(ip, new IPBanData(ip, bannedBy, reason, time, expires));
 
-		dbLogger.logTempIpBan(ip, bannedBy, reason, time, expires);
+		dbLogger.logIpBan(ip, bannedBy, reason, time, expires);
 	}
 
 	public void addIPBan(IPBanData data) {
@@ -510,43 +501,35 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addPlayerMute(String name, String mutedBy, String reason) {
-		name = name.toLowerCase();
-
-		playerMutes.put(name, new MuteData(name, mutedBy, reason, System.currentTimeMillis() / 1000, 0));
-
-		dbLogger.logMute(name, mutedBy, reason);
+		addPlayerMute(name, mutedBy, reason, System.currentTimeMillis() / 1000, 0);
 	}
-	
+
 	public void addExternalPlayerMute(String name, String mutedBy, String reason) {
 		name = name.toLowerCase();
-		
+
 		addPlayerMute(name, mutedBy, reason);
-		
+
 		dbLogger.logMuteAll(extConn, name, mutedBy, reason);
 	}
 
 	public void addPlayerMute(String name, String mutedBy, String reason, long expires) {
-		name = name.toLowerCase();
-
-		playerMutes.put(name, new MuteData(name, mutedBy, reason, System.currentTimeMillis() / 1000, expires));
-
-		dbLogger.logTempMute(name, mutedBy, reason, expires);
+		addPlayerMute(name, mutedBy, reason, System.currentTimeMillis() / 1000, expires);
 	}
 
 	public void addExternalPlayerMute(String name, String mutedBy, String reason, long expires) {
 		name = name.toLowerCase();
-		
+
 		addPlayerMute(name, mutedBy, reason, expires);
-		
+
 		dbLogger.logTempMuteAll(extConn, name, mutedBy, reason, expires);
 	}
-	
+
 	public void addPlayerMute(String name, String mutedBy, String reason, long time, long expires) {
 		name = name.toLowerCase();
 
 		playerMutes.put(name, new MuteData(name, mutedBy, reason, time, expires));
 
-		dbLogger.logTempMute(name, mutedBy, reason, time, expires);
+		dbLogger.logMute(name, mutedBy, reason, time, expires);
 	}
 
 	public void addPlayerMute(MuteData data) {
@@ -559,12 +542,16 @@ public class BanManager extends JavaPlugin {
 		playerMutes.remove(name);
 		dbLogger.muteRemove(name, by, keepLog);
 	}
-	
+
 	public void removeExternalPlayerMute(String name, String by) {
 		name = name.toLowerCase();
 
 		removePlayerMute(name, by, true);
 		dbLogger.muteExternalRemove(plugin.extConn, name, by);
+	}
+
+	public void removePlayerMuteRecords(String name) {
+		dbLogger.muteRemoveRecords(name.toLowerCase());
 	}
 
 	public MuteData getPlayerMute(String name) {
@@ -593,11 +580,9 @@ public class BanManager extends JavaPlugin {
 		dbLogger.logWarning(name, by, reason);
 	}
 
-	/*
-	 * public void removePlayerWarning(String name) {
-	 * 
-	 * }
-	 */
+	public void removePlayerWarnings(String name) {
+		dbLogger.removeWarnings(name.toLowerCase());
+	}
 
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
 		return dbLogger.getWarnings(name.toLowerCase());
@@ -609,5 +594,9 @@ public class BanManager extends JavaPlugin {
 
 	public void setPlayerIP(String name, String ip) {
 		dbLogger.setIP(name.toLowerCase(), ip);
+	}
+	
+	public void removePlayerKickRecords(String name) {
+		dbLogger.kickRemoveRecords(name);
 	}
 }

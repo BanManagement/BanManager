@@ -163,6 +163,7 @@ messages:
     duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
     consoleName: 'Console'
     configReloaded: '&a[BanManager] Config Reloaded.'
+    invalidClearType: '&cInvalid clear type, available options are banrecords, muterecords, kicks and warnings.'
     timeNow: 'now'
     timeYear: 'year'
     timeYears: 'years'

@@ -18,7 +18,6 @@ public class bansAsync implements Runnable {
 		lastRun = System.currentTimeMillis() / 1000;
 	}
 
-	@Override
 	public void run() {
 		// Check for new bans
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("bans") + " WHERE ban_time > " + lastRun + "");
@@ -37,7 +36,6 @@ public class bansAsync implements Runnable {
 
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-							@Override
 							public void run() {
 								if (plugin.useBukkitBans())
 									plugin.getServer().getPlayer(banned).setBanned(true);

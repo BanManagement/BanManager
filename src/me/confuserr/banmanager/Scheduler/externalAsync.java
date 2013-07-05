@@ -21,7 +21,6 @@ public class externalAsync implements Runnable {
 		this.lastRun = lastRun;
 	}
 
-	@Override
 	public void run() {
 		// Player Bans
 		// -----------------------------------------------------------------------------------------------------------------
@@ -41,7 +40,6 @@ public class externalAsync implements Runnable {
 
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-							@Override
 							public void run() {
 								if (plugin.useBukkitBans())
 									plugin.getServer().getPlayer(banned).setBanned(true);
@@ -102,7 +100,6 @@ public class externalAsync implements Runnable {
 				}
 
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-					@Override
 					public void run() {
 						for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
 							if (Util.getIP(onlinePlayer.getAddress().toString()).equals(ip)) {

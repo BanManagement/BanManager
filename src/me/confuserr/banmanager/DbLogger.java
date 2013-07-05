@@ -15,27 +15,11 @@ public class DbLogger {
 		plugin = instance;
 	}
 
-	public void logBan(String name, String bannedBy, String reason) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0', '" + plugin.serverName + "')");
-	}
-
-	public void logTempBan(String name, String bannedBy, String reason, long expires) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
-	}
-
-	public void logTempBan(String name, String bannedBy, String reason, long time, long expires) {
+	public void logBan(String name, String bannedBy, String reason, long time, long expires) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("bans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
 	}
 
-	public void logIpBan(String name, String bannedBy, String reason) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0', '" + plugin.serverName + "')");
-	}
-
-	public void logTempIpBan(String name, String bannedBy, String reason, long expires) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
-	}
-
-	public void logTempIpBan(String name, String bannedBy, String reason, long time, long expires) {
+	public void logIpBan(String name, String bannedBy, String reason, long time, long expires) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBans") + " (banned, banned_by, ban_reason, ban_time, ban_expires_on, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
 	}
 
@@ -43,15 +27,7 @@ public class DbLogger {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("kicks") + " (kicked, kicked_by, kick_reason, kick_time, server) VALUES ('" + name + "', '" + bannedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + plugin.serverName + "')");
 	}
 
-	public void logMute(String name, String mutedBy, String reason) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '0', '" + plugin.serverName + "')");
-	}
-
-	public void logTempMute(String name, String mutedBy, String reason, long expires) {
-		Util.asyncQuery("INSERT INTO " + localConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', UNIX_TIMESTAMP(now()), '" + expires + "', '" + plugin.serverName + "')");
-	}
-
-	public void logTempMute(String name, String mutedBy, String reason, long time, long expires) {
+	public void logMute(String name, String mutedBy, String reason, long time, long expires) {
 		Util.asyncQuery("INSERT INTO " + localConn.getTable("mutes") + " (muted, muted_by, mute_reason, mute_time, mute_expires_on, server) VALUES ('" + name + "', '" + mutedBy + "', '" + reason + "', '" + time + "', '" + expires + "', '" + plugin.serverName + "')");
 	}
 
@@ -225,7 +201,7 @@ public class DbLogger {
 	public ArrayList<WarnData> getWarnings(String name) {
 		ArrayList<WarnData> data = new ArrayList<WarnData>();
 
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("ipBanRecords") + " WHERE banned = '" + name + "'");
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "'");
 		try {
 			while (result.next()) {
 				data.add(new WarnData(name, result.getString("warned_by"), result.getString("warn_reason"), result.getLong("warn_time")));
@@ -239,6 +215,10 @@ public class DbLogger {
 		return data;
 	}
 
+	public void removeWarnings(String name) {
+		Util.asyncQuery("DELETE FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "'");
+	}
+
 	public void banRemove(String name, String by, boolean keepLog) {
 		if (keepLog)
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("banRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("bans") + " b WHERE b.banned = '" + name + "'");
@@ -249,6 +229,10 @@ public class DbLogger {
 
 	public void banExternalRemove(Database extConn, String name, String by) {
 		Util.asyncQuery("INSERT INTO " + extConn.getTable("unbans") + " (unbanned, unbanned_by, unban_time) VALUES ('" + name + "', '" + by + "', UNIX_TIMESTAMP(now()))", extConn);
+	}
+
+	public void banRemoveRecords(String name) {
+		Util.asyncQuery("DELETE FROM " + localConn.getTable("banRecords") + " WHERE banned = '" + name + "'");
 	}
 
 	public void ipRemove(String ip, String by, boolean keepLog) {
@@ -270,9 +254,17 @@ public class DbLogger {
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("mutes") + " WHERE muted = '" + name + "'");
 	}
-	
+
+	public void muteRemoveRecords(String name) {
+		Util.asyncQuery("DELETE FROM " + localConn.getTable("muteRecords") + " WHERE muted = '" + name + "'");
+	}
+
 	public void muteExternalRemove(Database extConn, String name, String by) {
 		Util.asyncQuery("INSERT INTO " + extConn.getTable("unmutes") + " (unmuted, unmuted_by, unmute_time) VALUES ('" + name + "', '" + by + "', UNIX_TIMESTAMP(now()))", extConn);
+	}
+
+	public void kickRemoveRecords(String name) {
+		Util.asyncQuery("DELETE FROM " + localConn.getTable("kicks") + " WHERE kicked = '" + name + "'");
 	}
 
 	public void create_tables() throws SQLException {

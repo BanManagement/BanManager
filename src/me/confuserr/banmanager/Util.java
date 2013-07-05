@@ -83,7 +83,6 @@ public class Util {
 		if (plugin.getConfig().getBoolean("useSyncChat")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-				@Override
 				public void run() {
 					plugin.localConn.query(query);
 				}
@@ -93,7 +92,6 @@ public class Util {
 			try {
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-					@Override
 					public void run() {
 						plugin.localConn.query(query);
 					}
@@ -110,7 +108,6 @@ public class Util {
 		if (plugin.getConfig().getBoolean("useSyncChat")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-				@Override
 				public void run() {
 					extConn.query(query);
 				}
@@ -120,7 +117,6 @@ public class Util {
 			try {
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-					@Override
 					public void run() {
 						extConn.query(query);
 					}

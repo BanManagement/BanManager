@@ -17,7 +17,6 @@ public class TempMuteCommand implements CommandExecutor {
 		plugin = instance;
 	}
 
-	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 3)
 			return false;
@@ -107,7 +106,6 @@ public class TempMuteCommand implements CommandExecutor {
 
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-			@Override
 			public void run() {
 				if (plugin.isPlayerMuted(playerName)) {
 					Util.sendMessage(sender, plugin.getMessage("alreadyMutedError").replace("[name]", playerName).replace("[displayName]", playerDisplayName));

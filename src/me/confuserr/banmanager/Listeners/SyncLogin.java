@@ -85,7 +85,6 @@ public class SyncLogin implements Listener {
 		// the list!
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-			@Override
 			public void run() {
 				if (plugin.dbLogger.isMuted(name)) {
 					plugin.getPlayerMutes().put(name, plugin.dbLogger.getMute(name));

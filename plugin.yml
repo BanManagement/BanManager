@@ -97,9 +97,12 @@ commands:
     description: "Collection of random utilities"
     usage: "/bmtools <tool>"
   warn:
-    description: "warn a player"
+    description: "Warn a player"
     usage: "/warn <player> <reason>"
     aliases: [bmwarn]
+  bmclear:
+    description: "Clear a player's records"
+    usage: "/bmclear <type> <player>"
 permissions:
     bm.*:
         description: Gives access to all BanManager commands
@@ -122,6 +125,7 @@ permissions:
             bm.banoffline: true
             bm.tempbanoffline: true
             bm.warn: true
+            bm.clear: true
     bm.unban:
         description: Allows you to unban a user
         default: op
@@ -175,4 +179,7 @@ permissions:
         default: op
     bm.warn:
         description: Allows you to warn a player
+        default: op
+    bm.clear:
+        description: Allows you to clear a player's records
         default: op

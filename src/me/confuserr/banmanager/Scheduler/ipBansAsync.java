@@ -19,7 +19,6 @@ public class ipBansAsync implements Runnable {
 		lastRun = System.currentTimeMillis() / 1000;
 	}
 
-	@Override
 	public void run() {
 		// Check for new bans
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("ipBans") + " WHERE ban_time > " + lastRun + "");

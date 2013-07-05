@@ -28,7 +28,6 @@ public class BanImportCommand implements CommandExecutor {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 2)
 			return false;
@@ -114,11 +113,16 @@ public class BanImportCommand implements CommandExecutor {
 								}
 							}
 						}
-					} catch (IOException | ParseException e) {
+					} catch (IOException e) {
+						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
+						BanImportCommand.importInProgress = false;
+						return;
+					} catch (ParseException e) {
 						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
 						BanImportCommand.importInProgress = false;
 						return;
 					}
+
 
 					Util.sendMessage(sender, plugin.getMessage("scanPlayersFound").replace("[found]", Integer.toString(toBan.size())));
 
@@ -133,7 +137,7 @@ public class BanImportCommand implements CommandExecutor {
 						int totalPlayers = toBan.size();
 
 						for (BanData p : toBan) {
-								plugin.addPlayerBan(p);
+							plugin.addPlayerBan(p);
 
 							done++;
 
@@ -209,7 +213,11 @@ public class BanImportCommand implements CommandExecutor {
 								}
 							}
 						}
-					} catch (IOException | ParseException e) {
+					} catch (IOException e) {
+						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
+						BanImportCommand.importInProgress = false;
+						return;
+					} catch (ParseException e) {
 						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
 						BanImportCommand.importInProgress = false;
 						return;
@@ -228,10 +236,7 @@ public class BanImportCommand implements CommandExecutor {
 						int totalPlayers = toBan.size();
 
 						for (IPBanData p : toBan) {
-							if (p.getExpires() == 0)
-								plugin.dbLogger.logIpBan(p.getBanned(), p.getBy(), p.getReason());
-							else
-								plugin.dbLogger.logTempIpBan(p.getBanned(), p.getBy(), p.getReason(), p.getExpires());
+							plugin.dbLogger.logIpBan(p.getBanned(), p.getBy(), p.getReason(), p.getTime(), p.getExpires());
 
 							done++;
 

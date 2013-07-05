@@ -22,7 +22,6 @@ public class BmInfoCommand implements CommandExecutor {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String args[]) {
 
 		if (args.length != 1)
