@@ -97,6 +97,8 @@ public class SyncLogin implements Listener {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 				public void run() {
+					plugin.dbLogger.setIP(name, ip);
+					
 					// Check for duplicates!
 					String players = plugin.dbLogger.findPlayerIpDuplicates(ip, name);
 
