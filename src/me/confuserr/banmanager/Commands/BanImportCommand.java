@@ -245,8 +245,8 @@ public class BanImportCommand implements CommandExecutor {
 							newPercent = Math.round((double) (done * 100) / totalPlayers);
 							if (newPercent != percent) {
 								percent = newPercent;
-								if (percent % 10 == 0 && (int) percent != 100)
-									Util.sendMessage(sender, plugin.getMessage("percentageIpsImported").replace("[percent]", Double.toString(percent)));
+								if (percent % 10 == 0 && (int) percent != 100)									
+									Util.sendMessage(sender, plugin.getMessage("percentageIPsImported").replace("[percent]", Double.toString(percent)));
 							}
 						}
 
