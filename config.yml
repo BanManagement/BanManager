@@ -164,6 +164,7 @@ messages:
     consoleName: 'Console'
     configReloaded: '&a[BanManager] Config Reloaded.'
     invalidClearType: '&cInvalid clear type, available options are banrecords, muterecords, kicks and warnings.'
+    playerRecordCleared: '[name] has had their [recordType] cleared'
     timeNow: 'now'
     timeYear: 'year'
     timeYears: 'years'
