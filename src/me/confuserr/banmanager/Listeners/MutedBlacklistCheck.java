@@ -16,7 +16,7 @@ public class MutedBlacklistCheck implements Listener {
 
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent event) {
-		if (!plugin.isPlayerMuted(event.getPlayer().getName()))
+		if (!plugin.isPlayerMutedInMem(event.getPlayer().getName()))
 			return;
 
 		// Split the command
