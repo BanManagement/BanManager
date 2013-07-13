@@ -128,6 +128,7 @@ public class BanImportCommand implements CommandExecutor {
 
 					if (toBan.size() == 0) {
 						Util.sendMessage(sender, plugin.getMessage("noPlayersImport"));
+						BanImportCommand.importInProgress = false;
 						return;
 					} else {
 
@@ -227,6 +228,7 @@ public class BanImportCommand implements CommandExecutor {
 
 					if (toBan.size() == 0) {
 						Util.sendMessage(sender, plugin.getMessage("noIpsImport"));
+						BanImportCommand.importInProgress = false;
 						return;
 					} else {
 
