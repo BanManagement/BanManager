@@ -565,6 +565,12 @@ public class BanManager extends JavaPlugin {
 
 		return dbLogger.getMute(name);
 	}
+	
+	public MuteData getPlayerMuteFromMem(String name) {
+		name = name.toLowerCase();
+
+		return playerMutes.get(name.toLowerCase());
+	}
 
 	public ArrayList<MuteData> getPlayerPastMutes(String name) {
 		return dbLogger.getPastMutes(name.toLowerCase());
@@ -577,6 +583,12 @@ public class BanManager extends JavaPlugin {
 			return true;
 
 		return dbLogger.isMuted(name);
+	}
+	
+	public boolean isPlayerMutedInMem(String name) {
+		name = name.toLowerCase();
+
+		return playerMutes.get(name) != null;
 	}
 
 	public void addPlayerWarning(String name, String by, String reason) {
