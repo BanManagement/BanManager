@@ -462,7 +462,7 @@ else {
 						<th>By</th>
 						<th>On</th>
 						<th>Length</th>
-						<th>Unbanned By</th>
+						<th>Unmuted By</th>
 						<th>At</th><?php
 			if(isset($pastMutes[0]) && !is_array($pastMutes[0]))
 				$pastMutes = array($pastMutes);
