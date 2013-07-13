@@ -13,10 +13,10 @@ public class ipBansAsync implements Runnable {
 	private BanManager plugin;
 	private long lastRun;
 
-	public ipBansAsync(BanManager banManager) {
+	public ipBansAsync(BanManager banManager, long lastChecked) {
 		plugin = banManager;
 		localConn = plugin.localConn;
-		lastRun = System.currentTimeMillis() / 1000;
+		lastRun = lastChecked;
 	}
 
 	public void run() {
@@ -64,6 +64,12 @@ public class ipBansAsync implements Runnable {
 		}
 
 		lastRun = System.currentTimeMillis() / 1000;
+		save();
 
+	}
+	
+	private synchronized void save() {
+		plugin.getConfig().set("lastChecked.ipbans", lastRun);
+		plugin.saveConfig();
 	}
 }

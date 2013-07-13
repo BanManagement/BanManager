@@ -13,10 +13,10 @@ public class muteAsync implements Runnable {
 	private BanManager plugin;
 	private long lastRun;
 
-	public muteAsync(BanManager banManager) {
+	public muteAsync(BanManager banManager, long lastChecked) {
 		plugin = banManager;
 		localConn = plugin.localConn;
-		lastRun = System.currentTimeMillis() / 1000;
+		lastRun = lastChecked;
 	}
 
 	public void run() {
@@ -63,5 +63,12 @@ public class muteAsync implements Runnable {
 		}
 
 		lastRun = System.currentTimeMillis() / 1000;
+		save();
+
+	}
+	
+	private synchronized void save() {
+		plugin.getConfig().set("lastChecked.mutes", lastRun);
+		plugin.saveConfig();
 	}
 }
