@@ -230,10 +230,10 @@ public class BanManager extends JavaPlugin {
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, getConfig().getLong("lastChecked.mutes", 0)), 20L, getConfig().getInt("scheduler.newMutes", 8) * 20);
 
 		// Check the banned tables for new player bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, getConfig().getLong("lastChecked.bans", 0)), 21L, getConfig().getInt("scheduler.newBans", 8) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, getConfig().getLong("lastChecked.bans", 0)), 40L, getConfig().getInt("scheduler.newBans", 8) * 20);
 
 		// Check the ip table for new ip bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, getConfig().getLong("lastChecked.ipbans", 0)), 22L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, getConfig().getLong("lastChecked.ipbans", 0)), 60L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
