@@ -121,9 +121,14 @@ if(!function_exists('json_encode')) {
 	}
 }
 
-if(!function_exists('apc_exists')) {
-	function apc_exists($key) { 
-		return (bool) apc_fetch($key);
+$apc_status = extension_loaded('apc') && ini_get('apc.enabled');
+if($apc_status) {
+	if(!function_exists('apc_exists')) {
+		if(version_compare(phpversion('apc'), '3.1.4', '<')) {
+			function apc_exists($key) { 
+				return (bool) apc_fetch($key);
+			}
+		}
 	}
 }
 
@@ -613,9 +618,7 @@ if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || 
 $settings['servers'] = unserialize($settings['servers']);
 
 // Check if APC is enabled to use that instead of file cache
-$settings['apc_enabled'] = false;
-if(extension_loaded('apc') && ini_get('apc.enabled'))
-	$settings['apc_enabled'] = true;
+$settings['apc_enabled'] = $apc_status;
 
 if(!isset($_GET['ajax']) || (isset($_GET['ajax']) && !$_GET['ajax']))
 	include('header.php');
