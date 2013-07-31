@@ -1,4 +1,6 @@
 # Default configuration file for James' BanManagement Plugin
+
+# Required. If the connection info is wrong, the plugin may hang on startup and will eventually disable itself
 localDatabase:
     host: 'localhost'
     port: 3306
@@ -20,6 +22,7 @@ localDatabase:
 
 # Enable for /banall & /unbanall commands
 # Allows (un)banning across multiple servers
+# Optional
 externalDatabase:
     enabled: false
     host: 'localhost'
