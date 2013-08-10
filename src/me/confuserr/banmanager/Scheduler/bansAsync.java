@@ -76,9 +76,16 @@ public class bansAsync implements Runnable {
 		save();
 
 	}
-	
+
 	private synchronized void save() {
-		plugin.schedulerFileConfig.set("lastChecked.bans", lastRun);
-		plugin.schedulerConfig.saveConfig();
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				plugin.schedulerFileConfig.set("lastChecked.bans", lastRun);
+				plugin.schedulerConfig.saveConfig();
+			}
+
+		});
 	}
 }

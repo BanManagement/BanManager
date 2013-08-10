@@ -66,9 +66,16 @@ public class muteAsync implements Runnable {
 		save();
 
 	}
-	
-	private synchronized void save() {
-		plugin.schedulerFileConfig.set("lastChecked.mutes", lastRun);
-		plugin.schedulerConfig.saveConfig();
+
+	private void save() {
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				plugin.schedulerFileConfig.set("lastChecked.mutes", lastRun);
+				plugin.schedulerConfig.saveConfig();
+			}
+
+		});
 	}
 }

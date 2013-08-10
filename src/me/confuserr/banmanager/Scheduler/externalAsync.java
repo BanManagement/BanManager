@@ -181,7 +181,14 @@ public class externalAsync implements Runnable {
 	}
 
 	private synchronized void save() {
-		plugin.schedulerFileConfig.set("lastChecked.external", lastRun);
-		plugin.schedulerConfig.saveConfig();
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				plugin.schedulerFileConfig.set("lastChecked.external", lastRun);
+				plugin.schedulerConfig.saveConfig();
+			}
+
+		});
 	}
 }
