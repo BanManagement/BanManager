@@ -1,4 +1,6 @@
 # Default configuration file for James' BanManagement Plugin
+
+# Required. If the connection info is wrong, the plugin may hang on startup and will eventually disable itself
 localDatabase:
     host: 'localhost'
     port: 3306
@@ -19,7 +21,8 @@ localDatabase:
     staffTable: 'bm_staff'
 
 # Enable for /banall & /unbanall commands
-# Allows (un)banning across multiple servers
+# Allows (un)banning across multiple servers that use the same exact externalDatabase.
+# Optional
 externalDatabase:
     enabled: false
     host: 'localhost'
@@ -78,6 +81,7 @@ use-partial-names: true
 # If the database fails whilst this is false, banned players can join.
 bukkit-ban: true
 
+# Supports colours via &. Use \n for a new line.
 messages:
     ban: '[name] has been banned for [reason]'
     banKick: 'You have been banned for [reason]'
