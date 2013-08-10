@@ -181,7 +181,7 @@ public class externalAsync implements Runnable {
 	}
 
 	private synchronized void save() {
-		plugin.getConfig().set("externalDatabase.lastChecked", lastRun);
-		plugin.saveConfig();
+		plugin.schedulerFileConfig.set("lastChecked.external", lastRun);
+		plugin.schedulerConfig.saveConfig();
 	}
 }

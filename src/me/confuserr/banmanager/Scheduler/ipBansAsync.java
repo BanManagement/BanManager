@@ -69,7 +69,7 @@ public class ipBansAsync implements Runnable {
 	}
 	
 	private synchronized void save() {
-		plugin.getConfig().set("lastChecked.ipbans", lastRun);
-		plugin.saveConfig();
+		plugin.schedulerFileConfig.set("lastChecked.ipbans", lastRun);
+		plugin.schedulerConfig.saveConfig();
 	}
 }

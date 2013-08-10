@@ -33,7 +33,6 @@ externalDatabase:
     ipUnbansTable: 'bm_ipunban_all'
     mutesTable: 'bm_mute_all'
     unmutesTable: 'bm_unmute_all'
-    lastChecked: 0
 
 # Enable for foreign characters
 useUTF8: false
@@ -54,16 +53,6 @@ cleanUp:
     muteRecords: 0
     playerIPs: 30
     warnings: 0
-
-# Scheduler intervals in seconds, recommended to leave as default values.
-# Only change if you know what you are doing!
-scheduler:
-    expiresCheck: 300
-    bukkitUnban: 3
-    newMutes: 8
-    newBans: 8
-    newIPBans: 8
-    external: 120
 
 # Blacklist commands for muted players
 mutedCommandBlacklist:

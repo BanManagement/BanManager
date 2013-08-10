@@ -68,7 +68,7 @@ public class muteAsync implements Runnable {
 	}
 	
 	private synchronized void save() {
-		plugin.getConfig().set("lastChecked.mutes", lastRun);
-		plugin.saveConfig();
+		plugin.schedulerFileConfig.set("lastChecked.mutes", lastRun);
+		plugin.schedulerConfig.saveConfig();
 	}
 }

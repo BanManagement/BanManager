@@ -1,0 +1,15 @@
+# Don't change these!
+lastChecked:
+  mutes: 0
+  ipbans: 0
+  bans: 0
+  external: 0
+  
+# Scheduler intervals in seconds, recommended to leave as default values.
+# Only change if you know what you are doing!
+scheduler:
+    expiresCheck: 300
+    newMutes: 8
+    newBans: 8
+    newIPBans: 8
+    external: 120

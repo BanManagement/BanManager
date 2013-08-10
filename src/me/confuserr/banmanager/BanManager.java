@@ -11,11 +11,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.*;
+import me.confuserr.banmanager.Configs.Config;
 import me.confuserr.banmanager.Listeners.*;
 import me.confuserr.banmanager.Scheduler.*;
 import me.confuserr.banmanager.data.*;
 import net.h31ix.updater.Updater;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
@@ -27,6 +29,10 @@ public class BanManager extends JavaPlugin {
 
 	private Map<String, String> banMessages = new HashMap<String, String>();
 	public boolean logKicks;
+	
+	// Configs
+	public FileConfiguration schedulerFileConfig;
+	public Config schedulerConfig;
 
 	public enum CleanUp {
 		Kicks(30), PlayerIPs(0), Warnings(0), BanRecords(0), IPBanRecords(0), MuteRecords(0);
@@ -90,12 +96,17 @@ public class BanManager extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
+		// Migrate old config options
+		
+		
 		saveConfig();
 		plugin = this;
 		staticPlugin = this;
 
-		// Load config
+		// Load configs
 		configReload();
+		schedulerConfig = new Config(new File(getDataFolder(), "schedules.yml"));
+		schedulerFileConfig = schedulerConfig.getConfig();
 
 		// Initialise database
 		localConn = new Database(getConfig().getString("localDatabase.username"), getConfig().getString("localDatabase.password"), "jdbc:mysql://" + getConfig().getString("localDatabase.host") + ":" + getConfig().getString("localDatabase.port") + "/" + getConfig().getString("localDatabase.database") + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10" + (getConfig().getBoolean("useUTF8") ? "&useUnicode=true&characterEncoding=utf-8" : ""), this, new HashMap<String, String>() {
@@ -173,7 +184,7 @@ public class BanManager extends JavaPlugin {
 				getCommand("tempmuteall").setExecutor(new TempMuteAllCommand(this));
 				getCommand("unmuteall").setExecutor(new UnMuteAllCommand(this));
 
-				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new externalAsync(this, extConn, getConfig().getLong("externalDatabase.lastChecked", 0)), 22L, getConfig().getInt("scheduler.external", 8) * 20);
+				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new externalAsync(this, extConn, schedulerFileConfig.getLong("lastChecked.external", 0)), 22L, schedulerFileConfig.getInt("scheduler.external", 120) * 20);
 			}
 		}
 
@@ -223,17 +234,17 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("Version " + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, getConfig().getInt("scheduler.expiresCheck", 300) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
 		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Check the muted table for new mutes
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, getConfig().getLong("lastChecked.mutes", 0)), 20L, getConfig().getInt("scheduler.newMutes", 8) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, schedulerFileConfig.getLong("lastChecked.mutes", 0)), 20L, schedulerFileConfig.getInt("scheduler.newMutes", 8) * 20);
 
 		// Check the banned tables for new player bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, getConfig().getLong("lastChecked.bans", 0)), 40L, getConfig().getInt("scheduler.newBans", 8) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, schedulerFileConfig.getLong("lastChecked.bans", 0)), 40L, schedulerFileConfig.getInt("scheduler.newBans", 8) * 20);
 
 		// Check the ip table for new ip bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, getConfig().getLong("lastChecked.ipbans", 0)), 60L, getConfig().getInt("scheduler.newIPBans", 8) * 20);
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
