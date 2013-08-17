@@ -89,7 +89,7 @@ public class BanManager extends JavaPlugin {
 			extConn.close();
 		}
 
-		getLogger().info("[BanManager] has been disabled");
+		getLogger().info("has been disabled");
 	}
 
 	@SuppressWarnings({ "deprecation", "serial" })
@@ -289,7 +289,7 @@ public class BanManager extends JavaPlugin {
 
 				jarFile = getFile();
 
-				getLogger().info("[BanManager] " + updateVersion + " update available");
+				getLogger().info(updateVersion + " update available");
 				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
 			}
 		}
