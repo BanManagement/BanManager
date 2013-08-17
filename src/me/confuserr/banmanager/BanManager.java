@@ -235,7 +235,7 @@ public class BanManager extends JavaPlugin {
 		// Checks for expired bans, and moves them into the record table
 		if (schedulerFileConfig.getInt("scheduler.expiresCheck", 300) != 0)
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
-			// 2 minute delay before it starts, runs every 5 minutes
+		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Check the muted table for new mutes
 		if (schedulerFileConfig.getInt("scheduler.newMutes", 8) != 0)
@@ -413,8 +413,11 @@ public class BanManager extends JavaPlugin {
 		dbLogger.logBan(name, bannedBy, reason, time, expires);
 	}
 
-	public void addPlayerBan(BanData data) {
+	public void addPlayerBan(BanData data, boolean logToDB) {
 		playerBans.put(data.getBanned(), data);
+
+		if (logToDB)
+			dbLogger.logBan(data.getBanned(), data.getBy(), data.getReason(), data.getTime(), data.getExpires());
 	}
 
 	public void addExternalPlayerBan(String name, String bannedBy, String reason) {

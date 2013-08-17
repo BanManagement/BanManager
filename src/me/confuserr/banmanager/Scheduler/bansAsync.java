@@ -28,7 +28,7 @@ public class bansAsync implements Runnable {
 				// First check to see if they aren't already in it, don't
 				// want duplicates!
 				if (!plugin.isPlayerBanned(result.getString("banned").toLowerCase())) {
-					plugin.addPlayerBan(new BanData(result.getString("banned").toLowerCase(), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")));
+					plugin.addPlayerBan(new BanData(result.getString("banned").toLowerCase(), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")), false);
 
 					if (plugin.getServer().getPlayer(result.getString("banned")) != null) {
 						// Oh, they're online, lets kick em!

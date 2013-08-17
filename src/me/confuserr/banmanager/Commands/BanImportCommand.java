@@ -138,7 +138,7 @@ public class BanImportCommand implements CommandExecutor {
 						int totalPlayers = toBan.size();
 
 						for (BanData p : toBan) {
-							plugin.addPlayerBan(p);
+							plugin.addPlayerBan(p, true);
 
 							done++;
 
