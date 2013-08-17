@@ -29,7 +29,7 @@ public class BanManager extends JavaPlugin {
 
 	private Map<String, String> banMessages = new HashMap<String, String>();
 	public boolean logKicks;
-	
+
 	// Configs
 	public FileConfiguration schedulerFileConfig;
 	public Config schedulerConfig;
@@ -85,7 +85,7 @@ public class BanManager extends JavaPlugin {
 		// Close the database connection
 		localConn.close();
 
-		if(extConn != null) {
+		if (extConn != null) {
 			extConn.close();
 		}
 
@@ -97,8 +97,7 @@ public class BanManager extends JavaPlugin {
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
 		// Migrate old config options
-		
-		
+
 		saveConfig();
 		plugin = this;
 		staticPlugin = this;
@@ -234,17 +233,21 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("Version " + getDescription().getVersion() + " has been enabled");
 
 		// Checks for expired bans, and moves them into the record table
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
-		// 2 minute delay before it starts, runs every 5 minutes
+		if (schedulerFileConfig.getInt("scheduler.expiresCheck", 300) != 0)
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
+			// 2 minute delay before it starts, runs every 5 minutes
 
 		// Check the muted table for new mutes
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, schedulerFileConfig.getLong("lastChecked.mutes", 0)), 20L, schedulerFileConfig.getInt("scheduler.newMutes", 8) * 20);
+		if (schedulerFileConfig.getInt("scheduler.newMutes", 8) != 0)
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, schedulerFileConfig.getLong("lastChecked.mutes", 0)), 20L, schedulerFileConfig.getInt("scheduler.newMutes", 8) * 20);
 
 		// Check the banned tables for new player bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, schedulerFileConfig.getLong("lastChecked.bans", 0)), 40L, schedulerFileConfig.getInt("scheduler.newBans", 8) * 20);
+		if (schedulerFileConfig.getInt("scheduler.newBans", 8) != 0)
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, schedulerFileConfig.getLong("lastChecked.bans", 0)), 40L, schedulerFileConfig.getInt("scheduler.newBans", 8) * 20);
 
 		// Check the ip table for new ip bans
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
+		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
@@ -397,11 +400,11 @@ public class BanManager extends JavaPlugin {
 	public void addPlayerBan(String name, String bannedBy, String reason) {
 		addPlayerBan(name, bannedBy, reason, System.currentTimeMillis() / 1000, 0);
 	}
-	
+
 	public void addPlayerBan(String name, String bannedBy, String reason, long expires) {
 		addPlayerBan(name, bannedBy, reason, System.currentTimeMillis() / 1000, expires);
 	}
-	
+
 	public void addPlayerBan(String name, String bannedBy, String reason, long time, long expires) {
 		name = name.toLowerCase();
 
@@ -576,7 +579,7 @@ public class BanManager extends JavaPlugin {
 
 		return dbLogger.getMute(name);
 	}
-	
+
 	public MuteData getPlayerMuteFromMem(String name) {
 		name = name.toLowerCase();
 
@@ -595,7 +598,7 @@ public class BanManager extends JavaPlugin {
 
 		return dbLogger.isMuted(name);
 	}
-	
+
 	public boolean isPlayerMutedInMem(String name) {
 		name = name.toLowerCase();
 
@@ -621,7 +624,7 @@ public class BanManager extends JavaPlugin {
 	public void setPlayerIP(String name, String ip) {
 		dbLogger.setIP(name.toLowerCase(), ip);
 	}
-	
+
 	public void removePlayerKickRecords(String name) {
 		dbLogger.kickRemoveRecords(name);
 	}
