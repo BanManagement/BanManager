@@ -268,22 +268,22 @@ public class DbLogger {
 	}
 
 	public void create_tables() throws SQLException {
-		boolean Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("bans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+		boolean Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("bans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`), INDEX `ban_time` (`ban_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 		if (!Table)
 			plugin.getLogger().severe("Unable to create local BanManagement table");
 		else {
-			Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("banRecords") + " (" + "ban_record_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expired_on int(10) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unbanned_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_record_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+			Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("banRecords") + " (" + "ban_record_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expired_on int(10) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unbanned_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_record_id)," + "KEY `banned` (`banned`), INDEX `ban_time` (`ban_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 			if (!Table)
 				plugin.getLogger().severe("Unable to create local BanManagement table");
 			else {
-				Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("ipBans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+				Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("ipBans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`), INDEX `ban_time` (`ban_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 				if (!Table)
 					plugin.getLogger().severe("Unable to create local BanManagement table");
 				else {
-					Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("ipBanRecords") + " (" + "ban_record_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expired_on int(10) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unbanned_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_record_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+					Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("ipBanRecords") + " (" + "ban_record_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expired_on int(10) NOT NULL," + "unbanned_by varchar(32) NOT NULL," + "unbanned_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_record_id)," + "KEY `banned` (`banned`), INDEX `ban_time` (`ban_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 					if (!Table)
 						plugin.getLogger().severe("Unable to create local BanManagement table");
@@ -292,12 +292,12 @@ public class DbLogger {
 						if (!Table)
 							plugin.getLogger().severe("Unable to create local BanManagement table");
 						else {
-							Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("mutes") + " (" + "mute_id int(255) NOT NULL AUTO_INCREMENT," + "muted varchar(32) NOT NULL," + "muted_by varchar(32) NOT NULL," + "mute_reason text NOT NULL," + "mute_time int(10) NOT NULL," + "mute_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (mute_id)," + "KEY `muted` (`muted`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+							Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("mutes") + " (" + "mute_id int(255) NOT NULL AUTO_INCREMENT," + "muted varchar(32) NOT NULL," + "muted_by varchar(32) NOT NULL," + "mute_reason text NOT NULL," + "mute_time int(10) NOT NULL," + "mute_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (mute_id)," + "KEY `muted` (`muted`), INDEX `mute_time` (`mute_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 							if (!Table)
 								plugin.getLogger().severe("Unable to create local BanManagement table");
 							else {
-								Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("muteRecords") + " (" + "mute_record_id int(255) NOT NULL AUTO_INCREMENT," + "muted varchar(32) NOT NULL," + "muted_by varchar(32) NOT NULL," + "mute_reason text NOT NULL," + "mute_time int(10) NOT NULL," + "mute_expired_on int(10) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmuted_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (mute_record_id)," + "KEY `muted` (`muted`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+								Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("muteRecords") + " (" + "mute_record_id int(255) NOT NULL AUTO_INCREMENT," + "muted varchar(32) NOT NULL," + "muted_by varchar(32) NOT NULL," + "mute_reason text NOT NULL," + "mute_time int(10) NOT NULL," + "mute_expired_on int(10) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmuted_time int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (mute_record_id)," + "KEY `muted` (`muted`), INDEX `ban_time` (`mute_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 								if (!Table)
 									plugin.getLogger().severe("Unable to create local BanManagement table");
