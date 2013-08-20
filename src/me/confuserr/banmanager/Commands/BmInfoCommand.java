@@ -115,6 +115,8 @@ public class BmInfoCommand implements CommandExecutor {
 
 				message = message.replace("[previousMutes]", Integer.toString(plugin.dbLogger.getPastMuteCount(name)));
 
+				message = message.replace("[kicksCount]", Integer.toString(plugin.dbLogger.getKickCount(name)));
+
 				message = message.replace("[warningsCount]", Integer.toString(plugin.dbLogger.getWarningCount(name)));
 
 				Util.sendMessage(sender, message);

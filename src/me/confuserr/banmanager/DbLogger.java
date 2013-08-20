@@ -104,6 +104,22 @@ public class DbLogger {
 		return count;
 	}
 
+	public int getKickCount(String user) {
+		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM " + localConn.getTable("kicks") + " WHERE kicked = '" + user + "'");
+		int count = 0;
+		try {
+			if(result.next()) {
+				count = result.getInt("numb");
+			}
+			result.close();
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+
 	public int getWarningCount(String user) {
 		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM " + localConn.getTable("warnings") + " WHERE warned = '" + user + "'");
 		int count = 0;

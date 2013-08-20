@@ -120,7 +120,7 @@ messages:
     noIpsImport: '&cNo IPs need importing, yay less work for me!'
     percentageIPsImported: '&6[percent]% of IPs imported'
     ipImportComplete: '&6IP import complete!'
-    bmInfo: '&cName: &6[name]\n&cCurrent Ban: [currentBan]\n&cPrevious Bans: [previousBans]\n&cCurrent Mute: [currentMute]\n&cPrevious Mutes: [previousMutes]\n&cWarnings: [warningsCount]'
+    bmInfo: '&cName: &6[name]\n&cCurrent Ban: [currentBan]\n&cPrevious Bans: [previousBans]\n&cCurrent Mute: [currentMute]\n&cPrevious Mutes: [previousMutes]\n&cKicks: [kicksCount]\n&cWarnings: [warningsCount]'
     ipBanned: '[ip] has been banned'
     ipTempBanned: '[ip] has been banned temporarily'
     ipSelfError: '&cYou can''t ip ban yourself fool!'
