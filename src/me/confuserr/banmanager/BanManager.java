@@ -189,7 +189,11 @@ public class BanManager extends JavaPlugin {
 
 		getCommand("ban").setExecutor(new BanCommand(this));
 		getCommand("tempban").setExecutor(new TempBanCommand(this));
-		getCommand("unban").setExecutor(new UnBanCommand(this));
+
+		UnBanCommand unBanCommand = new UnBanCommand(this);
+		getCommand("unban").setExecutor(unBanCommand);
+		getCommand("unban").setTabCompleter(unBanCommand);
+
 		getCommand("bminfo").setExecutor(new BmInfoCommand(this));
 		getCommand("banip").setExecutor(new BanIpCommand(this));
 		getCommand("tempbanip").setExecutor(new TempBanIpCommand(this));
