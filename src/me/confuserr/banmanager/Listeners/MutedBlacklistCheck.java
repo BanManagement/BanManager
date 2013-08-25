@@ -23,7 +23,7 @@ public class MutedBlacklistCheck implements Listener {
 		String[] args = event.getMessage().split(" ");
 
 		// Get rid of the first /
-		String cmd = args[0].replace("/", "");
+		String cmd = args[0].replace("/", "").toLowerCase();
 
 		// Check to see if its blacklisted
 		if (plugin.getMutedBlacklist().contains(cmd)) {
