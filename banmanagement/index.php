@@ -562,7 +562,7 @@ function searchIps($search, $serverID, $server, $sortByCol = 'name', $sortBy = '
 	else if(count($found) == 1) {
 		// Redirect!
 		$p = array_keys($found);
-		redirect('index.php?action=viewplayer&player='.$p[0].'&server='.$serverID);
+		redirect('index.php?action=viewip&ip='.$p[0].'&server='.$serverID);
 	} else {
 		// STUFF
 		return $found;
