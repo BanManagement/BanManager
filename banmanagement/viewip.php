@@ -218,7 +218,7 @@ else {
 						<th>Length</th>
 						<th>Unbanned By</th>
 						<th>At</th><?php
-		if(!is_array($pastBans[0]))
+		if(!isset($pastBans[0]) || (isset($pastBans[0]) && !is_array($pastBans[0])))
 			$pastBans = array($pastBans);
 		$serverName = false;
 		foreach($pastBans as $r) {
