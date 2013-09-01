@@ -98,7 +98,7 @@ $(function() {
 		// target the pager markup - see the HTML block below
 		container: $(".pager"),
 		
-		ajaxUrl: 'index.php?action=searchplayer&player=' + $("#container form input[name='player']").val() + '&server=' + $("#container form input[name='server']").val() + '&excluderecords=' + $("#container form input[name='excluderecords']").val() + '&ajax=true&size={size}&page={page}&sortby={sortList:column}&filter={filterList:filter}',
+		ajaxUrl: 'index.php?action=' + $("#container form input[name='action']").val() + '&player=' + $("#container form input[name='player']").val() + '&server=' + $("#container form input[name='server']").val() + '&excluderecords=' + $("#container form input[name='excluderecords']").val() + '&ajax=true&size={size}&page={page}&sortby={sortList:column}&filter={filterList:filter}',
 		ajaxObject: {
 			dataType: 'json',
 			success: function(data, textStatus, jqXHR) {

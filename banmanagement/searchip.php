@@ -88,14 +88,12 @@ else {
 				$player = $found[$playerNames[$i]];
 				$expireTime = ($player['expires'] + $mysqlSecs)- $timeNow;
 				
-				if($player['type'] != 'Kick' && $player['type'] != 'Warning') {
-					if($player['expires'] == 0)
-						$expires = '<span class="label label-important">Never</span>';
-					else if(isset($expireTime) && $expireTime > 0) {
-						$expires = '<span class="label label-warning">'.secs_to_hmini($expireTime).'</span>';
-					} else
-						$expires = '<span class="label label-success">Past</span>';
-				}
+				if($player['expires'] == 0)
+					$expires = '<span class="label label-important">Never</span>';
+				else if(isset($expireTime) && $expireTime > 0) {
+					$expires = '<span class="label label-warning">'.secs_to_hmini($expireTime).'</span>';
+				} else
+					$expires = '<span class="label label-success">Past</span>';
 				
 				if(!empty($filter)) {
 					$skip = false;
@@ -135,7 +133,7 @@ else {
 					$time = (!empty($player['time']) ? date('j F Y h:i:s A', $player['time']) : '');
 				
 				$ajaxArray['rows'][] = array(
-					'<img src="https://minotar.net/avatar/'.$playerNames[$i].'/20" alt="'.$playerNames[$i].'" class="minihead" /> <a href="index.php?action=viewplayer&player='.$playerNames[$i].'&server='.$_GET['server'].'">'.$playerNames[$i].'</a>',
+					'<a href="index.php?action=viewip&ip='.$playerNames[$i].'&server='.$_GET['server'].'">'.$playerNames[$i].'</a>',
 					$player['type'],
 					$player['by'],
 					$player['reason'],
@@ -170,7 +168,7 @@ else {
 	<form class="form-inline" action="" method="get">
 		<fieldset>
 			<legend>Search Options</legend>
-			<input type="hidden" name="action" value="searchplayer" />
+			<input type="hidden" name="action" value="searchip" />
 			<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
 			<input type="hidden" name="player" value="<?php echo $_GET['player']; ?>" />
 			<label class="checkbox">
