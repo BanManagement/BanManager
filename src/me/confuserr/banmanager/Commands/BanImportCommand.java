@@ -31,7 +31,7 @@ public class BanImportCommand implements CommandExecutor {
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String args[]) {
 		if (args.length < 2)
 			return false;
-		else if (!args[0].equals("player") && !args[0].equals("ip"))
+		else if (!args[0].equals("player") && !args[0].equals("ip") && !args[0].equals("players") && !args[0].equals("ips"))
 			return false;
 		else if (BanImportCommand.importInProgress) {
 			Util.sendMessage(sender, plugin.getMessage("importInProgressError"));
@@ -57,7 +57,7 @@ public class BanImportCommand implements CommandExecutor {
 
 		BanImportCommand.importInProgress = true;
 
-		if (type.equals("player")) {
+		if (type.equals("player") || type.equals("players")) {
 			Util.sendMessage(sender, plugin.getMessage("beginingPlayerImport"));
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
@@ -158,7 +158,7 @@ public class BanImportCommand implements CommandExecutor {
 					}
 				}
 			});
-		} else if (type.equals("ip")) {
+		} else if (type.equals("ip") || type.equals("ips")) {
 			Util.sendMessage(sender, plugin.getMessage("beginingIpImport"));
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
