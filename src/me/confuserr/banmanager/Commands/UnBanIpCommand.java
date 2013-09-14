@@ -39,6 +39,13 @@ public class UnBanIpCommand implements CommandExecutor {
 			// Its an IP
 			String ip = args[0];
 			if (plugin.isIPBanned(ip)) {
+				if (sender.hasPermission("bm.ipunban.by")) {
+					if (!plugin.getIPBan(ip).getBy().equals(playerName) && !sender.hasPermission("bm.exempt.override.banip")) {
+						Util.sendMessage(sender, plugin.getMessage("commandPermissionError"));
+						return true;
+					}
+				}
+
 				plugin.removeIPBan(ip, playerName, true);
 				Util.sendMessage(sender, plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName));
 			} else {
@@ -63,11 +70,18 @@ public class UnBanIpCommand implements CommandExecutor {
 					if (ip.isEmpty())
 						Util.sendMessage(sender, plugin.getMessage("ipPlayerOfflineError").replace("[name]", offlineName));
 					else {
+						if (sender.hasPermission("bm.ipunban.by")) {
+							if (!plugin.getIPBan(ip).getBy().equals(playerName) && !sender.hasPermission("bm.exempt.override.banip")) {
+								Util.sendMessage(sender, plugin.getMessage("commandPermissionError"));
+								return;
+							}
+						}
+
 						// Ok, we have their IP, lets unban it
 						plugin.removeIPBan(ip, byName, true);
 
 						String message = plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName);
-						
+
 						plugin.getLogger().info(message);
 
 						if (!sender.hasPermission("bm.notify.unipban"))

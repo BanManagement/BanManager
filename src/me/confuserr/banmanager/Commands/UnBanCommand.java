@@ -60,6 +60,14 @@ public class UnBanCommand implements CommandExecutor, TabCompleter {
 			Util.sendMessage(sender, plugin.getMessage("unbanError"));
 		} else {
 			final String offlineName = offlinePlayer.getName();
+			
+			
+			if (sender.hasPermission("bm.unban.by")) {
+				if (!plugin.getPlayerBan(offlineName).getBy().equals(playerName) && !sender.hasPermission("bm.exempt.override.ban")) {
+					Util.sendMessage(sender, plugin.getMessage("commandPermissionError"));
+					return true;
+				}
+			}
 
 			plugin.removePlayerBan(offlineName, playerName, true);
 

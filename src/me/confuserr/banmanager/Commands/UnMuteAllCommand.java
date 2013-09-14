@@ -49,6 +49,13 @@ public class UnMuteAllCommand implements CommandExecutor {
 				if (!plugin.isPlayerMuted(offlineName))
 					Util.sendMessage(sender, plugin.getMessage("playerNotMutedError"));
 				else {
+					if (sender.hasPermission("bm.unmute.by")) {
+						if (!plugin.getPlayerMute(offlineName).getBy().equals(byName) && !sender.hasPermission("bm.exempt.override.mute")) {
+							Util.sendMessage(sender, plugin.getMessage("commandPermissionError"));
+							return;
+						}
+					}
+
 					plugin.removeExternalPlayerMute(offlineName, byName);
 
 					String message = plugin.getMessage("playerUnmuted").replace("[name]", offlineName).replace("[by]", byName);
