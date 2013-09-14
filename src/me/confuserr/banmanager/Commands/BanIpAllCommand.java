@@ -169,10 +169,10 @@ public class BanIpAllCommand implements CommandExecutor {
 		plugin.addExternalIPBan(ip, bannedByName, reason);
 		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
-		if (!sender.hasPermission("bm.notify"))
+		if (!sender.hasPermission("bm.notify.ipban"))
 			Util.sendMessage(sender, plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		String message = plugin.getMessage("ipBan").replace("[ip]", ip).replace("[reason]", viewReason).replace("[by]", bannedByName);
-		Util.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify.ipban");
 	}
 }

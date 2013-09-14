@@ -97,11 +97,11 @@ public class MuteAllCommand implements CommandExecutor {
 
 				plugin.getLogger().info(infoMessage);
 
-				if (!sender.hasPermission("bm.notify"))
+				if (!sender.hasPermission("bm.notify.mute"))
 					Util.sendMessage(sender, infoMessage);
 
 				String message = plugin.getMessage("mute").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
-				Util.sendMessageWithPerm(message, "bm.notify");
+				Util.sendMessageWithPerm(message, "bm.notify.mute");
 
 				if (online) {
 					// Inform the player they have been muted

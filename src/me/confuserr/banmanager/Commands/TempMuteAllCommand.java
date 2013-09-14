@@ -118,11 +118,11 @@ public class TempMuteAllCommand implements CommandExecutor {
 
 				plugin.getLogger().info(infoMessage);
 
-				if (!sender.hasPermission("bm.notify"))
+				if (!sender.hasPermission("bm.notify.tempmute"))
 					Util.sendMessage(sender, infoMessage);
 
 				String message = plugin.getMessage("tempMute").replace("[expires]", formatExpires).replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", mutedByName);
-				Util.sendMessageWithPerm(message, "bm.notify");
+				Util.sendMessageWithPerm(message, "bm.notify.tempmute");
 
 				if (online) {
 					// Inform the player they have been muted

@@ -68,10 +68,10 @@ public class UnBanIpAllCommand implements CommandExecutor {
 
 						String message = plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName);
 
-						if (!sender.hasPermission("bm.notify"))
+						if (!sender.hasPermission("bm.notify.unipban"))
 							Util.sendMessage(sender, message);
 
-						Util.sendMessageWithPerm(message, "bm.notify");
+						Util.sendMessageWithPerm(message, "bm.notify.unipban");
 					}
 				}
 			});

@@ -70,7 +70,7 @@ public class KickCommand implements CommandExecutor {
 				
 				plugin.getLogger().info(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
 				
-				if(!sender.hasPermission("bm.notify"))
+				if(!sender.hasPermission("bm.notify.kick"))
 					Util.sendMessage(sender, plugin.getMessage("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName));
 				
 				if(reason.isEmpty())
@@ -78,7 +78,7 @@ public class KickCommand implements CommandExecutor {
 				else
 					message = plugin.getMessage("kicked").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				
-				Util.sendMessageWithPerm(message, "bm.notify");
+				Util.sendMessageWithPerm(message, "bm.notify.kick");
 			}
 		}
 		else if(list.size() > 1) {

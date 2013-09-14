@@ -55,10 +55,10 @@ public class UnMuteAllCommand implements CommandExecutor {
 
 					plugin.getLogger().info(message);
 
-					if (!sender.hasPermission("bm.notify"))
+					if (!sender.hasPermission("bm.notify.unmute"))
 						Util.sendMessage(sender, message);
 
-					Util.sendMessageWithPerm(message, "bm.notify");
+					Util.sendMessageWithPerm(message, "bm.notify.unmute");
 				}
 			}
 		});

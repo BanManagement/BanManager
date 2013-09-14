@@ -70,10 +70,10 @@ public class UnBanIpCommand implements CommandExecutor {
 						
 						plugin.getLogger().info(message);
 
-						if (!sender.hasPermission("bm.notify"))
+						if (!sender.hasPermission("bm.notify.unipban"))
 							Util.sendMessage(sender, message);
 
-						Util.sendMessageWithPerm(message, "bm.notify");
+						Util.sendMessageWithPerm(message, "bm.notify.unipban");
 					}
 				}
 			});

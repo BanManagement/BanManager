@@ -131,10 +131,10 @@ public class BanAllCommand implements CommandExecutor {
 
 		plugin.getLogger().info(infoMessage);
 
-		if (!sender.hasPermission("bm.notify"))
+		if (!sender.hasPermission("bm.notify.ban"))
 			Util.sendMessage(sender, infoMessage);
 
 		String message = plugin.getMessage("ban").replace("[displayName]", playerDisplayName).replace("[name]", playerName).replace("[reason]", viewReason).replace("[by]", bannedByName);
-		Util.sendMessageWithPerm(message, "bm.notify");
+		Util.sendMessageWithPerm(message, "bm.notify.ban");
 	}
 }

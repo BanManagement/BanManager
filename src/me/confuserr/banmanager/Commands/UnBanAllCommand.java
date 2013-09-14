@@ -50,10 +50,10 @@ public class UnBanAllCommand implements CommandExecutor {
 
 			plugin.getLogger().info(message);
 
-			if (!sender.hasPermission("bm.notify"))
+			if (!sender.hasPermission("bm.notify.unban"))
 				Util.sendMessage(sender, message);
 
-			Util.sendMessageWithPerm(message, "bm.notify");
+			Util.sendMessageWithPerm(message, "bm.notify.unban");
 		}
 		return true;
 	}
