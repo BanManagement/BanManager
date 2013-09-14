@@ -410,9 +410,9 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addPlayerBan(String name, String bannedBy, String reason, long time, long expires) {
-		name = name.toLowerCase();
+		String lName = name.toLowerCase();
 
-		playerBans.put(name, new BanData(name, bannedBy, reason, time, expires));
+		playerBans.put(lName, new BanData(lName, bannedBy, reason, time, expires));
 
 		dbLogger.logBan(name, bannedBy, reason, time, expires);
 	}
@@ -437,9 +437,9 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void removePlayerBan(String name, String by, boolean keepLog) {
-		name = name.toLowerCase();
+		String lName = name.toLowerCase();
 
-		playerBans.remove(name);
+		playerBans.remove(lName);
 		dbLogger.banRemove(name, by, keepLog);
 
 		if (useBukkitBans())
@@ -451,8 +451,6 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void removeExternalPlayerBan(String name, String by) {
-		name = name.toLowerCase();
-
 		removePlayerBan(name, by, true);
 		dbLogger.banExternalRemove(plugin.extConn, name, by);
 	}
@@ -529,8 +527,6 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addExternalPlayerMute(String name, String mutedBy, String reason) {
-		name = name.toLowerCase();
-
 		addPlayerMute(name, mutedBy, reason);
 
 		dbLogger.logMuteAll(extConn, name, mutedBy, reason);
@@ -549,9 +545,9 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public void addPlayerMute(String name, String mutedBy, String reason, long time, long expires) {
-		name = name.toLowerCase();
+		String lName = name.toLowerCase();
 
-		playerMutes.put(name, new MuteData(name, mutedBy, reason, time, expires));
+		playerMutes.put(lName, new MuteData(lName, mutedBy, reason, time, expires));
 
 		dbLogger.logMute(name, mutedBy, reason, time, expires);
 	}
