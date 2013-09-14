@@ -232,6 +232,8 @@ public class Updater
                 if(xFile.getName().endsWith(".zip"))
                 {
                     xFile.delete();
+                } else if (xFile.getName().startsWith("banmanagement")) {
+                	xFile.delete();
                 }
             }
             // Check to see if it's a zip file, if it is, unzip it.
