@@ -210,7 +210,7 @@ public class BanImportCommand implements CommandExecutor {
 									if (!details[3].equals("Forever"))
 										expires = dateFormat.parse(details[3]).getTime() / 1000;
 
-									toBan.add(new IPBanData(pName, pReason, by, date, expires));
+									toBan.add(new IPBanData(pName, by, pReason, date, expires));
 								}
 							}
 						}
