@@ -1,6 +1,8 @@
 main: me.confuserr.banmanager.BanManager
 name: BanManager
 version: 3.12
+website: http://dev.bukkit.org/bukkit-plugins/ban-management/
+authors: [confuserr]
 commands: 
   ban: 
     description: "ban a player"
