@@ -188,7 +188,7 @@ public class TempBanIpAllCommand implements CommandExecutor {
 			plugin.getServer().banIP(ip);
 
 		plugin.addExternalIPBan(ip, bannedByName, reason, timeExpires);
-		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
+		plugin.getServer().getConsoleSender().sendMessage(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify.tempipban"))
 			Util.sendMessage(sender, plugin.getMessage("ipTempBanned").replace("[ip]", ip).replace("[expires]", formatExpires));

@@ -82,7 +82,7 @@ public class UnBanIpCommand implements CommandExecutor {
 
 						String message = plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName);
 
-						plugin.getLogger().info(message);
+						plugin.getServer().getConsoleSender().sendMessage(message);
 
 						if (!sender.hasPermission("bm.notify.unipban"))
 							Util.sendMessage(sender, message);

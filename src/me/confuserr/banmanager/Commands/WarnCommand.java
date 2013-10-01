@@ -56,7 +56,7 @@ public class WarnCommand implements CommandExecutor {
 
 				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 
-				plugin.getLogger().info(infoMessage);
+				plugin.getServer().getConsoleSender().sendMessage(infoMessage);
 
 				if (!sender.hasPermission("bm.notify.warn"))
 					Util.sendMessage(sender, infoMessage);

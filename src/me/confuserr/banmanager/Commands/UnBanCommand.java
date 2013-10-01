@@ -73,7 +73,7 @@ public class UnBanCommand implements CommandExecutor, TabCompleter {
 
 			String message = plugin.getMessage("playerUnbanned").replace("[name]", offlineName).replace("[by]", playerName);
 
-			plugin.getLogger().info(message);
+			plugin.getServer().getConsoleSender().sendMessage(message);
 
 			if (!sender.hasPermission("bm.notify.unban"))
 				Util.sendMessage(sender, message);
