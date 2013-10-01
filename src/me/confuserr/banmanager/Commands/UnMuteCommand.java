@@ -60,7 +60,7 @@ public class UnMuteCommand implements CommandExecutor {
 
 					String message = plugin.getMessage("playerUnmuted").replace("[name]", offlineName).replace("[by]", byName);
 
-					plugin.getLogger().info(message);
+					plugin.getServer().getConsoleSender().sendMessage(message);
 
 					if (!sender.hasPermission("bm.notify.unmute"))
 						Util.sendMessage(sender, message);
