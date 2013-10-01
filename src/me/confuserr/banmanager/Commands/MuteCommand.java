@@ -95,7 +95,7 @@ public class MuteCommand implements CommandExecutor {
 
 				String infoMessage = plugin.getMessage("playerMuted").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-				plugin.getLogger().info(infoMessage);
+				plugin.getServer().getConsoleSender().sendMessage(infoMessage);
 
 				if (!sender.hasPermission("bm.notify.mute"))
 					Util.sendMessage(sender, infoMessage);

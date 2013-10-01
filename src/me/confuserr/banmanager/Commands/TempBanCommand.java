@@ -151,7 +151,7 @@ public class TempBanCommand implements CommandExecutor {
 
 		String infoMessage = plugin.getMessage("playerTempBanned").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-		plugin.getLogger().info(infoMessage);
+		plugin.getServer().getConsoleSender().sendMessage(infoMessage);
 
 		if (!sender.hasPermission("bm.notify.tempban"))
 			Util.sendMessage(sender, infoMessage);
