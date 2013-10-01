@@ -54,7 +54,7 @@ public class WarnCommand implements CommandExecutor {
 
 				plugin.dbLogger.logWarning(target.getName(), playerName, reason);
 
-				String infoMessage = plugin.getMessage("playerWarned").replace("[name]", target.getName()).replace("[displayName]", target.getDisplayName());
+				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 
 				plugin.getLogger().info(infoMessage);
 
