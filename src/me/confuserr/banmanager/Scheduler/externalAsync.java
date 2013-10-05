@@ -1,13 +1,12 @@
 package me.confuserr.banmanager.Scheduler;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.bukkit.entity.Player;
-
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Util;
+import org.bukkit.entity.Player;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class externalAsync implements Runnable {
 
@@ -24,7 +23,8 @@ public class externalAsync implements Runnable {
 	public void run() {
 		// Player Bans
 		// -----------------------------------------------------------------------------------------------------------------
-		ResultSet result = extConn.query("SELECT * FROM " + extConn.getTable("bans") + " WHERE ban_time > " + lastRun + "");
+        long thisRun = System.currentTimeMillis() / 1000;
+		ResultSet result = extConn.query("SELECT * FROM " + extConn.getTable("bans") + " WHERE ban_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -63,7 +63,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("unbans") + " WHERE unban_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("unbans") + " WHERE unban_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -81,7 +81,7 @@ public class externalAsync implements Runnable {
 
 		// IP Bans
 		// -----------------------------------------------------------------------------------------------------------------
-		result = extConn.query("SELECT * FROM " + extConn.getTable("ipBans") + " WHERE ban_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("ipBans") + " WHERE ban_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -116,7 +116,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("ipUnbans") + " WHERE unban_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("ipUnbans") + " WHERE unban_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -134,7 +134,7 @@ public class externalAsync implements Runnable {
 
 		// Mutes
 		// -----------------------------------------------------------------------------------------------------------------
-		result = extConn.query("SELECT * FROM " + extConn.getTable("mutes") + " WHERE mute_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("mutes") + " WHERE mute_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -158,7 +158,7 @@ public class externalAsync implements Runnable {
 		}
 
 		// Check for unbans and remove them!
-		result = extConn.query("SELECT * FROM " + extConn.getTable("unmutes") + " WHERE unmute_time > " + lastRun + "");
+		result = extConn.query("SELECT * FROM " + extConn.getTable("unmutes") + " WHERE unmute_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -176,7 +176,7 @@ public class externalAsync implements Runnable {
 
 		extConn.close();
 
-		lastRun = System.currentTimeMillis() / 1000;
+		lastRun = thisRun;
 		save();
 	}
 
