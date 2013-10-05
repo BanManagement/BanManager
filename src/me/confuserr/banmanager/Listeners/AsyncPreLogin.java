@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 public class AsyncPreLogin implements Listener {
 
@@ -17,7 +18,6 @@ public class AsyncPreLogin implements Listener {
 		plugin = instance;
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
 		final String name = event.getName().toLowerCase();
@@ -84,7 +84,14 @@ public class AsyncPreLogin implements Listener {
 		if (plugin.dbLogger.isMuted(name))
 			plugin.getPlayerMutes().put(name, plugin.dbLogger.getMute(name));
 
+	}
+
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerLogin(final PlayerLoginEvent event) {
 		if (plugin.logIPs()) {// Here we log their IP to the database
+			final String ip = Util.getIP(event.getAddress());
+			final String name = event.getPlayer().getName();
 			plugin.dbLogger.setIP(name, ip);
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
