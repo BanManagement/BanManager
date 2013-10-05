@@ -1,11 +1,11 @@
 package me.confuserr.banmanager.Scheduler;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.data.MuteData;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class muteAsync implements Runnable {
 
@@ -21,7 +21,8 @@ public class muteAsync implements Runnable {
 
 	public void run() {
 		// Check for new mutes
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("mutes") + " WHERE mute_time > " + lastRun + "");
+        long thisRun = System.currentTimeMillis() / 1000;
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("mutes") + " WHERE mute_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -45,7 +46,7 @@ public class muteAsync implements Runnable {
 		}
 
 		// Check for old mutes and remove them!
-		ResultSet result1 = localConn.query("SELECT muted FROM " + localConn.getTable("muteRecords") + " WHERE unmuted_time > " + lastRun + "");
+		ResultSet result1 = localConn.query("SELECT muted FROM " + localConn.getTable("muteRecords") + " WHERE unmuted_time >= " + lastRun + "");
 
 		try {
 			while (result1.next()) {
@@ -62,7 +63,7 @@ public class muteAsync implements Runnable {
 			e.printStackTrace();
 		}
 
-		lastRun = System.currentTimeMillis() / 1000;
+        lastRun = thisRun;
 		save();
 
 	}

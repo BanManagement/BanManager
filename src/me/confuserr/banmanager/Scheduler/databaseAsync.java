@@ -1,13 +1,12 @@
 package me.confuserr.banmanager.Scheduler;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import me.confuserr.banmanager.BanManager;
+import me.confuserr.banmanager.BanManager.CleanUp;
+import me.confuserr.banmanager.Database;
 import org.bukkit.Bukkit;
 
-import me.confuserr.banmanager.BanManager;
-import me.confuserr.banmanager.Database;
-import me.confuserr.banmanager.BanManager.CleanUp;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class databaseAsync implements Runnable {
 
@@ -24,7 +23,7 @@ public class databaseAsync implements Runnable {
 		// Get current time as a unix timestamp
 		long now = System.currentTimeMillis() / 1000;
 
-		// First, the player bans
+        // First, the player bans
 		localConn.query("INSERT INTO " + localConn.getTable("banRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.getTable("bans") + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
 
 		// Now we need to unban them

@@ -1,10 +1,11 @@
 package me.confuserr.banmanager.Scheduler;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.data.BanData;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class bansAsync implements Runnable {
 
@@ -20,7 +21,9 @@ public class bansAsync implements Runnable {
 
 	public void run() {
 		// Check for new bans
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("bans") + " WHERE ban_time > " + lastRun + "");
+        long thisRun = System.currentTimeMillis() / 1000; // Set the timestamp *before* we run, so we don't miss anything.
+
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("bans") + " WHERE ban_time >= " + lastRun + "");
 
 		try {
 			while (result.next()) {
@@ -28,7 +31,9 @@ public class bansAsync implements Runnable {
 				// First check to see if they aren't already in it, don't
 				// want duplicates!
 				if (!plugin.isPlayerBanned(result.getString("banned").toLowerCase())) {
-					plugin.addPlayerBan(new BanData(result.getString("banned").toLowerCase(), result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"), result.getLong("ban_expires_on")), false);
+					plugin.addPlayerBan(new BanData(result.getString("banned").toLowerCase(),
+                            result.getString("banned_by"), result.getString("ban_reason"), result.getLong("ban_time"),
+                            result.getLong("ban_expires_on")), false);
 
 					if (plugin.getServer().getPlayer(result.getString("banned")) != null) {
 						// Oh, they're online, lets kick em!
@@ -53,7 +58,7 @@ public class bansAsync implements Runnable {
 		}
 
 		// Check for old bans and remove them!
-		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.getTable("banRecords") + " WHERE unbanned_time > " + lastRun + "");
+		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.getTable("banRecords") + " WHERE unbanned_time >= " + lastRun + "");
 
 		try {
 			while (result1.next()) {
@@ -72,7 +77,7 @@ public class bansAsync implements Runnable {
 			e.printStackTrace();
 		}
 
-		lastRun = System.currentTimeMillis() / 1000;
+        lastRun = thisRun;
 		save();
 
 	}
