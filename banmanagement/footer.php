@@ -15,9 +15,42 @@
 				<p class="pull-right">Created By <a href="http://www.frostcast.net" target="_blank">Frostcast</a></p>
 			</footer>
 		</div> <!-- /container -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+		<!-- Add jQuery plugins below -->
+
+		<script src="//<?php echo $path; ?>js/bootstrap.min.js"></script>
+		<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+		<script src="//<?php echo $path; ?>js/heartcode-canvasloader-min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.countdown.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.minecraftskin.js"></script>
+		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
+		<?php
+			if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
+				echo '
+					<script type="text/javascript">
+						if (top.location != self.location) { top.location = self.location.href; }
+					</script>';
+			}
+			if(isset($_SESSION['admin']) && $_SESSION['admin']) {
+				echo '
+					<script type="text/javascript">
+						var authid = \''.sha1($settings['password']).'\';
+					</script>';
+				if(isset($_GET['action']) && $_GET['action'] != 'admin')
+					echo '
+					<script src="//'.$path.'js/bootstrap-datetimepicker.min.js"></script>
+					<script src="//'.$path.'js/admin.js"></script>
+			';
+			}
+		?>
+		<script src="//<?php echo $path; ?>js/core.js"></script>
 		<script type="text/javascript">
 			$(function() {
-				$(".span4 button[rel='popover']").popover({trigger: 'hover', placement: 'left'});
+				$(".col-lg-4 button[rel='popover']").popover({trigger: 'hover', placement: 'left'});
 				$("#search li").click(function(e) {
 					var s = $(this);
 					if(s.attr("id") == 'ip') {

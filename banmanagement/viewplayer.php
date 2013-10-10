@@ -49,7 +49,7 @@ else {
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		?>
-		<div class="hero-unit">
+		<div class="jumbotron">
 			<h2><img src="https://minotar.net/avatar/<?php echo $_GET['player']; ?>/40" alt="<?php echo $_GET['player']; ?>" /> <?php echo $_GET['player']; ?></h2>
 			<h3>Server: <?php echo $server['name']; ?></h3>
 		<?php

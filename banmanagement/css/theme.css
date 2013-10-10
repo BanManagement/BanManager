@@ -1,0 +1,179 @@
+/*************
+  Bootstrap theme
+ *************/
+/* jQuery Bootstrap Theme */
+
+/* Fix for icons */
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
+
+.tablesorter-bootstrap {
+	width: 100%;
+}
+.tablesorter-bootstrap .tablesorter-header,
+.tablesorter-bootstrap tfoot th,
+.tablesorter-bootstrap tfoot td {
+	font: bold 14px/20px Arial, Sans-serif;
+	position: relative;
+	padding: 8px;
+	margin: 0 0 18px;
+	list-style: none;
+	background-color: #FBFBFB;
+	background-image: -moz-linear-gradient(top, white, #efefef);
+	background-image: -ms-linear-gradient(top, white, #efefef);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), to(#efefef));
+	background-image: -webkit-linear-gradient(top, white, #efefef);
+	background-image: -o-linear-gradient(top, white, #efefef);
+	background-image: linear-gradient(to bottom, white, #efefef);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#efefef', GradientType=0);
+	background-repeat: repeat-x;
+	-webkit-box-shadow: inset 0 1px 0 white;
+	-moz-box-shadow: inset 0 1px 0 #ffffff;
+	box-shadow: inset 0 1px 0 white;
+}
+
+.tablesorter-bootstrap .tablesorter-header {
+	cursor: pointer;
+}
+
+.tablesorter-bootstrap .tablesorter-header-inner {
+	position: relative;
+	padding: 4px 18px 4px 4px;
+}
+
+/* bootstrap uses <i> for icons */
+.tablesorter-bootstrap .tablesorter-header i {
+	position: absolute;
+	right: 2px;
+	top: 50%;
+	margin-top: -7px; /* half the icon height; older IE doesn't like this */
+	width: 14px;
+	height: 14px;
+	background-repeat: no-repeat;
+	line-height: 14px;
+	display: inline-block;
+}
+.tablesorter-bootstrap .bootstrap-icon-unsorted {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWVJREFUeNqUUL9Lw2AUTGP8mqGlpBQkNeCSRcckEBcHq1jImMElToKuDvpHFMGhU0BQcHBwLji6CE1B4uB/INQsDi4d2jQ/fPeZxo764OV6915f7lLJ81xot9tCURXqdVEUr7IsO6ffH9Q5BlEUCaLwWxWqTcbYnaIoh0Dw4gAvcWlxq1qt9hqNxg6hUGAP+uIPUrGs0qXLer2+v/pTX6QpxLtkc2U2m53ACb8sSdIDXerSEms2m6+DweAICA4d89KGbduf9MpEVdXQ9/2LVqv1CASHjjn3iq/x1xKFfxQPqGnada1W86bT6SiO42OS3qk3KPStLMvbk8nkfjwen/LLuq6blFymMB0KdUPSGhAcOualjX6/f0bCiC7NaWGPQr0BwaFjzn0gYJqmLAiCA8/zni3LmhuGkQPBoWPOPwQeaPIqD4fDruu6L6Zp5kBw6IudchmdJAkLw3DXcZwnIPjy/FuAAQCiqqWWCAFKcwAAAABJRU5ErkJggg==);
+}
+
+/* since bootstrap (table-striped) uses nth-child(), we just use this to add a zebra stripe color */
+.tablesorter-bootstrap tr.odd td {
+	background-color: #f9f9f9;
+}
+.tablesorter-bootstrap tbody > .odd:hover > td,
+.tablesorter-bootstrap tbody > .even:hover > td {
+	background-color: #f5f5f5;
+}
+.tablesorter-bootstrap tr.even td {
+	background-color: #fff;
+}
+
+/* processing icon */
+.tablesorter-bootstrap .tablesorter-processing {
+	background-image: url('data:image/gif;base64,R0lGODlhFAAUAKEAAO7u7lpaWgAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQBCgACACwAAAAAFAAUAAACQZRvoIDtu1wLQUAlqKTVxqwhXIiBnDg6Y4eyx4lKW5XK7wrLeK3vbq8J2W4T4e1nMhpWrZCTt3xKZ8kgsggdJmUFACH5BAEKAAIALAcAAAALAAcAAAIUVB6ii7jajgCAuUmtovxtXnmdUAAAIfkEAQoAAgAsDQACAAcACwAAAhRUIpmHy/3gUVQAQO9NetuugCFWAAAh+QQBCgACACwNAAcABwALAAACE5QVcZjKbVo6ck2AF95m5/6BSwEAIfkEAQoAAgAsBwANAAsABwAAAhOUH3kr6QaAcSrGWe1VQl+mMUIBACH5BAEKAAIALAIADQALAAcAAAIUlICmh7ncTAgqijkruDiv7n2YUAAAIfkEAQoAAgAsAAAHAAcACwAAAhQUIGmHyedehIoqFXLKfPOAaZdWAAAh+QQFCgACACwAAAIABwALAAACFJQFcJiXb15zLYRl7cla8OtlGGgUADs=');
+	position: absolute;
+	z-index: 1000;
+}
+
+/* filter widget */
+.tablesorter-bootstrap .tablesorter-filter-row .tablesorter-filter {
+	width: 98%;
+	height: inherit;
+	margin: 0 auto;
+	padding: 4px 6px;
+	background-color: #fff;
+	color: #333;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: height 0.1s ease;
+	-moz-transition: height 0.1s ease;
+	-o-transition: height 0.1s ease;
+	transition: height 0.1s ease;
+}
+.tablesorter-bootstrap .tablesorter-filter-row td {
+	background: #eee;
+	line-height: normal;
+	text-align: center;
+	padding: 4px 6px;
+	vertical-align: middle;
+	-webkit-transition: line-height 0.1s ease;
+	-moz-transition: line-height 0.1s ease;
+	-o-transition: line-height 0.1s ease;
+	transition: line-height 0.1s ease;
+}
+/* hidden filter row */
+.tablesorter-bootstrap .tablesorter-filter-row.hideme td {
+	padding: 2px; /* change this to modify the thickness of the closed border row */
+	margin: 0;
+	line-height: 0;
+}
+.tablesorter-bootstrap .tablesorter-filter-row.hideme .tablesorter-filter {
+	height: 1px;
+	min-height: 0;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	/* don't use visibility: hidden because it disables tabbing */
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+
+/* pager plugin */
+.tablesorter-bootstrap .tablesorter-pager select {
+  padding: 4px 6px;
+}
+.tablesorter-bootstrap .tablesorter-pager .pagedisplay {
+	border: 0;
+}
+/* pager wrapper, div */
+.tablesorter-pager {
+	padding: 5px;
+}
+/* pager wrapper, in thead/tfoot */
+td.tablesorter-pager {
+	background-color: #e6eeee;
+	margin: 0; /* needed for bootstrap .pager gets a 18px bottom margin */
+}
+/* pager navigation arrows */
+.tablesorter-pager img {
+	vertical-align: middle;
+	margin-right: 2px;
+	cursor: pointer;
+}
+
+/* pager output text */
+.tablesorter-pager .pagedisplay {
+	padding: 0 5px 0 5px;
+	width: auto;
+	white-space: nowrap;
+	text-align: center;
+}
+
+/* pager element reset (needed for bootstrap) */
+.tablesorter-pager select {
+	margin: 0;
+	padding: 0;
+}
+
+/*** css used when "updateArrows" option is true ***/
+/* the pager itself gets a disabled class when the number of rows is less than the size */
+.tablesorter-pager.disabled {
+	display: none;
+}
+/* hide or fade out pager arrows when the first or last row is visible */
+.tablesorter-pager .disabled {
+	/* visibility: hidden */
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	cursor: default;
+}
+
+/*!
+ * Datepicker for Bootstrap
+ *
+ * Copyright 2012 Stefan Petre
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */.clearfix{*zoom:1}.clearfix:before,.clearfix:after{display:table;content:"";line-height:0}.clearfix:after{clear:both}.hide-text{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0}.input-block-level{display:block;width:100%;min-height:30px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.bootstrap-datetimepicker-widget{top:0;left:0;width:250px;padding:4px;margin-top:1px;z-index:3000;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}.bootstrap-datetimepicker-widget:before{content:'';display:inline-block;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #ccc;border-bottom-color:rgba(0,0,0,0.2);position:absolute;top:-7px;left:6px}.bootstrap-datetimepicker-widget:after{content:'';display:inline-block;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid #fff;position:absolute;top:-6px;left:7px}.bootstrap-datetimepicker-widget>ul{list-style-type:none;margin:0}.bootstrap-datetimepicker-widget .timepicker-hour,.bootstrap-datetimepicker-widget .timepicker-minute,.bootstrap-datetimepicker-widget .timepicker-second{width:100%;font-weight:bold;font-size:1.2em}.bootstrap-datetimepicker-widget table[data-hour-format="12"] .separator{width:4px;padding:0;margin:0}.bootstrap-datetimepicker-widget .datepicker>div{display:none}.bootstrap-datetimepicker-widget .picker-switch{text-align:center}.bootstrap-datetimepicker-widget table{width:100%;margin:0}.bootstrap-datetimepicker-widget td,.bootstrap-datetimepicker-widget th{text-align:center;width:20px;height:20px;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}.bootstrap-datetimepicker-widget td.day:hover,.bootstrap-datetimepicker-widget td.hour:hover,.bootstrap-datetimepicker-widget td.minute:hover,.bootstrap-datetimepicker-widget td.second:hover{background:#eee;cursor:pointer}.bootstrap-datetimepicker-widget td.old,.bootstrap-datetimepicker-widget td.new{color:#999}.bootstrap-datetimepicker-widget td.active,.bootstrap-datetimepicker-widget td.active:hover{color:#fff;background-color:#006dcc;background-image:-moz-linear-gradient(top,#08c,#04c);background-image:-webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));background-image:-webkit-linear-gradient(top,#08c,#04c);background-image:-o-linear-gradient(top,#08c,#04c);background-image:linear-gradient(to bottom,#08c,#04c);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0);border-color:#04c #04c #002a80;border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);*background-color:#04c;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,0.25)}.bootstrap-datetimepicker-widget td.active:hover,.bootstrap-datetimepicker-widget td.active:hover:hover,.bootstrap-datetimepicker-widget td.active:active,.bootstrap-datetimepicker-widget td.active:hover:active,.bootstrap-datetimepicker-widget td.active.active,.bootstrap-datetimepicker-widget td.active:hover.active,.bootstrap-datetimepicker-widget td.active.disabled,.bootstrap-datetimepicker-widget td.active:hover.disabled,.bootstrap-datetimepicker-widget td.active[disabled],.bootstrap-datetimepicker-widget td.active:hover[disabled]{color:#fff;background-color:#04c;*background-color:#003bb3}.bootstrap-datetimepicker-widget td.active:active,.bootstrap-datetimepicker-widget td.active:hover:active,.bootstrap-datetimepicker-widget td.active.active,.bootstrap-datetimepicker-widget td.active:hover.active{background-color:#039 \9}.bootstrap-datetimepicker-widget td.disabled,.bootstrap-datetimepicker-widget td.disabled:hover{background:0;color:#999;cursor:not-allowed}.bootstrap-datetimepicker-widget td span{display:block;width:47px;height:54px;line-height:54px;float:left;margin:2px;cursor:pointer;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}.bootstrap-datetimepicker-widget td span:hover{background:#eee}.bootstrap-datetimepicker-widget td span.active{color:#fff;background-color:#006dcc;background-image:-moz-linear-gradient(top,#08c,#04c);background-image:-webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));background-image:-webkit-linear-gradient(top,#08c,#04c);background-image:-o-linear-gradient(top,#08c,#04c);background-image:linear-gradient(to bottom,#08c,#04c);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0);border-color:#04c #04c #002a80;border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);*background-color:#04c;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,0.25)}.bootstrap-datetimepicker-widget td span.active:hover,.bootstrap-datetimepicker-widget td span.active:active,.bootstrap-datetimepicker-widget td span.active.active,.bootstrap-datetimepicker-widget td span.active.disabled,.bootstrap-datetimepicker-widget td span.active[disabled]{color:#fff;background-color:#04c;*background-color:#003bb3}.bootstrap-datetimepicker-widget td span.active:active,.bootstrap-datetimepicker-widget td span.active.active{background-color:#039 \9}.bootstrap-datetimepicker-widget td span.old{color:#999}.bootstrap-datetimepicker-widget td span.disabled,.bootstrap-datetimepicker-widget td span.disabled:hover{background:0;color:#999;cursor:not-allowed}.bootstrap-datetimepicker-widget th.switch{width:145px}.bootstrap-datetimepicker-widget th.next,.bootstrap-datetimepicker-widget th.prev{font-size:21px}.bootstrap-datetimepicker-widget th.disabled,.bootstrap-datetimepicker-widget th.disabled:hover{background:0;color:#999;cursor:not-allowed}.bootstrap-datetimepicker-widget thead tr:first-child th{cursor:pointer}.bootstrap-datetimepicker-widget thead tr:first-child th:hover{background:#eee}.input-append.date .add-on i,.input-prepend.date .add-on i{display:block;cursor:pointer;width:16px;height:16px}
