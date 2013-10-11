@@ -90,7 +90,7 @@ else {
 				
 				if($player['type'] != 'Kick' && $player['type'] != 'Warning') {
 					if($player['expires'] == 0)
-						$expires = '<span class="label label-important">Never</span>';
+						$expires = '<span class="label label-danger">Never</span>';
 					else if(isset($expireTime) && $expireTime > 0) {
 						$expires = '<span class="label label-warning">'.secs_to_hmini($expireTime).'</span>';
 					} else

@@ -28,7 +28,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	</head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<nav class="navbar navbar-fixed-top <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']){echo "navbar-inverse";} else {echo "navbar-default";} ?>" role="navigation">
 		<div class="container">
 		    <div class="navbar-header">
 		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-nav-collapse">
@@ -52,19 +52,18 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		    </ul>
 		    	<?php 
 		    		if(isset($_SESSION['admin']) && $_SESSION['admin']) {
-					echo '
-					<ul class="nav navbar-nav navbar-right">
-						<li>
-				    		<div class="btn-group">
-				    			<button type="button" class="btn btn-info navbar-btn" id="acp">Admin CP</button>
-				    			<button type="button" class="btn btn-info navbar-btn" id="logout">Logout</button>
-				    		</div>
-		    			</li>
-		    		';
-		    		}
+				?>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+			    		<div class="btn-group">
+			    			<button type="button" class="btn <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="acp">Admin CP</button>
+			    			<button type="button" class="btn <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="logout">Logout</button>
+			    		</div>
+	    			</li>
+	    		</ul>
+		    	<?php
+		    	}
 		    	?>
-		    	</li>
-		    </ul>
 		  </div>
 		</div>
 	</nav>

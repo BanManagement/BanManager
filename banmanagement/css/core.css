@@ -56,3 +56,9 @@ td.admin-options {
 .scratch {
     display:none;
 }
+
+#copyright_image{
+	width: 100px;
+	height: 25px;
+	margin-top: -6px;
+}

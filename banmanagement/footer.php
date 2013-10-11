@@ -10,11 +10,14 @@
 ?>
 			<hr>
 			<footer>
-				<p class="pull-left"><?php echo $settings['footer']; ?></p>
+				<p class="pull-left"><?php echo $settings['footer']; ?><?php if(isset($settings['admin_link']) && $settings['admin_link']){echo ' - <a href="index.php?action=admin" target="_blank">Admin</a>';} ?></p>
 				<!-- Must not be removed as per the licence terms -->
-				<p class="pull-right">Created By <a href="http://www.frostcast.net" target="_blank">Frostcast</a></p>
+				<p class="pull-right">Created By <a href="http://www.frostcast.net" target="_blank">
+					<img src="img/brand.png" alt="Frostcast" id="copyright_image" />
+				</a></p>
 			</footer>
 		</div> <!-- /container -->
+		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 		<!-- Add jQuery plugins below -->
@@ -27,7 +30,6 @@
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.minecraftskin.js"></script>
-		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
 		<?php
 			if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
 				echo '

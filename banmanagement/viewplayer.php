@@ -88,7 +88,7 @@ else {
 						<td>Expires in:</td>
 						<td class="expires">';
 				if($currentBans['ban_expires_on'] == 0)
-					echo '<span class="label label-important">Never</span>';
+					echo '<span class="label label-danger">Permanent</span>';
 				else {
 					$currentBans['ban_expires_on'] = $currentBans['ban_expires_on'] + $mysqlSecs;
 					$currentBans['ban_time'] = $currentBans['ban_time'] + $mysqlSecs;
@@ -129,14 +129,15 @@ else {
 				<tfoot>
 					<tr>
 						<td colspan="2">
-							<a class="btn btn-warning edit" title="Edit" href="#editban" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
-							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deleteban&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentBans['ban_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unban '.$_GET['player'].'?<br />This cannot be undone"><i class="icon-trash icon-white"></i> Unban</a>
+							<a class="btn btn-warning edit" title="Edit" href="#editban" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deleteban&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentBans['ban_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unban '.$_GET['player'].'?<br />This cannot be undone"><span class="glyphicon glyphicon-trash"></span> Unban</a>
 						</td>
 					</tr>
 				</tfoot>';
 			}
 				?>
-			</table><?php
+			</table>
+			<?php
 			if(isset($settings['player_current_ban_extra_html'])) {
 				$extra = htmlspecialchars_decode($settings['player_current_ban_extra_html'], ENT_QUOTES);
 				$extra = str_replace(array('{SERVER}', '{SERVERID}', '{NAME}'), array($server['name'], $_GET['server'], $_GET['player']), $extra);
@@ -147,79 +148,81 @@ else {
 			</div>';
 			}
 			if($admin && count($currentBans) != 0) {?>
-			<div class="modal hide fade" id="editban">
-				<form class="form-horizontal" action="" method="post">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h3>Edit Ban</h3>
-					</div>
-					<div class="modal-body">
-						<fieldset>
-							<div class="control-group">
-								<label class="control-label" for="yourtime">Your Time:</label>
-								<div class="controls">
-									<span class="yourtime"></span>
-								</div>
+			<div class="modal fade" id="editban">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<form class="form-horizontal" action="" method="post">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h3>Editing Ban</h3>
 							</div>
-							<div class="control-group">
-								<label class="control-label" for="servertime">Server Time:</label>
-								<div class="controls">
-									<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" for="bandatetime">Expires Server Time:</label>
-								<div class="controls">
-									<div class="input-append datetimepicker date"><?php
-				echo '						
-										<div class="input-prepend">
-											<button class="btn btn-danger bantype" type="button">';
-				if($currentBans['ban_expires_on'] == 0)
-					echo 'Never';
-				else
-					echo 'Temp';
-			
-				echo '</button>
-											<input type="text" class="required';
-			
-				if($currentBans['ban_expires_on'] == 0)
-					echo ' disabled" disabled="disabled"';
-				else
-					echo '"'; 
-			
-				echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
-
-				if($currentBans['ban_expires_on'] == 0)
-					echo '';
-				else
-					echo date('d/m/Y H:i:s', $currentBans['ban_expires_on']);
-				
-				echo '" id="bandatetime" />';
-										?>
-											<span class="add-on">
-												<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-											</span>
+							<div class="modal-body">
+								<div class="container">
+									<div class="control-group">
+										<label class="control-label" for="yourtime">Your Time:</label>
+										<div class="controls">
+											<span class="yourtime"></span>
 										</div>
 									</div>
+									<div class="control-group">
+										<label class="control-label" for="servertime">Server Time:</label>
+										<div class="controls">
+											<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
+										</div>
+									</div>
+						<!--			<div class="control-group">
+										<label class="control-label" for="bandatetime">Expires Server Time:</label>
+										<div class="controls">
+											<div class="input-append datetimepicker date">
+											<?php
+								/*					echo '						
+														<div class="input-prepend">
+															<button class="btn btn-danger bantype" type="button">';
+												if($currentBans['ban_expires_on'] == 0)
+													echo 'Permanent';
+												else
+													echo 'Temporary';
+											
+												echo '</button>
+																			<input type="text" class="required';
+											
+												if($currentBans['ban_expires_on'] == 0)
+													echo ' disabled" disabled="disabled"';
+												else
+													echo '"'; 
+											
+												echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
+
+												if($currentBans['ban_expires_on'] == 0)
+													echo '';
+												else
+													echo date('d/m/Y H:i:s', $currentBans['ban_expires_on']);
+												
+												echo '" id="bandatetime" />';
+								*/			?>
+													<span class="add-on">
+														<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>-->
+									<label for="banreason">Reason:</label>
+										<textarea id="banreason" name="reason" class="form-control" rows="4"><?php echo $currentBans['ban_reason']; ?></textarea>
 								</div>
 							</div>
-							<div class="control-group">
-								<label class="control-label" for="banreason">Reason:</label>
-								<div class="controls">
-									<textarea id="banreason" name="reason" rows="4"><?php echo $currentBans['ban_reason']; ?></textarea>
-								</div>
+							<div class="modal-footer">
+								<a href="#" class="btn" data-dismiss="modal">Close</a>
+								<input type="submit" class="btn btn-primary" value="Save" />
 							</div>
-						</fieldset>
+							<input type="hidden" name="id" value="<?php echo $currentBans['ban_id']; ?>" />
+							<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
+							<input type="hidden" name="expiresTimestamp" value="" />
+						</form>
 					</div>
-					<div class="modal-footer">
-						<a href="#" class="btn" data-dismiss="modal">Close</a>
-						<input type="submit" class="btn btn-primary" value="Save" />
-					</div>
-					<input type="hidden" name="id" value="<?php echo $currentBans['ban_id']; ?>" />
-					<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
-					<input type="hidden" name="expiresTimestamp" value="" />
-				</form>
-			</div><?php
+				</div>
+			</div>
+			<?php
 			}
 		}
 		
@@ -242,7 +245,7 @@ else {
 						<td>Expires in:</td>
 						<td class="expires">';
 				if($currentMutes['mute_expires_on'] == 0)
-					echo '<span class="label label-important">Never</span>';
+					echo '<span class="label label-danger">Permanent</span>';
 				else {
 					$currentMutes['mute_expires_on'] = $currentMutes['mute_expires_on'] + $mysqlSecs;
 					$currentMutes['mute_time'] = $currentMutes['mute_time'] + $mysqlSecs;
@@ -285,8 +288,8 @@ else {
 				<tfoot>
 					<tr>
 						<td colspan="2">
-							<a class="btn btn-warning edit" title="Edit" href="#editmute" data-toggle="modal"><i class="icon-pencil icon-white"></i> Edit</a>
-							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deletemute&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentMutes['mute_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unmute '.$_GET['player'].'?<br />This cannot be undone"><i class="icon-trash icon-white"></i> Unmute</a>
+							<a class="btn btn-warning edit" title="Edit" href="#editmute" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+							<a class="btn btn-danger delete" title="Unban" data-role="confirm" href="index.php?action=deletemute&ajax=true&authid='.sha1($settings['password']).'&server='.$_GET['server'].'&id='.$currentMutes['mute_id'].'" data-confirm-title="Unban '.$_GET['player'].'" data-confirm-body="Are you sure you want to unmute '.$_GET['player'].'?<br />This cannot be undone"><span class="glyphicon glyphicon-trash"></span> Unmute</a>
 						</td>
 					</tr>
 				</tfoot>';
@@ -305,78 +308,79 @@ else {
 			}
 			if($admin && count($currentMutes) != 0) {?>
 			
-			<div class="modal hide fade" id="editmute">
-				<form class="form-horizontal" action="" method="post">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h3>Edit Ban</h3>
-					</div>
-					<div class="modal-body">
-						<fieldset>
-							<div class="control-group">
-								<label class="control-label" for="yourtime">Your Time:</label>
-								<div class="controls">
-									<span class="yourtime"></span>
-								</div>
+			<div class="modal fade" id="editmute">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<form class="form-horizontal" action="" method="post">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h3>Editing Mute</h3>
 							</div>
-							<div class="control-group">
-								<label class="control-label" for="servertime">Server Time:</label>
-								<div class="controls">
-									<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" for="mutedatetime">Expires Server Time:</label>
-								<div class="controls">
-									<div class="input-append datetimepicker date"><?php
-				echo '						
-										<div class="input-prepend">
-											<button class="btn btn-danger bantype" type="button">';
-				if($currentMutes['mute_expires_on'] == 0)
-					echo 'Never';
-				else
-					echo 'Temp';
-			
-				echo '</button>
-											<input type="text" class="required';
-			
-				if($currentMutes['mute_expires_on'] == 0)
-					echo ' disabled" disabled="disabled"';
-				else
-					echo '"'; 
-			
-				echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
+							<div class="modal-body">
+								<div class="container">
+									<div class="form-group">
+										<label class="control-label" for="yourtime">Your Time:</label>
+											<span class="yourtime"></span>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="servertime">Server Time:</label>
+											<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
+									</div>
+								<!--	<div class="form-group">
+										<label class="control-label" for="mutedatetime">Expires Server Time:</label>
+										<div class="input-group">
+											<div class="input datetimepicker date">
+											<?php
+								/*
+												echo '						
+												<div class="input-group-addon">
+													<button class="btn btn-danger bantype" type="button">';
+											if($currentMutes['mute_expires_on'] == 0)
+												echo 'Permanent';
+											else
+												echo 'Temporary';
+										
+											echo '</button>
+													<input type="text" class="required';
+					
+											if($currentMutes['mute_expires_on'] == 0)
+												echo ' disabled" disabled="disabled"';
+											else
+												echo '"'; 
+										
+											echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
 
-				if($currentMutes['mute_expires_on'] == 0)
-					echo '';
-				else
-					echo date('d/m/Y H:i:s', $currentMutes['mute_expires_on']);
-				
-				echo '" id="mutedatetime" />';
-										?>
-											<span class="add-on">
-												<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-											</span>
+											if($currentMutes['mute_expires_on'] == 0)
+												echo '';
+											else
+												echo date('d/m/Y H:i:s', $currentMutes['mute_expires_on']);
+											
+											echo '" id="mutedatetime" />';
+
+								*/			?>
+													<span class="input-group-addon">
+														<span class="glyphicon glyphicon-calendar"></span>
+													</span>
+												</div>
+											</div>
 										</div>
+									</div> -->
+									<div class="form-group">
+										<label class="control-label" for="mutereason">Reason:</label>
+											<textarea id="mutereason" class="form-control" name="reason" rows="4"><?php echo $currentMutes['mute_reason']; ?></textarea>
 									</div>
 								</div>
 							</div>
-							<div class="control-group">
-								<label class="control-label" for="mutereason">Reason:</label>
-								<div class="controls">
-									<textarea id="mutereason" name="reason" rows="4"><?php echo $currentMutes['mute_reason']; ?></textarea>
-								</div>
+							<div class="modal-footer">
+								<a href="#" class="btn" data-dismiss="modal">Close</a>
+								<input type="submit" class="btn btn-primary" value="Save" />
 							</div>
-						</fieldset>
+							<input type="hidden" name="id" value="<?php echo $currentMutes['mute_id']; ?>" />
+							<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
+							<input type="hidden" name="expiresTimestamp" value="" />
+						</form>
 					</div>
-					<div class="modal-footer">
-						<a href="#" class="btn" data-dismiss="modal">Close</a>
-						<input type="submit" class="btn btn-primary" value="Save" />
-					</div>
-					<input type="hidden" name="id" value="<?php echo $currentMutes['mute_id']; ?>" />
-					<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
-					<input type="hidden" name="expiresTimestamp" value="" />
-				</form>
+				</div>
 			</div><?php
 			}
 		}
@@ -435,11 +439,11 @@ else {
 						<td>'.$r['ban_reason'].'</td>
 						<td>'.$r['banned_by'].'</td>
 						<td>'.date('H:i:s d/m/y', $r['ban_time']).'</td>
-						<td>'.($r['ban_expired_on'] == 0 ? 'Never' : secs_to_h($r['ban_expired_on'] - $r['ban_time'])).'</td>
+						<td>'.($r['ban_expired_on'] == 0 ? 'Permanent' : secs_to_h($r['ban_expired_on'] - $r['ban_time'])).'</td>
 						<td>'.$r['unbanned_by'].'</td>
 						<td>'.date('H:i:s d/m/y', $r['unbanned_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
-						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['ban_record_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['ban_record_id'].'"><span class="glyphicon glyphicon-trash"></span></a></td>' : '').'
 					</tr>';
 					++$i;
 				}
@@ -502,11 +506,11 @@ else {
 						<td>'.$r['mute_reason'].'</td>
 						<td>'.$r['muted_by'].'</td>
 						<td>'.date('d/m/y', $r['mute_time']).'</td>
-						<td>'.($r['mute_expired_on'] == 0 ? 'Never' : secs_to_h($r['mute_expired_on'] - $r['mute_time'])).'</td>
+						<td>'.($r['mute_expired_on'] == 0 ? 'Permanent' : secs_to_h($r['mute_expired_on'] - $r['mute_time'])).'</td>
 						<td>'.$r['unmuted_by'].'</td>
 						<td>'.date('d/m/y', $r['unmuted_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
-						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['mute_record_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['mute_record_id'].'"><span class="glyphicon glyphicon-trash"></span></a></td>' : '').'
 					</tr>';
 					++$i;
 				}
@@ -567,7 +571,7 @@ else {
 						<td>'.$r['warned_by'].'</td>
 						<td>'.date('H:i:s d/m/y', $r['warn_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
-						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['warn_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['warn_id'].'"><span class="glyphicon glyphicon-trash"></span></a></td>' : '').'
 					</tr>';
 					++$i;
 				}
@@ -627,7 +631,7 @@ else {
 						<td>'.$r['kicked_by'].'</td>
 						<td>'.date('d/m/y', $r['kick_time']).'</td>'.($serverName ? '
 						<td>'.$r['server'].'</td>' : '').($admin ? '
-						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['kick_id'].'"><i class="icon-trash icon-white"></i></a></td>' : '').'
+						<td class="admin-options"><a href="#" class="btn btn-danger delete" title="Remove" data-server="'.$_GET['server'].'" data-record-id="'.$r['kick_id'].'"><span class="glyphicon glyphicon-trash"></span></a></td>' : '').'
 					</tr>';
 					++$i;
 				}

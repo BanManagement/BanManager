@@ -6,6 +6,44 @@
 /* Fix for icons */
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
 
+.btn-inverse {
+  color: #ffffff;
+  background-color: #333333;
+  border-color: #101010;
+}
+.btn-inverse:hover,
+.btn-inverse:focus,
+.btn-inverse:active,
+.btn-inverse.active,
+.open .dropdown-toggle.btn-inverse {
+  color: #eeeeee;
+  background-color: #222222;
+  border-color: #101010;
+}
+.btn-inverse:active,
+.btn-inverse.active,
+.open .dropdown-toggle.btn-inverse {
+  background-image: none;
+}
+.btn-inverse.disabled,
+.btn-inverse[disabled],
+fieldset[disabled] .btn-inverse,
+.btn-inverse.disabled:hover,
+.btn-inverse[disabled]:hover,
+fieldset[disabled] .btn-inverse:hover,
+.btn-inverse.disabled:focus,
+.btn-inverse[disabled]:focus,
+fieldset[disabled] .btn-inverse:focus,
+.btn-inverse.disabled:active,
+.btn-inverse[disabled]:active,
+fieldset[disabled] .btn-inverse:active,
+.btn-inverse.disabled.active,
+.btn-inverse[disabled].active,
+fieldset[disabled] .btn-inverse.active {
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
 .tablesorter-bootstrap {
 	width: 100%;
 }
@@ -167,6 +205,10 @@ td.tablesorter-pager {
 	opacity: 0.5;
 	filter: alpha(opacity=50);
 	cursor: default;
+}
+
+.modal-dialog{
+	max-width: 800px;
 }
 
 /*!
