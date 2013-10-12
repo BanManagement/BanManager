@@ -20,7 +20,7 @@ function latestBans($server, $serverID) {
 	$rows = count($result);
 
 	if($rows == 0)
-		echo '<li>None</li>';
+		echo '<li><span class="label label-info">No Records</span></li>';
 	else {
 		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
 
@@ -54,7 +54,7 @@ function latestMutes($server, $serverID) {
 	$rows = count($result);
 
 	if($rows == 0)
-		echo '<li>None</li>';
+		echo '<li><span class="label label-info">No Records</span></li>';
 	else {
 		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
 
@@ -87,7 +87,7 @@ function latestWarnings($server, $serverID) {
 	$rows = count($result);
 
 	if($rows == 0)
-		echo '<li>None</li>';
+		echo '<li><span class="label label-info">No Records</span></li>';
 	else {
 		$timeDiff = cache('SELECT ('.time().' - UNIX_TIMESTAMP(now()))/3600 AS mysqlTime', 5, $serverID.'/mysqlTime', $server); // Cache it for a few seconds
 
@@ -101,10 +101,10 @@ function latestWarnings($server, $serverID) {
 }
 ?>
 <div class="jumbotron">
-	<h1><?php if (!is_writable(settings.php)) { echo 'Account Status'; } else echo $settings['header-title']; ?></h1>
-	<form action="index.php" method="get" class="form-horizontal" id="search">
-		<div class="row">
-			<div class="col-lg-5">
+	<div class="row">
+		<div class="col-lg-6">
+			<h1><?php echo $language['header-title']; ?></h1>
+			<form action="index.php" method="get" class="form-horizontal" id="search">
 		        <div class="input-group">
 				    <div class="input-group-btn">
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Player <span class="caret"></span></button>
@@ -114,48 +114,76 @@ function latestWarnings($server, $serverID) {
 				      </div>
 				      <input type="text" name="player" class="form-control" placeholder="Search by username">
 			    </div>
-			</div>
-	    </div>
-	<?php
-	if(!empty($settings['servers']) && count($settings['servers']) > 1) {
-		echo '
-		<div class="control-group">
-			<label class="control-label" for="servername">Server:</label>
-			<div class="controls">';
-		$id = array_keys($settings['servers']);
-		$i = 0;
-		foreach($settings['servers'] as $server) {
-			echo '
-				<label class="radio">
-					<input type="radio" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
-					'.$server['name'].'
-				</label>';
-			++$i;
-		}
-		echo '
-			</div>
-		</div>';
-	} else if(count($settings['servers']) == 1) {
-		echo '<input type="hidden" value="0" name="server" />';
-	}
-	?>
-		<div class="form-actions">
-		<?php
-			if(isset($settings['submit_buttons_before_html']))
-				echo htmlspecialchars_decode($settings['submit_buttons_before_html'], ENT_QUOTES);
-		?>
-			<input type="hidden" name="action" value="searchplayer" />
-			<div class="btn-group">
-				<input type="submit" class="btn btn-primary" value="Search" />
-				<a href="#" class="btn btn-primary" id="viewall">View All</a>
-			</div>
 			<?php
-			if(isset($settings['submit_buttons_after_html']))
-				echo htmlspecialchars_decode($settings['submit_buttons_after_html'], ENT_QUOTES);
+			if(!empty($settings['servers']) && count($settings['servers']) > 1) {
+				echo '
+				<div class="control-group">
+					<label class="control-label" for="servername">Server:</label>
+					<div class="controls">';
+				$id = array_keys($settings['servers']);
+				$i = 0;
+				foreach($settings['servers'] as $server) {
+					echo '
+						<label class="radio">
+							<input type="radio" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
+							'.$server['name'].'
+						</label>';
+					++$i;
+				}
+				echo '
+					</div>
+				</div>';
+			} else if(count($settings['servers']) == 1) {
+				echo '<input type="hidden" value="0" name="server" />';
+			}
 			?>
+				<div class="form-actions">
+				<?php
+					if(isset($settings['submit_buttons_before_html']))
+						echo htmlspecialchars_decode($settings['submit_buttons_before_html'], ENT_QUOTES);
+				?>
+					<input type="hidden" name="action" value="searchplayer" />
+					<div class="btn-group">
+						<input type="submit" class="btn btn-primary" value="Search" />
+						<a href="#" class="btn btn-primary" id="viewall">Display All</a>
+					</div>
+					<?php
+					if(isset($settings['submit_buttons_after_html']))
+						echo htmlspecialchars_decode($settings['submit_buttons_after_html'], ENT_QUOTES);
+					?>
+				</div>
+		    </form>
 		</div>
-    </form>
+		<?php 
+			if(isset($settings['bm_info']) && $settings['bm_info']){
+		?>
+		<div class="col-lg-6">
+			<div class="panel panel-jumbotron">
+				<div class="panel-body">
+					<p>
+						<span>
 
+						<?php
+							if(isset($settings['bm_info_icon']) && $settings['bm_info_icon']){
+								echo '<span class="glyphicon glyphicon-info-sign"></span> ';
+							}
+
+						?>
+						<?php
+							echo $language['brand']; 
+						?>
+
+						</span><br />
+
+						<?php echo $language['bm_info_text']; ?>
+					</p>
+				</div>
+			</div>
+		</div>
+		<?php
+		}
+		?>
+	</div>
 </div>
 <?php
 if(count($settings['servers']) > 1) {
@@ -183,7 +211,7 @@ if(count($settings['servers']) > 1) {
 			echo '
 	</div>';
 		} else
-			echo '<p>None</p>';
+			echo '<span class="label label-info">No Records</span>';
 }
 
 	if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
@@ -211,7 +239,7 @@ if(count($settings['servers']) > 1) {
 			echo '
 	</div>';
 		} else
-			echo '<p>None</p>';
+			echo '<span class="label label-info">No Records</span>';
 }
 
 	if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
@@ -239,7 +267,7 @@ if(count($settings['servers']) > 1) {
 			echo '
 	</div>';
 		} else
-			echo '<p>None</p>';
+			echo '<span class="label label-info">No Records</span>';
 	}
 } else if(count($settings['servers']) == 1) {
 	$display = false;
@@ -260,7 +288,7 @@ if(count($settings['servers']) > 1) {
 		if((isset($settings['latest_bans']) && $settings['latest_bans']) || !isset($settings['latest_bans'])) {
 			echo '
 			<div class="col-lg-4">
-				<h3>Latest Bans</h3>
+				<h3>'.$language['latest_bans_title'].'</h3>
 				<ul class="nav nav-tabs nav-stacked">';	
 					latestBans($server, 0);
 				echo '
@@ -271,7 +299,7 @@ if(count($settings['servers']) > 1) {
 		if((isset($settings['latest_mutes']) && $settings['latest_mutes'])) {
 			echo '
 			<div class="col-lg-4">
-				<h3>Latest Mutes</h3>
+				<h3>'.$language['latest_mutes_title'].'</h3>
 				<ul class="nav nav-tabs nav-stacked">';	
 					latestMutes($server, 0);
 					echo '
@@ -282,7 +310,7 @@ if(count($settings['servers']) > 1) {
 		if((isset($settings['latest_warnings']) && $settings['latest_warnings'])) {
 			echo '
 			<div class="col-lg-4">
-				<h3>Latest Warnings</h3>
+				<h3>'.$language['latest_warnings_title'].'</h3>
 				<ul class="nav nav-tabs nav-stacked">';	
 					latestWarnings($server, 0);
 				echo '
