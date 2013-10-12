@@ -9,7 +9,7 @@
 */
 $nav = array(
 	$language['nav-home'] => 'index.php',
-	$language['nav-servers'] => 'index.php?action=servers'
+	$language['nav-stats'] => 'index.php?action=servers'
 );
 
 $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']);
