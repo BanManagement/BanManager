@@ -79,7 +79,7 @@ if($_POST['type'] == 'mainsettings') {
 }
 
 if(!isset($variables))
-	die('Hacking atempt');
+	die('Could be a hacking attempt.');
 
 $contents = file_get_contents('settings.php');
 

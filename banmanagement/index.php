@@ -9,7 +9,7 @@
 */
 session_start();
 ob_start();
-
+error_reporting(0); // We don't want errors showing for security reasons.
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
     $_SESSION['initiated'] = true;
@@ -151,9 +151,12 @@ function redirect($location, $code = '302') {
 	exit('<a href="'.$location.'">If you were not redirected automatically please click here</a>');
 }
 
-function errors($message) {
+$errors = array();
+
+
+/*function errors($message) {
 	echo '
-		<div id="error" class="alert alert-error">
+		<div id="error" class="alert alert-danger">
 			<button class="close" data-dismiss="alert">&times;</button>
 			<h4 class="alert-heading">Error</h4>
 			<ol>';
@@ -169,7 +172,7 @@ function errors($message) {
 			</ol>
 		</div>';
 }
-
+*/
 /*
  * Convert seconds to human readable text.
  * http://csl.sublevel3.org/php-secs-to-human-text/
@@ -609,7 +612,7 @@ $actions = array(
 if(file_exists('settings.php'))
 	include('settings.php');
 else
-	errors('You must rename settingsRename.php to settings.php');
+	$errors['settings-rename'] = 'You have not yet renamed the settingsRename.php file. Please do so now.';
 
 // IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
 if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']))

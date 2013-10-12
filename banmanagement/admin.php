@@ -15,8 +15,17 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 		unset($_SESSION['failed_attempts']);
 } else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
 	?><form action="" method="post" class="well form-inline">
-    <input type="password" class="input-xlarge" name="password" placeholder="Password">
-    <button type="submit" class="btn">Sign in</button>
+	<h3>Admin Control Panel <small>&mdash; If you forgot your password please refer to settings.php to change it.</small></h3>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="input-group">
+			<input type="password" class="form-control" name="password" placeholder="Password">
+				<span class="input-group-btn">
+				<button class="btn btn-info" type="submit">Sign In</button>
+	    		</span>
+	    	</div>
+	    </div>
+    </div>
     </form><?php
 } else if(isset($_POST['password']) && !isset($_SESSION['admin'])) {
 	if(htmlspecialchars_decode($_POST['password'], ENT_QUOTES) != $settings['password']) {
@@ -54,18 +63,18 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				<tr>
 					<td>'.$server['name'].'</td>
 					<td>
-						<a href="#" class="btn btn-danger deleteServer" data-serverid="'.$id[$i].'"><i class="icon-trash icon-white"></i></a>';
+						<a href="#" class="btn btn-danger deleteServer" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-trash"></span></a>';
 			if($count > 0) {
 				if($i == 0)
 					echo '
-					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><i class="icon-arrow-down"></i></a>';
+					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-down"></i></a>';
 				else if($i == $count)
 					echo '
-					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><i class="icon-arrow-up"></i></a>';
+					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-up"></span></a>';
 				else {
 					echo '
-					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><i class="icon-arrow-up"></i></a>
-					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><i class="icon-arrow-down"></i></a>';
+					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-up"></span></a>
+					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-down"></span></a>';
 				}
 			}
 			echo '
@@ -91,103 +100,107 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 			</tr>
 		</tfoot>
 	</table>
-	<div class="modal hide fade" id="addserver">
-		<form class="form-horizontal" action="" method="post">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h3>Add Server</h3>
+	<div class="modal fade" id="addserver">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" action="" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h3>Add Server</h3>
+					</div>
+					<div class="modal-body">
+						<div class="container">
+							<div class="form-group">
+								<label class="control-label" for="servername">Server Name:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="servername" id="servername">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="host">MySQL Host:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="host" id="host">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="database">MySQL Database:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="database" id="database">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="username">MySQL Username:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="username" id="usernme">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="password">MySQL Password:</label>
+								<div class="controls">
+									<input type="password" class="form-control" name="password" id="password">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="banstable">Bans Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="banstable" id="banstable" value="bm_bans">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="recordtable">Bans Record Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="recordtable" id="recordtable" value="bm_ban_records">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="iptable">IP Bans Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="iptable" id="iptable" value="bm_ip_bans">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="iprecordtable">IP Record Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="iprecordtable" id="iprecordtable" value="bm_ip_records">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="mutestable">Mutes Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="mutestable" id="mutestable" value="bm_mutes">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="mutesrecordtable">Mutes Record Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="mutesrecordtable" id="mutesrecordtable" value="bm_mutes_records">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="kickstable">Kicks Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="kickstable" id="kickstable" value="bm_kicks">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="warningstable">Warnings Table:</label>
+								<div class="controls">
+									<input type="text" class="form-control required" name="warningstable" id="warningstable" value="bm_warnings">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">Close</a>
+						<input type="submit" class="btn btn-primary" value="Save" />
+					</div>
+				</form>
 			</div>
-			<div class="modal-body">
-				<fieldset>
-					<div class="control-group">
-						<label class="control-label" for="servername">Server Name:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="servername" id="servername">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="host">MySQL Host:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="host" id="host">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="database">MySQL Database:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="database" id="database">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="username">MySQL Username:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="username" id="usernme">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="password">MySQL Password:</label>
-						<div class="controls">
-							<input type="password" class="input-xlarge" name="password" id="password">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="banstable">Bans Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="banstable" id="banstable" value="bm_bans">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="recordtable">Bans Record Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="recordtable" id="recordtable" value="bm_ban_records">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="iptable">IP Bans Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="iptable" id="iptable" value="bm_ip_bans">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="iprecordtable">IP Record Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="iprecordtable" id="iprecordtable" value="bm_ip_records">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="mutestable">Mutes Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="mutestable" id="mutestable" value="bm_mutes">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="mutesrecordtable">Mutes Record Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="mutesrecordtable" id="mutesrecordtable" value="bm_mutes_records">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="kickstable">Kicks Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="kickstable" id="kickstable" value="bm_kicks">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="warningstable">Warnings Table:</label>
-						<div class="controls">
-							<input type="text" class="input-xlarge required" name="warningstable" id="warningstable" value="bm_warnings">
-						</div>
-					</div>
-				</fieldset>
-			</div>
-			<div class="modal-footer">
-				<a href="#" class="btn" data-dismiss="modal">Close</a>
-				<input type="submit" class="btn btn-primary" value="Save" />
-			</div>
-		</form>
+		</div>
 	</div>
 	<br />
 	<br />
-	<h3>Homepage Settings</h3>
+	<h3>Homepage Settings <small>You may find more settings in settings.php</small></h3>
 	<form class="form-horizontal settings" action="" method="post">
 		<table class="table table-striped table-bordered table-hover">
 			<thead>
@@ -215,7 +228,7 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				</tr>
 				<tr>
 					<td>Footer</td>
-					<td><input type="text" name="footer" value="'.$settings['footer'].'" /></td>
+					<td><input type="text" class="form-control" name="footer" value="'.$settings['footer'].'" /></td>
 				</tr>
 				<tr>
 					<td>Latest Bans</td>
@@ -231,11 +244,11 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				</tr>
 				<tr>
 					<td>HTML Before Buttons</td>
-					<td><input type="text" name="buttons_before" value="'.(isset($settings['submit_buttons_before_html']) ? $settings['submit_buttons_before_html'] : '').'" /></td>
+					<td><input type="text" class="form-control" name="buttons_before" value="'.(isset($settings['submit_buttons_before_html']) ? $settings['submit_buttons_before_html'] : '').'" /></td>
 				</tr>
 				<tr>
 					<td>HTML After Buttons</td>
-					<td><input type="text" name="buttons_after" value="'.(isset($settings['submit_buttons_after_html']) ? $settings['submit_buttons_after_html'] : '').'" /></td>
+					<td><input type="text" class="form-control" name="buttons_after" value="'.(isset($settings['submit_buttons_after_html']) ? $settings['submit_buttons_after_html'] : '').'" /></td>
 				</tr>';
 	} ?>
 	
@@ -281,7 +294,7 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				</tr>
 				<tr>
 					<td>Current Ban HTML Extra</td>
-					<td><input type="input" name="banextra"'.(isset($settings['player_current_ban_extra_html']) ? ' value="'.$settings['player_current_ban_extra_html'].'"' : '').' /></td>
+					<td><input type="input" class="form-control" name="banextra"'.(isset($settings['player_current_ban_extra_html']) ? ' value="'.$settings['player_current_ban_extra_html'].'"' : '').' /></td>
 				</tr>
 				<tr>
 					<td>Current Mute</td>
@@ -289,7 +302,7 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 				</tr>
 				<tr>
 					<td>Current Mute HTML Extra</td>
-					<td><input type="input" name="muteextra"'.(isset($settings['player_current_mute_extra_html']) ? ' value="'.$settings['player_current_mute_extra_html'].'"' : '').' /></td>
+					<td><input type="input" class="form-control" name="muteextra"'.(isset($settings['player_current_mute_extra_html']) ? ' value="'.$settings['player_current_mute_extra_html'].'"' : '').' /></td>
 				</tr>
 				<tr>
 					<td>Previous Bans</td>
