@@ -8,8 +8,8 @@
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
 $nav = array(
-	'Home' => 'index.php',
-	'Servers' => 'index.php?action=servers'
+	$language['nav-home'] => 'index.php',
+	$language['nav-servers'] => 'index.php?action=servers'
 );
 
 $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']);
@@ -33,9 +33,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		    <div class="navbar-header">
 		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-nav-collapse">
 		      <span class="sr-only">Toggle navigation</span>
-		      <span class="icon-bar"></span>
-		      <span class="icon-bar"></span>
-		      <span class="icon-bar"></span>
+		      <span class="glyphicon glyphicon-th-large"></span>
 		    </button>
 		    <a class="navbar-brand" href="index.php"><?php echo $language['brand']; ?></a>
 		  </div>
@@ -56,8 +54,8 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 				<ul class="nav navbar-nav navbar-right">
 					<li>
 			    		<div class="btn-group">
-			    			<button type="button" class="btn <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="acp">Admin CP</button>
-			    			<button type="button" class="btn <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="logout">Logout</button>
+			    			<button type="button" class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="acp">Admin CP</button>
+			    			<button type="button" class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="logout">Logout</button>
 			    		</div>
 	    			</li>
 	    		</ul>
