@@ -18,7 +18,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-			<title><?php echo $settings['title']; ?></title>
+			<title><?php echo $language['title']; ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="<?php echo $settings['description']; ?>" />
 		<meta name="author" content="Frostcast" />
@@ -28,7 +28,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	</head>
 <body>
-	<nav class="navbar navbar-fixed-top <?php if(isset($settings['navbar-dark']) && $settings['navbar-dark']){echo "navbar-inverse";} else {echo "navbar-default";} ?>" role="navigation">
+	<nav class="navbar navbar-fixed-top <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']){echo "navbar-inverse";} else {echo "navbar-default";} ?>" role="navigation">
 		<div class="container">
 		    <div class="navbar-header">
 		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-nav-collapse">
@@ -37,7 +37,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		      <span class="icon-bar"></span>
 		      <span class="icon-bar"></span>
 		    </button>
-		    <a class="navbar-brand" href="index.php"><?php echo $settings['brand']; ?></a>
+		    <a class="navbar-brand" href="index.php"><?php echo $language['brand']; ?></a>
 		  </div>
 		  <div class="collapse navbar-collapse navbar-nav-collapse">
 		    <ul class="nav navbar-nav">
@@ -70,7 +70,6 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 <div id="container" class="container">
 <?php
 	if(!empty($errors)){
-		foreach ($errors as $error) {
 ?>
 
 <div class="alert alert-danger">
@@ -80,5 +79,4 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 
 <?php
 	}
-}
 ?>

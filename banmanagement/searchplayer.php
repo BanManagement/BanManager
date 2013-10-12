@@ -169,17 +169,17 @@ else {
 		?>
 	<form class="form-inline" action="" method="get">
 		<fieldset>
-			<legend>Search Options</legend>
+			<h2>Advanced Search</h2>
 			<input type="hidden" name="action" value="searchplayer" />
 			<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
 			<input type="hidden" name="player" value="<?php echo $_GET['player']; ?>" />
 			<label class="checkbox">
-				Exclude Past<input type="checkbox" name="excluderecords" value="1" <?php
+				Exclude Past <input type="checkbox" name="excluderecords" value="1" <?php
 				if(isset($_GET['excluderecords']))
 					echo 'checked="checked"';
 				?>/>
 			</label>
-			<button type="submit" class="btn"><i class="icon-search"></i></button>
+			<button type="submit" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-search"></span></button>
 		</fieldset>
 	</form>
 	<table class="table table-striped table-bordered sortable">
