@@ -101,7 +101,7 @@ function latestWarnings($server, $serverID) {
 }
 ?>
 <div class="jumbotron">
-	<h1>Account Status</h1>
+	<h1><?php if (!is_writable(settings.php)) { echo 'Account Status'; } else echo $settings['header-title']; ?></h1>
 	<form action="index.php" method="get" class="form-horizontal" id="search">
 		<div class="row">
 			<div class="col-lg-5">
