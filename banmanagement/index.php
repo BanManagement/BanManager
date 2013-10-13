@@ -9,7 +9,7 @@
 */
 session_start();
 ob_start();
-//error_reporting(0); // We don't want errors showing for security reasons.
+error_reporting(0); // We don't want errors showing for security reasons.
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
     $_SESSION['initiated'] = true;
