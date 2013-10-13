@@ -30,6 +30,7 @@
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.minecraftskin.js"></script>
+		<script src="//<?php echo $path; ?>js/core.js"></script>
 		<?php
 			if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
 				echo '
@@ -49,7 +50,6 @@
 			';
 			}
 		?>
-		<script src="//<?php echo $path; ?>js/core.js"></script>
 		<script type="text/javascript">
 			$(function() {
 				$(".col-lg-4 button[rel='popover']").popover({trigger: 'hover', placement: 'left'});

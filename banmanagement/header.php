@@ -20,7 +20,7 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<meta charset="utf-8" />
 			<title><?php echo $language['title']; ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="description" content="<?php echo $settings['description']; ?>" />
+		<meta name="description" content="<?php echo $language['description']; ?>" />
 		<meta name="author" content="Frostcast" />
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="screen" />
 		<link rel="stylesheet" type="text/css" href="css/core.css" />
