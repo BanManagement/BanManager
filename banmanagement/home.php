@@ -143,6 +143,21 @@ function latestWarnings($server, $serverID) {
 						echo htmlspecialchars_decode($settings['submit_buttons_before_html'], ENT_QUOTES);
 				?>
 					<input type="hidden" name="action" value="searchplayer" />
+				<?php
+					if(isset($settings['pastbans']) && $settings['pastbans']){
+				?>
+						<p class="pastbans">
+							<?php
+							foreach($settings['servers'] as $server) {
+								list($pastBans) = cache("SELECT COUNT(*) FROM ".$server['recordTable'], 3600, '', $server, $server['name'].'pastBanStats');	
+								
+								echo '<span>'.$pastBans.'</span> '. $language['pastbans_text'] .'';
+								}
+							?>
+						</p>
+				<?php
+				}
+				?>
 					<div class="btn-group">
 						<input type="submit" class="btn btn-primary" value="Search" />
 						<a href="#" class="btn btn-primary" id="viewall">Display All</a>

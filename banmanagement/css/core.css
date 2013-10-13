@@ -7,7 +7,15 @@ button .navbar-btn  a{
 	color: #fff;
 }
 
-
+.pastbans{
+	font-size: 12px;
+    font-weight: bold;
+    color: #aaaaaa;
+    text-transform: uppercase;
+}
+.pastbans span{
+	color: #ED381C;
+}
 #ajaxLoading {
 	margin-top: 15px;
 	margin-left: auto;

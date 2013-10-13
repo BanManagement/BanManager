@@ -26,7 +26,8 @@ else {
 	foreach($settings['servers'] as $server) {
 		// Make sure we can connecet
 		if(!connect($server)) {
-			?><tr><td colspan="3">Unable to connect to database</td></tr><?php
+			?><tr><td colspan="3">Unable to connect to database</td></tr>
+		<?php
 		} else {
 			list($currentTempBans) = cache("SELECT COUNT(*) FROM ".$server['bansTable']." WHERE ban_expires_on != 0", 3600, '', $server, $server['name'].'currentTempStats');
 
