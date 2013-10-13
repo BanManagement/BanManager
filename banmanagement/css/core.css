@@ -1,0 +1,64 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+button .navbar-btn  a{
+	text-decoration: none;
+	color: #fff;
+}
+
+
+#ajaxLoading {
+	margin-top: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 15px;
+	text-align: center;
+}
+#ajaxLoading.small {
+	display: inline-block;
+	margin: 0;
+	vertical-align: text-top;
+}
+.latestban {
+	position: relative;
+}
+.latestban button {
+	position: absolute;
+	right: 4px;
+	top: 4px;
+}
+#servers td {
+	vertical-align: middle;
+}
+.hero-unit {
+	font-size: 14px;
+}
+td.admin-options {
+	text-align: center;
+}
+#search {
+	position: relative;
+}
+.minihead {
+	width: 20px;
+	display: inline-block;
+}
+.minecraft_head .head {
+    display:none;
+}
+.minecraft_head:hover .hat {
+    display:none;
+}
+.minecraft_head:hover .head {
+    display:inline-block;
+}
+.scratch {
+    display:none;
+}
+
+#copyright_image{
+	width: 100px;
+	height: 25px;
+	margin-top: -6px;
+}

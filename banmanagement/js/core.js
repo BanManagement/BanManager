@@ -8,6 +8,16 @@ function showLoading(element) {
 	cl.show(); // Hidden by default
 }
 
+// Admin buttons
+
+$('#acp').click(function(){
+	window.location = 'index.php?action=admin';
+});
+
+$('#logout').click(function(){
+	window.location = 'index.php?action=logout';
+});
+
 function hideLoading() {
 	$("#ajaxLoading").remove();
 }

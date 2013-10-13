@@ -12,7 +12,7 @@ if(empty($settings['servers']))
 else {
 	?>
 	<table class="table table-striped table-bordered">
-		<caption>Ban Statistics</caption>
+		<h1 style="font-size: 49px;">Ban Statistics</h1>
 		<thead>
 			<th>Server</th>
 			<th>Current Temporary Bans</th>

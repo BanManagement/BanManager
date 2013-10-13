@@ -487,7 +487,7 @@ $(function() {
 	
 	$("[data-role=confirm]").click(function(e) {
 		e.preventDefault();
-		$("body").append('<div class="modal" id="confirmModal"><div class="modal-header"><a class="close" data-dismiss="modal">&times;</a><h3>'+$(this).data("confirm-title")+'</h3></div><div class="modal-body"><p>'+$(this).data("confirm-body")+'</p></div><div class="modal-footer"><a href="#" class="btn cancel" data-dismiss="modal">Cancel</a><a href="'+$(this).attr("href")+'" class="btn btn-primary">Confirm</a></div></div>');
+		$("body").append('<div class="modal fade" id="confirmModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><a class="close" data-dismiss="modal">&times;</a><h3>'+$(this).data("confirm-title")+'</h3></div><div class="modal-body"><p>'+$(this).data("confirm-body")+'</p></div><div class="modal-footer"><a href="#" class="btn cancel" data-dismiss="modal">Cancel</a><a href="'+$(this).attr("href")+'" class="btn btn-primary">Confirm</a></div></div></div></div>');
 		$("#confirmModal").modal().find(".cancel").focus();
 		$('#confirmModal').on('hidden', function () {
 			$(this).remove();
