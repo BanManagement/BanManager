@@ -16,7 +16,8 @@ $settings['footer'] 		= '&copy; Your Server '.date('Y'); // Footer for all pages
 $settings['admin_link']     = true; // Show the admin link in the footer of all page
 $settings['bm_info']		= true; // Show ban management infomation aside 'Account Status'
 	$settings['bm_info_icon'] = false; // Show the 'info' icon next to the title of bm_info
-
+$settings['pastbans']		= true; // Show amount of players banned under the search
+	
 /**
 * These are the language options for Ban Management
 **/
@@ -29,7 +30,8 @@ $language['latest_bans_title'] = 'Recent Bans'; // The text displayed over the l
 $language['latest_mutes_title'] = 'Recent Mutes'; // The text displayed over the latest mutes table
 $language['latest_warnings_title'] = 'Recent Warnings'; // The text displayed over the latest warnings table
 $language['nav-home']		   = 'Home'; // The text displayed in the navbar for 'Home'
-$language['nav-stats']	   = 'Statistics'; // The text displayed in the navbar for 'Servers'
+$language['nav-stats']	  	   = 'Statistics'; // The text displayed in the navbar for 'Servers'
+$language['pastbans_text']     = "unique bans. Don't be one of them."; // Choose what text to place if pastbans is true
 $language['bm_info_text']  	   = // The text displayed if bm_info is set to true. Enter your text below, HTML elements supported
 ' 
 	Ban Management is powerful ban and mute application that allows players to check if and why they were banned or muted and who
