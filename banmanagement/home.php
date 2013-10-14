@@ -117,17 +117,19 @@ function latestWarnings($server, $serverID) {
 			<?php
 			if(!empty($settings['servers']) && count($settings['servers']) > 1) {
 				echo '
-				<div class="control-group">
-					<label class="control-label" for="servername">Server:</label>
-					<div class="controls">';
+				<div class="form-group">
+					<label for="servername">Server:</label>
+					';
 				$id = array_keys($settings['servers']);
 				$i = 0;
 				foreach($settings['servers'] as $server) {
 					echo '
-						<label class="radio">
+					<div class="radio">
+						<label>
 							<input type="radio" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
 							'.$server['name'].'
-						</label>';
+						</label>
+					</div>';
 					++$i;
 				}
 				echo '
@@ -150,7 +152,7 @@ function latestWarnings($server, $serverID) {
 							<?php
 							foreach($settings['servers'] as $server) {
 								list($pastBans) = cache("SELECT COUNT(*) FROM ".$server['recordTable'], 3600, '', $server, $server['name'].'pastBanStats');	
-								
+
 								echo '<span>'.$pastBans.'</span> '. $language['pastbans_text'] .'';
 								}
 							?>

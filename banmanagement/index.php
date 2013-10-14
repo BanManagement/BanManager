@@ -9,7 +9,8 @@
 */
 session_start();
 ob_start();
-error_reporting(0); // We don't want errors showing for security reasons.
+error_reporting(0); // Disable error reports for security
+
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
     $_SESSION['initiated'] = true;
@@ -151,28 +152,21 @@ function redirect($location, $code = '302') {
 	exit('<a href="'.$location.'">If you were not redirected automatically please click here</a>');
 }
 
-$errors = array();
 
-
-/*function errors($message) {
+function errors($message) {
 	echo '
+		<div class="container">
 		<div id="error" class="alert alert-danger">
 			<button class="close" data-dismiss="alert">&times;</button>
-			<h4 class="alert-heading">Error</h4>
-			<ol>';
+			<h1>Uh oh, we\'ve found an error.</h1>';
 	if(is_array($message)) {
 		foreach($message as $e)
-			echo '
-				<li>'.$e.'</li>';
+			echo $e;
 	} else {
-		echo '
-				<li>'.$message.'</li>';
+		echo $message;
 	}
-	echo '
-			</ol>
-		</div>';
+		echo '</div></div>';
 }
-*/
 /*
  * Convert seconds to human readable text.
  * http://csl.sublevel3.org/php-secs-to-human-text/
@@ -609,10 +603,12 @@ $actions = array(
 	'viewip',
 	'viewplayer'
 );
-if(file_exists('settings.php'))
+if(file_exists('settings.php')){
 	include('settings.php');
-else
-	$errors['settings-rename'] = 'You have not yet renamed the settingsRename.php file. Please do so now.';
+}
+else{
+	errors('Unable to located the settings.php file. If you haven\'t renamed settingsRename.php yet, please go do that now to make Ban Management functional.');
+}
 
 // IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
 if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection']))

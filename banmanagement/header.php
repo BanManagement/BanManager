@@ -66,15 +66,3 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		</div>
 	</nav>
 <div id="container" class="container">
-<?php
-	if(!empty($errors)){
-?>
-
-<div class="alert alert-danger">
-	<h1>Oh no! We've found an error</h1>
-	You forgot to rename your settingsRename.php file to settings.php. Without this file, you cannot configure anything.
-</div>
-
-<?php
-	}
-?>
