@@ -8,7 +8,7 @@
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
 if($settings['password'] == '')
-	$errors[] = 'You have not yet set a password!';
+	$errors('You have not set a password. For your security, it\'s required that you set one.');
 else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4) {
 	die(errors('You have reached the maximum number of attempts. Please try again in 30 minutes.'));
 	if($_SESSION['failed_attempt'] < time())
