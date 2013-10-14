@@ -23,8 +23,7 @@
 .panel-jumbotron > .panel-footer + .panel-collapse .panel-body {
   border-bottom-color: #dddddd;
 }
-.panel-jumbotron .panel-body span,
-.pastbans {
+.panel-jumbotron .panel-body span {
 	font-size: 12px;
     font-weight: bold;
     color: #aaaaaa;

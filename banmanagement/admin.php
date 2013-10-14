@@ -8,9 +8,9 @@
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
 if($settings['password'] == '')
-	errors('You have not yet set a password!');
+	errors('You have not set a password. For your security, it\'s required that you set one.');
 else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4) {
-	die('You have reached your maxiumum attempts. Please try again later');
+	die(errors('You have reached the maximum number of attempts. Please try again in 30 minutes.'));
 	if($_SESSION['failed_attempt'] < time())
 		unset($_SESSION['failed_attempts']);
 } else if(!isset($_SESSION['admin']) && !isset($_POST['password'])) {
@@ -18,6 +18,13 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	<h3>Admin Control Panel <small>&mdash; If you forgot your password please refer to settings.php to change it.</small></h3>
 	<div class="row">
 		<div class="col-lg-6">
+		<?php
+			if(!empty($errors)){
+				foreach ($errors as $error) {
+					echo $error;
+				}
+			}
+		?>
 			<div class="input-group">
 			<input type="password" class="form-control" name="password" placeholder="Password">
 				<span class="input-group-btn">
