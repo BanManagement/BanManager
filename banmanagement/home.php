@@ -161,8 +161,8 @@ function latestWarnings($server, $serverID) {
 				}
 				?>
 					<div class="btn-group">
-						<input type="submit" class="btn btn-primary" value="Search" />
-						<a href="#" class="btn btn-primary" id="viewall">Display All</a>
+						<button type="submit" class="btn btn-primary">Search</button>
+						<button type="button" class="btn btn-primary" id="viewall">Display All</button>
 					</div>
 					<?php
 					if(isset($settings['submit_buttons_after_html']))
