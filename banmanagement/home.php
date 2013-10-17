@@ -214,7 +214,7 @@ if(count($settings['servers']) > 1) {
 			$i = 0;
 			foreach($settings['servers'] as $server) {
 				echo '
-		<div class="col-lg-3">
+		<div class="col-lg-4">
 			<h3>'.$server['name'].'</h3>
 			<ul class="nav nav-tabs nav-stacked">';	
 				latestBans($server, $i);
