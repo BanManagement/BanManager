@@ -7,6 +7,10 @@ button .navbar-btn  a{
 	color: #fff;
 }
 
+.server-option {
+	float: none !important;
+}
+
 .pastbans{
 	font-size: 12px;
     font-weight: bold;

@@ -118,22 +118,24 @@ function latestWarnings($server, $serverID) {
 			if(!empty($settings['servers']) && count($settings['servers']) > 1) {
 				echo '
 				<div class="form-group">
-					<label for="servername">Server:</label>
+					<label for="servername" class="col-lg-2 control-label">Server:</label>
+					<div class="col-lg-10">
 					';
 				$id = array_keys($settings['servers']);
 				$i = 0;
 				foreach($settings['servers'] as $server) {
 					echo '
-					<div class="radio">
-						<label>
-							<input type="radio" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
-							'.$server['name'].'
-						</label>
-					</div>';
+							<div class="radio">
+								<label>
+									<input type="radio" class="server-option" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
+									'.$server['name'].'
+								</label>
+							</div>';
 					++$i;
 				}
 				echo '
-					</div>';
+					</div>
+				</div>';
 			} else if(count($settings['servers']) == 1) {
 				echo '<input type="hidden" value="0" name="server" />';
 			}
