@@ -76,6 +76,13 @@ else {
 	}
 	$table .= '
 		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="2">
+					<a class="btn btn-primary btn-large" href="#addserver" data-toggle="modal">Add Server</a>
+				</td>
+			</tr>
+		</tfoot>
 	</table>';
 	$array['success'] = array('table' => $table);
 }
