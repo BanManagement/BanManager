@@ -30,7 +30,7 @@ function latestBans($server, $serverID) {
 		foreach($result as $r) {
 			$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
 			echo '
-					<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" class="minihead" /> '.$r['banned'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
+					<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" class="minihead" /> '.$r['banned'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
 			if($r['ban_expires_on'] == 0)
 				echo ' <span class=\'label label-danger\'>Never</span>';
 			else if($expires > 0)
@@ -63,7 +63,7 @@ function latestMutes($server, $serverID) {
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		foreach($result as $r) {
 			$expires = ($r['mute_expires_on'] + $mysqlSecs)- time();
-			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" class="minihead" /> '.$r['muted'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" class="minihead" /> '.$r['muted'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
 			if($r['mute_expires_on'] == 0)
 				echo ' <span class=\'label label-danger\'>Never</span>';
 			else if($expires > 0)
@@ -95,7 +95,7 @@ function latestWarnings($server, $serverID) {
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		foreach($result as $r) {
-			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" class="minihead" /> '.$r['warned'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><span class="glyphicon glyphicon-info-sign"></span></button></li>';
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" class="minihead" /> '.$r['warned'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><span class="glyphicon glyphicon-info-sign"></span></button></li>';
 		}
 	}
 }
@@ -108,11 +108,11 @@ function latestWarnings($server, $serverID) {
 		        <div class="input-group">
 				    <div class="input-group-btn">
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Player <span class="caret"></span></button>
-					        <ul class="dropdown-menu">
-					          <li id="ip"><a href="#">Search by IP Address</a></li>
-					        </ul>
-				      </div>
-				      <input type="text" name="player" class="form-control" placeholder="Search by username">
+						<ul class="dropdown-menu">
+						  <li id="ip"><a href="#">Search by IP Address</a></li>
+						</ul>
+					</div>
+					<input type="text" name="player" class="form-control" placeholder="Search by username">
 			    </div>
 			<?php
 			if(!empty($settings['servers']) && count($settings['servers']) > 1) {
@@ -133,8 +133,7 @@ function latestWarnings($server, $serverID) {
 					++$i;
 				}
 				echo '
-					</div>
-				</div>';
+					</div>';
 			} else if(count($settings['servers']) == 1) {
 				echo '<input type="hidden" value="0" name="server" />';
 			}
