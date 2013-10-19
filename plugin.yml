@@ -128,6 +128,34 @@ permissions:
             bm.tempbanoffline: true
             bm.warn: true
             bm.clear: true
+    bm.notify.*:
+        description: Players with this permission will be notified of bans
+        default: op
+        children:
+          bm.notify.ban: true
+          bm.notify.ipban: true
+          bm.notify.kick: true
+          bm.notify.mute: true
+          bm.notify.tempban: true
+          bm.notify.tempipban: true
+          bm.notify.tempmute: true
+          bm.notify.unban: true
+          bm.notify.unipban: true
+          bm.notify.unmute: true
+          bm.notify.warn: true
+          bm.notify.duplicateips: true
+    bm.exempt.*:
+        description: Players with this permission cannot be banned, kicked or muted
+        default: op
+        children:
+          bm.exempt.ban: true
+          bm.exempt.banip: true
+          bm.exempt.kick: true
+          bm.exempt.mute: true
+          bm.exempt.tempban: true
+          bm.exempt.tempipban: true
+          bm.exempt.tempmute: true
+          bm.exempt.warn: true
     bm.unban:
         description: Allows you to unban a user
         default: op
@@ -148,9 +176,6 @@ permissions:
         default: op
     bm.bminfo:
         description: Allows you to see information on players
-        default: op
-    bm.notify:
-        description: Players with this permission will be told of bans
         default: op
     bm.banip:
         description: Allows you to ban an ip
