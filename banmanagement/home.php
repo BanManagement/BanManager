@@ -30,7 +30,7 @@ function latestBans($server, $serverID) {
 		foreach($result as $r) {
 			$expires = ($r['ban_expires_on'] + $mysqlSecs)- time();
 			echo '
-					<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" class="minihead" /> '.$r['banned'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
+					<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['banned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['banned'].'/20" alt="'.$r['banned'].'" class="minihead" /> '.$r['banned'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['ban_reason'].'" data-original-title="'.$r['banned_by'];
 			if($r['ban_expires_on'] == 0)
 				echo ' <span class=\'label label-danger\'>Never</span>';
 			else if($expires > 0)
@@ -63,7 +63,7 @@ function latestMutes($server, $serverID) {
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		foreach($result as $r) {
 			$expires = ($r['mute_expires_on'] + $mysqlSecs)- time();
-			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" class="minihead" /> '.$r['muted'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['muted'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['muted'].'/20" alt="'.$r['muted'].'" class="minihead" /> '.$r['muted'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['mute_reason'].'" data-original-title="'.$r['muted_by'];
 			if($r['mute_expires_on'] == 0)
 				echo ' <span class=\'label label-danger\'>Never</span>';
 			else if($expires > 0)
@@ -95,7 +95,7 @@ function latestWarnings($server, $serverID) {
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		foreach($result as $r) {
-			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" class="minihead" /> '.$r['warned'].'</a><button class="btn btn-info" id="info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><span class="glyphicon glyphicon-info-sign"></span></button></li>';
+			echo '<li class="latestban"><a href="index.php?action=viewplayer&player='.$r['warned'].'&server='.$serverID.'"><img src="https://minotar.net/avatar/'.$r['warned'].'/20" alt="'.$r['warned'].'" class="minihead" /> '.$r['warned'].'</a><button class="btn btn-info ban-info" rel="popover" data-html="true" data-content="'.$r['warn_reason'].'" data-original-title="'.$r['warned_by'].'"><span class="glyphicon glyphicon-info-sign"></span></button></li>';
 		}
 	}
 }
@@ -108,28 +108,29 @@ function latestWarnings($server, $serverID) {
 		        <div class="input-group">
 				    <div class="input-group-btn">
 				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Player <span class="caret"></span></button>
-					        <ul class="dropdown-menu">
-					          <li id="ip"><a href="#">Search by IP Address</a></li>
-					        </ul>
-				      </div>
-				      <input type="text" name="player" class="form-control" placeholder="Search by username">
+						<ul class="dropdown-menu">
+						  <li id="ip"><a href="#">Search by IP Address</a></li>
+						</ul>
+					</div>
+					<input type="text" name="player" class="form-control" placeholder="Search by username">
 			    </div>
 			<?php
 			if(!empty($settings['servers']) && count($settings['servers']) > 1) {
 				echo '
 				<div class="form-group">
-					<label for="servername">Server:</label>
+					<label for="servername" class="col-lg-2 control-label">Server:</label>
+					<div class="col-lg-10">
 					';
 				$id = array_keys($settings['servers']);
 				$i = 0;
 				foreach($settings['servers'] as $server) {
 					echo '
-					<div class="radio">
-						<label>
-							<input type="radio" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
-							'.$server['name'].'
-						</label>
-					</div>';
+							<div class="radio">
+								<label>
+									<input type="radio" class="server-option" value="'.$id[$i].'" name="server"'.($i == 0 ? ' checked="checked"' : '').' />
+									'.$server['name'].'
+								</label>
+							</div>';
 					++$i;
 				}
 				echo '
@@ -215,7 +216,7 @@ if(count($settings['servers']) > 1) {
 			$i = 0;
 			foreach($settings['servers'] as $server) {
 				echo '
-		<div class="col-lg-3">
+		<div class="col-lg-4">
 			<h3>'.$server['name'].'</h3>
 			<ul class="nav nav-tabs nav-stacked">';	
 				latestBans($server, $i);

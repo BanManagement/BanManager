@@ -8,16 +8,6 @@ function showLoading(element) {
 	cl.show(); // Hidden by default
 }
 
-// Admin buttons
-
-$('#acp').click(function(){
-	window.location = 'index.php?action=admin';
-});
-
-$('#logout').click(function(){
-	window.location = 'index.php?action=logout';
-});
-
 function hideLoading() {
 	$("#ajaxLoading").remove();
 }
@@ -118,7 +108,7 @@ $(function() {
 				hideLoading();
 			},
 			beforeSend: function() {
-				$("table.sortable").before('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Searching</div>');
+				$("table.sortable").before('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Fetching...</div>');
 				showLoading('loadingSmall');
 			}
 		},

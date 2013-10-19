@@ -76,7 +76,7 @@ $(function() {
 		var order = $(this).data('order');
 		var formBody = $("#container");
 		$this = $(this);
-		$(this).append('<div id="ajaxLoading" class="small"><span id="loadingSmall"></span></div>').find('i').hide().parent().addClass('disabled');
+		$(this).append('<div id="ajaxLoading" class="small"><span id="loadingSmall"></span></div>').find('.glyphicon-arrow-up').hide().parent().addClass('disabled');
 		showLoading('loadingSmall');
 		$.ajax({
 			url: 'index.php?action=reorderserver&ajax=true&authid='+authid+'&server='+id+'&order='+order,
@@ -84,7 +84,7 @@ $(function() {
 			dataType: 'json',
 			success: function(data, textStatus, jqXHR) {
 				hideLoading();
-				$this.removeClass('disabled').find('i').show();
+				$this.removeClass('disabled').find('.glyphicon-arrow-up').show();
 				if(data.error) {
 					formBody.prepend(error(data.error));
 				} else {
@@ -94,7 +94,7 @@ $(function() {
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				hideLoading();
-				$this.removeClass('disabled').find('i').show();
+				$this.removeClass('disabled').find('.glyphicon-arrow-up').show();
 				formBody.prepend(error('Invalid response from server, try again<br />Response: '+jqXHR.responseText));
 			}
 		});

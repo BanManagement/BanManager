@@ -54,8 +54,8 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 				<ul class="nav navbar-nav navbar-right">
 					<li>
 			    		<div class="btn-group">
-			    			<button type="button" class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="acp">Admin CP</button>
-			    			<button type="button" class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="logout">Logout</button>
+			    			<a class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="acp" href="index.php?action=admin">Admin CP</a>
+			    			<a class="btn <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']) {echo "btn-inverse";} else {echo "btn-info";} ?> navbar-btn" id="logout" href="index.php?action=logout">Logout</a>
 			    		</div>
 	    			</li>
 	    		</ul>

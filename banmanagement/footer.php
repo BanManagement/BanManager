@@ -43,8 +43,7 @@
 					<script type="text/javascript">
 						var authid = \''.sha1($settings['password']).'\';
 					</script>';
-				if(isset($_GET['action']) && $_GET['action'] != 'admin')
-					echo '
+				echo '
 					<script src="//'.$path.'js/bootstrap-datetimepicker.min.js"></script>
 					<script src="//'.$path.'js/admin.js"></script>
 			';

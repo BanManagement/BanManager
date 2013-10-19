@@ -7,7 +7,7 @@
 	may be available at http://creativecommons.org/licenses/by-nc-sa/2.0/uk/.
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
-if($settings['password'] == '')
+if(empty($settings['password']) || $settings['passsword'] == 'password')
 	errors('You have not set a password. For your security, it\'s required that you set one.');
 else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4) {
 	die(errors('You have reached the maximum number of attempts. Please try again in 30 minutes.'));
@@ -74,7 +74,7 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 			if($count > 0) {
 				if($i == 0)
 					echo '
-					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-down"></i></a>';
+					<a href="#" class="btn reorderServer" data-order="down" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-down"></span></a>';
 				else if($i == $count)
 					echo '
 					<a href="#" class="btn reorderServer" data-order="up" data-serverid="'.$id[$i].'"><span class="glyphicon glyphicon-arrow-up"></span></a>';
@@ -352,4 +352,3 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 	<?php
 }
 ?>
-<script src="//<?php echo $path; ?>js/admin.js"></script>
