@@ -108,7 +108,7 @@ $(function() {
 				hideLoading();
 			},
 			beforeSend: function() {
-				$("table.sortable").before('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Searching</div>');
+				$("table.sortable").before('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Fetching...</div>');
 				showLoading('loadingSmall');
 			}
 		},

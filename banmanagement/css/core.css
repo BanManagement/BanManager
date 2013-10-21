@@ -43,9 +43,6 @@ button .navbar-btn  a{
 #servers td {
 	vertical-align: middle;
 }
-.hero-unit {
-	font-size: 14px;
-}
 td.admin-options {
 	text-align: center;
 }
@@ -68,9 +65,11 @@ td.admin-options {
 .scratch {
     display:none;
 }
-
 #copyright_image{
 	width: 100px;
 	height: 25px;
 	margin-top: -6px;
+}
+#excludepast{
+	padding: 5px;
 }
