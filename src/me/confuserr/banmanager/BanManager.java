@@ -141,9 +141,6 @@ public class BanManager extends JavaPlugin {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		} else {
-			// Convert player names to lowercase
-			localConn.query("UPDATE " + localConn.getTable("bans") + " SET banned = LOWER(banned)");
 		}
 
 		// Check the external database
