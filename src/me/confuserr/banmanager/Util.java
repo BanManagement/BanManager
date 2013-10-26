@@ -53,7 +53,7 @@ public class Util {
 	}
 
 	public static String colorize(String string) {
-		return string.replaceAll("(?i)&([a-k0-9])", "\u00A7$1");
+		return string.replaceAll("(?i)&([a-l0-9])", "\u00A7$1");
 	}
 
 	public static void sendMessage(CommandSender sender, String message) {
