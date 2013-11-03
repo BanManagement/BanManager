@@ -108,12 +108,11 @@ public class DbLogger {
 		ResultSet result = localConn.query("SELECT COUNT(*) AS numb FROM " + localConn.getTable("kicks") + " WHERE kicked = '" + user + "'");
 		int count = 0;
 		try {
-			if(result.next()) {
+			if (result.next()) {
 				count = result.getInt("numb");
 			}
 			result.close();
-		}
-		catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -236,8 +235,9 @@ public class DbLogger {
 	}
 
 	public void banRemove(String name, String by, boolean keepLog) {
-		if (keepLog)
+		if (keepLog) {
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("banRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("bans") + " b WHERE b.banned = '" + name + "'");
+		}
 
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("bans") + " WHERE banned = '" + name + "'");
@@ -252,8 +252,9 @@ public class DbLogger {
 	}
 
 	public void ipRemove(String ip, String by, boolean keepLog) {
-		if (keepLog)
+		if (keepLog) {
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("ipBanRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server  FROM " + localConn.getTable("ipBans") + " b WHERE b.banned = '" + ip + "'");
+		}
 
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("ipBans") + " WHERE banned = '" + ip + "'");
@@ -264,8 +265,9 @@ public class DbLogger {
 	}
 
 	public void muteRemove(String name, String by, boolean keepLog) {
-		if (keepLog)
+		if (keepLog) {
 			Util.asyncQuery("INSERT INTO " + localConn.getTable("muteRecords") + " (muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time, server) SELECT b.muted, b.muted_by, b.mute_reason, b.mute_time, b.mute_expires_on, \"" + by + "\", UNIX_TIMESTAMP(now()), b.server FROM " + localConn.getTable("mutes") + " b WHERE b.muted = '" + name + "'");
+		}
 
 		// Now delete it
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("mutes") + " WHERE muted = '" + name + "'");
