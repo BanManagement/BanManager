@@ -74,7 +74,7 @@
 					 if(typeof server === 'undefined')
 						server = 0;
 					
-					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+server+'&player=%';
+					window.location.href = 'index.php?action='+$("#search input[name=action]").val()+'&server='+server+'&player=%25';
 				});
 			});
 		</script>
