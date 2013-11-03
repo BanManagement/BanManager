@@ -74,6 +74,7 @@ public class SyncLogin implements Listener {
 			ipReason = Util.colorize(ipReason);
 			// Oh dear, they've been banned
 			event.disallow(Result.KICK_BANNED, ipReason);
+			return;
 		} else if (plugin.useBukkitBans()) {
 			if (plugin.getServer().getOfflinePlayer(name).isBanned()) {
 				if (plugin.dbLogger.handleBukkitBan(name))

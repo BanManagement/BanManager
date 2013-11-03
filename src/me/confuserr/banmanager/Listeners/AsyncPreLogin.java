@@ -72,6 +72,7 @@ public class AsyncPreLogin implements Listener {
 			ipReason = Util.colorize(ipReason);
 			// Oh dear, they've been banned
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ipReason);
+			return;
 		} else if (plugin.useBukkitBans()) {
 			if (plugin.getServer().getOfflinePlayer(name).isBanned()) {
 				if (plugin.dbLogger.handleBukkitBan(name))
@@ -87,7 +88,7 @@ public class AsyncPreLogin implements Listener {
 	}
 
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
 		if (plugin.logIPs()) {// Here we log their IP to the database
 			final String ip = Util.getIP(event.getAddress());
