@@ -7,6 +7,7 @@
 	may be available at http://creativecommons.org/licenses/by-nc-sa/2.0/uk/.
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
+session_name("BanManagement");
 session_start();
 ob_start();
 error_reporting(0); // Disable error reports for security
@@ -607,7 +608,7 @@ if(file_exists('settings.php')){
 	include('settings.php');
 }
 else{
-	errors('Unable to located the settings.php file. If you haven\'t renamed settingsRename.php yet, please go do that now to make Ban Management functional.');
+	errors('Unable to locate the settings.php file. If you haven\'t renamed settingsRename.php yet, please go do that now to make Ban Management functional.');
 }
 
 // IE8 frame busting, well thats the only good thing it has :P (Now supported by Firefox woot)
