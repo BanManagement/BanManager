@@ -7,6 +7,7 @@
 	may be available at http://creativecommons.org/licenses/by-nc-sa/2.0/uk/.
 	Additional licence terms at https://raw.github.com/confuser/Ban-Management/master/banmanagement/licence.txt
 */
+session_name("BanManagement");
 session_start();
 ob_start();
 error_reporting(0); // Disable error reports for security
