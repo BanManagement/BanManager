@@ -68,7 +68,7 @@ public class KickCommand implements CommandExecutor {
 				if(plugin.logKicks)
 					plugin.dbLogger.logKick(target.getName(), playerName, reason);
 				
-				plugin.getServer().getConsoleSender().sendMessage(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
+				plugin.getLogger().info(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
 				
 				if(!sender.hasPermission("bm.notify.kick"))
 					Util.sendMessage(sender, plugin.getMessage("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName));
