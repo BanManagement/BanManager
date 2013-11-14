@@ -24,7 +24,7 @@ public class TempBanIpCommand implements CommandExecutor {
 		if (args.length < 3)
 			return false;
 
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 
 		long timeExpires = Util.getTimeStamp(args[1]);
@@ -188,7 +188,7 @@ public class TempBanIpCommand implements CommandExecutor {
 			plugin.getServer().banIP(ip);
 
 		plugin.addIPBan(ip, bannedByName, reason, timeExpires);
-		plugin.getServer().getConsoleSender().sendMessage(plugin.getMessage("ipBanned").replace("[ip]", ip));
+		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify.tempipban"))
 			Util.sendMessage(sender, plugin.getMessage("ipTempBanned").replace("[ip]", ip).replace("[expires]", formatExpires));

@@ -22,7 +22,7 @@ public class MuteCommand implements CommandExecutor {
 		if (args.length < 2)
 			return false;
 
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
@@ -95,7 +95,7 @@ public class MuteCommand implements CommandExecutor {
 
 				String infoMessage = plugin.getMessage("playerMuted").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-				plugin.getServer().getConsoleSender().sendMessage(infoMessage);
+				plugin.getLogger().info(infoMessage);
 
 				if (!sender.hasPermission("bm.notify.mute"))
 					Util.sendMessage(sender, infoMessage);

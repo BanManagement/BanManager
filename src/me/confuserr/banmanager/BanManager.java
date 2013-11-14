@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.*;
 import me.confuserr.banmanager.Configs.Config;
 import me.confuserr.banmanager.Listeners.*;
@@ -593,10 +592,8 @@ public class BanManager extends JavaPlugin {
 	public boolean isPlayerMuted(String name) {
 		name = name.toLowerCase();
 
-		if (playerMutes.get(name) != null)
-			return true;
+		return playerMutes.get(name) != null || dbLogger.isMuted(name);
 
-		return dbLogger.isMuted(name);
 	}
 
 	public boolean isPlayerMutedInMem(String name) {

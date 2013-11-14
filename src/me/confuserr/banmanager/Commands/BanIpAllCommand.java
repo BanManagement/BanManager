@@ -25,7 +25,7 @@ public class BanIpAllCommand implements CommandExecutor {
 		if (args.length < 2)
 			return false;
 
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
@@ -167,7 +167,7 @@ public class BanIpAllCommand implements CommandExecutor {
 			plugin.getServer().banIP(ip);
 
 		plugin.addExternalIPBan(ip, bannedByName, reason);
-		plugin.getServer().getConsoleSender().sendMessage(plugin.getMessage("ipBanned").replace("[ip]", ip));
+		plugin.getLogger().info(plugin.getMessage("ipBanned").replace("[ip]", ip));
 
 		if (!sender.hasPermission("bm.notify.ipban"))
 			Util.sendMessage(sender, plugin.getMessage("ipBanned").replace("[ip]", ip));

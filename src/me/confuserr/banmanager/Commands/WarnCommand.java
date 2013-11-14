@@ -23,7 +23,7 @@ public class WarnCommand implements CommandExecutor {
 		if (args.length < 2)
 			return false;
 
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
@@ -56,7 +56,7 @@ public class WarnCommand implements CommandExecutor {
 
 				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 
-				plugin.getServer().getConsoleSender().sendMessage(infoMessage);
+				plugin.getLogger().info(infoMessage);
 
 				if (!sender.hasPermission("bm.notify.warn"))
 					Util.sendMessage(sender, infoMessage);

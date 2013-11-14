@@ -50,8 +50,8 @@ public class LoglessKickCommand implements CommandExecutor {
 			} else {
 				
 				String reason = "";
-				String kick = "";
-				String message = "";
+				String kick;
+				String message;
 				
 				if(args.length > 1)
 					reason = Util.getReason(args, 1);
@@ -65,7 +65,7 @@ public class LoglessKickCommand implements CommandExecutor {
 				
 				target.kickPlayer(kick);
 				
-				plugin.getServer().getConsoleSender().sendMessage(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
+				plugin.getLogger().info(plugin.getMessage("playerKicked").replace("[name]", target.getName()));
 				
 				if(!sender.hasPermission("bm.notify.kick"))
 					Util.sendMessage(sender, plugin.getMessage("kickedNo").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[by]", playerName));
