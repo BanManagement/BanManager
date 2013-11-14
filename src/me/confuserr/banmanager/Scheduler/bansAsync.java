@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class bansAsync implements Runnable {
 
 	private Database localConn;
-	private BanManager plugin;
+	private final BanManager plugin;
 	private long lastRun;
 
 	public bansAsync(BanManager banManager, long lastChecked) {

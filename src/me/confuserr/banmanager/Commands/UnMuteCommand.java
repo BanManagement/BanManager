@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class UnMuteCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnMuteCommand(BanManager instance) {
 		plugin = instance;

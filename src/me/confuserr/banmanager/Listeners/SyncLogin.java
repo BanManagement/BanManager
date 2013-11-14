@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 public class SyncLogin implements Listener {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public SyncLogin(BanManager instance) {
 		plugin = instance;
@@ -28,7 +28,7 @@ public class SyncLogin implements Listener {
 		// Check to see if they are banned
 		if (plugin.isPlayerBanned(name)) {
 			BanData data = plugin.getPlayerBan(name);
-			String banReason = "";
+			String banReason;
 
 			long now = System.currentTimeMillis() / 1000;
 
@@ -53,7 +53,7 @@ public class SyncLogin implements Listener {
 
 		} else if (plugin.isIPBanned(ip)) {
 			IPBanData data = plugin.getIPBan(ip);
-			String ipReason = "";
+			String ipReason;
 
 			long now = System.currentTimeMillis() / 1000;
 

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class TempBanIpCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public TempBanIpCommand(BanManager instance) {
 		plugin = instance;

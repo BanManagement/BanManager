@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class MuteCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public MuteCommand(BanManager instance) {
 		plugin = instance;

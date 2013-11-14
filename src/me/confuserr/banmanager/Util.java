@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 public class Util {
 
-	private static BanManager plugin = BanManager.getPlugin();
+	private static final BanManager plugin = BanManager.getPlugin();
 	private static final Random generator = new Random();
 
 	public static String viewReason(String reason) {
@@ -187,9 +187,7 @@ public class Util {
 	
 	public static boolean ipBukkitBanned(String ip) {
 		Set<String> bans = plugin.getServer().getIPBans();
-		if (bans.contains(ip))
-			return true;
-		return false;
+		return bans.contains(ip);
 	}
 
 	// Copyright essentials, all credits to them, this is here to remove

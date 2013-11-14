@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 public class AsyncPreLogin implements Listener {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public AsyncPreLogin(BanManager instance) {
 		plugin = instance;
@@ -26,7 +26,7 @@ public class AsyncPreLogin implements Listener {
 		// Check to see if they are banned
 		if (plugin.isPlayerBanned(name)) {
 			BanData data = plugin.getPlayerBan(name);
-			String banReason = "";
+			String banReason;
 
 			long now = System.currentTimeMillis() / 1000;
 
@@ -51,7 +51,7 @@ public class AsyncPreLogin implements Listener {
 
 		} else if (plugin.isIPBanned(ip)) {
 			IPBanData data = plugin.getIPBan(ip);
-			String ipReason = "";
+			String ipReason;
 
 			long now = System.currentTimeMillis() / 1000;
 

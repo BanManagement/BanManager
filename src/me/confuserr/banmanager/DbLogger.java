@@ -8,7 +8,7 @@ import me.confuserr.banmanager.data.*;
 
 public class DbLogger {
 	private Database localConn;
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	DbLogger(Database conn, BanManager instance) {
 		localConn = conn;
@@ -285,7 +285,7 @@ public class DbLogger {
 		Util.asyncQuery("DELETE FROM " + localConn.getTable("kicks") + " WHERE kicked = '" + name + "'");
 	}
 
-	public void create_tables() throws SQLException {
+	public void create_tables() throws SQLException {//TODO:SQLException is never thrown here
 		boolean Table = localConn.createTable("CREATE TABLE IF NOT EXISTS " + localConn.getTable("bans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "server varchar(30) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`), INDEX `ban_time` (`ban_time`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 		if (!Table)
@@ -390,7 +390,7 @@ public class DbLogger {
 		}
 	}
 
-	public void createExternalTables(Database extConn) throws SQLException {
+	public void createExternalTables(Database extConn) throws SQLException {//TODO:SQLException never thrown here
 		boolean Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("bans") + " (" + "ban_id int(255) NOT NULL AUTO_INCREMENT," + "banned varchar(32) NOT NULL," + "banned_by varchar(32) NOT NULL," + "ban_reason text NOT NULL," + "ban_time int(10) NOT NULL," + "ban_expires_on int(10) NOT NULL," + "PRIMARY KEY (ban_id)," + "KEY `banned` (`banned`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
 
 		if (!Table)
@@ -417,6 +417,7 @@ public class DbLogger {
 							plugin.getLogger().severe("Unable to create external BanManagement table");
 						else {
 							Table = extConn.createTable("CREATE TABLE IF NOT EXISTS " + extConn.getTable("unmutes") + " (" + "unmute_id int(255) NOT NULL AUTO_INCREMENT," + "unmuted varchar(32) NOT NULL," + "unmuted_by varchar(32) NOT NULL," + "unmute_time int(10) NOT NULL," + "PRIMARY KEY (unmute_id)," + "KEY `unmuted` (`unmuted`)" + ") ENGINE=MyISAM  DEFAULT CHARSET=latin1");
+							//TODO:Table var is not used..?
 						}
 					}
 				}

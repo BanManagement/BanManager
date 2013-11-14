@@ -11,8 +11,7 @@ import java.sql.SQLException;
 public class databaseAsync implements Runnable {
 
 	private Database localConn;
-	private ResultSet result;
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public databaseAsync(BanManager banManager) {
 		plugin = banManager;
@@ -27,7 +26,7 @@ public class databaseAsync implements Runnable {
 		localConn.query("INSERT INTO " + localConn.getTable("banRecords") + " (banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time, server) SELECT b.banned, b.banned_by, b.ban_reason, b.ban_time, b.ban_expires_on, '" + plugin.getMessage("consoleName") + "', " + now + ", b.server FROM " + localConn.getTable("bans") + " b WHERE b.ban_expires_on != '0' AND b.ban_expires_on < '" + now + "'");
 
 		// Now we need to unban them
-		result = localConn.query("SELECT banned FROM " + localConn.getTable("bans") + " WHERE ban_expires_on != 0 AND ban_expires_on < '" + now + "'");
+		ResultSet result = localConn.query("SELECT banned FROM " + localConn.getTable("bans") + " WHERE ban_expires_on != 0 AND ban_expires_on < '" + now + "'");
 
 		try {
 			while (result.next()) {

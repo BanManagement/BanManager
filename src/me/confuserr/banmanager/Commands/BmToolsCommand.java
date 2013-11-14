@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 
 public class BmToolsCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public BmToolsCommand(BanManager instance) {
 		plugin = instance;

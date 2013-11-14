@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class BanCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public BanCommand(BanManager instance) {
 		plugin = instance;

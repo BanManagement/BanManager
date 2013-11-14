@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class UnBanCommand implements CommandExecutor, TabCompleter {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnBanCommand(BanManager instance) {
 		plugin = instance;

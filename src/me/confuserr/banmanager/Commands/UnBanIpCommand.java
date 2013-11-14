@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class UnBanIpCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnBanIpCommand(BanManager instance) {
 		plugin = instance;

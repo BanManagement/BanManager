@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import me.confuserr.banmanager.data.*;;
+import me.confuserr.banmanager.data.*;
 
 /**
  * This is a static API for BanManager.
@@ -16,9 +16,10 @@ import me.confuserr.banmanager.data.*;;
  * 
  * @author James Mortemore
  */
+@SuppressWarnings({"WeakerAccess","unused"})
 public class BmAPI {
 
-	private static BanManager plugin = BanManager.getPlugin();
+	private static final BanManager plugin = BanManager.getPlugin();
 
 	// Bans
 	/**
@@ -236,7 +237,7 @@ public class BmAPI {
 	 * You must handle the notification to the warned player yourself.
 	 * 
 	 * @param name - Name of player to warn
-	 * @param bannedBy - Who the warning is by, can be anything
+	 * @param warnedBy - Who the warning is by, can be anything
 	 * @param reason - Why they are warned
 	 */
 	public static void warn(String name, String warnedBy, String reason) {
@@ -260,7 +261,7 @@ public class BmAPI {
 	 * You must check the player is online first otherwise a NPE will be thrown.
 	 * 
 	 * @param name - Name of player to kick
-	 * @param bannedBy - Who the kick is by, can be anything
+	 * @param kickedBy - Who the kick is by, can be anything
 	 * @param reason - Why they are kicked
 	 */
 	public static synchronized void kick(String name, String kickedBy, String reason) {

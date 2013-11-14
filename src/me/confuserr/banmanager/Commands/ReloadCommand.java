@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class ReloadCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public ReloadCommand(BanManager instance) {
 		plugin = instance;

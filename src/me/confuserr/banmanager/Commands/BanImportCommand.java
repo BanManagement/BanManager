@@ -20,8 +20,8 @@ import org.bukkit.entity.Player;
 
 public class BanImportCommand implements CommandExecutor {
 
-	private BanManager plugin;
-	public static boolean importInProgress = false;
+	private final BanManager plugin;
+	private static boolean importInProgress = false;
 
 	public BanImportCommand(BanManager instance) {
 		plugin = instance;
@@ -38,7 +38,7 @@ public class BanImportCommand implements CommandExecutor {
 			return true;
 		}
 
-		Player player = null;
+		Player player;
 		String playerName = "Console";
 
 		if (sender instanceof Player) {
@@ -73,7 +73,7 @@ public class BanImportCommand implements CommandExecutor {
 
 					Util.sendMessage(sender, plugin.getMessage("scanningDatabase"));
 
-					String nextLine = "";
+					String nextLine;
 
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
@@ -81,18 +81,14 @@ public class BanImportCommand implements CommandExecutor {
 
 					try {
 						while ((nextLine = banned.readLine()) != null) {
-							if (nextLine.contains("#"))
-								continue;
+							if (nextLine.contains("#")) {}
 							else {
 								String[] details = nextLine.split("\\|");
 								String pName = details[0].toLowerCase();
 
-								if (details.length < 4)
-									continue;
-								else if (!Util.isValidPlayerName(pName))
-									continue;
-								else if (plugin.isPlayerBanned(pName))
-									continue;
+								if (details.length < 4) {}
+								else if (!Util.isValidPlayerName(pName)) {}
+								else if (plugin.isPlayerBanned(pName)) {}
 								else {
 
 									long date = dateFormat.parse(details[1]).getTime() / 1000;
@@ -129,7 +125,6 @@ public class BanImportCommand implements CommandExecutor {
 					if (toBan.size() == 0) {
 						Util.sendMessage(sender, plugin.getMessage("noPlayersImport"));
 						BanImportCommand.importInProgress = false;
-						return;
 					} else {
 
 						int done = 0;
@@ -174,7 +169,7 @@ public class BanImportCommand implements CommandExecutor {
 
 					Util.sendMessage(sender, plugin.getMessage("scanningDatabase"));
 
-					String nextLine = "";
+					String nextLine;
 
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
@@ -182,17 +177,13 @@ public class BanImportCommand implements CommandExecutor {
 
 					try {
 						while ((nextLine = banned.readLine()) != null) {
-							if (nextLine.contains("#"))
-								continue;
+							if (nextLine.contains("#")) {}
 							else {
 								String[] details = nextLine.split("\\|");
 
-								if (details.length < 4)
-									continue;
-								else if (!Util.ValidateIPAddress(details[0]))
-									continue;
-								else if (plugin.isIPBanned(details[0]))
-									continue;
+								if (details.length < 4) {}
+								else if (!Util.ValidateIPAddress(details[0])) {}
+								else if (plugin.isIPBanned(details[0])) {}
 								else {
 
 									String pName = details[0];
@@ -229,7 +220,6 @@ public class BanImportCommand implements CommandExecutor {
 					if (toBan.size() == 0) {
 						Util.sendMessage(sender, plugin.getMessage("noIpsImport"));
 						BanImportCommand.importInProgress = false;
-						return;
 					} else {
 
 						int done = 0;

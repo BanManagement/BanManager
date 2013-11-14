@@ -20,8 +20,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
-	public BanManager plugin;
-	public static BanManager staticPlugin;
+	private BanManager plugin;
+	private static BanManager staticPlugin;
 	public Database localConn;
 	private Database extConn;
 	public String serverName;

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 public class BmInfoCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public BmInfoCommand(BanManager instance) {
 		plugin = instance;
@@ -27,7 +27,7 @@ public class BmInfoCommand implements CommandExecutor {
 		if (args.length != 1)
 			return false;
 
-		Player player = null;
+		Player player;
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
@@ -45,7 +45,7 @@ public class BmInfoCommand implements CommandExecutor {
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
 			public void run() {
-				String name = "";
+				String name;
 				if (!plugin.usePartialNames())
 					name = args[0];
 				else {

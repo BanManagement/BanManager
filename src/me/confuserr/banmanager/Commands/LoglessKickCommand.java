@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class LoglessKickCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public LoglessKickCommand(BanManager instance) {
 		plugin = instance;
@@ -23,7 +23,7 @@ public class LoglessKickCommand implements CommandExecutor {
 		if(args.length < 1)
 			return false;
 		
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 		
 		if(sender instanceof Player) {

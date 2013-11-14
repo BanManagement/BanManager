@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class TempMuteAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public TempMuteAllCommand(BanManager instance) {
 		plugin = instance;

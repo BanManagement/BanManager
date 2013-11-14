@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class BanIpAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public BanIpAllCommand(BanManager instance) {
 		plugin = instance;

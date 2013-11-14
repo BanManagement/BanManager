@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class UnBanAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnBanAllCommand(BanManager instance) {
 		plugin = instance;
