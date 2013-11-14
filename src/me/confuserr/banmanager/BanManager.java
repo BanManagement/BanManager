@@ -19,6 +19,7 @@ import net.h31ix.updater.Updater;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.ChatColor;
 
 public class BanManager extends JavaPlugin {
 	public BanManager plugin;
@@ -383,7 +384,7 @@ public class BanManager extends JavaPlugin {
 	}
 
 	public String getMessage(String message) {
-		return banMessages.get(message);
+		return ChatColor.translateAlternateColorCodes('&', banMessages.get(message));
 	}
 
 	public HashMap<String, String> getTimeLimitsBans() {
