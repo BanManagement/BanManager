@@ -1,6 +1,7 @@
 package me.confuserr.banmanager.Commands;
 
 import java.util.List;
+import java.util.Map;
 
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
@@ -53,6 +54,17 @@ public class WarnCommand implements CommandExecutor {
 				String viewReason = Util.viewReason(reason);
 
 				plugin.dbLogger.logWarning(target.getName(), playerName, reason);
+                                
+                                if(plugin.enableWarningActions()) {
+                                    Map<Integer, String> actions = plugin.getWarningActions();
+                                    if(actions.size() > 0) {
+                                        int number = plugin.dbLogger.getWarningCount(target.getName()) + 1;
+                                        if(actions.containsKey(number)) {
+                                            String actionCommand = actions.get(number).replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
+                                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+                                        }
+                                    }
+                                }
 
 				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 
