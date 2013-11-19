@@ -113,6 +113,7 @@ public class BanImportCommand implements CommandExecutor {
 								}
 							}
 						}
+						banned.close();
 					} catch (IOException e) {
 						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
 						BanImportCommand.importInProgress = false;
@@ -214,6 +215,7 @@ public class BanImportCommand implements CommandExecutor {
 								}
 							}
 						}
+						banned.close();
 					} catch (IOException e) {
 						Util.sendMessage(sender, ChatColor.RED + "Error occurred");
 						BanImportCommand.importInProgress = false;
