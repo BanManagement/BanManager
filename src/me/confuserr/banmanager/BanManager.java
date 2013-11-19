@@ -79,6 +79,8 @@ public class BanManager extends JavaPlugin {
 	private boolean logIPs = true;
         private boolean enableWarningActions = false;
         private Map<Integer, String> warningActions;
+        private boolean enableWarningCooldown = false;
+        private int warningCooldown = 10;
 
 	@Override
 	public void onDisable() {
@@ -357,6 +359,11 @@ public class BanManager extends JavaPlugin {
                             warningActions.put(number, getConfig().getString("warningActions." + key));
                         }
                     }
+                }
+                
+                enableWarningCooldown = getConfig().getBoolean("warningCooldown.enabled");
+                if(enableWarningCooldown) {
+                    warningCooldown = getConfig().getInt("warningCooldown.cooldown");
                 }
 	}
 
@@ -637,6 +644,14 @@ public class BanManager extends JavaPlugin {
         
         public Map<Integer, String> getWarningActions() {
                 return warningActions;
+        }
+        
+        public boolean enableWarningCooldown() {
+                return enableWarningCooldown;
+        }
+        
+        public int getWarningCooldown() {
+                return warningCooldown;
         }
 
 	public String getPlayerIP(String name) {
