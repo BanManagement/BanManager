@@ -64,7 +64,7 @@ public class Database {
 		try {
 			if (connection == null)
 				return DriverManager.getConnection(this.url, this.user, this.pass);
-			else if (connection.isValid(0)) // Check the connection is valid
+			else if (connection.isValid(3)) // Check the connection is valid
 				return connection;
 			else {
 				// Return a new connection!
