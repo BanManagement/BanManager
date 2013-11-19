@@ -1,9 +1,12 @@
 package me.confuserr.banmanager.Commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import me.confuserr.banmanager.BanManager;
 import me.confuserr.banmanager.Util;
+import me.confuserr.banmanager.data.WarnData;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -49,10 +52,34 @@ public class WarnCommand implements CommandExecutor {
 				Util.sendMessage(sender, plugin.getMessage("warnExemptError"));
 			} else {
 
+                                if(plugin.enableWarningCooldown()) {
+                                    ArrayList<WarnData> warnings = plugin.dbLogger.getWarnings(target.getName());
+                                    if(warnings.size() > 0) {
+                                        WarnData data = warnings.get(warnings.size() - 1);
+                                        long last = data.getTime();
+                                        long now = System.currentTimeMillis() / 1000L;
+                                        if(now - last <= plugin.getWarningCooldown()) {
+                                            Util.sendMessage(sender, plugin.getMessage("warnCooldown"));
+                                            return true;
+                                        }
+                                    }
+                                }
+                                                        
 				String reason = Util.getReason(args, 1);
 				String viewReason = Util.viewReason(reason);
 
 				plugin.dbLogger.logWarning(target.getName(), playerName, reason);
+                                
+                                if(plugin.enableWarningActions()) {
+                                    Map<Integer, String> actions = plugin.getWarningActions();
+                                    if(actions.size() > 0) {
+                                        int number = plugin.dbLogger.getWarningCount(target.getName()) + 1;
+                                        if(actions.containsKey(number)) {
+                                            String actionCommand = actions.get(number).replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
+                                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+                                        }
+                                    }
+                                }
 
 				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 

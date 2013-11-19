@@ -60,6 +60,16 @@ cleanUp:
 # Blacklist commands for muted players
 mutedCommandBlacklist:
     - msg
+    
+# Warning actions for when a player hits a certain number of warnings
+warningActions:
+    enabled: false
+    '10': ban [name] [reason]
+
+# To prevent duplicate warnings you can set a cooldown to limit the amount in seconds before a player can be warned again
+warningCooldown:
+    enabled: false
+    cooldown: 10
 
 # Leave false, this is for Tekkit Classic servers
 useSyncChat: false
@@ -152,6 +162,7 @@ messages:
     warnSelfError: '&cYou can''t warn yourself fool!'
     warnExemptError: '&cYou do not have permission to warn this player'
     playerWarned: '[name] has been warned'
+    warnCooldown: '&cThis player was warned too recently, try again later'
     warned: '&cYou have been warned by [by] for the following:\n[reason]'
     duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
     consoleName: 'Console'

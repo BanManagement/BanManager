@@ -9,13 +9,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import me.confuserr.banmanager.Database;
 import me.confuserr.banmanager.Commands.*;
 import me.confuserr.banmanager.Configs.Config;
 import me.confuserr.banmanager.Listeners.*;
 import me.confuserr.banmanager.Scheduler.*;
 import me.confuserr.banmanager.data.*;
 import net.h31ix.updater.Updater;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,6 +77,10 @@ public class BanManager extends JavaPlugin {
 	private boolean usePartialNames = true;
 	private boolean bukkitBans = true;
 	private boolean logIPs = true;
+        private boolean enableWarningActions = false;
+        private Map<Integer, String> warningActions;
+        private boolean enableWarningCooldown = false;
+        private int warningCooldown = 10;
 
 	@Override
 	public void onDisable() {
@@ -313,7 +318,7 @@ public class BanManager extends JavaPlugin {
 		CleanUp.IPBanRecords.setDays(getConfig().getInt("cleanUp.ipBanRecords"));
 		CleanUp.MuteRecords.setDays(getConfig().getInt("cleanUp.muteRecords"));
 		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
-
+                
 		serverName = getConfig().getString("serverName");
 
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
@@ -344,6 +349,22 @@ public class BanManager extends JavaPlugin {
 			String path = "timeLimits.bans." + key;
 			getTimeLimitsBans().put(key, getConfig().getString(path));
 		}
+                
+                enableWarningActions = getConfig().getBoolean("warningActions.enabled");
+                if(enableWarningActions) {
+                    warningActions = new HashMap<Integer, String>();
+                    for (String key : getConfig().getConfigurationSection("warningActions").getKeys(false)) {
+                        if(StringUtils.isNumeric(key)) {
+                            int number = NumberUtils.toInt(key);
+                            warningActions.put(number, getConfig().getString("warningActions." + key));
+                        }
+                    }
+                }
+                
+                enableWarningCooldown = getConfig().getBoolean("warningCooldown.enabled");
+                if(enableWarningCooldown) {
+                    warningCooldown = getConfig().getInt("warningCooldown.cooldown");
+                }
 	}
 
 	public ConcurrentHashMap<String, BanData> getPlayerBans() {
@@ -616,6 +637,22 @@ public class BanManager extends JavaPlugin {
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
 		return dbLogger.getWarnings(name.toLowerCase());
 	}
+        
+        public boolean enableWarningActions() {
+                return enableWarningActions;
+        }
+        
+        public Map<Integer, String> getWarningActions() {
+                return warningActions;
+        }
+        
+        public boolean enableWarningCooldown() {
+                return enableWarningCooldown;
+        }
+        
+        public int getWarningCooldown() {
+                return warningCooldown;
+        }
 
 	public String getPlayerIP(String name) {
 		return dbLogger.getIP(name.toLowerCase());
