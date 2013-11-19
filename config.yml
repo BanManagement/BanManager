@@ -60,6 +60,11 @@ cleanUp:
 # Blacklist commands for muted players
 mutedCommandBlacklist:
     - msg
+    
+# Warning actions for when a player hits a certain number of warnings
+warningActions:
+    enabled: false
+    '10': ban [name] [reason]
 
 # Leave false, this is for Tekkit Classic servers
 useSyncChat: false
