@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class UnMuteCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnMuteCommand(BanManager instance) {
 		plugin = instance;
@@ -22,7 +22,7 @@ public class UnMuteCommand implements CommandExecutor {
 		if (args.length < 1)
 			return false;
 
-		Player player = null;
+		Player player;
 		String playerName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
@@ -60,7 +60,7 @@ public class UnMuteCommand implements CommandExecutor {
 
 					String message = plugin.getMessage("playerUnmuted").replace("[name]", offlineName).replace("[by]", byName);
 
-					plugin.getServer().getConsoleSender().sendMessage(message);
+					plugin.getLogger().info(message);
 
 					if (!sender.hasPermission("bm.notify.unmute"))
 						Util.sendMessage(sender, message);

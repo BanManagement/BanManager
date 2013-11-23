@@ -11,7 +11,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class AsyncChat implements Listener {
 	
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public AsyncChat(BanManager instance) {
 		plugin = instance;

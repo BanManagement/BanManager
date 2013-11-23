@@ -189,7 +189,7 @@ public class MetricsLite {
 						}
 					}
 				}, 0, PING_INTERVAL * 1200);
-			} catch (NoSuchMethodError e) {
+			} catch (NoSuchMethodError ignored) {
 
 			}
 

@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 @SuppressWarnings("deprecation")
 public class SyncChat implements Listener {
 	
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public SyncChat(BanManager instance) {
 		plugin = instance;

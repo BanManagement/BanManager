@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class UpdateNotify implements Listener {
 	
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UpdateNotify(BanManager instance) {
 		plugin = instance;

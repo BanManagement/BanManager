@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class BanAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public BanAllCommand(BanManager instance) {
 		plugin = instance;
@@ -129,7 +129,7 @@ public class BanAllCommand implements CommandExecutor {
 
 		String infoMessage = plugin.getMessage("playerBanned").replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-		plugin.getServer().getConsoleSender().sendMessage(infoMessage);
+		plugin.getLogger().info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify.ban"))
 			Util.sendMessage(sender, infoMessage);

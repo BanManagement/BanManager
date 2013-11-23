@@ -22,8 +22,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
-	public BanManager plugin;
-	public static BanManager staticPlugin;
+	private BanManager plugin;
+	private static BanManager staticPlugin;
 	public Database localConn;
 	private Database extConn;
 	public String serverName;
@@ -614,10 +614,8 @@ public class BanManager extends JavaPlugin {
 	public boolean isPlayerMuted(String name) {
 		name = name.toLowerCase();
 
-		if (playerMutes.get(name) != null)
-			return true;
+		return playerMutes.get(name) != null || dbLogger.isMuted(name);
 
-		return dbLogger.isMuted(name);
 	}
 
 	public boolean isPlayerMutedInMem(String name) {

@@ -9,12 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Util {
 
-	private static BanManager plugin = BanManager.getPlugin();
+	private static final BanManager plugin = BanManager.getPlugin();
 	private static final Random generator = new Random();
 
 	public static String viewReason(String reason) {
@@ -22,8 +23,7 @@ public class Util {
 	}
 
 	public static String parseReason(String[] args) {
-		String reason = Util.implodeArray(args, " ").replace("\"", "&quot;").replace("'", "&#039;");
-		return reason;
+		return Util.implodeArray(args, " ").replace("\"", "&quot;").replace("'", "&#039;");
 	}
 
 	public static String implodeArray(String[] inputArray, String glueString) {
@@ -53,7 +53,7 @@ public class Util {
 	}
 
 	public static String colorize(String string) {
-		return string.replaceAll("(?i)&([a-l0-9])", "\u00A7$1");
+		return ChatColor.translateAlternateColorCodes('&', string);
 	}
 
 	public static void sendMessage(CommandSender sender, String message) {
@@ -97,7 +97,7 @@ public class Util {
 					}
 
 				});
-			} catch (NoSuchMethodError e) {
+			} catch (NoSuchMethodError ignored) {
 
 			}
 		}
@@ -122,13 +122,13 @@ public class Util {
 					}
 
 				});
-			} catch (NoSuchMethodError e) {
+			} catch (NoSuchMethodError ignored) {
 
 			}
 		}
 	}
 
-	public final static boolean ValidateIPAddress(String ipAddress) {
+	public static boolean ValidateIPAddress(String ipAddress) {
 		String[] parts = ipAddress.split("\\.");
 
 		if (parts.length != 4)
@@ -187,9 +187,7 @@ public class Util {
 	
 	public static boolean ipBukkitBanned(String ip) {
 		Set<String> bans = plugin.getServer().getIPBans();
-		if (bans.contains(ip))
-			return true;
-		return false;
+		return bans.contains(ip);
 	}
 
 	// Copyright essentials, all credits to them, this is here to remove

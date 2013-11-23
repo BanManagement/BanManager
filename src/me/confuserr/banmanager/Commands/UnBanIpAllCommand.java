@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class UnBanIpAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public UnBanIpAllCommand(BanManager instance) {
 		plugin = instance;
@@ -21,7 +21,7 @@ public class UnBanIpAllCommand implements CommandExecutor {
 		if (args.length < 1)
 			return false;
 
-		Player player = null;
+		Player player;
 		String consoleName = plugin.getMessage("consoleName");
 
 		if (sender instanceof Player) {
@@ -60,7 +60,6 @@ public class UnBanIpAllCommand implements CommandExecutor {
 			}
 
 			final String offlineName = plugin.getServer().getOfflinePlayer(args[0]).getName();
-			final String byName = playerName;
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
@@ -78,7 +77,7 @@ public class UnBanIpAllCommand implements CommandExecutor {
 						}
 
 						// Ok, we have their IP, lets unban it
-						plugin.removeExternalIPBan(ip, byName);
+						plugin.removeExternalIPBan(ip, playerName);
 
 						String message = plugin.getMessage("ipUnbanned").replace("[ip]", ip).replace("[by]", playerName);
 

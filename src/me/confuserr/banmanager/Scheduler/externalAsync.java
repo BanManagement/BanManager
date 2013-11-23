@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class externalAsync implements Runnable {
 
 	private Database extConn;
-	private BanManager plugin;
+	private final BanManager plugin;
 	private long lastRun;
 
 	public externalAsync(BanManager banManager, Database extConn, long lastRun) {

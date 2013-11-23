@@ -40,15 +40,14 @@ import org.bukkit.plugin.Plugin;
 
 public class Updater
 {
-    private Plugin plugin;
+    private final Plugin plugin;
     private UpdateType type;
     private String versionTitle;
     private String versionLink;
     private long totalSize; // Holds the total size of the file
     //private double downloadedSize; TODO: Holds the number of bytes downloaded
     private int sizeLine; // Used for detecting file size
-    private int multiplier; // Used for determining when to broadcast download updates
-    private boolean announce; // Whether to announce file downloads
+	private boolean announce; // Whether to announce file downloads
     private URL url; // Connecting to RSS
     private File file; // The plugin's file
     private Thread thread; // Updater thread
@@ -227,7 +226,7 @@ public class Updater
                 }
             }
             //Just a quick check to make sure we didn't leave any files from last time...
-            for(File xFile : new File("plugins/" + updateFolder).listFiles())
+            for(File xFile : new File("plugins/" + updateFolder).listFiles())//TODO:NPE
             {
                 if(xFile.getName().endsWith(".zip"))
                 {
@@ -263,7 +262,7 @@ public class Updater
                     fout.close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception ignored)
             {
             }
         }
@@ -316,7 +315,7 @@ public class Updater
             zipFile.close();
             zipFile = null;
             // Move any plugin data folders that were included to the right place, Bukkit won't do this for us.
-            for(File dFile : new File(zipPath).listFiles())
+            for(File dFile : new File(zipPath).listFiles())//TODO:NPE
             {
                 if(dFile.isDirectory())
                 {
@@ -324,10 +323,10 @@ public class Updater
                     {
                         File oFile = new File("plugins/" + dFile.getName()); // Get current dir
                         File [] contents = oFile.listFiles(); // List of existing files in the current dir
-                        for(File cFile : dFile.listFiles()) // Loop through all the files in the new dir
+                        for(File cFile : dFile.listFiles()) // Loop through all the files in the new dir//TODO:NPE
                         {
                             boolean found = false;
-                            for(File xFile : contents) // Loop through contents to see if it exists
+                            for(File xFile : contents) // Loop through contents to see if it exists//TODO:NPE
                             {
                                 if(xFile.getName().equals(cFile.getName()))
                                 {
@@ -367,7 +366,7 @@ public class Updater
      */
     public boolean pluginFile(String name)
     {
-        for(File file : new File("plugins").listFiles())
+        for(File file : new File("plugins").listFiles())//TODO:NPE possible
         {
             if(file.getName().equals(name))
             {
@@ -410,9 +409,9 @@ public class Updater
                 else if(counter == sizeLine)
                 {
                     String size = line.replaceAll("<dd>", "").replaceAll("</dd>", "");
-                    multiplier = size.contains("MiB") ? 1048576 : 1024;
+					int multiplier = size.contains("MiB") ? 1048576 : 1024;
                     size = size.replace(" KiB", "").replace(" MiB", "");
-                    totalSize = (long)(Double.parseDouble(size)*multiplier);
+                    totalSize = (long)(Double.parseDouble(size)* multiplier);
                 }
             }
             urlConn = null;
@@ -538,8 +537,7 @@ public class Updater
                         {
                             event = eventReader.nextEvent();
                             link = event.asCharacters().getData();
-                            continue;
-                        }
+						}
                     }
                     else if (event.isEndElement())
                     {

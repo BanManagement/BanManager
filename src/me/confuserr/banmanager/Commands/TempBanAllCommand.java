@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class TempBanAllCommand implements CommandExecutor {
 
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public TempBanAllCommand(BanManager instance) {
 		plugin = instance;
@@ -151,7 +151,7 @@ public class TempBanAllCommand implements CommandExecutor {
 
 		String infoMessage = plugin.getMessage("playerTempBanned").replace("[expires]", formatExpires).replace("[name]", playerName).replace("[displayName]", playerDisplayName);
 
-		plugin.getServer().getConsoleSender().sendMessage(infoMessage);
+		plugin.getLogger().info(infoMessage);
 
 		if (!sender.hasPermission("bm.notify.tempban"))
 			Util.sendMessage(sender, infoMessage);

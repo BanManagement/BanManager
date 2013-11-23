@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class MutedBlacklistCheck implements Listener {
-	private BanManager plugin;
+	private final BanManager plugin;
 
 	public MutedBlacklistCheck(BanManager instance) {
 		plugin = instance;

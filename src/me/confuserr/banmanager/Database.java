@@ -53,9 +53,7 @@ public class Database {
 	}
 
 	public boolean checkConnection() {
-		if (open() == null)
-			return false;
-		return true;
+		return open() != null;
 	}
 
 	public Connection open() {
@@ -93,7 +91,7 @@ public class Database {
 	}
 
 	public ResultSet query(String query) {
-		Statement statement = null;
+		Statement statement;
 		ResultSet result = null;
 		queryInProgress = true;
 		try {
@@ -120,13 +118,12 @@ public class Database {
 	}
 
 	public int updateQuery(String query) {
-		Connection connection = null;
-		Statement statement = null;
+		Connection connection;
+		Statement statement;
 		try {
 			connection = open();
 			statement = connection.createStatement();
-			int result = statement.executeUpdate(query);
-			return result;
+			return statement.executeUpdate(query);
 		} catch (SQLException e) {
 			plugin.getLogger().warning("Error in SQL query: " + e.getMessage());
 			plugin.getLogger().warning(query);
@@ -135,7 +132,7 @@ public class Database {
 	}
 
 	public PreparedStatement prepare(String query) {
-		Connection connection = null;
+		Connection connection;
 		PreparedStatement ps = null;
 		try {
 			connection = open();
@@ -185,10 +182,10 @@ public class Database {
 	}
 
 	public boolean createTable(String query) {
-		Statement statement = null;
+		Statement statement;
 		try {
 			this.connection = this.open();
-			if (query.equals("") || query == null) {
+			if (query.equals("")) {
 				plugin.getLogger().severe("SQL query empty: createTable(" + query + ")");
 				return false;
 			}
@@ -228,9 +225,7 @@ public class Database {
 			}
 		}
 
-		if (query("SELECT * FROM " + table) == null)
-			return true;
-		return false;
+		return query("SELECT * FROM " + table) == null;
 	}
 
 	public boolean colExists(String table, String column) {
