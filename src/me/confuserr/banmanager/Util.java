@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -53,7 +54,7 @@ public class Util {
 	}
 
 	public static String colorize(String string) {
-		return string.replaceAll("(?i)&([a-l0-9])", "\u00A7$1");
+		return ChatColor.translateAlternateColorCodes('&', string);
 	}
 
 	public static void sendMessage(CommandSender sender, String message) {
