@@ -10,7 +10,7 @@
 session_name("BanManagement");
 session_start();
 ob_start();
- #error_reporting(0); // Disable error reports for security
+error_reporting(0); // Disable error reports for security
 
 if(!isset($_SESSION['initiated'])) {
     session_regenerate_id();
