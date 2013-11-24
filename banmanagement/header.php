@@ -25,6 +25,10 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="screen" />
 		<link rel="stylesheet" type="text/css" href="css/core.css" />
 		<link rel="stylesheet" type="text/css" href="css/theme.css" />
+		<?php // Only include if on the viewplayer page, no need for extra HTTP requests for something we're not using
+		if(isset($_GET['action']) && $_GET['action'] == 'viewplayer'): ?>
+		<link rel="stylesheet" type="text/css" href="css/jquery.mCustomScrollbar.css"  />
+		<?php endif; ?>
 		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	</head>
 <body>

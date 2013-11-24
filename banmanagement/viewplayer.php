@@ -15,7 +15,7 @@ else if(!isset($_GET['player']) || empty($_GET['player']))
 	redirect('index.php');
 else if(isset($_GET['player']) && preg_match('/[^a-z0-9_]{2,16}/i', $_GET['player']))
 	redirect('index.php');
-else {
+else{
 	// Get the server details
 	$server = $settings['servers'][$_GET['server']];
 
@@ -49,26 +49,31 @@ else {
 		$mysqlTime = ($mysqlTime > 0)  ? floor($mysqlTime) : ceil ($mysqlTime);
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		?>
-		<div class="jumbotron">
-			<h2><img src="https://minotar.net/avatar/<?php echo $_GET['player']; ?>/40" alt="<?php echo $_GET['player']; ?>" /> <?php echo $_GET['player']; ?></h2>
-			<h3>Server: <?php echo $server['name']; ?></h3>
-		<?php
+<div class="row">
+	<div class="col-lg-3">
+		<div class="player_information">
+			<span class="skin" data-minecraft-username="<?php echo $_GET['player'];?>"></span>
+			<span id="player_name"><?php echo $_GET['player'];?></span>
+		</div>
+	</div>
+	<div class="col-lg-9" id="player_ban_info">
+		<h4>Current Server: <?php echo $server['name']; ?></h4>
+		<?php 
 		$id = array_keys($settings['servers']);
 		$i = 0;
 		$html = '';
 		if(count($settings['servers']) > 1) {
 			echo '
-			<h5>Change Server: ';
+			<p>Change Server: ';
 			foreach($settings['servers'] as $serv) {
 				if($serv['name'] != $server['name']) {
-					$html .= '<a href="index.php?action=viewplayer&player='.$_GET['player'].'&server='.$id[$i].'">'.$serv['name'].'</a>, ';
+					$html .= '<a href="index.php?action=viewplayer&player='.$_GET['player'].'&server='.$id[$i].'">'.$server['name'].'</a>, ';
 				}
 				++$i;
 			}
 			echo substr($html, 0, -2).'
-			</h5>';
+			</p>';
 		}
-		
 		if((isset($settings['player_current_ban']) && $settings['player_current_ban']) || !isset($settings['player_current_ban'])) {
 			?>
 			<br />
@@ -641,8 +646,9 @@ else {
 				</tbody>
 			</table><?php
 		} ?>
-		</div>
-		<?php
+	</div>
+</div>
+<?php
 	}
 }
 ?>

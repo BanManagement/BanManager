@@ -17,7 +17,6 @@
 				</a></p>
 			</footer>
 		</div> <!-- /container -->
-		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 		<!-- Add jQuery plugins below -->
@@ -29,7 +28,18 @@
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script>
+		<?php // Only include if on the viewplayer page, no need for extra HTTP requests for something we're not using
+		if(isset($_GET['action']) && $_GET['action'] == 'viewplayer'): ?>
+		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.minecraftskin.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.mCustomScrollbar.concat.min.js"></script>
+		<script type="text/javascript">
+			$('.skin').minecraftSkin();
+			$('#player_ban_info').mCustomScrollbar({
+				theme: 'dark-thick'
+			});
+		</script>
+		<?php endif; ?>
 		<script src="//<?php echo $path; ?>js/core.js"></script>
 		<?php
 			if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
