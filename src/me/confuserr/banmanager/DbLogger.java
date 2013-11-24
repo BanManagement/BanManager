@@ -216,7 +216,7 @@ public class DbLogger {
 	public ArrayList<WarnData> getWarnings(String name) {
 		ArrayList<WarnData> data = new ArrayList<WarnData>();
 
-		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "'");
+		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "' ORDER BY warn_time ASC");
 		try {
 			while (result.next()) {
 				data.add(new WarnData(name, result.getString("warned_by"), result.getString("warn_reason"), result.getLong("warn_time")));
