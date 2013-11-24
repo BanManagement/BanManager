@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import me.confuserr.banmanager.Commands.*;
-import me.confuserr.banmanager.Configs.Config;
-import me.confuserr.banmanager.Listeners.*;
-import me.confuserr.banmanager.Scheduler.*;
+import me.confuserr.banmanager.commands.*;
+import me.confuserr.banmanager.configs.Config;
 import me.confuserr.banmanager.data.*;
+import me.confuserr.banmanager.listeners.*;
+import me.confuserr.banmanager.scheduler.*;
 import net.h31ix.updater.Updater;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -77,10 +77,10 @@ public class BanManager extends JavaPlugin {
 	private boolean usePartialNames = true;
 	private boolean bukkitBans = true;
 	private boolean logIPs = true;
-        private boolean enableWarningActions = false;
-        private Map<Integer, String> warningActions;
-        private boolean enableWarningCooldown = false;
-        private int warningCooldown = 10;
+	private boolean enableWarningActions = false;
+	private Map<Integer, String> warningActions;
+	private boolean enableWarningCooldown = false;
+	private int warningCooldown = 10;
 
 	@Override
 	public void onDisable() {
@@ -185,7 +185,7 @@ public class BanManager extends JavaPlugin {
 				getCommand("tempmuteall").setExecutor(new TempMuteAllCommand(this));
 				getCommand("unmuteall").setExecutor(new UnMuteAllCommand(this));
 
-				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new externalAsync(this, extConn, schedulerFileConfig.getLong("lastChecked.external", 0)), 22L, schedulerFileConfig.getInt("scheduler.external", 120) * 20);
+				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ExternalAsync(this, extConn, schedulerFileConfig.getLong("lastChecked.external", 0)), 22L, schedulerFileConfig.getInt("scheduler.external", 120) * 20);
 			}
 		}
 
@@ -240,20 +240,20 @@ public class BanManager extends JavaPlugin {
 
 		// Checks for expired bans, and moves them into the record table
 		if (schedulerFileConfig.getInt("scheduler.expiresCheck", 300) != 0)
-			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new databaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new DatabaseAsync(this), 2400L, schedulerFileConfig.getInt("scheduler.expiresCheck", 300) * 20);
 		// 2 minute delay before it starts, runs every 5 minutes
 
 		// Check the muted table for new mutes
 		if (schedulerFileConfig.getInt("scheduler.newMutes", 8) != 0)
-			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new muteAsync(this, schedulerFileConfig.getLong("lastChecked.mutes", 0)), 20L, schedulerFileConfig.getInt("scheduler.newMutes", 8) * 20);
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new MuteAsync(this, schedulerFileConfig.getLong("lastChecked.mutes", 0)), 20L, schedulerFileConfig.getInt("scheduler.newMutes", 8) * 20);
 
 		// Check the banned tables for new player bans
 		if (schedulerFileConfig.getInt("scheduler.newBans", 8) != 0)
-			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new bansAsync(this, schedulerFileConfig.getLong("lastChecked.bans", 0)), 40L, schedulerFileConfig.getInt("scheduler.newBans", 8) * 20);
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new BansAsync(this, schedulerFileConfig.getLong("lastChecked.bans", 0)), 40L, schedulerFileConfig.getInt("scheduler.newBans", 8) * 20);
 
 		// Check the ip table for new ip bans
 		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
-			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ipBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new IpBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
@@ -318,7 +318,7 @@ public class BanManager extends JavaPlugin {
 		CleanUp.IPBanRecords.setDays(getConfig().getInt("cleanUp.ipBanRecords"));
 		CleanUp.MuteRecords.setDays(getConfig().getInt("cleanUp.muteRecords"));
 		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
-                
+
 		serverName = getConfig().getString("serverName");
 
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
@@ -349,22 +349,22 @@ public class BanManager extends JavaPlugin {
 			String path = "timeLimits.bans." + key;
 			getTimeLimitsBans().put(key, getConfig().getString(path));
 		}
-                
-                enableWarningActions = getConfig().getBoolean("warningActions.enabled");
-                if(enableWarningActions) {
-                    warningActions = new HashMap<Integer, String>();
-                    for (String key : getConfig().getConfigurationSection("warningActions").getKeys(false)) {
-                        if(StringUtils.isNumeric(key)) {
-                            int number = NumberUtils.toInt(key);
-                            warningActions.put(number, getConfig().getString("warningActions." + key));
-                        }
-                    }
-                }
-                
-                enableWarningCooldown = getConfig().getBoolean("warningCooldown.enabled");
-                if(enableWarningCooldown) {
-                    warningCooldown = getConfig().getInt("warningCooldown.cooldown");
-                }
+
+		enableWarningActions = getConfig().getBoolean("warningActions.enabled");
+		if (enableWarningActions) {
+			warningActions = new HashMap<Integer, String>();
+			for (String key : getConfig().getConfigurationSection("warningActions").getKeys(false)) {
+				if (StringUtils.isNumeric(key)) {
+					int number = NumberUtils.toInt(key);
+					warningActions.put(number, getConfig().getString("warningActions." + key));
+				}
+			}
+		}
+
+		enableWarningCooldown = getConfig().getBoolean("warningCooldown.enabled");
+		if (enableWarningCooldown) {
+			warningCooldown = getConfig().getInt("warningCooldown.cooldown");
+		}
 	}
 
 	public ConcurrentHashMap<String, BanData> getPlayerBans() {
@@ -637,22 +637,22 @@ public class BanManager extends JavaPlugin {
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
 		return dbLogger.getWarnings(name.toLowerCase());
 	}
-        
-        public boolean enableWarningActions() {
-                return enableWarningActions;
-        }
-        
-        public Map<Integer, String> getWarningActions() {
-                return warningActions;
-        }
-        
-        public boolean enableWarningCooldown() {
-                return enableWarningCooldown;
-        }
-        
-        public int getWarningCooldown() {
-                return warningCooldown;
-        }
+
+	public boolean enableWarningActions() {
+		return enableWarningActions;
+	}
+
+	public Map<Integer, String> getWarningActions() {
+		return warningActions;
+	}
+
+	public boolean enableWarningCooldown() {
+		return enableWarningCooldown;
+	}
+
+	public int getWarningCooldown() {
+		return warningCooldown;
+	}
 
 	public String getPlayerIP(String name) {
 		return dbLogger.getIP(name.toLowerCase());
