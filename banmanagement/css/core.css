@@ -73,3 +73,11 @@ td.admin-options {
 #excludepast{
 	padding: 5px;
 }
+
+.jumbotron {
+	font-size: inherit;
+}
+
+.jumbotron .input-group {
+	line-height: 0px;
+}
