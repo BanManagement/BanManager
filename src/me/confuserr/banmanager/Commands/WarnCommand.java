@@ -52,34 +52,34 @@ public class WarnCommand implements CommandExecutor {
 				Util.sendMessage(sender, plugin.getMessage("warnExemptError"));
 			} else {
 
-                                if(plugin.enableWarningCooldown()) {
-                                    ArrayList<WarnData> warnings = plugin.dbLogger.getWarnings(target.getName());
-                                    if(warnings.size() > 0) {
-                                        WarnData data = warnings.get(warnings.size() - 1);
-                                        long last = data.getTime();
-                                        long now = System.currentTimeMillis() / 1000L;
-                                        if(now - last <= plugin.getWarningCooldown()) {
-                                            Util.sendMessage(sender, plugin.getMessage("warnCooldown"));
-                                            return true;
-                                        }
-                                    }
-                                }
-                                                        
+				if (plugin.enableWarningCooldown()) {
+					ArrayList<WarnData> warnings = plugin.dbLogger.getWarnings(target.getName());
+					if (warnings.size() > 0) {
+						WarnData data = warnings.get(warnings.size() - 1);
+						long last = data.getTime();
+						long now = System.currentTimeMillis() / 1000L;
+						if (now - last <= plugin.getWarningCooldown()) {
+							Util.sendMessage(sender, plugin.getMessage("warnCooldown"));
+							return true;
+						}
+					}
+				}
+
 				String reason = Util.getReason(args, 1);
 				String viewReason = Util.viewReason(reason);
 
 				plugin.dbLogger.logWarning(target.getName(), playerName, reason);
-                                
-                                if(plugin.enableWarningActions()) {
-                                    Map<Integer, String> actions = plugin.getWarningActions();
-                                    if(actions.size() > 0) {
-                                        int number = plugin.dbLogger.getWarningCount(target.getName()) + 1;
-                                        if(actions.containsKey(number)) {
-                                            String actionCommand = actions.get(number).replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
-                                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
-                                        }
-                                    }
-                                }
+
+				if (plugin.enableWarningActions()) {
+					Map<Integer, String> actions = plugin.getWarningActions();
+					if (actions.size() > 0) {
+						int number = plugin.dbLogger.getWarningCount(target.getName()) + 1;
+						if (actions.containsKey(number)) {
+							String actionCommand = actions.get(number).replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+						}
+					}
+				}
 
 				String infoMessage = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 
@@ -90,7 +90,7 @@ public class WarnCommand implements CommandExecutor {
 
 				String message = plugin.getMessage("playerWarned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName);
 				Util.sendMessageWithPerm(message, "bm.notify.warn");
-				
+
 				Util.sendMessage(target, plugin.getMessage("warned").replace("[displayName]", target.getDisplayName()).replace("[name]", target.getName()).replace("[reason]", viewReason).replace("[by]", playerName));
 			}
 		} else if (list.size() > 1) {
