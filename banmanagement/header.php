@@ -1,5 +1,5 @@
 <?php
-/*  BanManagement © 2012, a web interface for the Bukkit plugin BanManager
+/*  BanManagement ï¿½ 2012, a web interface for the Bukkit plugin BanManager
     by James Mortemore of http://www.frostcast.net
 	is licenced under a Creative Commons
 	Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales.
@@ -25,7 +25,12 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="screen" />
 		<link rel="stylesheet" type="text/css" href="css/core.css" />
 		<link rel="stylesheet" type="text/css" href="css/theme.css" />
-		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    		<!--[if lt IE 9]>
+      			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      			<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    		<![endif]-->
 	</head>
 <body>
 	<nav class="navbar navbar-fixed-top <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']){echo "navbar-inverse";} else {echo "navbar-default";} ?>" role="navigation">
