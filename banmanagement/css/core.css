@@ -65,13 +65,17 @@ td.admin-options {
 .scratch {
     display:none;
 }
-#copyright_image{
+#copyright_image {
 	width: 100px;
 	height: 25px;
 	margin-top: -6px;
 }
-#excludepast{
-	padding: 5px;
+#excludepast {
+  padding: 5px;
+}
+
+.jumbotron {
+	font-size: medium !important; 
 }
 
 .jumbotron {

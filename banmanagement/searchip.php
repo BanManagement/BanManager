@@ -1,5 +1,5 @@
 <?php
-/*  BanManagement © 2012, a web interface for the Bukkit plugin BanManager
+/*  BanManagement Â© 2012, a web interface for the Bukkit plugin BanManager
     by James Mortemore of http://www.frostcast.net
 	is licenced under a Creative Commons
 	Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales.
@@ -88,12 +88,14 @@ else {
 				$player = $found[$playerNames[$i]];
 				$expireTime = ($player['expires'] + $mysqlSecs)- $timeNow;
 				
-				if($player['expires'] == 0)
-					$expires = '<span class="label label-important">Never</span>';
-				else if(isset($expireTime) && $expireTime > 0) {
-					$expires = '<span class="label label-warning">'.secs_to_hmini($expireTime).'</span>';
-				} else
-					$expires = '<span class="label label-success">Past</span>';
+				if($player['type'] != 'Kick' && $player['type'] != 'Warning') {
+					if($player['expires'] == 0)
+						$expires = '<span class="label label-danger">Permanent</span>';
+					else if(isset($expireTime) && $expireTime > 0) {
+						$expires = '<span class="label label-warning">'.secs_to_hmini($expireTime).'</span>';
+					} else
+						$expires = '<span class="label label-warning">Expired</span>';
+				}
 				
 				if(!empty($filter)) {
 					$skip = false;
@@ -167,17 +169,21 @@ else {
 		?>
 	<form class="form-inline" action="" method="get">
 		<fieldset>
-			<legend>Search Options</legend>
+			<div class="page-header">
+				<h1>Search Options</h1>
+			</div>
 			<input type="hidden" name="action" value="searchip" />
 			<input type="hidden" name="server" value="<?php echo $_GET['server']; ?>" />
 			<input type="hidden" name="player" value="<?php echo $_GET['player']; ?>" />
+            <div class="checkbox" id="excludepast">
 			<label class="checkbox">
-				Exclude Past<input type="checkbox" name="excluderecords" value="1" <?php
+				Exclude Past <input type="checkbox" name="excluderecords" value="1" <?php
 				if(isset($_GET['excluderecords']))
 					echo 'checked="checked"';
 				?>/>
 			</label>
-			<button type="submit" class="btn"><i class="icon-search"></i></button>
+            </div>
+			<button type="submit" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-search"></span> Update</button>
 		</fieldset>
 	</form>
 	<table class="table table-striped table-bordered sortable">
@@ -196,11 +202,11 @@ else {
 		<tfoot>
 			<tr>
 				<th colspan="7" class="pager form-horizontal">
-					<button class="btn first"><i class="icon-step-backward"></i></button>
-					<button class="btn prev"><i class="icon-arrow-left"></i></button>
+					<button class="btn btn-default first"><span class="glyphicon glyphicon-step-backward"></span></button>
+					<button class="btn btn-default prev"><span class="glyphicon glyphicon-arrow-left"></span></button>
 					<span class="pagedisplay"></span>
-					<button class="btn next"><i class="icon-arrow-right"></i></button>
-					<button class="btn last"><i class="icon-step-forward"></i></button>
+					<button class="btn btn-default next"><span class="glyphicon glyphicon-arrow-right" style="float:none"></span></button>
+					<button class="btn btn-default last"><span class="glyphicon glyphicon-step-forward"></span></button>
 					<select class="pagesize input-mini" title="Select page size">
 						<option selected="selected" value="10">10</option>
 						<option value="20">20</option>
