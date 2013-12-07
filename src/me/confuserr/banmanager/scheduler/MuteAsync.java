@@ -11,7 +11,7 @@ public class MuteAsync implements Runnable {
 
 	private Database localConn;
 	private BanManager plugin;
-	private long lastRun;
+	private static long lastRun;
 
 	public MuteAsync(BanManager banManager, long lastChecked) {
 		plugin = banManager;
@@ -64,19 +64,9 @@ public class MuteAsync implements Runnable {
 		}
 
         lastRun = thisRun;
-		save();
-
 	}
-
-	private void save() {
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				plugin.schedulerFileConfig.set("lastChecked.mutes", lastRun);
-				plugin.schedulerConfig.saveConfig();
-			}
-
-		});
+	
+	public static long getLastRun() {
+		return lastRun;
 	}
 }

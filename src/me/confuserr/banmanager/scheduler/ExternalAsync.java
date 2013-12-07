@@ -12,12 +12,12 @@ public class ExternalAsync implements Runnable {
 
 	private Database extConn;
 	private BanManager plugin;
-	private long lastRun;
+	private static long lastRun;
 
-	public ExternalAsync(BanManager banManager, Database extConn, long lastRun) {
+	public ExternalAsync(BanManager banManager, Database extConn, long lastChecked) {
 		plugin = banManager;
 		this.extConn = extConn;
-		this.lastRun = lastRun;
+		lastRun = lastChecked;
 	}
 
 	public void run() {
@@ -177,18 +177,9 @@ public class ExternalAsync implements Runnable {
 		extConn.close();
 
 		lastRun = thisRun;
-		save();
 	}
-
-	private synchronized void save() {
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				plugin.schedulerFileConfig.set("lastChecked.external", lastRun);
-				plugin.schedulerConfig.saveConfig();
-			}
-
-		});
+	
+	public static long getLastRun() {
+		return lastRun;
 	}
 }

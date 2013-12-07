@@ -13,3 +13,4 @@ scheduler:
     newBans: 8
     newIPBans: 8
     external: 120
+    saveLastRuns: 60

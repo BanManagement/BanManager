@@ -11,7 +11,7 @@ public class BansAsync implements Runnable {
 
 	private Database localConn;
 	private BanManager plugin;
-	private long lastRun;
+	private static long lastRun;
 
 	public BansAsync(BanManager banManager, long lastChecked) {
 		plugin = banManager;
@@ -78,19 +78,9 @@ public class BansAsync implements Runnable {
 		}
 
         lastRun = thisRun;
-		save();
-
 	}
-
-	private synchronized void save() {
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				plugin.schedulerFileConfig.set("lastChecked.bans", lastRun);
-				plugin.schedulerConfig.saveConfig();
-			}
-
-		});
+	
+	public static long getLastRun() {
+		return lastRun;
 	}
 }

@@ -86,6 +86,7 @@ public class BanManager extends JavaPlugin {
 	public void onDisable() {
 		// Cancel all BanManager tasks
 		getServer().getScheduler().cancelTasks(this);
+		schedulerConfig.saveConfig();
 
 		// Close the database connection
 		localConn.close();
@@ -254,6 +255,9 @@ public class BanManager extends JavaPlugin {
 		// Check the ip table for new ip bans
 		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new IpBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
+		
+		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new SaveLastRunsSync(this), 60L, schedulerFileConfig.getInt("scheduler.saveLastRuns", 60) * 20);
 
 		// Load all the player & ip bans into the array
 		ResultSet result = localConn.query("SELECT banned, ban_reason, banned_by, ban_time, ban_expires_on FROM " + localConn.getTable("bans"));
