@@ -1,5 +1,5 @@
 <?php
-/*  BanManagement © 2012, a web interface for the Bukkit plugin BanManager
+/*  BanManagement ï¿½ 2012, a web interface for the Bukkit plugin BanManager
     by James Mortemore of http://www.frostcast.net
 	is licenced under a Creative Commons
 	Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales.
@@ -107,7 +107,7 @@ function latestWarnings($server, $serverID) {
 			<form action="index.php" method="get" class="form-horizontal" id="search">
 		        <div class="input-group">
 				    <div class="input-group-btn">
-				        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Player <span class="caret"></span></button>
+				        <button id="player" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Player <span class="caret"></span></button>
 						<ul class="dropdown-menu">
 						  <li id="ip"><a href="#">Search by IP Address</a></li>
 						</ul>
