@@ -81,3 +81,13 @@ td.admin-options {
 .jumbotron .input-group {
 	line-height: 0px;
 }
+
+.form-control.fixedWidth {
+    width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+	.form-control.fixedWidth {
+		width: 550px;
+	}
+}
