@@ -72,8 +72,8 @@ public class DeleteLastWarningCommand implements CommandExecutor {
 		return true;
 	}
 
-	private void remove(CommandSender sender, String playerName) {
-        	plugin.removeLastPlayerWarning(playerName);
-		Util.sendMessage(sender, plugin.getMessage("playerLastWarningDeleted").replace("[name]", playerName));
-	}
+        private void remove(CommandSender sender, String playerName) {
+                plugin.removeLastPlayerWarning(playerName);
+                Util.sendMessage(sender, plugin.getMessage("playerLastWarningDeleted").replace("[name]", playerName));
+        }
 }

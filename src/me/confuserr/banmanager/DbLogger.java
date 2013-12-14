@@ -235,7 +235,7 @@ public class DbLogger {
 	}
         
         public void removeLastWarning(String name) {
-		Util.asyncQuery("DELETE FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "' ORDER BY warn_time ASC LIMIT 1");
+                Util.asyncQuery("DELETE FROM " + localConn.getTable("warnings") + " WHERE warned = '" + name + "' ORDER BY warn_time ASC LIMIT 1");
         }
 
 	public void banRemove(String name, String by, boolean keepLog) {

@@ -640,7 +640,7 @@ public class BanManager extends JavaPlugin {
 	}
         
         public void removeLastPlayerWarning(String name) {
-		dbLogger.removeLastWarning(name.toLowerCase());
+                dbLogger.removeLastWarning(name.toLowerCase());
         }
 
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
