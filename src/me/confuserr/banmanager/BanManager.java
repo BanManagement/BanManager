@@ -211,6 +211,7 @@ public class BanManager extends JavaPlugin {
 		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
 		getCommand("warn").setExecutor(new WarnCommand(this));
 		getCommand("bmclear").setExecutor(new ClearCommand(this));
+                getCommand("dwarn").setExecutor(new DeleteLastWarningCommand(this));
 
 		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
 														// Sync events
@@ -637,6 +638,10 @@ public class BanManager extends JavaPlugin {
 	public void removePlayerWarnings(String name) {
 		dbLogger.removeWarnings(name.toLowerCase());
 	}
+        
+        public void removeLastPlayerWarning(String name) {
+		dbLogger.removeLastWarning(name.toLowerCase());
+        }
 
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
 		return dbLogger.getWarnings(name.toLowerCase());
