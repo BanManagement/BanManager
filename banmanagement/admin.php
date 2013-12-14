@@ -1,5 +1,5 @@
 <?php
-/*  BanManagement © 2012, a web interface for the Bukkit plugin BanManager
+/*  BanManagement ï¿½ 2012, a web interface for the Bukkit plugin BanManager
     by James Mortemore of http://www.frostcast.net
 	is licenced under a Creative Commons
 	Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales.
@@ -120,79 +120,79 @@ else if(isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] > 4)
 							<div class="form-group">
 								<label class="control-label" for="servername">Server Name:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="servername" id="servername">
+									<input type="text" class="form-control required fixedWidth" name="servername" id="servername">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="host">MySQL Host:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="host" id="host">
+									<input type="text" class="form-control required fixedWidth" name="host" id="host">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="database">MySQL Database:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="database" id="database">
+									<input type="text" class="form-control required fixedWidth" name="database" id="database">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="username">MySQL Username:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="username" id="usernme">
+									<input type="text" class="form-control required fixedWidth" name="username" id="usernme">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="password">MySQL Password:</label>
 								<div class="controls">
-									<input type="password" class="form-control" name="password" id="password">
+									<input type="password" class="form-control fixedWidth" name="password" id="password">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="banstable">Bans Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="banstable" id="banstable" value="bm_bans">
+									<input type="text" class="form-control required fixedWidth" name="banstable" id="banstable" value="bm_bans">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="recordtable">Bans Record Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="recordtable" id="recordtable" value="bm_ban_records">
+									<input type="text" class="form-control required fixedWidth" name="recordtable" id="recordtable" value="bm_ban_records">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="iptable">IP Bans Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="iptable" id="iptable" value="bm_ip_bans">
+									<input type="text" class="form-control required fixedWidth" name="iptable" id="iptable" value="bm_ip_bans">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="iprecordtable">IP Record Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="iprecordtable" id="iprecordtable" value="bm_ip_records">
+									<input type="text" class="form-control required fixedWidth" name="iprecordtable" id="iprecordtable" value="bm_ip_records">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="mutestable">Mutes Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="mutestable" id="mutestable" value="bm_mutes">
+									<input type="text" class="form-control required fixedWidth" name="mutestable" id="mutestable" value="bm_mutes">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="mutesrecordtable">Mutes Record Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="mutesrecordtable" id="mutesrecordtable" value="bm_mutes_records">
+									<input type="text" class="form-control required fixedWidth" name="mutesrecordtable" id="mutesrecordtable" value="bm_mutes_records">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="kickstable">Kicks Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="kickstable" id="kickstable" value="bm_kicks">
+									<input type="text" class="form-control required fixedWidth" name="kickstable" id="kickstable" value="bm_kicks">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label" for="warningstable">Warnings Table:</label>
 								<div class="controls">
-									<input type="text" class="form-control required" name="warningstable" id="warningstable" value="bm_warnings">
+									<input type="text" class="form-control required fixedWidth" name="warningstable" id="warningstable" value="bm_warnings">
 								</div>
 							</div>
 						</div>
