@@ -105,6 +105,10 @@ commands:
   bmclear:
     description: "Clear a player's records"
     usage: "/bmclear <type> <player>"
+  dwarn:
+    description: "Delete a player's last warning"
+    usage: "/dwarn <player>"
+    aliases: [bmdwarn]
 permissions:
     bm.*:
         description: Gives access to all BanManager commands
