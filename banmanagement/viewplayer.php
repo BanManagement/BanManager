@@ -50,7 +50,7 @@ else {
 		$mysqlSecs = ($mysqlTime * 60) * 60;
 		?>
 		<div class="jumbotron">
-			<h2><img src="https://minotar.net/avatar/<?php echo $_GET['player']; ?>/40" alt="<?php echo $_GET['player']; ?>" /> <?php echo $_GET['player']; ?></h2>
+			<h2><img src="https://minotar.net/helm/<?php echo $_GET['player']; ?>/40" alt="<?php echo $_GET['player']; ?>" /> <?php echo $_GET['player']; ?></h2>
 			<h3>Server: <?php echo $server['name']; ?></h3>
 		<?php
 		$id = array_keys($settings['servers']);
