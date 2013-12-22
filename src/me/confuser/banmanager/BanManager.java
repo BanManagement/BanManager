@@ -103,7 +103,6 @@ public class BanManager extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
-		// Migrate old config options
 
 		saveConfig();
 		plugin = this;
@@ -138,8 +137,6 @@ public class BanManager extends JavaPlugin {
 		}
 
 		if (!localConn.checkTable(localConn.getTable("warnings"))) {
-			// Modify the bminfo message for warnings
-			getConfig().set("messages.bmInfo", getConfig().getString("messages.bmInfo") + "\n&cWarnings: [warningsCount]");
 			saveConfig();
 
 			getLogger().info("[BanManager] Creating tables");
