@@ -18,7 +18,7 @@
 			</footer>
 		</div> <!-- /container -->
 		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
 		<!-- Add jQuery plugins below -->
 
@@ -49,6 +49,7 @@
 						var authid = \''.sha1($settings['password']).'\';
 					</script>';
 				echo '
+					<script src="//'.$path.'js/moment-with-langs.min.js"></script>
 					<script src="//'.$path.'js/bootstrap-datetimepicker.min.js"></script>
 					<script src="//'.$path.'js/admin.js"></script>
 			';
