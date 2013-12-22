@@ -132,26 +132,30 @@ $(function() {
 	});
 	
 	if(jQuery.fn.datetimepicker) {
-		$(".datetimepicker").datetimepicker({
-			format: 'dd/MM/yyyy hh:mm:ss',
-			startDate: new Date()
+		$('.modal').on('shown.bs.modal', function () {
+			$(".datetimepicker").datetimepicker();
 		});
 	}
-	
+
 	$(".yourtime").html(dateFormat(new Date(), "dd/mm/yyyy HH:MM:ss"));
 	
 	$("#editban form .bantype, #editmute form .bantype").click(function(e) {
 		e.preventDefault();
-		if($(this).html() == 'Never') {
-			$(this).html('Temp');
-			var picker = $(this).parent().parent().data('datetimepicker');
+		var $expires = $(this).parent().parent().find("input[name=expires]");
+
+		if($(this).html() == 'Permanent') {
+			$(this).html('Temporary');
+
+			$expires.removeAttr("disabled");
+	
+			var picker = $(this).parent().parent().data('DateTimePicker');
+
 			picker.setDate(new Date());
-			
-			$(this).parent().find("input[name=expires]").removeAttr("disabled");
+
 		} else {
-			$(this).html('Never');
-			$(this).parent().find("input[name=expires]").val('');
-			$(this).parent().find("input[name=expires]").attr("disabled", "disabled");
+			$(this).html('Permanent');
+			$expires.val('');
+			$expires.attr("disabled", "disabled");
 		}
 	});
 	
@@ -170,7 +174,7 @@ $(function() {
 		
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
 		showLoading('loadingSmall');
-		$("#editban form input[name=expiresTimestamp]").val($("#editban form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
+		$("#editban form input[name=expiresTimestamp]").val($("#editban form input[name=expires]").parent().data('DateTimePicker').getDate().toDate().getTime() / 1000);
 		$.ajax({
 			url: 'index.php?action=updateban&ajax=true&authid='+authid,
 			data: form.serialize(),
@@ -192,7 +196,7 @@ $(function() {
 						$("#current-ban .expires").html('<span class="label label-important">Never</span>');
 					else {
 						$("#current-ban .expires").countdown({
-							until: $("#editban form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
+							until: $("#editban form input[name=expires]").parent().data('DateTimePicker').getDate().toDate(),
 							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
 							onExpiry: function() {
 								location.reload();
@@ -225,7 +229,7 @@ $(function() {
 		
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
 		showLoading('loadingSmall');
-		$("#editmute form input[name=expiresTimestamp]").val($("#editmute form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
+		$("#editmute form input[name=expiresTimestamp]").val($("#editmute form input[name=expires]").parent().parent().data('DateTimePicker').getDate().getTime()/1000);
 		$.ajax({
 			url: 'index.php?action=updatemute&ajax=true&authid='+authid,
 			data: form.serialize(),
@@ -247,7 +251,7 @@ $(function() {
 						$("#current-mute .expires").html('<span class="label label-important">Never</span>');
 					else {
 						$("#current-mute .expires").countdown({
-							until: $("#editmute form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
+							until: $("#editmute form input[name=expires]").parent().parent().data('DateTimePicker').getDate(),
 							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
 							onExpiry: function() {
 								location.reload();
@@ -280,7 +284,7 @@ $(function() {
 		
 		formBody.hide().after('<div id="ajaxLoading"><span id="loadingSmall"></span><br />Saving</div>');
 		showLoading('loadingSmall');
-		$("#editipban form input[name=expiresTimestamp]").val($("#editipban form input[name=expires]").parent().parent().data('datetimepicker').getDate().getTime()/1000);
+		$("#editipban form input[name=expiresTimestamp]").val($("#editipban form input[name=expires]").parent().parent().data('DateTimePicker').getDate().getTime()/1000);
 		$.ajax({
 			url: 'index.php?action=updateipban&ajax=true&authid='+authid,
 			data: form.serialize(),
@@ -302,7 +306,7 @@ $(function() {
 						$("#current-ban .expires").html('<span class="label label-important">Never</span>');
 					else {
 						$("#current-ban .expires").countdown({
-							until: $("#editipban form input[name=expires]").parent().parent().data('datetimepicker').getDate(),
+							until: $("#editipban form input[name=expires]").parent().parent().data('DateTimePicker').getDate(),
 							format: 'yowdhms', layout: '{y<} {yn} {yl}, {y>} {o<} {on} {ol}, {o>} {w<} {wn} {wl}, {w>} {d<} {dn} {dl}, {d>} {h<} {hn} {hl}, {h>} {m<} {mn} {ml}, {m>} {s<} {sn} {sl} {s>}',
 							onExpiry: function() {
 								location.reload();

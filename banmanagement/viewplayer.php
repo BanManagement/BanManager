@@ -163,59 +163,57 @@ else {
 								<h3>Editing Ban</h3>
 							</div>
 							<div class="modal-body">
-								<div class="container">
-									<div class="control-group">
-										<label class="control-label" for="yourtime">Your Time:</label>
-										<div class="controls">
-											<span class="yourtime"></span>
-										</div>
+								<div class="control-group">
+									<label class="control-label" for="yourtime">Your Time:</label>
+									<div class="controls">
+										<span class="yourtime"></span>
 									</div>
-									<div class="control-group">
-										<label class="control-label" for="servertime">Server Time:</label>
-										<div class="controls">
-											<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
-										</div>
-									</div>
-						<!--			<div class="control-group">
-										<label class="control-label" for="bandatetime">Expires Server Time:</label>
-										<div class="controls">
-											<div class="input-append datetimepicker date">
-											<?php
-								/*					echo '						
-														<div class="input-prepend">
-															<button class="btn btn-danger bantype" type="button">';
-												if($currentBans['ban_expires_on'] == 0)
-													echo 'Permanent';
-												else
-													echo 'Temporary';
-											
-												echo '</button>
-																			<input type="text" class="required';
-											
-												if($currentBans['ban_expires_on'] == 0)
-													echo ' disabled" disabled="disabled"';
-												else
-													echo '"'; 
-											
-												echo ' name="expires" data-format="dd/MM/yyyy hh:mm:ss" value="';
-
-												if($currentBans['ban_expires_on'] == 0)
-													echo '';
-												else
-													echo date('d/m/Y H:i:s', $currentBans['ban_expires_on']);
-												
-												echo '" id="bandatetime" />';
-								*/			?>
-													<span class="add-on">
-														<i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-													</span>
-												</div>
-											</div>
-										</div>
-									</div>-->
-									<label for="banreason">Reason:</label>
-										<textarea id="banreason" name="reason" class="form-control" rows="4"><?php echo $currentBans['ban_reason']; ?></textarea>
 								</div>
+								<div class="control-group">
+									<label class="control-label" for="servertime">Server Time:</label>
+									<div class="controls">
+										<span class="servertime"><?php echo date('d/m/Y H:i:s', time() + $mysqlSecs); ?></span>
+									</div>
+								</div>
+								<div class="control-group">
+									<label class="control-label" for="bandatetime">Expires Server Time:</label>
+									<div class="controls">
+										<div class="input-group date datetimepicker">
+										<?php
+											echo '						
+											<span class="input-group-btn">
+												<button class="btn btn-danger bantype" type="button">';
+											if($currentBans['ban_expires_on'] == 0)
+												echo 'Permanent';
+											else
+												echo 'Temporary';
+										
+											echo '</button>
+											</span>
+											<input type="text" class="form-control required';
+										
+											if($currentBans['ban_expires_on'] == 0)
+												echo ' disabled" disabled="disabled"';
+											else
+												echo '"'; 
+										
+											echo ' name="expires" data-format="DD/MM/YYYY hh:mm:ss" value="';
+
+											if($currentBans['ban_expires_on'] == 0)
+												echo '';
+											else
+												echo date('d/m/Y H:i:s', $currentBans['ban_expires_on']);
+											
+											echo '" id="bandatetime" />';
+										?>
+											<span class="input-group-addon">
+												<i class="glyphicon glyphicon-calendar"></i>
+											</span>
+										</div>
+									</div>
+								</div>
+								<label for="banreason">Reason:</label>
+								<textarea id="banreason" name="reason" class="form-control" rows="4"><?php echo $currentBans['ban_reason']; ?></textarea>
 							</div>
 							<div class="modal-footer">
 								<a href="#" class="btn" data-dismiss="modal">Close</a>
