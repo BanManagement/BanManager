@@ -1,4 +1,4 @@
-main: me.confuserr.banmanager.BanManager
+main: me.confuser.banmanager.BanManager
 name: BanManager
 version: 3.13
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
