@@ -33,6 +33,14 @@ $(function() {
 		});
 	});
 	
+	if (jQuery().minecraftSkin) $('.skin').minecraftSkin();
+	
+	if (jQuery().mCustomScrollbar) {
+		$('#player_ban_info').mCustomScrollbar({
+			theme: 'dark-thick'
+		});
+	}
+	
 	$.extend($.tablesorter.themes.bootstrap, {
 		// these classes are added to the table. To see other table classes available,
 		// look here: http://twitter.github.com/bootstrap/base-css.html#tables

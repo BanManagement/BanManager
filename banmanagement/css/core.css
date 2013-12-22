@@ -91,3 +91,30 @@ td.admin-options {
 		width: 550px;
 	}
 }
+
+.player_information {
+	background: #eee;
+	padding: 5px;
+	border: 1px solid #e6e6e6;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-ms-border-radius: 3px;
+	height: 300px;
+}
+
+#player_name {
+	font-weight: 700;
+	text-align: center;
+	display: inherit;
+}
+
+.skin {
+	text-align: center;
+	display: block;
+}
+
+#player_ban_info {
+	max-height: 700px;
+	overflow: auto;
+}

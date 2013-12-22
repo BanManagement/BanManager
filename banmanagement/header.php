@@ -32,6 +32,9 @@ $path = $_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME
       			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       			<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     		<![endif]-->
+		<?php if(isset($_GET['action']) && $_GET['action'] == 'viewplayer'): ?>
+		<link rel="stylesheet" type="text/css" href="css/jquery.mCustomScrollbar.css" />
+		<?php endif; ?>
 	</head>
 <body>
 	<nav class="navbar navbar-fixed-top <?php if(isset($theme['navbar-dark']) && $theme['navbar-dark']){echo "navbar-inverse";} else {echo "navbar-default";} ?>" role="navigation">

@@ -29,7 +29,12 @@
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.widgets.min.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.tablesorter.pager.min.js"></script>
+		<?php // Only include if on the viewplayer page, no need for extra HTTP requests for something we're not using
+		if(isset($_GET['action']) && $_GET['action'] == 'viewplayer'): ?>
+		<script src="//<?php echo $path; ?>js/excanvas.js"></script>
 		<script src="//<?php echo $path; ?>js/jquery.minecraftskin.js"></script>
+		<script src="//<?php echo $path; ?>js/jquery.mCustomScrollbar.concat.min.js"></script>
+		<?php endif; ?>
 		<script src="//<?php echo $path; ?>js/core.js"></script>
 		<?php
 			if((isset($settings['iframe_protection']) && $settings['iframe_protection']) || !isset($settings['iframe_protection'])) {
