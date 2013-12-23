@@ -6,33 +6,33 @@
 * and more. 
 **/
 
-$settings['utf8'] 			= false; // Encoding (Recommended TRUE)
-$settings['latest_bans'] 	= true;  // Latest Bans table
-$settings['latest_mutes']	= true; // Latest Mutes table
+$settings['utf8'] = false; // Encoding (Recommended TRUE)
+$settings['latest_bans'] = true;  // Latest Bans table
+$settings['latest_mutes'] = true; // Latest Mutes table
 $settings['latest_warnings'] = true; // Latest warnings table
-$settings['servers']		= '';
-$settings['password']		= 'password'; // ACP Password (Keep it strong)
-$settings['footer'] 		= '&copy; Your Server '.date('Y'); // Footer for all pages
-$settings['admin_link']     = true; // Show the admin link in the footer of all page
-$settings['bm_info']		= true; // Show ban management infomation aside 'Account Status'
-	$settings['bm_info_icon'] = false; // Show the 'info' icon next to the title of bm_info
-$settings['pastbans']		= true; // Show amount of players banned under the search
+$settings['servers'] = '';
+$settings['password'] = 'password'; // ACP Password (Keep it strong)
+$settings['footer'] = '&copy; Your Server '.date('Y'); // Footer for all pages
+$settings['admin_link'] = true; // Show the admin link in the footer of all page
+$settings['bm_info'] = true; // Show ban management infomation aside 'Account Status'
+$settings['bm_info_icon'] = false; // Show the 'info' icon next to the title of bm_info
+$settings['pastbans'] = true; // Show amount of players banned under the search
 	
 /**
 * These are the language options for Ban Management
 **/
 
-$language['brand']			   = 'Ban Management'; // The branding of all pages
-$language['header-title']	   = 'Account Status'; // Edit the 'Account Status' text above the search
-$language['description'] 	   = ''; // Meta Description for search engines
-$language['title']			   = 'Ban Management by Frostcast'; // Title of all pages
+$language['brand'] = 'Ban Management'; // The branding of all pages
+$language['header-title'] = 'Account Status'; // Edit the 'Account Status' text above the search
+$language['description'] = ''; // Meta Description for search engines
+$language['title'] = 'Ban Management by Frostcast'; // Title of all pages
 $language['latest_bans_title'] = 'Recent Bans'; // The text displayed over the latest bans table
 $language['latest_mutes_title'] = 'Recent Mutes'; // The text displayed over the latest mutes table
 $language['latest_warnings_title'] = 'Recent Warnings'; // The text displayed over the latest warnings table
-$language['nav-home']		   = 'Home'; // The text displayed in the navbar for 'Home'
-$language['nav-stats']	  	   = 'Statistics'; // The text displayed in the navbar for 'Servers'
-$language['pastbans_text']     = "unique bans. Don't be one of them."; // Choose what text to place if pastbans is true
-$language['bm_info_text']  	   = // The text displayed if bm_info is set to true. Enter your text below, HTML elements supported
+$language['nav-home'] = 'Home'; // The text displayed in the navbar for 'Home'
+$language['nav-stats'] = 'Statistics'; // The text displayed in the navbar for 'Servers'
+$language['pastbans_text'] = "unique bans. Don't be one of them."; // Choose what text to place if pastbans is true
+$language['bm_info_text'] = // The text displayed if bm_info is set to true. Enter your text below, HTML elements supported
 ' 
 	Ban Management is powerful ban and mute application that allows players to check if and why they were banned or muted and who
 	it was by. You can also see how much time is left of your ban or mute.
@@ -43,6 +43,6 @@ $language['bm_info_text']  	   = // The text displayed if bm_info is set to true
 * These are the settings for editing the layout of Ban Management
 **/
 
-$theme['navbar-dark']       = false; // Enable dark theme for the navbar
+$theme['navbar-dark'] = false; // Enable dark theme for the navbar
 
 ?>

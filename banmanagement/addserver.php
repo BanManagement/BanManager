@@ -63,6 +63,10 @@ else if(!tableExists($_POST['warningstable']))
 else {
 	// Success! Add it
 	$servers = $settings['servers'];
+
+	if (empty($servers))
+		$servers = array();
+
 	$servers[] = array(
 		'name' => $_POST['servername'],
 		'host' => $_POST['host'],
