@@ -103,7 +103,7 @@ public class Util {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static void asyncQuery(final String query, final Database extConn) {
 		if (plugin.getConfig().getBoolean("useSyncChat")) {
@@ -177,7 +177,7 @@ public class Util {
 		}
 		return timeReturn;
 	}
-	
+
 	public static int generatePin() {
 		return 100000 + generator.nextInt(900000);
 	}
@@ -185,7 +185,7 @@ public class Util {
 	public static boolean isValidPlayerName(String name) {
 		return name.matches("^[a-zA-Z0-9_]*$");
 	}
-	
+
 	public static boolean ipBukkitBanned(String ip) {
 		Set<String> bans = plugin.getServer().getIPBans();
 		if (bans.contains(ip))
@@ -236,6 +236,10 @@ public class Util {
 		}
 		if (!found)
 			throw new Exception("Illegal Date");
+		
+		if (years > 20)
+			throw new Exception("Illegal Date");
+		
 		Calendar c = new GregorianCalendar();
 		if (years > 0)
 			c.add(Calendar.YEAR, years * (future ? 1 : -1));
