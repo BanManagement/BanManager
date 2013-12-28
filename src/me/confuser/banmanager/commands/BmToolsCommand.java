@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.BanData;
 import me.confuser.banmanager.data.IPBanData;
-import net.h31ix.updater.Updater;
+import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -67,9 +67,9 @@ public class BmToolsCommand implements CommandExecutor {
 				if (plugin.isUpdateAvailable()) {
 					plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 						public void run() {
-							new Updater(plugin, "ban-management", plugin.jarFile, Updater.UpdateType.NO_VERSION_CHECK, true);
+							new Updater(plugin, 41473, plugin.jarFile, Updater.UpdateType.NO_VERSION_CHECK, true);
 
-							sender.sendMessage(ChatColor.GREEN + "[BanManager] Updating, please restart server in a moment to apply the update");
+							sender.sendMessage(ChatColor.GREEN + "[BanManager] Updating, please restart the server in a moment to apply the update.");
 						}
 					});
 				} else {

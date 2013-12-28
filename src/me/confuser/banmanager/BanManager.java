@@ -15,7 +15,8 @@ import me.confuser.banmanager.configs.Config;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.scheduler.*;
-import net.h31ix.updater.Updater;
+import net.gravitydevelopment.updater.Updater;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -291,13 +292,13 @@ public class BanManager extends JavaPlugin {
 
 		// Check for an update
 		if (checkForUpdates) {
-			Updater updater = new Updater(this, "ban-management", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+			Updater updater = new Updater(this, 41473, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
 			// Determine if there is an update ready for us
 			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
 
 			if (updateAvailable) {
 				// Get the latest version
-				updateVersion = updater.getLatestVersionString();
+				updateVersion = updater.getLatestGameVersion();
 
 				jarFile = getFile();
 
