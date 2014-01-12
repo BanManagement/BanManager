@@ -154,7 +154,7 @@ function latestWarnings($server, $serverID) {
 							foreach($settings['servers'] as $server) {
 								list($pastBans) = cache("SELECT COUNT(*) FROM ".$server['recordTable'], 3600, '', $server, $server['name'].'pastBanStats');	
 
-								echo '<span>'.$pastBans.'</span> '. $language['pastbans_text'] .'';
+								echo '<span>'.$pastBans.'</span> '. $language['pastbans_text'] .' </br>';
 								}
 							?>
 						</p>
