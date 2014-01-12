@@ -40,8 +40,12 @@ externalDatabase:
 # Enable for foreign characters
 useUTF8: false
 
-# Enable to log player IPs to allow for offline player ip banning and ip duplicate check of banned players on player join
+# Enable to log player IPs to allow for offline player IP banning and IP duplicate check of banned players on player join
 logIPs: true
+
+# A list of IPs to duplicate the duplicate checks
+bypassDuplicateChecks:
+    - 0.0.0.0
 
 # Only fill in if you are syncing bans across servers
 serverName: ''

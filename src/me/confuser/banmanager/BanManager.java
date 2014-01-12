@@ -7,19 +7,58 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.confuser.banmanager.commands.*;
+import me.confuser.banmanager.commands.BanAllCommand;
+import me.confuser.banmanager.commands.BanCommand;
+import me.confuser.banmanager.commands.BanImportCommand;
+import me.confuser.banmanager.commands.BanIpAllCommand;
+import me.confuser.banmanager.commands.BanIpCommand;
+import me.confuser.banmanager.commands.BmInfoCommand;
+import me.confuser.banmanager.commands.BmToolsCommand;
+import me.confuser.banmanager.commands.ClearCommand;
+import me.confuser.banmanager.commands.DeleteLastWarningCommand;
+import me.confuser.banmanager.commands.KickCommand;
+import me.confuser.banmanager.commands.LoglessKickCommand;
+import me.confuser.banmanager.commands.MuteAllCommand;
+import me.confuser.banmanager.commands.MuteCommand;
+import me.confuser.banmanager.commands.ReloadCommand;
+import me.confuser.banmanager.commands.TempBanAllCommand;
+import me.confuser.banmanager.commands.TempBanCommand;
+import me.confuser.banmanager.commands.TempBanIpAllCommand;
+import me.confuser.banmanager.commands.TempBanIpCommand;
+import me.confuser.banmanager.commands.TempMuteAllCommand;
+import me.confuser.banmanager.commands.TempMuteCommand;
+import me.confuser.banmanager.commands.UnBanAllCommand;
+import me.confuser.banmanager.commands.UnBanCommand;
+import me.confuser.banmanager.commands.UnBanIpAllCommand;
+import me.confuser.banmanager.commands.UnBanIpCommand;
+import me.confuser.banmanager.commands.UnMuteAllCommand;
+import me.confuser.banmanager.commands.UnMuteCommand;
+import me.confuser.banmanager.commands.WarnCommand;
 import me.confuser.banmanager.configs.Config;
-import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.listeners.*;
-import me.confuser.banmanager.scheduler.*;
+import me.confuser.banmanager.data.BanData;
+import me.confuser.banmanager.data.IPBanData;
+import me.confuser.banmanager.data.MuteData;
+import me.confuser.banmanager.data.WarnData;
+import me.confuser.banmanager.listeners.AsyncChat;
+import me.confuser.banmanager.listeners.AsyncPreLogin;
+import me.confuser.banmanager.listeners.MutedBlacklistCheck;
+import me.confuser.banmanager.listeners.SyncChat;
+import me.confuser.banmanager.listeners.SyncLogin;
+import me.confuser.banmanager.listeners.UpdateNotify;
+import me.confuser.banmanager.scheduler.BansAsync;
+import me.confuser.banmanager.scheduler.DatabaseAsync;
+import me.confuser.banmanager.scheduler.ExternalAsync;
+import me.confuser.banmanager.scheduler.IpBansAsync;
+import me.confuser.banmanager.scheduler.MuteAsync;
+import me.confuser.banmanager.scheduler.SaveLastRunsSync;
 import net.gravitydevelopment.updater.Updater;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,8 +70,9 @@ public class BanManager extends JavaPlugin {
 	public String serverName;
 
 	private Map<String, String> banMessages = new HashMap<String, String>();
+	public List<String> duplicateBypass = new ArrayList<String>();
 	public boolean logKicks;
-
+	
 	// Configs
 	public FileConfiguration schedulerFileConfig;
 	public Config schedulerConfig;
@@ -313,6 +353,7 @@ public class BanManager extends JavaPlugin {
 		reloadConfig();
 
 		logKicks = getConfig().getBoolean("logKicks");
+		duplicateBypass = getConfig().getStringList("bypassDuplicateChecks");
 		CleanUp.Kicks.setDays(getConfig().getInt("cleanUp.keepKicks"));
 
 		logIPs = getConfig().getBoolean("logIPs");

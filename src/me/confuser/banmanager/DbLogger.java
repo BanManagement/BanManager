@@ -450,6 +450,10 @@ public class DbLogger {
 	}
 
 	public String findPlayerIpDuplicates(String ip, String player) {
+		if (plugin.duplicateBypass.contains(ip)) {
+			return "";
+		}
+		
 		ResultSet result = localConn.query("SELECT ip.player FROM " + localConn.getTable("bans") + " b LEFT JOIN " + localConn.getTable("playerIps") + " ip ON ip.player = b.banned WHERE ip.ip = INET_ATON('" + ip + "')");
 
 		try {
