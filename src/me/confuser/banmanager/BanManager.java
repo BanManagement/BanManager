@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +32,7 @@ public class BanManager extends JavaPlugin {
 	public String serverName;
 
 	private Map<String, String> banMessages = new HashMap<String, String>();
+	public List<String> duplicateBypass = new ArrayList<String>();
 	public boolean logKicks;
 
 	// Configs
@@ -323,6 +325,8 @@ public class BanManager extends JavaPlugin {
 		CleanUp.MuteRecords.setDays(getConfig().getInt("cleanUp.muteRecords"));
 		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
 
+		duplicateBypass = getConfig().getStringList("bypassDuplicateChecks");
+		
 		serverName = getConfig().getString("serverName");
 
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
