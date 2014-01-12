@@ -43,7 +43,7 @@ useUTF8: false
 # Enable to log player IPs to allow for offline player ip banning and ip duplicate check of banned players on player join
 logIPs: true
 
-# A list of IPs to duplicate the duplicate checks
+# A list of IPs to exclude from the banned player duplicate check
 bypassDuplicateChecks:
   - 0.0.0.0
 

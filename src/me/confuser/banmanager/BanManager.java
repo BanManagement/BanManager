@@ -32,7 +32,7 @@ public class BanManager extends JavaPlugin {
 	public String serverName;
 
 	private Map<String, String> banMessages = new HashMap<String, String>();
-	public List<String> duplicateBypass = new ArrayList<String>();
+	public HashSet<String> duplicateBypass = new HashSet<String>();
 	public boolean logKicks;
 
 	// Configs
@@ -325,7 +325,7 @@ public class BanManager extends JavaPlugin {
 		CleanUp.MuteRecords.setDays(getConfig().getInt("cleanUp.muteRecords"));
 		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
 
-		duplicateBypass = getConfig().getStringList("bypassDuplicateChecks");
+		duplicateBypass = new HashSet<String>(getConfig().getStringList("bypassDuplicateChecks"));
 		
 		serverName = getConfig().getString("serverName");
 
