@@ -1,5 +1,21 @@
 package me.confuser.banmanager;
 
+import me.confuser.banmanager.commands.*;
+import me.confuser.banmanager.configs.Config;
+import me.confuser.banmanager.data.BanData;
+import me.confuser.banmanager.data.IPBanData;
+import me.confuser.banmanager.data.MuteData;
+import me.confuser.banmanager.data.WarnData;
+import me.confuser.banmanager.listeners.*;
+import me.confuser.banmanager.scheduler.*;
+import me.confuser.banmanager.tools.ListBansTool;
+import me.confuser.banmanager.tools.UpdateTool;
+import net.gravitydevelopment.updater.Updater;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -7,22 +23,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.configs.Config;
-import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.listeners.*;
-import me.confuser.banmanager.scheduler.*;
-import net.gravitydevelopment.updater.Updater;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanManager extends JavaPlugin {
 	public BanManager plugin;
@@ -102,7 +104,7 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("has been disabled");
 	}
 
-	@SuppressWarnings({ "deprecation", "serial" })
+	@SuppressWarnings({"deprecation", "serial"})
 	@Override
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
@@ -209,22 +211,26 @@ public class BanManager extends JavaPlugin {
 		getCommand("tempmute").setExecutor(new TempMuteCommand(this));
 		getCommand("unmute").setExecutor(new UnMuteCommand(this));
 		getCommand("bmreload").setExecutor(new ReloadCommand(this));
-		getCommand("bmtools").setExecutor(new BmToolsCommand(this));
+		getCommand("bmtools").setExecutor(new BmToolsCommand());
 		getCommand("warn").setExecutor(new WarnCommand(this));
 		getCommand("bmclear").setExecutor(new ClearCommand(this));
-                getCommand("dwarn").setExecutor(new DeleteLastWarningCommand(this));
+		getCommand("dwarn").setExecutor(new DeleteLastWarningCommand(this));
+
+		// Register tools
+		BmAPI.registerTool(new UpdateTool());
+		BmAPI.registerTool(new ListBansTool());
 
 		if (getConfig().getBoolean("useSyncChat")) { // If syncChat is on, use
-														// Sync events
+			// Sync events
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new SyncChat(plugin), this);
 		} else if (getServer().getOnlineMode()) { // If server is in online mode
-													// and syncChat is off, use
-													// async events
+			// and syncChat is off, use
+			// async events
 			getServer().getPluginManager().registerEvents(new AsyncPreLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
 		} else { // Otherwise use the normal sync login event and use Async chat
-					// even for mutes.
+			// even for mutes.
 			getServer().getPluginManager().registerEvents(new SyncLogin(plugin), this);
 			getServer().getPluginManager().registerEvents(new AsyncChat(plugin), this);
 		}
@@ -257,7 +263,7 @@ public class BanManager extends JavaPlugin {
 		// Check the ip table for new ip bans
 		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new IpBansAsync(this, schedulerFileConfig.getLong("lastChecked.ipbans", 0)), 60L, schedulerFileConfig.getInt("scheduler.newIPBans", 8) * 20);
-		
+
 		if (schedulerFileConfig.getInt("scheduler.newIPBans", 8) != 0)
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this, new SaveLastRunsSync(this), 60L, schedulerFileConfig.getInt("scheduler.saveLastRuns", 60) * 20);
 
@@ -326,7 +332,7 @@ public class BanManager extends JavaPlugin {
 		CleanUp.Warnings.setDays(getConfig().getInt("cleanUp.warnings"));
 
 		duplicateBypass = new HashSet<String>(getConfig().getStringList("bypassDuplicateChecks"));
-		
+
 		serverName = getConfig().getString("serverName");
 
 		checkForUpdates = getConfig().getBoolean("checkForUpdates");
@@ -641,10 +647,10 @@ public class BanManager extends JavaPlugin {
 	public void removePlayerWarnings(String name) {
 		dbLogger.removeWarnings(name.toLowerCase());
 	}
-        
-        public void removeLastPlayerWarning(String name) {
-                dbLogger.removeLastWarning(name.toLowerCase());
-        }
+
+	public void removeLastPlayerWarning(String name) {
+		dbLogger.removeLastWarning(name.toLowerCase());
+	}
 
 	public ArrayList<WarnData> getPlayerWarnings(String name) {
 		return dbLogger.getWarnings(name.toLowerCase());
