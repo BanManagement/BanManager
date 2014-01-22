@@ -15,7 +15,7 @@ import me.confuser.banmanager.configs.Config;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.scheduler.*;
-import net.gravitydevelopment.updater.Updater;
+import net.gravitydevelopment.updater.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
