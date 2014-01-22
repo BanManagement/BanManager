@@ -9,6 +9,10 @@
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public</url>
 		</repository>
+		<repository>
+    	    <id>gravity-repo</id>
+    	    <url>http://repo.gravitydevelopment.net</url>
+  	    </repository>
 	</repositories>
 	<build>
 		<finalName>BanManager</finalName>
@@ -58,6 +62,11 @@
 			<version>LATEST</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.gravitydevelopment.updater</groupId>
+			<artifactId>updater</artifactId>
+			<version>2.1</version>
 		</dependency>
 	</dependencies>
 	<properties>
