@@ -236,10 +236,10 @@ public class Util {
 		}
 		if (!found)
 			throw new Exception("Illegal Date");
-		
+
 		if (years > 20)
 			throw new Exception("Illegal Date");
-		
+
 		Calendar c = new GregorianCalendar();
 		if (years > 0)
 			c.add(Calendar.YEAR, years * (future ? 1 : -1));
@@ -300,5 +300,15 @@ public class Util {
 		diff--;
 		fromDate.setTimeInMillis(savedDate);
 		return diff;
+	}
+
+	public static boolean classExists(String className) {
+		boolean exist = true;
+		try {
+			Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			exist = false;
+		}
+		return exist;
 	}
 }

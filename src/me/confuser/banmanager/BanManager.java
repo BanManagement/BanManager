@@ -8,6 +8,7 @@ import me.confuser.banmanager.data.MuteData;
 import me.confuser.banmanager.data.WarnData;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.scheduler.*;
+import me.confuser.banmanager.tabcomplete.RegisterTabCompletes;
 import me.confuser.banmanager.tools.ListBansTool;
 import me.confuser.banmanager.tools.UpdateTool;
 import net.gravitydevelopment.updater.Updater;
@@ -198,7 +199,9 @@ public class BanManager extends JavaPlugin {
 
 		UnBanCommand unBanCommand = new UnBanCommand(this);
 		getCommand("unban").setExecutor(unBanCommand);
-		getCommand("unban").setTabCompleter(unBanCommand);
+
+		if (Util.classExists("org.bukkit.command.TabCompleter"))
+			new RegisterTabCompletes(this);
 
 		getCommand("bminfo").setExecutor(new BmInfoCommand(this));
 		getCommand("banip").setExecutor(new BanIpCommand(this));
@@ -322,7 +325,7 @@ public class BanManager extends JavaPlugin {
 							public void run() {
 								plugin.getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), plugin);
 							}
-							
+
 						});
 					}
 				}

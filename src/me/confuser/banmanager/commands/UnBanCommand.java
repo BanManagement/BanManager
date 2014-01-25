@@ -1,8 +1,5 @@
 package me.confuser.banmanager.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.Util;
 
@@ -10,29 +7,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class UnBanCommand implements CommandExecutor, TabCompleter {
+public class UnBanCommand implements CommandExecutor {
 
 	private BanManager plugin;
 
 	public UnBanCommand(BanManager instance) {
 		plugin = instance;
-	}
-	
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String commandLabel, String args[]) {		
-		ArrayList<String> mostLike = new ArrayList<String>();
-
-		if (args.length == 1) {
-			for (String playerName : plugin.getPlayerBans().keySet()) {
-				if (playerName.startsWith(args[0]))
-					mostLike.add(playerName);
-			}
-		}
-
-		return mostLike;
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
