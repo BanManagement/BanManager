@@ -21,7 +21,7 @@ public class BansAsync implements Runnable {
 
 	public void run() {
 		// Check for new bans
-        long thisRun = System.currentTimeMillis() / 1000; // Set the timestamp *before* we run, so we don't miss anything.
+        long thisRun = (System.currentTimeMillis() / 1000) - 120; // Set the timestamp *before* we run, so we don't miss anything.
 
 		ResultSet result = localConn.query("SELECT * FROM " + localConn.getTable("bans") + " WHERE ban_time >= " + lastRun + "");
 
