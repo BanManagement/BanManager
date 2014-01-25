@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 
 public class BmToolsCommand implements CommandExecutor {
 
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String args[]) {
 
 		if (args.length == 0)

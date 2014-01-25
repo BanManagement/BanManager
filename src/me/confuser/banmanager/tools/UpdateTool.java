@@ -10,6 +10,7 @@ public class UpdateTool implements BmTool {
 
 	public String name = "Update";
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void run(final CommandSender sender, String[] args) {
 		if (sender.hasPermission("bm.tools.update")) {
