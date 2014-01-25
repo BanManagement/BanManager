@@ -9,6 +9,10 @@
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public</url>
 		</repository>
+		<repository>
+    	    <id>gravity-repo</id>
+    	    <url>http://repo.gravitydevelopment.net</url>
+  	    </repository>
 	</repositories>
 	<build>
 		<finalName>BanManager</finalName>
@@ -32,15 +36,27 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-				<executions>
+			</plugin>
+			<plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
                     <execution>
-                        <id>build</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                    	<phase>package</phase>
+                    	<goals>
+                    		<goal>shade</goal>
+                    	</goals>
+                    	<configuration>
+                    		<relocations>
+                    			<relocation>
+                        			<pattern>net.gravitydevelopment.updater</pattern>
+                        			<shadedPattern>me.confuser.banmanagement.updater</shadedPattern>
+                        		</relocation>
+                        	</relocations>
+                		</configuration>
+                	</execution>
+            	</executions>
 			</plugin>
 		</plugins>
 		<extensions>
@@ -57,7 +73,12 @@
 			<artifactId>bukkit</artifactId>
 			<version>LATEST</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.gravitydevelopment.updater</groupId>
+			<artifactId>updater</artifactId>
+			<version>2.1</version>
 		</dependency>
 	</dependencies>
 	<properties>
