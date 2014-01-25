@@ -104,7 +104,7 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("has been disabled");
 	}
 
-	@SuppressWarnings({"deprecation", "serial"})
+	@SuppressWarnings({ "deprecation", "serial" })
 	@Override
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
@@ -299,20 +299,35 @@ public class BanManager extends JavaPlugin {
 		getLogger().info("Loaded " + ipBans.size() + " ip bans");
 
 		// Check for an update
+		// Check for an update
 		if (checkForUpdates) {
-			Updater updater = new Updater(this, 41473, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-			// Determine if there is an update ready for us
-			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
+			jarFile = getFile();
 
-			if (updateAvailable) {
-				// Get the latest version
-				updateVersion = updater.getLatestGameVersion();
+			getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
-				jarFile = getFile();
+				@Override
+				public void run() {
+					Updater updater = new Updater(plugin, 41473, jarFile, Updater.UpdateType.NO_DOWNLOAD, false);
+					// Determine if there is an update ready for us
+					updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
 
-				getLogger().info(updateVersion + " update available");
-				getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), this);
-			}
+					if (updateAvailable) {
+						// Get the latest version
+						updateVersion = updater.getLatestName();
+
+						getLogger().info(updateVersion + " update available");
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+							@Override
+							public void run() {
+								plugin.getServer().getPluginManager().registerEvents(new UpdateNotify(plugin), plugin);
+							}
+							
+						});
+					}
+				}
+
+			});
 		}
 	}
 
