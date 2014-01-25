@@ -10,9 +10,9 @@
 			<url>http://repo.bukkit.org/content/groups/public</url>
 		</repository>
 		<repository>
-    	    <id>gravity-repo</id>
-    	    <url>http://repo.gravitydevelopment.net</url>
-  	    </repository>
+			<id>gravity-repo</id>
+			<url>http://repo.gravitydevelopment.net</url>
+		</repository>
 	</repositories>
 	<build>
 		<finalName>BanManager</finalName>
@@ -38,25 +38,25 @@
 				</configuration>
 			</plugin>
 			<plugin>
-            	<groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                    	<phase>package</phase>
-                    	<goals>
-                    		<goal>shade</goal>
-                    	</goals>
-                    	<configuration>
-                    		<relocations>
-                    			<relocation>
-                        			<pattern>net.gravitydevelopment.updater</pattern>
-                        			<shadedPattern>me.confuser.banmanagement.updater</shadedPattern>
-                        		</relocation>
-                        	</relocations>
-                		</configuration>
-                	</execution>
-            	</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<relocations>
+								<relocation>
+									<pattern>net.gravitydevelopment.updater</pattern>
+									<shadedPattern>me.confuser.banmanagement.updater</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<extensions>
