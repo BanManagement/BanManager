@@ -30,7 +30,7 @@ $(function() {
 				} else {
 					errorRemove();
 					$("#addserver").modal('hide');
-					$("#servers tbody").append('<tr><td>'+data.success.serverName+'</td><td><a href="#" class="btn btn-danger deleteServer" data-serverid="'+data.success.id+'"><i class="icon-trash icon-white"></i></a></td>');
+					$("#servers tbody").append('<tr><td>'+data.success.serverName+'</td><td><a href="#" class="btn btn-danger deleteServer" data-serverid="'+data.success.id+'"><i class="glyphicon glyphicon-trash"></i></a></td>');
 					$("#noservers").remove();
 				}
 			},
