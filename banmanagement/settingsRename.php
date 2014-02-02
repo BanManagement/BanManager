@@ -40,7 +40,7 @@ $language['latest_mutes_title'] = 'Recent Mutes'; // The text displayed over the
 $language['latest_warnings_title'] = 'Recent Warnings'; // The text displayed over the latest warnings table
 $language['nav-home'] = 'Home'; // The text displayed in the navbar for 'Home'
 $language['nav-stats'] = 'Statistics'; // The text displayed in the navbar for 'Servers'
-$language['unique_player_bans'] = 'Unique Player Bans'; // The text displayed on the homepage
+$language['past_player_bans'] = 'Past Player Bans'; // The text displayed on the homepage
 $language['bm_info_text'] = // The text displayed if bm_info is set to true. Enter your text below, HTML elements supported
 ' 
 	Ban Management is powerful ban and mute application that allows players to check if and why they were banned or muted and who
