@@ -57,6 +57,7 @@ if($_POST['type'] == 'mainsettings') {
 	$player_kicks = 'false';
 	$player_warnings = 'false';
 	$player_current_ban_extra_html = '';
+	$player_current_mute_extra_html = '';
 	
 	if(isset($_POST['ban']))
 		$player_current_ban = 'true';
@@ -67,7 +68,7 @@ if($_POST['type'] == 'mainsettings') {
 	if(isset($_POST['prevmutes']))
 		$player_previous_mutes = 'true';
 	if(isset($_POST['warnings']))
-		$player_kicks = 'true';
+		$player_warnings = 'true';
 	if(isset($_POST['kicks']))
 		$player_warnings = 'true';
 	if(isset($_POST['banextra']))
