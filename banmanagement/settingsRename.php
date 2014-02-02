@@ -17,6 +17,15 @@ $settings['admin_link'] = true; // Show the admin link in the footer of all page
 $settings['bm_info'] = true; // Show ban management infomation aside 'Account Status'
 $settings['bm_info_icon'] = false; // Show the 'info' icon next to the title of bm_info
 $settings['pastbans'] = true; // Show amount of players banned under the search
+
+$settings['player_current_ban'] = true;
+$settings['player_current_mute'] = true;
+$settings['player_previous_bans'] = true;
+$settings['player_previous_mutes'] = true;
+$settings['player_kicks'] = true;
+$settings['player_warnings'] = true;
+$settings['player_current_ban_extra_html'] = '';
+$settings['player_current_mute_extra_html'] = '';
 	
 /**
 * These are the language options for Ban Management
