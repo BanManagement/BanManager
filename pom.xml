@@ -51,7 +51,7 @@
 							<relocations>
 								<relocation>
 									<pattern>net.gravitydevelopment.updater</pattern>
-									<shadedPattern>me.confuser.banmanagement.updater</shadedPattern>
+									<shadedPattern>me.confuser.banmanager.updater</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
