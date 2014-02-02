@@ -11,14 +11,13 @@ button .navbar-btn  a{
 	float: none !important;
 }
 
-.pastbans{
+.panel-jumbotron .panel-body .pastbans {
 	font-size: 12px;
     font-weight: bold;
-    color: #aaaaaa;
-    text-transform: uppercase;
 }
-.pastbans span{
+.panel-jumbotron .panel-body .pastbans .badge {
 	color: #ED381C;
+	background: none;
 }
 #ajaxLoading {
 	margin-top: 15px;

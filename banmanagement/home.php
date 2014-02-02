@@ -146,21 +146,6 @@ function latestWarnings($server, $serverID) {
 						echo htmlspecialchars_decode($settings['submit_buttons_before_html'], ENT_QUOTES);
 				?>
 					<input type="hidden" name="action" value="searchplayer" />
-				<?php
-					if(isset($settings['pastbans']) && $settings['pastbans']){
-				?>
-						<p class="pastbans">
-							<?php
-							foreach($settings['servers'] as $server) {
-								list($pastBans) = cache("SELECT COUNT(*) FROM ".$server['recordTable'], 3600, '', $server, $server['name'].'pastBanStats');	
-
-								echo '<span>'.$pastBans.'</span> '. $language['pastbans_text'] .' </br>';
-								}
-							?>
-						</p>
-				<?php
-				}
-				?>
 					<div class="btn-group">
 						<button type="submit" class="btn btn-primary">Search</button>
 						<button type="button" class="btn btn-primary" id="viewall">Display All</button>
@@ -172,12 +157,12 @@ function latestWarnings($server, $serverID) {
 				</div>
 		    </form>
 		</div>
-		<?php 
-			if(isset($settings['bm_info']) && $settings['bm_info']){
-		?>
 		<div class="col-lg-6">
 			<div class="panel panel-jumbotron">
 				<div class="panel-body">
+		<?php 
+		if(isset($settings['bm_info']) && $settings['bm_info']) {
+		?>
 					<p>
 						<span>
 
@@ -195,12 +180,36 @@ function latestWarnings($server, $serverID) {
 
 						<?php echo $language['bm_info_text']; ?>
 					</p>
+		<?php
+		}
+		
+		if(isset($settings['pastbans']) && $settings['pastbans']) {
+		?>
+					<span>
+						<span class="glyphicon glyphicon-globe"></span> 
+						<?php echo $language['past_player_bans']; ?>
+					</span>
+					<div class="list-group pastbans">
+					<?php
+					$i = 0;
+					foreach($settings['servers'] as $server) {
+						list($pastBans) = cache("SELECT COUNT(*) FROM ".$server['recordTable'], 3600, '', $server, $server['name'].'pastBanStats');	
+
+						echo '
+						<a class="list-group-item" href="index.php?action=searchplayer&server='.$i.'&player=%25">
+							<span class="badge">'.$pastBans.'</span>
+							'.$server['name'] .'
+						</a>';
+						++$i;
+					}
+					?>
+					</div>
+		<?php
+			}
+		?>
 				</div>
 			</div>
 		</div>
-		<?php
-		}
-		?>
 	</div>
 </div>
 <?php
