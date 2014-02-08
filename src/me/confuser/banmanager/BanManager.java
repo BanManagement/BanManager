@@ -108,9 +108,7 @@ public class BanManager extends JavaPlugin {
 	@SuppressWarnings({ "deprecation", "serial" })
 	@Override
 	public void onEnable() {
-		getConfig().options().copyDefaults(true);
-
-		saveConfig();
+		saveDefaultConfig();
 		plugin = this;
 		staticPlugin = this;
 
