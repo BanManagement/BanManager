@@ -59,15 +59,19 @@ public class BansAsync implements Runnable {
 
 		// Check for old bans and remove them!
 		ResultSet result1 = localConn.query("SELECT * FROM " + localConn.getTable("banRecords") + " WHERE unbanned_time >= " + lastRun + "");
-
+		plugin.getLogger().info("Checking unbans newer than " + lastRun);
 		try {
 			while (result1.next()) {
+				plugin.getLogger().info("Found " + result1.getString("banned").toLowerCase() + " to unban. Is Banned: " + plugin.isPlayerBanned(result1.getString("banned").toLowerCase()));
 				// Remove them from the list
 				if (plugin.isPlayerBanned(result1.getString("banned").toLowerCase())) {
 					plugin.getPlayerBans().remove(result1.getString("banned").toLowerCase());
 
-					if (plugin.useBukkitBans())
+					plugin.getLogger().info(result1.getString("banned").toLowerCase() + " bm unbanned!");
+					if (plugin.useBukkitBans()) {
 						plugin.getServer().getOfflinePlayer(result1.getString("banned").toLowerCase()).setBanned(false);
+						plugin.getLogger().info(result1.getString("banned").toLowerCase() + " bukkit unbanned!");
+					}
 				}
 
 			}
