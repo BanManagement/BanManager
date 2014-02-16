@@ -311,7 +311,7 @@ function clearCache($folder = '', $olderThan = 0) {
 	global $settings;
 
 	if($settings['apc_enabled']) {
-		apc_delete($folder);
+		apc_clear_cache('user');
 		return;
 	}
 	
