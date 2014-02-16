@@ -43,8 +43,7 @@ $language['nav-stats'] = 'Statistics'; // The text displayed in the navbar for '
 $language['past_player_bans'] = 'Past Player Bans'; // The text displayed on the homepage
 $language['bm_info_text'] = // The text displayed if bm_info is set to true. Enter your text below, HTML elements supported
 ' 
-	Ban Management is powerful ban and mute application that allows players to check if and why they were banned or muted and who
-	it was by. You can also see how much time is left of your ban or mute.
+	Ban Management is a powerful server administration tool that allows servers to enforce rules. Ban Management has powerful banning, muting, kicking and warning tools. In this interface, you can view a player’s entire punishment history, and even modify it!
 
 ';
 
