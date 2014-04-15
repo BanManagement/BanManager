@@ -19,6 +19,9 @@ public class DeleteLastWarningCommand implements CommandExecutor {
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String args[]) {
+		if(args.length != 1)
+			return false;
+
 		Player player = null;
 
 		if (sender instanceof Player) {
