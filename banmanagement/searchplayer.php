@@ -1,5 +1,5 @@
 <?php
-/*  BanManagement © 2012, a web interface for the Bukkit plugin BanManager
+/*  BanManagement ï¿½ 2012, a web interface for the Bukkit plugin BanManager
     by James Mortemore of http://www.frostcast.net
 	is licenced under a Creative Commons
 	Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales.
@@ -135,7 +135,7 @@ else {
 					$time = (!empty($player['time']) ? date('j F Y h:i:s A', $player['time']) : '');
 				
 				$ajaxArray['rows'][] = array(
-					'<img src="https://minotar.net/helm/'.$playerNames[$i].'/23" alt="'.$playerNames[$i].'" class="minihead" /> <a href="index.php?action=viewplayer&player='.$playerNames[$i].'&server='.$_GET['server'].'">'.$playerNames[$i].'</a>',
+					'<img src="http://cravatar.eu/helmavatar/'.$playerNames[$i].'/23" alt="'.$playerNames[$i].'" class="minihead" /> <a href="index.php?action=viewplayer&player='.$playerNames[$i].'&server='.$_GET['server'].'">'.$playerNames[$i].'</a>',
 					$player['type'],
 					$player['by'],
 					$player['reason'],
