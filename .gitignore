@@ -5,6 +5,7 @@ bin
 .project
 .externalToolBuilders
 build.xml
+.DS_Store
 
 # Package Files #
 *.jar
