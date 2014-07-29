@@ -10,6 +10,7 @@ import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.storage.*;
+import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.BukkitPlugin;
 
 public class BanManager extends BukkitPlugin {
@@ -42,6 +43,18 @@ public class BanManager extends BukkitPlugin {
 			plugin.getPluginLoader().disablePlugin(this);
 			e.printStackTrace();
 		}
+		
+		try {
+			long timeDiff = DateUtils.findTimeDiff();
+			
+			if (timeDiff > 1) {
+				getLogger().severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
+			}
+		} catch (SQLException e) {
+			getLogger().warning("An error occurred attempting to find the time difference, please see stack trace below");
+			plugin.getPluginLoader().disablePlugin(this);
+			e.printStackTrace();
+		}
 
 		setupListeners();
 		setupCommands();
@@ -66,6 +79,10 @@ public class BanManager extends BukkitPlugin {
 	
 	public DefaultConfig getDefaultConfig() {
 		return config;
+	}
+	
+	public JdbcPooledConnectionSource getLocalConnection() {
+		return localConn;
 	}
 	
 	public static BanManager getPlugin() {

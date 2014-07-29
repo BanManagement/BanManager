@@ -1,14 +1,20 @@
 package me.confuser.banmanager.util;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.j256.ormlite.dao.GenericRawResults;
+
+import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.Message;
 
 public class DateUtils {
+	private static BanManager plugin = BanManager.getPlugin();
+	private static long timeDiff = 0;
 	
 	public static String formatDifference(long time) {
 		long day = TimeUnit.SECONDS.toDays(time);
@@ -114,5 +120,19 @@ public class DateUtils {
 		if (seconds > 0)
 			c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
 		return c.getTimeInMillis() / 1000;
+	}
+	
+	public static long getTimeDiff() {
+		return timeDiff;
+	}
+	
+	public static long findTimeDiff() throws SQLException {
+		String query = "SELECT UNIX_TIMESTAMP() - ? as mysqlTime";
+		
+		GenericRawResults<String[]> results = plugin.getPlayerStorage().queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000));
+		
+		timeDiff = Long.parseLong(results.getFirstResult()[0]);
+		
+		return timeDiff;
 	}
 }
