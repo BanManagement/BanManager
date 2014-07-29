@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
@@ -15,6 +17,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
+import me.confuser.banmanager.util.DateUtils;
 
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 	private BanManager plugin = BanManager.getPlugin();
@@ -55,7 +58,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 	}
 	
 	public void removeBan(PlayerBanData ban) {
-		bans.remove(ban.getUUID());
+		removeBan(ban.getUUID());
+	}
+	
+	public void removeBan(UUID uuid) {
+		bans.remove(uuid);
 	}
 	
 	public PlayerBanData getBan(String playerName) {
@@ -95,7 +102,22 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 		return true;
 	}
 	
-	public ClosableIterator findNewBans(long fromTime) {
+	public CloseableIterator<PlayerBanData> findBans(long fromTime) throws SQLException {
+		if (fromTime == 0)
+			return iterator();
+		
+		long checkTime = fromTime + DateUtils.getTimeDiff();
+		
+		QueryBuilder<PlayerBanData, byte[]> query = queryBuilder();
+		Where<PlayerBanData, byte[]> where = query.where();
+		where
+			.ge("created", checkTime)
+			.or()
+			.ge("updated", checkTime);
+		
+		query.setWhere(where);
+		
+		return query.iterator();
 		
 	}
 

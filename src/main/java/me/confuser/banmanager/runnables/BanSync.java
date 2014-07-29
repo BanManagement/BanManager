@@ -5,11 +5,9 @@ import java.sql.SQLException;
 import org.bukkit.entity.Player;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
+import me.confuser.banmanager.data.PlayerBanRecord;
 import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.bukkitutil.Message;
 
@@ -19,26 +17,29 @@ public class BanSync implements Runnable {
 	private long lastChecked = 0;
 
 	public BanSync() {
-		
+		// TODO Set lastChecked from config
 	}
 	
 	@Override
 	public void run() {
 		// New/updated bans check
-		newBansSync();
+		try {
+			newBans();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		// New unbans
+		try {
+			newUnbans();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void newBansSync() throws SQLException {
-		QueryBuilder<PlayerBanData, byte[]> query = banStorage.queryBuilder();
-		Where<PlayerBanData, byte[]> where = query.where();
+	private void newBans() throws SQLException {
 		
-		where
-			.ge("created", lastChecked)
-			.or()
-			.ge("updated", lastChecked);
-		
-		query.setWhere(where);
-		CloseableIterator<PlayerBanData> itr = query.iterator();
+		CloseableIterator<PlayerBanData> itr = banStorage.findBans(lastChecked);
 		
 		while(itr.hasNext()) {
 			final PlayerBanData ban = itr.next();
@@ -66,6 +67,23 @@ public class BanSync implements Runnable {
 					bukkitPlayer.kickPlayer(kickMessage.toString());
 				}
 			});
+
+		}
+		
+		itr.close();
+	}
+	
+	private void newUnbans() throws SQLException {
+		
+		CloseableIterator<PlayerBanRecord> itr = plugin.getPlayerBanRecordStorage().findUnbans(lastChecked);
+		
+		while(itr.hasNext()) {
+			final PlayerBanRecord ban = itr.next();
+			
+			if (!banStorage.isBanned(ban.getPlayer().getUUID()))
+				continue;
+			
+			banStorage.removeBan(ban.getPlayer().getUUID());
 
 		}
 		

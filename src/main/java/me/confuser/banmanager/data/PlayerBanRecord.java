@@ -35,4 +35,8 @@ public class PlayerBanRecord {
 		
 		this.actor = actor;
 	}
+	
+	public PlayerData getPlayer() {
+		return player;
+	}
 }
