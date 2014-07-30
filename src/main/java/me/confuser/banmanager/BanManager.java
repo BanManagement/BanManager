@@ -26,8 +26,7 @@ public class BanManager extends BukkitPlugin {
 	private PlayerMuteStorage playerMuteStorage;
 	private PlayerMuteRecordStorage playerMuteRecordStorage;
 	private PlayerStorage playerStorage;
-	private WarnStorage warnStorage;
-	private OfflineWarnStorage offlineWarnStorage;
+	private PlayerWarnStorage playerWarnStorage;
 	
 	private DefaultConfig config;
 	
@@ -75,6 +74,10 @@ public class BanManager extends BukkitPlugin {
 	
 	public PlayerMuteRecordStorage getPlayerMuteRecordStorage() {
 		return playerMuteRecordStorage;
+	}
+	
+	public PlayerWarnStorage getPlayerWarnStorage() {
+		return playerWarnStorage;
 	}
 	
 	public PlayerStorage getPlayerStorage() {
