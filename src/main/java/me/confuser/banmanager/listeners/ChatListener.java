@@ -1,6 +1,7 @@
 package me.confuser.banmanager.listeners;
 
-import org.bukkit.entity.Player;
+import java.sql.SQLException;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -20,7 +21,11 @@ public class ChatListener extends Listeners<BanManager> {
 		PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(event.getPlayer().getUniqueId());
 		
 		if (mute.hasExpired()) {
-			plugin.getPlayerMuteStorage().unmute(mute);
+			try {
+				plugin.getPlayerMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			return;
 		}
 		

@@ -34,7 +34,11 @@ public class JoinListener extends Listeners<BanManager> {
 		PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
 		
 		if (data.hasExpired()) {
-			plugin.getPlayerBanStorage().unban(data);
+			try {
+				plugin.getPlayerBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			return;
 		}
 		
