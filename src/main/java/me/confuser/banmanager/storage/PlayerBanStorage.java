@@ -17,6 +17,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
+import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
@@ -88,7 +89,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 	}
 	
 	public boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
-		PlayerBanEvent event = new PlayerUnbanEvent(ban);
+		PlayerUnbanEvent event = new PlayerUnbanEvent(ban);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		
 		if (event.isCancelled())
