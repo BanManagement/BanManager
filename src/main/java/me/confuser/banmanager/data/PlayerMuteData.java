@@ -81,4 +81,8 @@ public class PlayerMuteData {
 	public boolean hasExpired() {
 		return getExpires() <= (System.currentTimeMillis() / 1000);
 	}
+	
+	public long getUpdated() {
+		return updated;
+	}
 }

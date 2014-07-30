@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.bukkitutil.Message;
