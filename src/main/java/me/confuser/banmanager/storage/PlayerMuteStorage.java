@@ -6,18 +6,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 
+import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.events.PlayerMuteEvent;
+import me.confuser.banmanager.events.PlayerUnmuteEvent;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
-public class MuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
+public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
+	private BanManager plugin = BanManager.getPlugin();
 	private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<UUID, PlayerMuteData>();
 
-	public MuteStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteData> tableConfig) throws SQLException {
+	public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
 		
 		CloseableIterator<PlayerMuteData> itr = iterator();
@@ -29,7 +33,7 @@ public class MuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 		}
 	}
 	
-	public ConcurrentHashMap<UUID, PlayerMuteData> getBans() {
+	public ConcurrentHashMap<UUID, PlayerMuteData> getMutes() {
 		return mutes;
 	}
 	
@@ -68,6 +72,21 @@ public class MuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 		
 		create(mute);
 		mutes.put(mute.getUUID(), mute);
+		
+		return true;
+	}
+	
+	public boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
+		PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		
+		if (event.isCancelled())
+			return false;
+
+		delete(mute);
+		mutes.remove(mute.getUUID());
+		
+		plugin.getPlayerMuteRecordStorage().addRecord(mute, actor);
 		
 		return true;
 	}
