@@ -17,7 +17,7 @@ public class AsyncChat implements Listener {
 		plugin = instance;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(final AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
