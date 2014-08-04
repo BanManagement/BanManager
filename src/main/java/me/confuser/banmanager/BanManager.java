@@ -20,6 +20,7 @@ public class BanManager extends BukkitPlugin {
 	
 	private JdbcPooledConnectionSource localConn;
 	private JdbcPooledConnectionSource externalConn;
+	
 	private PlayerBanStorage playerBanStorage;
 	private PlayerBanRecordStorage playerBanRecordStorage;
 	private KickStorage kickStorage;
@@ -27,6 +28,9 @@ public class BanManager extends BukkitPlugin {
 	private PlayerMuteRecordStorage playerMuteRecordStorage;
 	private PlayerStorage playerStorage;
 	private PlayerWarnStorage playerWarnStorage;
+	
+	private IpBanStorage ipBanStorage;
+	private IpBanRecordStorage ipBanRecordStorage;
 	
 	private DefaultConfig config;
 	
@@ -82,6 +86,14 @@ public class BanManager extends BukkitPlugin {
 	
 	public PlayerStorage getPlayerStorage() {
 		return playerStorage;
+	}
+	
+	public IpBanStorage getIpBanStorage() {
+		return ipBanStorage;
+	}
+	
+	public IpBanRecordStorage getIpBanRecordStorage() {
+		return ipBanRecordStorage;
 	}
 	
 	public DefaultConfig getDefaultConfig() {
