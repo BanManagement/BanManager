@@ -22,9 +22,9 @@ public class PlayerMuteData {
 	
 	// Should always be database time
 	@DatabaseField(index = true)
-	private long created = System.currentTimeMillis() / 1000;
+	private long created = System.currentTimeMillis() / 1000L;
 	@DatabaseField(index = true)
-	private long updated = System.currentTimeMillis() / 1000;
+	private long updated = System.currentTimeMillis() / 1000L;
 	@DatabaseField(index = true)
 	private long expires = 0;
 	
@@ -79,7 +79,7 @@ public class PlayerMuteData {
 	}
 	
 	public boolean hasExpired() {
-		return getExpires() <= (System.currentTimeMillis() / 1000);
+		return getExpires() <= (System.currentTimeMillis() / 1000L);
 	}
 	
 	public long getUpdated() {

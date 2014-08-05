@@ -22,7 +22,7 @@ public class PlayerData {
 	@DatabaseField(index = true)
 	private long ip;
 	@DatabaseField
-	private long lastSeen = System.currentTimeMillis() / 1000;
+	private long lastSeen = System.currentTimeMillis() / 1000L;
 
 	private UUID uuid = null;
 
@@ -42,7 +42,7 @@ public class PlayerData {
 		this.id = UUIDUtils.toBytes(uuid);
 		this.name = name;
 		this.ip = IPUtils.toLong("127.0.0.1");
-		this.lastSeen = System.currentTimeMillis() / 1000;
+		this.lastSeen = System.currentTimeMillis() / 1000L;
 	}
 	
 	public PlayerData(UUID uuid, String name, InetAddress ip) {
@@ -50,7 +50,7 @@ public class PlayerData {
 		this.id = UUIDUtils.toBytes(uuid);
 		this.name = name;
 		this.ip = IPUtils.toLong(ip);
-		this.lastSeen = System.currentTimeMillis() / 1000;
+		this.lastSeen = System.currentTimeMillis() / 1000L;
 	}
 	
 	public PlayerData(UUID uuid, String name, long ip, long lastSeen) {

@@ -55,7 +55,7 @@ public class DateUtils {
 	}
 	
 	public static String getDifferenceFormat(long timestamp) {
-		return formatDifference(timestamp - (System.currentTimeMillis() / 1000));
+		return formatDifference(timestamp - (System.currentTimeMillis() / 1000L));
 	}
 	
 	// Copyright essentials, all credits to them for this.
@@ -119,7 +119,7 @@ public class DateUtils {
 			c.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
 		if (seconds > 0)
 			c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
-		return c.getTimeInMillis() / 1000;
+		return c.getTimeInMillis() / 1000L;
 	}
 	
 	public static long getTimeDiff() {
@@ -129,7 +129,7 @@ public class DateUtils {
 	public static long findTimeDiff() throws SQLException {
 		String query = "SELECT UNIX_TIMESTAMP() - ? as mysqlTime";
 		
-		GenericRawResults<String[]> results = plugin.getPlayerStorage().queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000));
+		GenericRawResults<String[]> results = plugin.getPlayerStorage().queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000L));
 		
 		timeDiff = Long.parseLong(results.getFirstResult()[0]);
 		

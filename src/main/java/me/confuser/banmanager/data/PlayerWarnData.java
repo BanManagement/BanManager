@@ -15,7 +15,7 @@ public class PlayerWarnData {
 	private PlayerData actor;	
 	// Should always be database time
 	@DatabaseField(index = true)
-	private long created = System.currentTimeMillis() / 1000;
+	private long created = System.currentTimeMillis() / 1000L;
 	@DatabaseField(index = true)
 	private boolean read = true;
 	

@@ -20,7 +20,7 @@ public class PlayerBanRecord {
 	@DatabaseField(canBeNull = false)
 	private long pastCreated;
 	@DatabaseField(canBeNull = false)
-	private long created = System.currentTimeMillis() / 1000;
+	private long created = System.currentTimeMillis() / 1000L;
 
 	PlayerBanRecord() {
 		
