@@ -16,7 +16,7 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 public class UnmuteCommand extends BukkitCommand<BanManager> {
 
 	public UnmuteCommand() {
-		super("unban");
+		super("unmute");
 	}
 
 	@Override

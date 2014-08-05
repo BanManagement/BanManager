@@ -19,7 +19,7 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 public class TempMuteCommand extends BukkitCommand<BanManager> {
 
 	public TempMuteCommand() {
-		super("mute");
+		super("tempmute");
 	}
 	
 	@Override
