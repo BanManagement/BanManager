@@ -1,5 +1,6 @@
 package me.confuser.banmanager.storage;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +19,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpBanEvent;
 import me.confuser.banmanager.events.IpUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.util.IPUtils;
 
 public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
@@ -44,9 +46,17 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 	public boolean isBanned(long ip) {
 		return bans.get(ip) != null;
 	}
+	
+	public boolean isBanned(InetAddress address) {
+		return isBanned(IPUtils.toLong(address));
+	}
 
 	public IpBanData getBan(long ip) {
 		return bans.get(ip);
+	}
+	
+	public IpBanData getBan(InetAddress address) {
+		return getBan(IPUtils.toLong(address));
 	}
 	
 	public void addBan(IpBanData ban) {

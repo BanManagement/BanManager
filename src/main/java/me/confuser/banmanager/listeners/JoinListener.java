@@ -10,6 +10,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
@@ -21,6 +22,35 @@ public class JoinListener extends Listeners<BanManager> {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void banCheck(final AsyncPlayerPreLoginEvent event) {
+		if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
+			IpBanData data = plugin.getIpBanStorage().getBan(event.getAddress());
+			
+			if (data.hasExpired()) {
+				try {
+					plugin.getIpBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+			
+			Message message = null;
+			
+			if (data.getExpires() == 0) {
+				message = Message.get("disallowedIpPermBan");
+			} else {
+				message = Message.get("disallowedIpTempBan");
+				message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+			}
+			
+			message.set("ip", event.getAddress().toString());
+			message.set("reason", data.getReason());
+			message.set("actor", data.getActor().getName());
+			
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message.toString());
+			
+			return;
+		}
 		if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
 			try {
 				plugin.getPlayerStorage().addOnline(new PlayerData(event.getUniqueId(), event.getName(), event.getAddress()), true);
