@@ -62,7 +62,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 		return console;
 	}
 	
-	public PlayerData retrieve(String name) {
+	public PlayerData retrieve(String name, boolean mojangLookup) {
 		// Check if online first
 		for (PlayerData player : online.values()) {
 			if (player.getName().equalsIgnoreCase(name))
@@ -77,6 +77,9 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		if (!mojangLookup)
+			return null;
 		
 		// UUID Lookup :(
 		try {

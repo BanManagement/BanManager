@@ -46,7 +46,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 						return;
 					}
 				} else {
-					player = plugin.getPlayerStorage().retrieve(playerName);
+					player = plugin.getPlayerStorage().retrieve(playerName, true);
 				}
 				
 				if (player == null) {

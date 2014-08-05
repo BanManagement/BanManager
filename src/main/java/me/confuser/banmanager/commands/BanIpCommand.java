@@ -30,31 +30,44 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
 		
 		// Check if ip
 		final String ipStr = args[0];
+		final boolean isName = !InetAddresses.isInetAddress(ipStr);
 		
-		if (!InetAddresses.isInetAddress(ipStr)) {
+		if (isName && ipStr.length() > 16) {
 			Message message = Message.get("invalidIp");
 			message.set("ip", ipStr);
 
 			sender.sendMessage(message.toString());
 			return true;
 		}
-		
-		final long ip = IPUtils.toLong(ipStr);
-		
-		if (plugin.getIpBanStorage().isBanned(ip)) {
-			Message message = Message.get("ipAlreadyBanned");
-			message.set("ip", ipStr);
 
-			sender.sendMessage(message.toString());
-			return true;
-		}
-		
 		final String reason = StringUtils.join(args, " ", 1, args.length - 1);
 		
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
 			public void run() {
+				final long ip;
+
+				if (isName) {
+					PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+					if (player == null) {
+						sender.sendMessage(Message.get("playerNotFound").set("player", ipStr).toString());
+						return;
+					}
+					
+					ip = player.getIP();
+				} else {
+					ip = IPUtils.toLong(ipStr);
+				}
+				
+				if (plugin.getIpBanStorage().isBanned(ip)) {
+					Message message = Message.get("ipAlreadyBanned");
+					message.set("ip", ipStr);
+
+					sender.sendMessage(message.toString());
+					return;
+				}
+
 				final PlayerData actor;
 				
 				if (sender instanceof Player) {
