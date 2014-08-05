@@ -1,13 +1,6 @@
 package me.confuser.banmanager.commands;
 
 import java.sql.SQLException;
-import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,15 +8,23 @@ import org.bukkit.entity.Player;
 
 import com.google.common.net.InetAddresses;
 
-public class BanIpCommand extends BukkitCommand<BanManager> {
+import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.util.IPUtils;
+import me.confuser.bukkitutil.Message;
+import me.confuser.bukkitutil.commands.BukkitCommand;
 
-	public BanIpCommand() {
-		super("banip");
+public class TempIpBanCommand extends BukkitCommand<BanManager> {
+
+	public TempIpBanCommand() {
+		super("tempipban");
 	}
 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-		if (args.length < 2)
+		if (args.length < 3)
 			return false;
 		
 		final String ipStr = args[0];
@@ -36,8 +37,18 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
 			sender.sendMessage(message.toString());
 			return true;
 		}
-
-		final String reason = StringUtils.join(args, " ", 1, args.length - 1);
+	
+		long expiresCheck;
+		
+		try {
+			expiresCheck = DateUtils.parseDateDiff(args[2], true);
+		} catch (Exception e1) {
+			sender.sendMessage(Message.get("invalidTime").toString());
+			return true;
+		}
+		
+		final long expires = expiresCheck;
+		final String reason = StringUtils.join(args, " ", 2, args.length - 1);
 		
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -64,7 +75,7 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
 					sender.sendMessage(message.toString());
 					return;
 				}
-
+				
 				final PlayerData actor;
 				
 				if (sender instanceof Player) {
@@ -73,7 +84,7 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
 					actor = plugin.getPlayerStorage().getConsole();
 				}
 				
-				final IpBanData ban = new IpBanData(ip, actor, reason);
+				final IpBanData ban = new IpBanData(ip, actor, reason, expires);
 				boolean created = false;
 				
 				try {
@@ -102,18 +113,18 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
 					}
 				});
 				
-				Message message = Message.get("ipBanned");
+				Message message = Message.get("ipTempBanned");
 				message
 					.set("ip", ipStr)
 					.set("actor", actor.getName())
-					.set("reason", ban.getReason());
+					.set("reason", ban.getReason())
+					.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 				
-				plugin.getServer().broadcast(message.toString(), "bm.notify.ipban");
+				plugin.getServer().broadcast(message.toString(), "bm.notify.tempipban");
 			}
 			
 		});
 		
 		return true;
 	}
-
 }
