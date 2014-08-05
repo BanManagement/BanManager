@@ -129,6 +129,11 @@ public class BanManager extends BukkitPlugin {
 		new MuteCommand().register();
 		new TempMuteCommand().register();
 		new UnmuteCommand().register();
+		
+		// IP Bans
+		new BanIpCommand().register();
+		new TempIpBanCommand().register();
+		new UnbanIpCommand().register();
 	}
 
 	@Override
