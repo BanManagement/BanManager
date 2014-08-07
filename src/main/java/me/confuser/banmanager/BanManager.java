@@ -134,6 +134,8 @@ public class BanManager extends BukkitPlugin {
 		new BanIpCommand().register();
 		new TempIpBanCommand().register();
 		new UnbanIpCommand().register();
+		
+		new ImportCommand().register();
 	}
 
 	@Override

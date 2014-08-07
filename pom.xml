@@ -102,6 +102,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>LATEST</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-core</artifactId>
 			<version>4.48</version>

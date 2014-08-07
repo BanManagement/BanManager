@@ -51,6 +51,18 @@ public class PlayerBanData {
 		this.expires = expires;
 	}
 	
+	// Only use for imports!
+	public PlayerBanData(PlayerData player, PlayerData actor, String reason, long expires, long created) {
+		uuid = player.getUUID();
+		id = UUIDUtils.toBytes(uuid);
+		
+		this.player = player;
+		this.reason = reason;
+		this.actor = actor;
+		this.expires = expires;
+		this.created = created;
+	}
+	
 	public UUID getUUID() {
 		if (uuid == null)
 			uuid = UUIDUtils.fromBytes(id);

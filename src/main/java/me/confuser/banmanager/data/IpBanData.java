@@ -33,10 +33,18 @@ public class IpBanData {
 	}
 	
 	public IpBanData(long ip, PlayerData actor, String reason, long expires) {
-		this.ip= ip;
+		this.ip = ip;
 		this.reason = reason;
 		this.actor = actor;
 		this.expires = expires;
+	}
+	
+	public IpBanData(long ip, PlayerData actor, String reason, long expires, long created) {
+		this.ip = ip;
+		this.reason = reason;
+		this.actor = actor;
+		this.expires = expires;
+		this.created = created;
 	}
 	
 	public long getIp() {
