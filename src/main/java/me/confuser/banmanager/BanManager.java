@@ -23,7 +23,7 @@ public class BanManager extends BukkitPlugin {
 	
 	private PlayerBanStorage playerBanStorage;
 	private PlayerBanRecordStorage playerBanRecordStorage;
-	private KickStorage kickStorage;
+	private PlayerKickStorage playerKickStorage;
 	private PlayerMuteStorage playerMuteStorage;
 	private PlayerMuteRecordStorage playerMuteRecordStorage;
 	private PlayerStorage playerStorage;
@@ -70,6 +70,10 @@ public class BanManager extends BukkitPlugin {
 	
 	public PlayerBanRecordStorage getPlayerBanRecordStorage() {
 		return playerBanRecordStorage;
+	}
+	
+	public PlayerKickStorage getPlayerKickStorage() {
+		return playerKickStorage;
 	}
 	
 	public PlayerMuteStorage getPlayerMuteStorage() {
@@ -173,10 +177,16 @@ public class BanManager extends BukkitPlugin {
 	@SuppressWarnings("unchecked")
 	public void setupStorages() throws SQLException {
 		playerStorage = new PlayerStorage(localConn, (DatabaseTableConfig<PlayerData>) config.getLocalDb().getTable("players"));
+		
 		playerBanStorage = new PlayerBanStorage(localConn, (DatabaseTableConfig<PlayerBanData>) config.getLocalDb().getTable("bans"));
 		playerBanRecordStorage = new PlayerBanRecordStorage(localConn, (DatabaseTableConfig<PlayerBanRecord>) config.getLocalDb().getTable("playerBanRecords"));
+		
 		playerMuteStorage = new PlayerMuteStorage(localConn, (DatabaseTableConfig<PlayerMuteData>) config.getLocalDb().getTable("mutes"));
 		playerMuteRecordStorage = new PlayerMuteRecordStorage(localConn, (DatabaseTableConfig<PlayerMuteRecord>) config.getLocalDb().getTable("playerMuteRecords"));
+		
+		playerWarnStorage = new PlayerWarnStorage(localConn, (DatabaseTableConfig<PlayerWarnData>) config.getLocalDb().getTable("warnings"));
+		
+		playerKickStorage = new PlayerKickStorage(localConn, (DatabaseTableConfig<PlayerKickData>) config.getLocalDb().getTable("kicks"));
 	}
 
 	@Override
