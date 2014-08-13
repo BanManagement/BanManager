@@ -59,6 +59,8 @@ public class JoinListener extends Listeners<BanManager> {
 				
 				return;
 			}
+			
+			return;
 		}
 		
 		PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
@@ -90,6 +92,8 @@ public class JoinListener extends Listeners<BanManager> {
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
+		if (!plugin.getDefaultConfig().isDuplicateIpCheckEnabled())
+			return;
 		
 		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 

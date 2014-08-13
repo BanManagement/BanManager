@@ -141,6 +141,7 @@ public class BanManager extends BukkitPlugin {
 		
 		new ImportCommand().register();
 		new FindAltsCommand().register();
+		new ReloadCommand().register();
 	}
 
 	@Override

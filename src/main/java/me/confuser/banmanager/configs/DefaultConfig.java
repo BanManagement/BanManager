@@ -11,6 +11,7 @@ public class DefaultConfig extends Config<BanManager> {
 	private DatabaseConfig localDb;
 	private DatabaseConfig externalDb;
 	private HashSet<String> mutedBlacklistCommands = new HashSet<String>();
+	private boolean dupeIpCheck = true;
 
 	public DefaultConfig() {
 		super("config.yml");
@@ -34,6 +35,8 @@ public class DefaultConfig extends Config<BanManager> {
 				mutedBlacklistCommands.add(aliasCmd);
 			}
 		}
+		
+		dupeIpCheck = conf.getBoolean("duplicateIpCheck", true);
 	}
 	
 	public DatabaseConfig getLocalDb() {
@@ -51,6 +54,10 @@ public class DefaultConfig extends Config<BanManager> {
 
 	public boolean isBlockedCommand(String cmd) {
 		return mutedBlacklistCommands.contains(cmd);
+	}
+
+	public boolean isDuplicateIpCheckEnabled() {
+		return dupeIpCheck;
 	}
 
 }

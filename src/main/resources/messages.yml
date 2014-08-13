@@ -1,0 +1,17 @@
+# Variables
+# [reason] = Ban/Mute reason
+# [player] = The name of the player
+# [ip] = The banned ip
+# [actor] = Who banned/muted
+# [expires] = How long until the ban/mute ends
+
+messages:
+  disallowedIpPermBan: 'Your IP has been banned from this server for [reason]'
+  disallowedIpTempBan: 'You have been banned from this server for [reason] \nIt expires in [expires]'
+  disallowedPermBan: 'You have been banned from this server for [reason]'
+  disallowedTempBan: 'You have been banned from this server for [reason] \nIt expires in [expires]'
+  duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
+  mutedBlacklistedCommand: '&cYou may not use the [command] command whilst muted!'
+  muted: 'You have been permanently muted for [reason] by [by]'
+  tempMuted: 'You have been temporarily muted for [reason] by [by] which expires in [expires]'
+  configReloaded: '&aConfiguration reloaded successfully!'
