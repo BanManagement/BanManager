@@ -42,3 +42,6 @@ mutedCommandBlacklist:
 
 # Displays a warning to those with bm.notify.duplicateips permission if joining players have the same ip as a banned player
 duplicateIpCheck: true
+
+# Log /kick to the database?
+logKicks: false

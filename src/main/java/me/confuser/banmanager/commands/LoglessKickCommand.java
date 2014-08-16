@@ -1,10 +1,7 @@
 package me.confuser.banmanager.commands;
 
-import java.sql.SQLException;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerKickData;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 
@@ -14,10 +11,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class KickCommand extends BukkitCommand<BanManager> {
+public class LoglessKickCommand extends BukkitCommand<BanManager> {
 
-	public KickCommand() {
-		super("kick");
+	public LoglessKickCommand() {
+		super("nlkick");
 	}
 
 	@Override
@@ -25,7 +22,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
 		if (args.length < 1)
 			return false;
 		
-		final String playerName = args[0];
+		String playerName = args[0];
 		Player player = Bukkit.getPlayer(playerName);
 		
 		if (player == null) {
@@ -36,40 +33,14 @@ public class KickCommand extends BukkitCommand<BanManager> {
 			return true;
 		}
 		
-		final String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length - 1) : "";
+		String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length - 1) : "";
 		
-		final PlayerData actor;
+		PlayerData actor;
 		
 		if (sender instanceof Player) {
 			actor = plugin.getPlayerStorage().getOnline((Player) sender);
 		} else {
 			actor = plugin.getPlayerStorage().getConsole();
-		}
-		
-		if (plugin.getDefaultConfig().isKickLoggingEnabled()) {
-			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-				@Override
-				public void run() {
-					PlayerData player = plugin.getPlayerStorage().retrieve(playerName, false);
-					
-					PlayerKickData data = new PlayerKickData(player, actor, reason);
-					
-					boolean created = false;
-					
-					try {
-						created = plugin.getPlayerKickStorage().addKick(data);
-					} catch (SQLException e) {
-						sender.sendMessage(Message.get("errorOccurred").toString());
-						e.printStackTrace();
-						return;
-					}
-					
-					if (!created)
-						return;
-				}
-				
-			});
 		}
 		
 		Message kickMessage;
