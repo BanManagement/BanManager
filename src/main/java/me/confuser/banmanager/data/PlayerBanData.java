@@ -1,31 +1,26 @@
 package me.confuser.banmanager.data;
 
-import java.util.UUID;
-
-import me.confuser.banmanager.util.UUIDUtils;
-
+import me.confuser.banmanager.storage.mysql.ByteArray;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class PlayerBanData {
-	@DatabaseField(id = true)
-	private byte[] id;
-	@DatabaseField(canBeNull = false, foreign = true)
+	@DatabaseField(generatedId = true)
+	private int id;
+	@DatabaseField(canBeNull = false, foreign = true, uniqueIndex = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData player;
 	@DatabaseField(canBeNull = false)
 	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true)
+	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;
 	
-	private UUID uuid = null;
-	
 	// Should always be database time
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long created = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long updated = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long expires = 0;
 	
 	PlayerBanData() {
@@ -33,18 +28,12 @@ public class PlayerBanData {
 	}
 	
 	public PlayerBanData(PlayerData player, PlayerData actor, String reason) {
-		uuid = player.getUUID();
-		id = UUIDUtils.toBytes(uuid);
-		
 		this.player = player;
 		this.reason = reason;
 		this.actor = actor;
 	}
 	
 	public PlayerBanData(PlayerData player, PlayerData actor, String reason, long expires) {
-		uuid = player.getUUID();
-		id = UUIDUtils.toBytes(uuid);
-		
 		this.player = player;
 		this.reason = reason;
 		this.actor = actor;
@@ -53,21 +42,11 @@ public class PlayerBanData {
 	
 	// Only use for imports!
 	public PlayerBanData(PlayerData player, PlayerData actor, String reason, long expires, long created) {
-		uuid = player.getUUID();
-		id = UUIDUtils.toBytes(uuid);
-		
 		this.player = player;
 		this.reason = reason;
 		this.actor = actor;
 		this.expires = expires;
 		this.created = created;
-	}
-	
-	public UUID getUUID() {
-		if (uuid == null)
-			uuid = UUIDUtils.fromBytes(id);
-
-		return uuid;
 	}
 	
 	public PlayerData getPlayer() {
@@ -91,10 +70,14 @@ public class PlayerBanData {
 	}
 	
 	public boolean hasExpired() {
-		return getExpires() <= (System.currentTimeMillis() / 1000L);
+		return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
 	}
 
 	public long getUpdated() {
 		return updated;
+	}
+	
+	public int getId() {
+		return id;
 	}
 }

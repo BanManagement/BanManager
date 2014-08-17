@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -19,20 +20,24 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
 import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 
-public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
+public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
 	private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<UUID, PlayerBanData>();
 
 	public PlayerBanStorage(ConnectionSource connection, DatabaseTableConfig<PlayerBanData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
 		
+		if (!this.isTableExists())
+			return;
+		
 		CloseableIterator<PlayerBanData> itr = iterator();
 		
 		while(itr.hasNext()) {
 			PlayerBanData ban = itr.next();
 			
-			bans.put(ban.getUUID(), ban);
+			bans.put(ban.getPlayer().getUUID(), ban);
 		}
 		
 		itr.close();
@@ -55,11 +60,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 	}
 	
 	public void addBan(PlayerBanData ban) {
-		bans.put(ban.getUUID(), ban);
+		bans.put(ban.getPlayer().getUUID(), ban);
 	}
 	
 	public void removeBan(PlayerBanData ban) {
-		removeBan(ban.getUUID());
+		removeBan(ban.getPlayer().getUUID());
 	}
 	
 	public void removeBan(UUID uuid) {
@@ -83,7 +88,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 			return false;
 
 		create(ban);
-		bans.put(ban.getUUID(), ban);
+		bans.put(ban.getPlayer().getUUID(), ban);
 		
 		return true;
 	}
@@ -96,7 +101,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 			return false;
 
 		delete(ban);
-		bans.remove(ban.getUUID());
+		bans.remove(ban.getPlayer().getUUID());
 		
 		plugin.getPlayerBanRecordStorage().addRecord(ban, actor);
 		
@@ -109,8 +114,8 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, byte[]> {
 		
 		long checkTime = fromTime + DateUtils.getTimeDiff();
 		
-		QueryBuilder<PlayerBanData, byte[]> query = queryBuilder();
-		Where<PlayerBanData, byte[]> where = query.where();
+		QueryBuilder<PlayerBanData, Integer> query = queryBuilder();
+		Where<PlayerBanData, Integer> where = query.where();
 		where
 			.ge("created", checkTime)
 			.or()

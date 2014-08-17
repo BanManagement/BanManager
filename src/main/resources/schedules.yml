@@ -1,0 +1,17 @@
+# Scheduler intervals in seconds, recommended to leave as default values.
+# Setting to 0 disables the scheduler from running.
+# Only change if you know what you are doing!
+scheduler:
+  expiresCheck: 300
+  playerBans: 30
+  playerMutes: 30
+  ipBans: 30
+  external: 120
+  saveLastRuns: 60
+
+# Don't change these!
+lastChecked:
+  mutes: 0
+  ipbans: 0
+  bans: 0
+  external: 0

@@ -19,7 +19,7 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 public class TempIpBanCommand extends BukkitCommand<BanManager> {
 
 	public TempIpBanCommand() {
-		super("tempipban");
+		super("tempbanip");
 	}
 
 	@Override

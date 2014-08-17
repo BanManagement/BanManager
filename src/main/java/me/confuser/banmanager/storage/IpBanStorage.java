@@ -28,6 +28,9 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 	public IpBanStorage(ConnectionSource connection, DatabaseTableConfig<IpBanData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
 		
+		if (!this.isTableExists())
+			return;
+		
 		CloseableIterator<IpBanData> itr = iterator();
 		
 		while(itr.hasNext()) {

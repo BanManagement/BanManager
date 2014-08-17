@@ -15,6 +15,7 @@ import me.confuser.banmanager.util.UUIDUtils;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -26,6 +27,18 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	
 	public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
+		
+		// Get the console
+		String name = plugin.getConsoleConfig().getName();
+		UUID uuid = plugin.getConsoleConfig().getUUID();
+		
+		console = this.queryForId(UUIDUtils.toBytes(uuid));
+		
+		if (console == null) {
+			// Create it
+			console = new PlayerData(uuid, name);
+			create(console);
+		}
 	}
 	
 	public void addOnline(PlayerData player) {
@@ -101,20 +114,29 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	}
 
 	public List<PlayerData> getDuplicates(long ip) {
-		String query = "SELECT players.uuid, players.name FROM ? AS players LEFT JOIN ? AS bans ip ON player.uuid bans.uuid WHERE players.ip = ?";
+		String query = "SELECT players.id, players.name FROM " + tableInfo.getTableName() + " AS players LEFT JOIN " + plugin.getPlayerBanStorage().getTableInfo().getTableName() + " AS bans ON players.id = bans.player_id WHERE players.ip = ?";
+		System.out.println(query + " " + ip);
 		ArrayList<PlayerData> players = new ArrayList<PlayerData>();
 		
+		GenericRawResults<String[]> queryRaw = null;
 		try {
-			CloseableIterator<String[]> itr = queryRaw(query, tableInfo.getTableName(), plugin.getPlayerBanStorage().getTableInfo().getTableName(), String.valueOf(ip)).closeableIterator();
+			queryRaw = queryRaw(query, String.valueOf(ip));
+			CloseableIterator<String[]> itr = queryRaw.closeableIterator();
 			
 			while(itr.hasNext()) {
 				DatabaseResults result = itr.getRawResults();
-				players.add(new PlayerData(UUID.fromString(result.getString(1)), result.getString(2), ip, 0));
+				players.add(new PlayerData(UUIDUtils.fromBytes(result.getBytes(0)), result.getString(1), ip, 0));
 			}
 			
 			itr.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				queryRaw.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return players;

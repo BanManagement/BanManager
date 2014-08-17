@@ -133,6 +133,8 @@ public class DateUtils {
 		
 		timeDiff = Long.parseLong(results.getFirstResult()[0]);
 		
+		results.close();
+		
 		return timeDiff;
 	}
 }

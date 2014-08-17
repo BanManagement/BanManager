@@ -27,6 +27,9 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 	public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
 		
+		if (!this.isTableExists())
+			return;
+		
 		CloseableIterator<PlayerMuteData> itr = iterator();
 		
 		while(itr.hasNext()) {

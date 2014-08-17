@@ -20,8 +20,8 @@ public class DefaultConfig extends Config<BanManager> {
 
 	@Override
 	public void afterLoad() {
-		localDb = new DatabaseConfig(conf.getConfigurationSection("databases.local"));
-		externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
+		localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
+		//externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
 		
 		for (String cmd : conf.getStringList("mutedCommandBlacklist")) {
 			mutedBlacklistCommands.add(cmd);

@@ -44,7 +44,7 @@ public class BanSync implements Runnable {
 		while(itr.hasNext()) {
 			final PlayerBanData ban = itr.next();
 			
-			if (banStorage.isBanned(ban.getUUID()) && ban.getUpdated() < lastChecked)
+			if (banStorage.isBanned(ban.getPlayer().getUUID()) && ban.getUpdated() < lastChecked)
 				continue;
 			
 			banStorage.addBan(ban);

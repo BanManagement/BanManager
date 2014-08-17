@@ -1,25 +1,27 @@
 package me.confuser.banmanager.data;
 
+import me.confuser.banmanager.storage.mysql.ByteArray;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class IpBanData {
-	@DatabaseField(id = true, generatedId = true)
+	@DatabaseField(generatedId = true)
 	private int id;
-	@DatabaseField(canBeNull = false)
+	@DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
 	private long ip;
 	@DatabaseField(canBeNull = false)
 	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true)
+	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;
 
 	// Should always be database time
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long created = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long updated = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true)
+	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
 	private long expires = 0;
 	
 	IpBanData() {
@@ -68,7 +70,7 @@ public class IpBanData {
 	}
 	
 	public boolean hasExpired() {
-		return getExpires() <= (System.currentTimeMillis() / 1000L);
+		return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
 	}
 
 	public long getUpdated() {
