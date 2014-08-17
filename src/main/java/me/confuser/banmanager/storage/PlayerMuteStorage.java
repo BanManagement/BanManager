@@ -37,6 +37,10 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 			
 			mutes.put(mute.getUUID(), mute);
 		}
+		
+		itr.close();
+		
+		plugin.getLogger().info("Loaded " + mutes.size() + " mutes into memory");
 	}
 	
 	public ConcurrentHashMap<UUID, PlayerMuteData> getMutes() {

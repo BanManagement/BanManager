@@ -41,6 +41,8 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 		}
 		
 		itr.close();
+		
+		plugin.getLogger().info("Loaded " + bans.size() + " bans into memory");
 	}
 	
 	public ConcurrentHashMap<UUID, PlayerBanData> getBans() {

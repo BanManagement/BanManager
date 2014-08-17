@@ -40,6 +40,8 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 		}
 		
 		itr.close();
+		
+		plugin.getLogger().info("Loaded " + bans.size() + " ip bans into memory");
 	}
 	
 	public ConcurrentHashMap<Long, IpBanData> getBans() {

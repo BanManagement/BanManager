@@ -2,6 +2,7 @@ package me.confuser.banmanager;
 
 import java.sql.SQLException;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 
@@ -41,6 +42,8 @@ public class BanManager extends BukkitPlugin {
 
 		setupConfigs();
 		try {
+			disableDatabaseLogging();
+
 			if (!setupConnections())
 				return;
 
@@ -119,6 +122,10 @@ public class BanManager extends BukkitPlugin {
 
 	public static BanManager getPlugin() {
 		return statPlugin;
+	}
+	
+	private void disableDatabaseLogging() {
+		System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
 	}
 
 	@Override
