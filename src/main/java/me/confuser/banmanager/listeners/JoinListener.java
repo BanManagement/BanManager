@@ -100,7 +100,7 @@ public class JoinListener extends Listeners<BanManager> {
 			public void run() {
 				final long ip = IPUtils.toLong(event.getAddress());
 				final UUID uuid = event.getPlayer().getUniqueId();
-				List<PlayerData> duplicates = plugin.getPlayerStorage().getDuplicates(ip);
+				List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 				
 				if (duplicates.size() == 0)
 					return;

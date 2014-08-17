@@ -1,6 +1,8 @@
 package me.confuser.banmanager.storage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,7 +10,6 @@ import org.bukkit.Bukkit;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -20,7 +21,6 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
 import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.UUIDUtils;
 
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
@@ -127,5 +127,31 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 		
 	}
 
-	
+	public List<PlayerData> getDuplicates(long ip) {
+		ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+
+		QueryBuilder<PlayerBanData, Integer> query = queryBuilder();
+		try {
+			QueryBuilder<PlayerData, byte[]> playerQuery = plugin.getPlayerStorage().queryBuilder();
+			
+			Where<PlayerData, byte[]> where = playerQuery.where();
+			where.eq("ip", ip);
+			playerQuery.setWhere(where);
+			
+			query.leftJoin(playerQuery);
+
+			CloseableIterator<PlayerBanData> itr = query.iterator();
+
+			while (itr.hasNext()) {
+				players.add(itr.next().getPlayer());
+			}
+
+			itr.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return players;
+	}
 }
