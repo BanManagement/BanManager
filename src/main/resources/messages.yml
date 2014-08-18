@@ -40,4 +40,4 @@ messages:
   invalidTime: '&cYour time length is invalid'
   tempBanKick: 'You have been temporarily banned for [reason]'
   playerTempBanned: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
-  alreadyMuted: '&c[player] is lready muted'
+  alreadyMuted: '&c[player] is already muted'
