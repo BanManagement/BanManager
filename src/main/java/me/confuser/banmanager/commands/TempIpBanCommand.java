@@ -41,14 +41,14 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
 		long expiresCheck;
 		
 		try {
-			expiresCheck = DateUtils.parseDateDiff(args[2], true);
+			expiresCheck = DateUtils.parseDateDiff(args[1], true);
 		} catch (Exception e1) {
 			sender.sendMessage(Message.get("invalidTime").toString());
 			return true;
 		}
 		
 		final long expires = expiresCheck;
-		final String reason = StringUtils.join(args, " ", 2, args.length - 1);
+		final String reason = StringUtils.join(args, " ", 2, args.length);
 		
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
