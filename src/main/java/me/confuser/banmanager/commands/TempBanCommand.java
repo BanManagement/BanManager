@@ -49,20 +49,20 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
 		long expiresCheck;
 		
 		try {
-			expiresCheck = DateUtils.parseDateDiff(args[2], true);
+			expiresCheck = DateUtils.parseDateDiff(args[1], true);
 		} catch (Exception e1) {
 			sender.sendMessage(Message.get("invalidTime").toString());
 			return true;
 		}
 		
 		final long expires = expiresCheck;
-		final String reason = StringUtils.join(args, " ", 2, args.length - 1);
+		final String reason = StringUtils.join(args, " ", 2, args.length);
 		
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				PlayerData player;
+				final PlayerData player;
 				
 				if (isUUID) {
 					try {
@@ -81,7 +81,7 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
 					return;
 				}
 				
-				PlayerData actor;
+				final PlayerData actor;
 				
 				if (sender instanceof Player) {
 					actor = plugin.getPlayerStorage().getOnline((Player) sender);
@@ -89,7 +89,7 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
 					actor = plugin.getPlayerStorage().getConsole();
 				}
 				
-				PlayerBanData ban = new PlayerBanData(player, actor, reason, expires);
+				final PlayerBanData ban = new PlayerBanData(player, actor, reason, expires);
 				boolean created = false;
 				
 				try {
@@ -104,16 +104,23 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
 					return;
 				
 				if (plugin.getPlayerStorage().isOnline(player.getUUID())) {
-					Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
-					
-					Message kickMessage = Message.get("tempBanKick")
-						.set("displayName", bukkitPlayer.getDisplayName())
-						.set("player", player.getName())
-						.set("reason", ban.getReason())
-						.set("actor", actor.getName())
-						.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-					
-					bukkitPlayer.kickPlayer(kickMessage.toString());
+					plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+						@Override
+						public void run() {
+							Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+							
+							Message kickMessage = Message.get("tempBanKick")
+								.set("displayName", bukkitPlayer.getDisplayName())
+								.set("player", player.getName())
+								.set("reason", ban.getReason())
+								.set("actor", actor.getName())
+								.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+							
+							bukkitPlayer.kickPlayer(kickMessage.toString());
+						}
+						
+					});
 				}
 				
 				Message message = Message.get("playerTempBanned");

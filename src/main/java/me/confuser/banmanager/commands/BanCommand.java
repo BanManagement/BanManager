@@ -25,18 +25,18 @@ public class BanCommand extends BukkitCommand<BanManager> {
 	public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
 		if (args.length < 2)
 			return false;
-		
+
 		// Check if UUID vs name
 		final String playerName = args[0];
 		final boolean isUUID = playerName.length() > 16;
 		boolean isBanned = false;
-		
+
 		if (isUUID) {
 			isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
 		} else {
 			isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
 		}
-		
+
 		if (isBanned) {
 			Message message = Message.get("alreadyBanned");
 			message.set("player", playerName);
@@ -44,15 +44,15 @@ public class BanCommand extends BukkitCommand<BanManager> {
 			sender.sendMessage(message.toString());
 			return true;
 		}
-		
+
 		final String reason = StringUtils.join(args, " ", 1, args.length - 1);
-		
+
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				PlayerData player;
-				
+				final PlayerData player;
+
 				if (isUUID) {
 					try {
 						player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
@@ -64,23 +64,23 @@ public class BanCommand extends BukkitCommand<BanManager> {
 				} else {
 					player = plugin.getPlayerStorage().retrieve(playerName, true);
 				}
-				
+
 				if (player == null) {
 					sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
 					return;
 				}
-				
-				PlayerData actor;
-				
+
+				final PlayerData actor;
+
 				if (sender instanceof Player) {
 					actor = plugin.getPlayerStorage().getOnline((Player) sender);
 				} else {
 					actor = plugin.getPlayerStorage().getConsole();
 				}
-				
-				PlayerBanData ban = new PlayerBanData(player, actor, reason);
+
+				final PlayerBanData ban = new PlayerBanData(player, actor, reason);
 				boolean created = false;
-				
+
 				try {
 					created = plugin.getPlayerBanStorage().ban(ban);
 				} catch (SQLException e) {
@@ -88,33 +88,36 @@ public class BanCommand extends BukkitCommand<BanManager> {
 					e.printStackTrace();
 					return;
 				}
-				
+
 				if (!created)
 					return;
-				
+
 				if (plugin.getPlayerStorage().isOnline(player.getUUID())) {
-					Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
-					
-					Message kickMessage = Message.get("banKick")
-						.set("displayName", bukkitPlayer.getDisplayName())
-						.set("player", player.getName())
-						.set("reason", ban.getReason())
-						.set("actor", actor.getName());
-					
-					bukkitPlayer.kickPlayer(kickMessage.toString());
+					plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+						@Override
+						public void run() {
+							Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+
+							Message kickMessage = Message.get("banKick")
+								.set("displayName", bukkitPlayer.getDisplayName())
+								.set("player", player.getName())
+								.set("reason", ban.getReason())
+								.set("actor", actor.getName());
+
+							bukkitPlayer.kickPlayer(kickMessage.toString());
+						}
+					});
 				}
-				
+
 				Message message = Message.get("playerBanned");
-				message
-					.set("player", player.getName())
-					.set("actor", actor.getName())
-					.set("reason", ban.getReason());
-				
+				message.set("player", player.getName()).set("actor", actor.getName()).set("reason", ban.getReason());
+
 				plugin.getServer().broadcast(message.toString(), "bm.notify.ban");
 			}
-			
+
 		});
-		
+
 		return true;
 	}
 }
