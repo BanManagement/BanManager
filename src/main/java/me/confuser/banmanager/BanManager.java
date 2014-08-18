@@ -42,7 +42,8 @@ public class BanManager extends BukkitPlugin {
 
 		setupConfigs();
 		try {
-			disableDatabaseLogging();
+			if (!config.isDebugEnabled())
+				disableDatabaseLogging();
 
 			if (!setupConnections())
 				return;
@@ -155,7 +156,7 @@ public class BanManager extends BukkitPlugin {
 		new TempIpBanCommand().register();
 		new UnbanIpCommand().register();
 
-		// new ImportCommand().register();
+		new ImportCommand().register();
 		// new FindAltsCommand().register();
 		new ReloadCommand().register();
 		new KickCommand().register();

@@ -1,3 +1,4 @@
+debug: true
 databases:
   # Local Database is always required. If not enabled, plugin will disable on startup.
   local:
