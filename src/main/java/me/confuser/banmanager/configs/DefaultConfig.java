@@ -23,24 +23,40 @@ public class DefaultConfig extends Config<BanManager> {
 	public void afterLoad() {
 		localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
 		//externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
-		
-		for (String cmd : conf.getStringList("mutedCommandBlacklist")) {
-			mutedBlacklistCommands.add(cmd);
-			
-			// Check for aliases
-			PluginCommand command = plugin.getCommand(cmd);
-			
-			if (command == null)
-				continue;
-			
-			for (String aliasCmd : command.getAliases()) {
-				mutedBlacklistCommands.add(aliasCmd);
-			}
-		}
-		
 		dupeIpCheck = conf.getBoolean("duplicateIpCheck", true);
 		logKicks = conf.getBoolean("logKicks", false);
 		debug = conf.getBoolean("debug", false);
+		
+		// Run this after startup to ensure all aliases are found
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				plugin.getLogger().info("The following commands are blocked whilst muted:");
+				for (String cmd : conf.getStringList("mutedCommandBlacklist")) {
+					mutedBlacklistCommands.add(cmd);
+					// TODO Use a stringbuilder
+					String info = cmd;
+					
+					// Check for aliases
+					PluginCommand command = plugin.getServer().getPluginCommand(cmd);
+					if (command == null) {
+						plugin.getLogger().info(info);
+						continue;
+					}
+					
+					info += " - ";
+					
+					for (String aliasCmd : command.getAliases()) {
+						info += aliasCmd + " ";
+						mutedBlacklistCommands.add(aliasCmd);
+					}
+					
+					plugin.getLogger().info(info);
+				}
+			}
+			
+		});
 	}
 	
 	public DatabaseConfig getLocalDb() {
