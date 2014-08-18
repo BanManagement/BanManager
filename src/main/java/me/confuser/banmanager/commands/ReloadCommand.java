@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.MessagesConfig;
+import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 
 public class ReloadCommand extends BukkitCommand<BanManager> {
@@ -16,6 +17,8 @@ public class ReloadCommand extends BukkitCommand<BanManager> {
 	public boolean onCommand(CommandSender sender, Command command, String commandName, String[] args) {
 		plugin.getDefaultConfig().load();
 		new MessagesConfig().load();
+		
+		sender.sendMessage(Message.get("configReloaded").toString());
 		
 		return true;
 	}
