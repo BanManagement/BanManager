@@ -45,7 +45,7 @@ public class BanCommand extends BukkitCommand<BanManager> {
 			return true;
 		}
 
-		final String reason = StringUtils.join(args, " ", 1, args.length - 1);
+		final String reason = StringUtils.join(args, " ", 1, args.length);
 
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

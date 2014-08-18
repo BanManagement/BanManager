@@ -44,3 +44,4 @@ messages:
   playerUnbanned: '[player] has been unbanned by [actor]'
   notBanned: '&c[player] is not banned'
   playerTempMuted: '&cYou have been temporarily muted for [expires] by [actor] for [reason]'
+  playerMuted: '[player] has been permanently muted for [expires] by [actor] for [reason]'
