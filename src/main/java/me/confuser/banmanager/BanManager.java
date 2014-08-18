@@ -190,8 +190,7 @@ public class BanManager extends BukkitPlugin {
 		if (!localDb.getPassword().isEmpty())
 			localConn.setPassword(localDb.getPassword());
 
-		// TODO config
-		localConn.setMaxConnectionsFree(2);
+		localConn.setMaxConnectionsFree(localDb.getMaxConnections());
 		localConn.setTestBeforeGet(true);
 		// only keep the connections open for 5 minutes
 		localConn.setMaxConnectionAgeMillis(5 * 60 * 1000);

@@ -8,6 +8,7 @@ databases:
     name: local_bans
     user: root
     password: ''
+    maxConnections: 10
     tables:
       players: bm_players
       playerBans: bm_player_bans
@@ -28,6 +29,7 @@ databases:
     name: external_bans
     user: root
     password: ''
+    maxConnections: 10
     tables:
       playerBans: bm_player_ban_all
       playerUnbans: bm_player_unban_all

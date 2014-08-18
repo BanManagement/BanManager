@@ -13,15 +13,17 @@ public abstract class DatabaseConfig {
 	private final String user;
 	private final String password;
 	private final boolean isEnabled;
+	private final int maxConnections;
 	private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<String, DatabaseTableConfig<?>>();
 
 	public DatabaseConfig(ConfigurationSection conf) {
 		host = conf.getString("host");
-		port = conf.getInt("port");
+		port = conf.getInt("port", 3306);
 		name = conf.getString("name");
 		user = conf.getString("user");
 		password = conf.getString("password");
 		isEnabled = conf.getBoolean("enabled");
+		maxConnections = conf.getInt("maxConnections", 10);
 	}
 
 	public String getJDBCUrl() {
@@ -58,5 +60,9 @@ public abstract class DatabaseConfig {
 
 	public boolean isEnabled() {
 		return isEnabled;
+	}
+
+	public int getMaxConnections() {
+		return maxConnections;
 	}
 }
