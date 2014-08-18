@@ -13,6 +13,7 @@ public class DefaultConfig extends Config<BanManager> {
 	private HashSet<String> mutedBlacklistCommands = new HashSet<String>();
 	private boolean dupeIpCheck = true;
 	private boolean logKicks = false;
+	private boolean debug = false;
 
 	public DefaultConfig() {
 		super("config.yml");
@@ -39,6 +40,7 @@ public class DefaultConfig extends Config<BanManager> {
 		
 		dupeIpCheck = conf.getBoolean("duplicateIpCheck", true);
 		logKicks = conf.getBoolean("logKicks", false);
+		debug = conf.getBoolean("debug", false);
 	}
 	
 	public DatabaseConfig getLocalDb() {
@@ -64,6 +66,10 @@ public class DefaultConfig extends Config<BanManager> {
 
 	public boolean isKickLoggingEnabled() {
 		return logKicks;
+	}
+	
+	public boolean isDebugEnabled() {
+		return debug;
 	}
 
 }
