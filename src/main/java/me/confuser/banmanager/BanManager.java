@@ -10,6 +10,7 @@ import me.confuser.banmanager.commands.*;
 import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.listeners.*;
+import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
@@ -36,6 +37,7 @@ public class BanManager extends BukkitPlugin {
 
 	private DefaultConfig config;
 	private ConsoleConfig consoleConfig;
+	private SchedulesConfig schedulesConfig;
 
 	public void onEnable() {
 		statPlugin = plugin = this;
@@ -112,9 +114,13 @@ public class BanManager extends BukkitPlugin {
 	public DefaultConfig getDefaultConfig() {
 		return config;
 	}
-	
+
 	public ConsoleConfig getConsoleConfig() {
 		return consoleConfig;
+	}
+
+	public SchedulesConfig getSchedulesConfig() {
+		return schedulesConfig;
 	}
 
 	public JdbcPooledConnectionSource getLocalConnection() {
@@ -124,7 +130,7 @@ public class BanManager extends BukkitPlugin {
 	public static BanManager getPlugin() {
 		return statPlugin;
 	}
-	
+
 	private void disableDatabaseLogging() {
 		System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
 	}
@@ -161,7 +167,7 @@ public class BanManager extends BukkitPlugin {
 		new ReloadCommand().register();
 		new KickCommand().register();
 		new LoglessKickCommand().register();
-		
+
 		new WarnCommand().register();
 	}
 
@@ -171,9 +177,12 @@ public class BanManager extends BukkitPlugin {
 
 		config = new DefaultConfig();
 		config.load();
-		
+
 		consoleConfig = new ConsoleConfig();
 		consoleConfig.load();
+
+		schedulesConfig = new SchedulesConfig();
+		schedulesConfig.load();
 	}
 
 	public boolean setupConnections() throws SQLException {
@@ -246,7 +255,7 @@ public class BanManager extends BukkitPlugin {
 
 		if (!playerKickStorage.isTableExists())
 			TableUtils.createTable(localConn, playerKickConfig);
-		
+
 		DatabaseTableConfig<IpBanData> ipBansConfig = (DatabaseTableConfig<IpBanData>) config.getLocalDb().getTable("ipBans");
 		ipBanStorage = new IpBanStorage(localConn, ipBansConfig);
 
@@ -270,7 +279,15 @@ public class BanManager extends BukkitPlugin {
 
 	@Override
 	public void setupRunnables() {
-		// TODO Auto-generated method stub
+		getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), schedulesConfig.getSchedule("saveLastChecked"), schedulesConfig.getSchedule("saveLastChecked"));
 
+		if (schedulesConfig.getSchedule("playerBans") != 0)
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new BanSync(), schedulesConfig.getSchedule("playerBans"), schedulesConfig.getSchedule("playerBans"));
+
+		if (schedulesConfig.getSchedule("playerMutes") != 0)
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new MuteSync(), schedulesConfig.getSchedule("playerMutes"), schedulesConfig.getSchedule("playerMutes"));
+		
+		if (schedulesConfig.getSchedule("ipBans") != 0)
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans"), schedulesConfig.getSchedule("ipBans"));
 	}
 }

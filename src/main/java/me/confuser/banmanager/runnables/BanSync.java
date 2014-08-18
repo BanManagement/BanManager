@@ -17,7 +17,7 @@ public class BanSync implements Runnable {
 	private long lastChecked = 0;
 
 	public BanSync() {
-		// TODO Set lastChecked from config
+		lastChecked = plugin.getSchedulesConfig().getLastChecked("playerBans");
 	}
 	
 	@Override
@@ -35,6 +35,9 @@ public class BanSync implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		lastChecked = System.currentTimeMillis() / 1000L;
+		plugin.getSchedulesConfig().setLastChecked("playerBans", lastChecked);
 	}
 
 	private void newBans() throws SQLException {

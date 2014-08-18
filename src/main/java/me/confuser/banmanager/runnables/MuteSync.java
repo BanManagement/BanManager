@@ -14,7 +14,7 @@ public class MuteSync implements Runnable {
 	private long lastChecked = 0;
 
 	public MuteSync() {
-		// TODO Set lastChecked from config
+		lastChecked = plugin.getSchedulesConfig().getLastChecked("playerMutes");
 	}
 	
 	@Override
@@ -32,6 +32,9 @@ public class MuteSync implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		lastChecked = System.currentTimeMillis() / 1000L;
+		plugin.getSchedulesConfig().setLastChecked("playerMutes", lastChecked);
 	}
 
 	private void newMutes() throws SQLException {
