@@ -32,6 +32,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 		if (!this.isTableExists())
 			return;
 		
+		// TODO Use raw query, to avoid N+2 queries
+		/* String playerTable = plugin.getPlayerStorage().getTableInfo().getTableName();
+		GenericRawResults<String[]> rawResults = this.queryRaw("SELECT * FROM " + getTableInfo().getTableName() + " b JOIN " + playerTable + " p ON b.player_id = p.id JOIN " + playerTable + " a ON b.actor_id = a.id", null);
+		*/
+		
 		CloseableIterator<PlayerBanData> itr = iterator();
 		
 		while(itr.hasNext()) {

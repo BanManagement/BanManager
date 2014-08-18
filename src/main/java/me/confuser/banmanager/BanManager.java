@@ -266,9 +266,6 @@ public class BanManager extends BukkitPlugin {
 		new LeaveListener().register();
 		new ChatListener().register();
 		new CommandListener().register();
-
-		// TODO Make optional in config
-		//new ConsoleListener().register();
 	}
 
 	@Override
