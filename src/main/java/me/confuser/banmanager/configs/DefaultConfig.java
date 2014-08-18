@@ -44,12 +44,14 @@ public class DefaultConfig extends Config<BanManager> {
 						plugin.getLogger().info(info);
 						continue;
 					}
-					
+
 					info += " - ";
 					
 					for (String aliasCmd : command.getAliases()) {
 						info += aliasCmd + " ";
 						mutedBlacklistCommands.add(aliasCmd);
+						// Block the annoying /plugin:cmd too
+						mutedBlacklistCommands.add(command.getPlugin().getDescription().getName().toLowerCase() + ":" + aliasCmd);
 					}
 					
 					plugin.getLogger().info(info);
