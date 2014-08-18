@@ -41,3 +41,5 @@ messages:
   tempBanKick: 'You have been temporarily banned for [reason]'
   playerTempBanned: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
   alreadyMuted: '&c[player] is already muted'
+  playerUnbanned: '[player] has been unbanned by [actor]'
+  notBanned: '&c[player] is not banned'
