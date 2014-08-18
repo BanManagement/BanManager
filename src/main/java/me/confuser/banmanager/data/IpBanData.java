@@ -13,7 +13,7 @@ public class IpBanData {
 	private long ip;
 	@DatabaseField(canBeNull = false)
 	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;
 
 	// Should always be database time

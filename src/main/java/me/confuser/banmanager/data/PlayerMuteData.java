@@ -12,11 +12,11 @@ import com.j256.ormlite.table.DatabaseTable;
 public class PlayerMuteData {
 	@DatabaseField(id = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private byte[] id;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData player;
 	@DatabaseField(canBeNull = false)
 	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;
 	
 	private UUID uuid = null;
