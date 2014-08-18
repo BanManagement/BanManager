@@ -9,10 +9,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import com.j256.ormlite.dao.CloseableIterator;
+
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
@@ -92,6 +95,35 @@ public class JoinListener extends Listeners<BanManager> {
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
+		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+
+			public void run() {
+				CloseableIterator<PlayerWarnData> warnings;
+				try {
+					warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(plugin.getPlayerStorage().getOnline(event.getPlayer()));
+					
+					while (warnings.hasNext()) {
+						PlayerWarnData warning = warnings.next();
+						
+						Message.get("warned")
+							.set("displayName", event.getPlayer().getDisplayName())
+							.set("player", event.getPlayer().getName())
+							.set("reason", warning.getReason())
+							.set("actor", warning.getActor().getName())
+							.sendTo(event.getPlayer());
+						
+						warning.setRead(true);
+						// TODO Move to one update query to set all warnings for player to read
+						plugin.getPlayerWarnStorage().update(warning);
+					}
+					
+					warnings.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}, 20L);
+
 		if (!plugin.getDefaultConfig().isDuplicateIpCheckEnabled())
 			return;
 		

@@ -161,6 +161,8 @@ public class BanManager extends BukkitPlugin {
 		new ReloadCommand().register();
 		new KickCommand().register();
 		new LoglessKickCommand().register();
+		
+		new WarnCommand().register();
 	}
 
 	@Override

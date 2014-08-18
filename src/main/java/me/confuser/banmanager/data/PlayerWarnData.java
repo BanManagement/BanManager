@@ -9,11 +9,11 @@ import com.j256.ormlite.table.DatabaseTable;
 public class PlayerWarnData {
 	@DatabaseField(generatedId = true)
 	private int id;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData player;
 	@DatabaseField(canBeNull = false)
 	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;	
 	// Should always be database time
 	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
@@ -56,6 +56,10 @@ public class PlayerWarnData {
 	
 	public boolean hasRead() {
 		return read;
+	}
+
+	public void setRead(boolean hasRead) {
+		read = hasRead;
 	}
 	
 }

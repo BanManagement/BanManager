@@ -30,7 +30,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 	}
 	
 	public CloseableIterator<PlayerWarnData> getUnreadWarnings(PlayerData player) throws SQLException {
-		return queryBuilder().where().eq("player", player).and().eq("read", false).iterator();
+		return queryBuilder().where().eq("player_id", player).and().eq("read", false).iterator();
 	}
 
 }
