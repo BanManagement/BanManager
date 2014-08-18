@@ -101,7 +101,7 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
 				// Find online players
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					public void run() {
-						Message kickMessage = Message.get("ipBanKick")
+						Message kickMessage = Message.get("ipTempBanKick")
 							.set("reason", ban.getReason())
 							.set("actor", actor.getName());
 
@@ -120,7 +120,7 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
 					.set("reason", ban.getReason())
 					.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 				
-				plugin.getServer().broadcast(message.toString(), "bm.notify.tempipban");
+				plugin.getServer().broadcast(message.toString(), "bm.notify.tempbanip");
 			}
 			
 		});

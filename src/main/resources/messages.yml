@@ -7,7 +7,7 @@
 
 messages:
   disallowedIpPermBan: 'Your IP has been banned from this server for [reason]'
-  disallowedIpTempBan: 'You have been banned from this server for [reason] \nIt expires in [expires]'
+  disallowedIpTempBan: 'Your IP has been banned from this server for [reason] \nIt expires in [expires]'
   disallowedPermBan: 'You have been banned from this server for [reason]'
   disallowedTempBan: 'You have been banned from this server for [reason] \nIt expires in [expires]'
   duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
@@ -42,6 +42,14 @@ messages:
   playerTempBanned: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
   alreadyMuted: '&c[player] is already muted'
   playerUnbanned: '[player] has been unbanned by [actor]'
+  ipUnbanned: '[ip] has been unbanned by [actor]'
   notBanned: '&c[player] is not banned'
   playerTempMuted: '&cYou have been temporarily muted for [expires] by [actor] for [reason]'
   playerMuted: '[player] has been permanently muted for [expires] by [actor] for [reason]'
+  ipTempBanned: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
+  ipBanned: '[ip] has been permanently banned by [actor] for [reason]'
+  ipBanKick: 'You have been permanently banned for [reason]'
+  ipTempBanKick: 'You have been temporarily banned for [reason]'
+  ipNotBanned: '[ip] is not banned'
+  playerUnmuted: '[player] has been unmuted by [actor]'
+  notMuted: '[player] is not muted'
