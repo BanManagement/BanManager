@@ -29,6 +29,7 @@ messages:
   timeSecond: 'second'
   timeSeconds: 'seconds'
   never: 'never'
+  none: 'none'
   errorOccurred: '&cAn error occured whilst attempting to perform that command. Please check the console for the error.'
   playerOffline: '&c[player] is offline'
   playerNotFound: '&c[player] not found, are you sure they exist?'
@@ -55,3 +56,4 @@ messages:
   notMuted: '[player] is not muted'
   warned: '&cYou have been warned by [actor] for [reason]'
   playerWarned: '[player] has been warned by [actor] for [reason]'
+  altsFound: 'Possible alts found:'

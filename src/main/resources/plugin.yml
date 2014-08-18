@@ -8,107 +8,139 @@ commands:
     description: "ban a player"
     usage: "/ban <username> <reason>"
     aliases: [bmban]
+    permission: bm.command.ban
   banall: 
     description: "ban a player across multiple servers"
     usage: "/banall <username> <reason>"
     aliases: [bmbanall]
+    permission: bm.command.banall
   tempban: 
     description: "tempban a player"
     usage: "/tempban <username> <timeDiff> <reason>"
     aliases: [bmtempban]
+    permission: bm.command.tempban
   tempbanall: 
     description: "tempban a player across multiple servers"
     usage: "/tempbanall <username> <timeDiff> <reason>"
     aliases: [bmtempbanall]
+    permission: bm.command.tempbanall
   unban:
     description: "unban a player"
     usage: "/unban <username>"
     aliases: [bmunban]
+    permission: bm.command.unban
   unbanall:
     description: "unban a player across multiple servers"
     usage: "/unbanall <username>"
     aliases: [bmunbanall]
+    permission: bm.command.unbanall
   bminfo:
     description: "see information on a player"
     usage: "/bminfo <username>"
     aliases: [bmbminfo]
+    permission: bm.command.bminfo
   banip:
     description: "ban an ip"
     usage: "/banip <username || IP Address> <reason>"
     aliases: [bmbanip]
+    permission: bm.command.banip
   banipall:
     description: "ban an ip across multiple servers"
     usage: "/banipall <username || IP Address> <reason>"
     aliases: [bmbanipall]
+    permission: bm.command.banipall
   tempbanip: 
     description: "tempban an ip"
     usage: "/tempbanip <username || IP Address> <timeDiff> <reason>"
     aliases: [bmtempbanip]
+    permission: bm.command.tempbanip
   tempbanipall: 
     description: "tempban an ip across multiple servers"
     usage: "/tempbanipall <username || IP Address> <timeDiff> <reason>"
     aliases: [bmtempbanipall]
+    permission: bm.command.tempbanipall
   unbanip:
     description: "unban's an ip"
     usage: "/unbanip <IP Address>"
     aliases: [bmunbanip]
+    permission: bm.command.unbanip
   unbanipall:
     description: "unban's an ip across multiple servers"
     usage: "/unbanipall <IP Address>"
     aliases: [bmunbanipall]
-  banimport:
+    permission: bm.command.unbanipall
+  bmimport:
     description: "imports bans"
-    usage: "/banimport <player || ip> <reason>"
+    usage: "/bmimport <player || ip> <reason>"
     aliases: [bmbanimport]
+    permission: bm.command.import
   kick:
     description: "kick a player"
     usage: "/kick <player> <reason>"
     aliases: [bmkick]
+    permission: bm.command.kick
   mute:
     description: "mutes a player"
     usage: "/mute <player> <reason>"
     aliases: [bmmute]
+    permission: bm.command.mute
   muteall:
     description: "mutes a player across multiple servers"
     usage: "/muteall <player> <reason>"
     aliases: [bmmuteall]
+    permission: bm.command.muteall
   tempmute:
     description: "temp mutes a player"
     usage: "/tempmute <player> <timeDiff> <reason>"
     aliases: [bmtempmute]
+    permission: bm.command.tempmute
   tempmuteall:
     description: "temp mutes a player across multiple servers"
     usage: "/tempmuteall <player> <timeDiff> <reason>"
     aliases: [bmtempmuteall]
+    permission: bm.command.tempmuteall
   unmute:
     description: "unmute a player"
     usage: "/unmute <username>"
     aliases: [bmunmute]
+    permission: bm.command.unmute
   unmuteall:
     description: "unmute a player across multiple servers"
     usage: "/unmuteall <username>"
     aliases: [bmunmuteall]
+    permission: bm.command.unmuteall
   nlkick:
     description: "kick a player without logging"
     usage: "/nlkick <player> <reason>"
     aliases: [bmnlkick]
+    permission: bm.command.nlkick
   bmreload:
     description: "Reloads from the config everything except database connection info"
     usage: "/bmreload"
+    permission: bm.command.reload
   bmtools:
     description: "Collection of random utilities"
     usage: "/bmtools <tool>"
+    permission: bm.command.tools
   warn:
     description: "Warn a player"
     usage: "/warn <player> <reason>"
     aliases: [bmwarn]
+    permission: bm.command.warn
+  alts:
+    description: "Find alts"
+    usage: "/alts <player || ip>"
+    aliases: [bmalts]
+    permission: bm.command.alts
   bmclear:
     description: "Clear a player's records"
     usage: "/bmclear <type> <player>"
+    permission: bm.command.clear
   dwarn:
     description: "Delete a player's last warning"
     usage: "/dwarn <player>"
     aliases: [bmdwarn]
+    permission: bm.command.dwarn
 permissions:
     bm.*:
         description: Gives access to all BanManager commands
