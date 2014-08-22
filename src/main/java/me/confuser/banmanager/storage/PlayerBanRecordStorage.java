@@ -40,4 +40,8 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
 		return query.iterator();
 		
 	}
+	
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
 }

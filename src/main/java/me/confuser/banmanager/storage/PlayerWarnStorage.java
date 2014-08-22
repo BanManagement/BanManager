@@ -33,4 +33,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 		return queryBuilder().where().eq("player_id", player).and().eq("read", false).iterator();
 	}
 
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
 }

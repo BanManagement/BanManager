@@ -162,9 +162,13 @@ public class BanManager extends BukkitPlugin {
 		new TempIpBanCommand().register();
 		new UnbanIpCommand().register();
 
+		// Misc
 		new ImportCommand().register();
 		new FindAltsCommand().register();
 		new ReloadCommand().register();
+		new InfoCommand().register();
+		
+		// Kicks
 		new KickCommand().register();
 		new LoglessKickCommand().register();
 

@@ -57,3 +57,9 @@ messages:
   warned: '&cYou have been warned by [actor] for [reason]'
   playerWarned: '[player] has been warned by [actor] for [reason]'
   altsFound: 'Possible alts found:'
+  # Info
+  bminfoStatsSummary: '[player] has been banned [bans] times, muted [mutes] times and warned [warns] times'
+  bminfoConnection: 'Their last connection was with [ip] on [lastSeen]'
+  bminfoIpStatsSummary: 'This ip has been banned [bans] times'
+  bminfoBanned: 'They are currently banned for [reason] by [actor] at [created] which expires in [expires]'
+  bminfoMuted: 'They are currently muted for [reason] by [actor] at [created] which expires in [expires]'

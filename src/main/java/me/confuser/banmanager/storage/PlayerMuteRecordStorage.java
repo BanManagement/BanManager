@@ -40,5 +40,9 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
 		return query.iterator();
 		
 	}
+	
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
 
 }
