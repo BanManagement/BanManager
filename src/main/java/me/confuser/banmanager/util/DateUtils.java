@@ -17,6 +17,9 @@ public class DateUtils {
 	private static long timeDiff = 0;
 	
 	public static String formatDifference(long time) {
+		if (time == 0)
+			return Message.getString("never");
+		
 		long day = TimeUnit.SECONDS.toDays(time);
 		long hours = TimeUnit.SECONDS.toHours(time) - (day * 24);
 		long minutes = TimeUnit.SECONDS.toMinutes(time) - (TimeUnit.SECONDS.toHours(time) * 60);
