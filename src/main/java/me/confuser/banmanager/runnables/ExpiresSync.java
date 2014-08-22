@@ -2,14 +2,7 @@ package me.confuser.banmanager.runnables;
 
 import java.sql.SQLException;
 
-import net.minecraft.util.org.apache.commons.lang3.ArrayUtils;
-
-import org.bukkit.entity.Player;
-
-import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerBanRecord;
 import me.confuser.banmanager.storage.IpBanRecordStorage;
 import me.confuser.banmanager.storage.IpBanStorage;
 import me.confuser.banmanager.storage.PlayerBanRecordStorage;
@@ -17,7 +10,6 @@ import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.banmanager.storage.PlayerMuteRecordStorage;
 import me.confuser.banmanager.storage.PlayerMuteStorage;
 import me.confuser.banmanager.util.DateUtils;
-import me.confuser.bukkitutil.Message;
 
 public class ExpiresSync implements Runnable {
 	private BanManager plugin = BanManager.getPlugin();
