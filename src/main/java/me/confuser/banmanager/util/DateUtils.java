@@ -53,8 +53,10 @@ public class DateUtils {
 			  .append(" ")
 			  .append(Message.get(day == 1 ? "timeSeconds" : "timeSeconds").toString());
 		}
+		
+		String diff = sb.toString();
 
-		return sb.toString();
+		return diff.isEmpty() ? Message.getString("timeNow") : diff;
 	}
 	
 	public static String getDifferenceFormat(long timestamp) {
