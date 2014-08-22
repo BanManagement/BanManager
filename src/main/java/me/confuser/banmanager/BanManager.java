@@ -293,5 +293,8 @@ public class BanManager extends BukkitPlugin {
 		
 		if (schedulesConfig.getSchedule("ipBans") != 0)
 			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans"), schedulesConfig.getSchedule("ipBans"));
+
+		if (schedulesConfig.getSchedule("expiresCheck") != 0)
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck"), schedulesConfig.getSchedule("expiresCheck"));
 	}
 }

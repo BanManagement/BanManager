@@ -2,7 +2,7 @@
 # Setting to 0 disables the scheduler from running.
 # Only change if you know what you are doing!
 scheduler:
-  expiresCheck: 300
+  expiresCheck: 30
   playerBans: 30
   playerMutes: 30
   ipBans: 30
