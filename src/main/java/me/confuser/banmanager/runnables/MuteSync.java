@@ -44,7 +44,7 @@ public class MuteSync implements Runnable {
 		while(itr.hasNext()) {
 			final PlayerMuteData mute = itr.next();
 			
-			if (muteStorage.isMuted(mute.getUUID()) && mute.getUpdated() < lastChecked)
+			if (muteStorage.isMuted(mute.getPlayer().getUUID()) && mute.getUpdated() < lastChecked)
 				continue;
 			
 			muteStorage.addMute(mute);
