@@ -38,6 +38,15 @@ public class PlayerWarnData {
 		this.read = read;
 	}
 	
+	// Imports only!
+	public PlayerWarnData(PlayerData player, PlayerData actor, String reason, boolean read, long created) {
+		this.player = player;
+		this.reason = reason;
+		this.actor = actor;
+		this.read = read;
+		this.created = created;
+	}
+	
 	public PlayerData getPlayer() {
 		return player;
 	}

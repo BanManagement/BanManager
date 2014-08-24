@@ -74,6 +74,14 @@ public class BanManager extends BukkitPlugin {
 		setupCommands();
 		setupRunnables();
 	}
+	
+	public void onDisable() {
+		localConn.closeQuietly();
+		
+		if (externalConn != null) {
+			externalConn.closeQuietly();
+		}
+	}
 
 	public PlayerBanStorage getPlayerBanStorage() {
 		return playerBanStorage;

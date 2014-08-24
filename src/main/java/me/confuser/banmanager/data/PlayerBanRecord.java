@@ -38,6 +38,17 @@ public class PlayerBanRecord {
 		this.actor = actor;
 	}
 	
+	public PlayerBanRecord(PlayerBanData ban, PlayerData actor, long created) {
+		player = ban.getPlayer();
+		reason = ban.getReason();
+		expired = ban.getExpires();
+		pastActor = ban.getActor();
+		pastCreated = ban.getCreated();
+		
+		this.actor = actor;
+		this.created = created;
+	}
+	
 	public PlayerData getPlayer() {
 		return player;
 	}

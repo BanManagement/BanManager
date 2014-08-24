@@ -25,19 +25,30 @@ public class PlayerMuteRecord {
 	private long created = System.currentTimeMillis() / 1000L;
 
 	PlayerMuteRecord() {
-		
+
 	}
-	
+
 	public PlayerMuteRecord(PlayerMuteData mute, PlayerData actor) {
 		player = mute.getPlayer();
 		reason = mute.getReason();
 		expired = mute.getExpires();
 		pastActor = mute.getActor();
 		pastCreated = mute.getCreated();
-		
+
 		this.actor = actor;
 	}
-	
+
+	public PlayerMuteRecord(PlayerMuteData mute, PlayerData actor, long created) {
+		player = mute.getPlayer();
+		reason = mute.getReason();
+		expired = mute.getExpires();
+		pastActor = mute.getActor();
+		pastCreated = mute.getCreated();
+
+		this.actor = actor;
+		this.created = created;
+	}
+
 	public PlayerData getPlayer() {
 		return player;
 	}

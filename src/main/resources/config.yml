@@ -37,7 +37,26 @@ databases:
       playerUnmute: bm_player_unmute_all
       ipBans: bm_ip_ban_all
       ipUnbans: bm_ip_unban_all
-
+  
+  # Only for converting a non-UUID v4 BanManager database
+  convert:
+    enabled: false
+    host: 127.0.0.1
+    port: 3306
+    name: local_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    tables:
+      bansTable: bm_bans
+      bansRecordTable: bm_ban_records
+      ipBansTable: bm_ip_bans
+      ipBansRecordTable: bm_ip_records
+      kicksTable: bm_kicks
+      mutesTable: bm_mutes
+      mutesRecordTable: bm_mutes_records
+      playerIpsTable: bm_player_ips
+      warningsTable: bm_warnings
 
 # Aliases will be found and blocked automatically, e.g. msg will block tell
 mutedCommandBlacklist:

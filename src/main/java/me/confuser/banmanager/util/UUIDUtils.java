@@ -34,6 +34,11 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
         this.names = ImmutableList.copyOf(names);
         this.rateLimiting = rateLimiting;
     }
+    
+    public UUIDUtils(Set<String> names, boolean rateLimiting) {
+    	 this.names = ImmutableList.copyOf(names);
+         this.rateLimiting = rateLimiting;
+    }
 
     public UUIDUtils(List<String> names) {
         this(names, true);

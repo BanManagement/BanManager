@@ -20,7 +20,7 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
-public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
+public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
 	private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<UUID, PlayerMuteData>();
 
@@ -35,7 +35,7 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 		while(itr.hasNext()) {
 			PlayerMuteData mute = itr.next();
 			
-			mutes.put(mute.getUUID(), mute);
+			mutes.put(mute.getPlayer().getUUID(), mute);
 		}
 		
 		itr.close();
@@ -74,7 +74,7 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 	}
 	
 	public void addMute(PlayerMuteData mute) {
-		mutes.put(mute.getUUID(), mute);
+		mutes.put(mute.getPlayer().getUUID(), mute);
 	}
 	
 	public boolean mute(PlayerMuteData mute) throws SQLException {
@@ -85,7 +85,7 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 			return false;
 		
 		create(mute);
-		mutes.put(mute.getUUID(), mute);
+		mutes.put(mute.getPlayer().getUUID(), mute);
 		
 		return true;
 	}
@@ -102,7 +102,7 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 			return false;
 
 		delete(mute);
-		mutes.remove(mute.getUUID());
+		mutes.remove(mute.getPlayer().getUUID());
 		
 		plugin.getPlayerMuteRecordStorage().addRecord(mute, actor);
 		
@@ -115,8 +115,8 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, byte[]> {
 		
 		long checkTime = fromTime + DateUtils.getTimeDiff();
 		
-		QueryBuilder<PlayerMuteData, byte[]> query = queryBuilder();
-		Where<PlayerMuteData, byte[]> where = query.where();
+		QueryBuilder<PlayerMuteData, Integer> query = queryBuilder();
+		Where<PlayerMuteData, Integer> where = query.where();
 		where
 			.ge("created", checkTime)
 			.or()
