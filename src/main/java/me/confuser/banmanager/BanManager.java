@@ -1,6 +1,10 @@
 package me.confuser.banmanager;
 
+import java.io.IOException;
 import java.sql.SQLException;
+
+import org.mcstats.MetricsLite;
+
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -71,7 +75,7 @@ public class BanManager extends BukkitPlugin {
 			plugin.getPluginLoader().disablePlugin(this);
 			e.printStackTrace();
 		}
-		
+
 		if (conversionConn != null) {
 			setupConversion();
 		}
@@ -79,11 +83,18 @@ public class BanManager extends BukkitPlugin {
 		setupListeners();
 		setupCommands();
 		setupRunnables();
+
+		try {
+			MetricsLite metrics = new MetricsLite(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
 	}
-	
+
 	public void onDisable() {
 		localConn.closeQuietly();
-		
+
 		if (externalConn != null) {
 			externalConn.closeQuietly();
 		}
@@ -148,16 +159,16 @@ public class BanManager extends BukkitPlugin {
 	private void disableDatabaseLogging() {
 		System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
 	}
-	
+
 	private void setupConversion() {
 		getLogger().info("Running pre-conversion launch checks");
 		ConvertDatabaseConfig conversionDb = config.getConversionDb();
-		
+
 		if (config.getLocalDb().getHost().equals(conversionDb.getHost()) && config.getLocalDb().getName().equals(conversionDb.getName())) {
 			if (!conversionChecks())
 				return;
 		}
-		
+
 		// Begin the converting
 		getLogger().info("Conversion will begin shortly. You have 30 seconds to kill the process to abort.");
 		try {
@@ -168,7 +179,7 @@ public class BanManager extends BukkitPlugin {
 		getLogger().info("Launching conversion procedres");
 		new UUIDConvert(conversionConn);
 	}
-	
+
 	private boolean conversionChecks() {
 		ConvertDatabaseConfig conversionDb = config.getConversionDb();
 
@@ -176,47 +187,47 @@ public class BanManager extends BukkitPlugin {
 			getLogger().severe("players table equals playerIpsTable, aborting");
 			return false;
 		}
-		
+
 		if (playerBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansTable"))) {
 			getLogger().severe("playerBans table equals bansTable, aborting");
 			return false;
 		}
-		
+
 		if (playerBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansRecordTable"))) {
 			getLogger().severe("playerBanRecords table equals bansRecordTable, aborting");
 			return false;
 		}
-		
+
 		if (playerMuteStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesTable"))) {
 			getLogger().severe("playerMutes table equals mutesTable, aborting");
 			return false;
 		}
-		
+
 		if (playerMuteRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesRecordTable"))) {
 			getLogger().severe("playerMuteRecords table equals mutesRecordTable, aborting");
 			return false;
 		}
-		
+
 		if (playerKickStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("kicksTable"))) {
 			getLogger().severe("playerKicks table equals kicksTable, aborting");
 			return false;
 		}
-		
+
 		if (playerWarnStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("warningsTable"))) {
 			getLogger().severe("playerWarnings table equals warningsTable, aborting");
 			return false;
 		}
-		
+
 		if (ipBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansTable"))) {
 			getLogger().severe("ipBans table equals ipBansTable, aborting");
 			return false;
 		}
-		
+
 		if (ipBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansRecordTable"))) {
 			getLogger().severe("ipBanRecords table equals ipBansRecordTable, aborting");
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -252,7 +263,7 @@ public class BanManager extends BukkitPlugin {
 		new FindAltsCommand().register();
 		new ReloadCommand().register();
 		new InfoCommand().register();
-		
+
 		// Kicks
 		new KickCommand().register();
 		new LoglessKickCommand().register();
@@ -297,10 +308,10 @@ public class BanManager extends BukkitPlugin {
 		localConn.setDatabaseType(new MySQLDatabase());
 
 		localConn.initialize();
-		
+
 		if (!config.getConversionDb().isEnabled())
 			return true;
-		
+
 		DatabaseConfig conversionDb = config.getConversionDb();
 
 		conversionConn = new JdbcPooledConnectionSource(conversionDb.getJDBCUrl());
@@ -393,7 +404,7 @@ public class BanManager extends BukkitPlugin {
 
 		if (schedulesConfig.getSchedule("playerMutes") != 0)
 			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new MuteSync(), schedulesConfig.getSchedule("playerMutes"), schedulesConfig.getSchedule("playerMutes"));
-		
+
 		if (schedulesConfig.getSchedule("ipBans") != 0)
 			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans"), schedulesConfig.getSchedule("ipBans"));
 
