@@ -1,0 +1,69 @@
+debug: true
+databases:
+  # Local Database is always required. If not enabled, plugin will disable on startup.
+  local:
+    enabled: false
+    host: 127.0.0.1
+    port: 3306
+    name: local_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    tables:
+      players: bm_players
+      playerBans: bm_player_bans
+      playerBanRecords: bm_player_ban_records
+      playerMutes: bm_player_mutes
+      playerMuteRecords: bm_player_mute_records
+      playerKicks: bm_player_kicks
+      playerWarnings: bm_player_warnings
+      ipBans: bm_ip_bans
+      ipBanRecords: bm_ip_ban_records
+
+  # External is only required if you want to sync with other servers, but still have separate bans, mutes etc.
+  # This will enable /*all commands, e.g. /banall, /muteall
+  external:
+    enabled: false
+    host: 127.0.0.1
+    port: 3306
+    name: external_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    tables:
+      playerBans: bm_player_ban_all
+      playerUnbans: bm_player_unban_all
+      playerMutes: bm_player_mute_all
+      playerUnmute: bm_player_unmute_all
+      ipBans: bm_ip_ban_all
+      ipUnbans: bm_ip_unban_all
+  
+  # Only for converting a non-UUID v4 BanManager database
+  convert:
+    enabled: false
+    host: 127.0.0.1
+    port: 3306
+    name: local_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    tables:
+      bansTable: bm_bans
+      bansRecordTable: bm_ban_records
+      ipBansTable: bm_ip_bans
+      ipBansRecordTable: bm_ip_records
+      kicksTable: bm_kicks
+      mutesTable: bm_mutes
+      mutesRecordTable: bm_mutes_records
+      playerIpsTable: bm_player_ips
+      warningsTable: bm_warnings
+
+# Aliases will be found and blocked automatically, e.g. msg will block tell
+mutedCommandBlacklist:
+- msg
+
+# Displays a warning to those with bm.notify.duplicateips permission if joining players have the same ip as a banned player
+duplicateIpCheck: true
+
+# Log /kick to the database?
+logKicks: false
