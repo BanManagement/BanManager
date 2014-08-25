@@ -215,6 +215,9 @@ public class UUIDConvert {
 		plugin.getLogger().info(ChatColor.GREEN + "Ip ban records table converted!");
 		plugin.getLogger().info(ChatColor.GREEN + "Conversion complete! Please check logs for errors. Restart the server for new data to take affect!");
 		conversionConn.closeQuietly();
+		
+		plugin.getDefaultConfig().conf.set("databases.convert.enabled", false);
+		plugin.getDefaultConfig().save();
 	}
 
 	private void convertIpBanRecordsTable(DatabaseConnection connection) {
