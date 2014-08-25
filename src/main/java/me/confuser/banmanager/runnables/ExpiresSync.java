@@ -44,7 +44,7 @@ public class ExpiresSync implements Runnable {
 			e.printStackTrace();
 		}
 
-		final String ipExpireSQL = "INSERT INTO " + ipBanRecordStorage.getTableInfo().getTableName() + " (player_id, reason, expired, actor_id, pastActor_id, pastCreated, created) SELECT b.player_id, b.reason, b.expires, b.actor_id, UNHEX(?), b.created, ? FROM " + ipBanStorage.getTableInfo().getTableName() + " b WHERE b.expires != '0' AND b.expires < ?";
+		final String ipExpireSQL = "INSERT INTO " + ipBanRecordStorage.getTableInfo().getTableName() + " (ip, reason, expired, actor_id, pastActor_id, pastCreated, created) SELECT b.ip, b.reason, b.expires, b.actor_id, UNHEX(?), b.created, ? FROM " + ipBanStorage.getTableInfo().getTableName() + " b WHERE b.expires != '0' AND b.expires < ?";
 
 		try {
 			ipBanStorage.executeRaw(ipExpireSQL, console, nowStr, nowStr);
