@@ -38,6 +38,17 @@ public class IpBanRecord {
 		this.actor = actor;
 	}
 	
+	public IpBanRecord(IpBanData ban, PlayerData actor, long created) {
+		ip = ban.getIp();
+		reason = ban.getReason();
+		expired = ban.getExpires();
+		pastActor = ban.getActor();
+		pastCreated = ban.getCreated();
+		
+		this.actor = actor;
+		this.created = created;
+	}
+
 	public long getIp() {
 		return ip;
 	}

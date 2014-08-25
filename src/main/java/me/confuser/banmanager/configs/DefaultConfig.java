@@ -68,6 +68,10 @@ public class DefaultConfig extends Config<BanManager> {
 	public DatabaseConfig getExternalDb() {
 		return externalDb;
 	}
+	
+	public ConvertDatabaseConfig getConversionDb() {
+		return new ConvertDatabaseConfig(conf.getConfigurationSection("databases.convert"));
+	}
 
 	@Override
 	public void onSave() {

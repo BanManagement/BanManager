@@ -61,7 +61,8 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
                 uuidMap.put(name, uuid);
             }
             if (rateLimiting && i != requests - 1) {
-                Thread.sleep(100L);
+            	// Try to avoid rate limit
+                Thread.sleep(10000L);
             }
         }
         return uuidMap;

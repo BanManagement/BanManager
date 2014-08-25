@@ -10,10 +10,12 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.configs.ConvertDatabaseConfig;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
 import me.confuser.banmanager.data.PlayerBanData;
@@ -27,13 +29,14 @@ import me.confuser.banmanager.storage.PlayerStorage;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 
-// This class is horrifically big, lots of repetition
+// This class is horrifically big, lots of repetition, but speed for release over readability :(
+// This class will be removed in upcoming releases
 public class UUIDConvert {
 	private BanManager plugin = BanManager.getPlugin();
 	private PlayerStorage playerStorage = plugin.getPlayerStorage();
-	private JdbcPooledConnectionSource conversionConn;
+	private ConvertDatabaseConfig conversionDb = plugin.getDefaultConfig().getConversionDb();
 
-	public UUIDConvert() {
+	public UUIDConvert(JdbcPooledConnectionSource conversionConn) {
 		// Convert player ips table first
 		DatabaseConnection connection;
 		try {
@@ -213,14 +216,11 @@ public class UUIDConvert {
 		plugin.getLogger().info(ChatColor.GREEN + "Conversion complete! Please check logs for errors. Restart the server for new data to take affect!");
 		conversionConn.closeQuietly();
 	}
-	
+
 	private void convertIpBanRecordsTable(DatabaseConnection connection) {
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time FROM " /*
-																																					 * +
-																																					 * playerIpsTable
-																																					 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time FROM " + conversionDb.getTableName("ipBansRecordTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -247,8 +247,8 @@ public class UUIDConvert {
 					banActor = playerStorage.getConsole();
 				}
 
-				IpBanData ban = new IpBanData(IPUtils.toLong(ip), banActor, reason, pastCreated, expires);
-				IpBanRecord record = new IpBanRecord(ban, actor);
+				IpBanData ban = new IpBanData(IPUtils.toLong(ip), banActor, reason, expires, pastCreated);
+				IpBanRecord record = new IpBanRecord(ban, actor, created);
 
 				plugin.getIpBanRecordStorage().create(record);
 			}
@@ -262,10 +262,7 @@ public class UUIDConvert {
 	private void convertIpBansTable(DatabaseConnection connection) {
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM " /*
-																														 * +
-																														 * playerIpsTable
-																														 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM " + conversionDb.getTableName("ipBansTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -300,10 +297,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerBan> toLookup = new HashMap<String, PlayerBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT kicked, kicked_by, kick_reason, kick_time FROM " /*
-																										 * +
-																										 * playerIpsTable
-																										 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT kicked, kicked_by, kick_reason, kick_time FROM " + conversionDb.getTableName("kicksTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -387,10 +381,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerBan> toLookup = new HashMap<String, PlayerBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT warned, warned_by, warn_reason, warn_time FROM " /*
-																										 * +
-																										 * playerIpsTable
-																										 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT warned, warned_by, warn_reason, warn_time FROM " + conversionDb.getTableName("warningsTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -474,10 +465,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerRecordBan> toLookup = new HashMap<String, PlayerRecordBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time FROM " /*
-																																					 * +
-																																					 * playerIpsTable
-																																					 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT muted, muted_by, mute_reason, mute_time, mute_expired_on, unmuted_by, unmuted_time FROM " + conversionDb.getTableName("mutesRecordTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -568,10 +556,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerBan> toLookup = new HashMap<String, PlayerBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT muted, muted_by, mute_reason, mute_time, mute_expires_on FROM " /*
-																														 * +
-																														 * playerIpsTable
-																														 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT muted, muted_by, mute_reason, mute_time, mute_expires_on FROM " + conversionDb.getTableName("mutesTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -654,10 +639,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerRecordBan> toLookup = new HashMap<String, PlayerRecordBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time FROM " /*
-																																					 * +
-																																					 * playerIpsTable
-																																					 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expired_on, unbanned_by, unbanned_time FROM " + conversionDb.getTableName("bansRecordTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -748,10 +730,7 @@ public class UUIDConvert {
 		HashMap<String, PlayerBan> toLookup = new HashMap<String, PlayerBan>();
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM " /*
-																														 * +
-																														 * playerIpsTable
-																														 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT banned, banned_by, ban_reason, ban_time, ban_expires_on FROM " + conversionDb.getTableName("bansTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -833,10 +812,7 @@ public class UUIDConvert {
 	private void convertPlayerIpTable(DatabaseConnection connection) {
 		DatabaseResults result;
 		try {
-			result = connection.compileStatement("SELECT player, ip, last_seen FROM " /*
-																					 * +
-																					 * playerIpsTable
-																					 */, null, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
+			result = connection.compileStatement("SELECT player, ip, last_seen FROM " + conversionDb.getTableName("playerIpsTable"), StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS).runQuery(null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
