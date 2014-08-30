@@ -337,6 +337,8 @@ public class BanManager extends BukkitPlugin {
 
 		if (!playerStorage.isTableExists())
 			TableUtils.createTable(localConn, playerConfig);
+		
+		playerStorage.setupConsole();
 
 		DatabaseTableConfig<PlayerBanData> playerBansConfig = (DatabaseTableConfig<PlayerBanData>) config.getLocalDb().getTable("playerBans");
 		playerBanStorage = new PlayerBanStorage(localConn, playerBansConfig);

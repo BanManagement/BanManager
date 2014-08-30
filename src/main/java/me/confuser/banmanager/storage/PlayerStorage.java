@@ -27,12 +27,14 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
 	public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
+	}
 
+	public void setupConsole() throws SQLException {
 		// Get the console
 		String name = plugin.getConsoleConfig().getName();
 		UUID uuid = plugin.getConsoleConfig().getUUID();
 
-		console = this.queryForId(UUIDUtils.toBytes(uuid));
+		console = queryForId(UUIDUtils.toBytes(uuid));
 
 		if (console == null) {
 			// Create it
@@ -119,7 +121,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 		QueryBuilder<PlayerData, byte[]> query = queryBuilder();
 		try {
 			query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
-			
+
 			Where<PlayerData, byte[]> where = query.where();
 
 			where.eq("ip", ip);
