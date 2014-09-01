@@ -128,7 +128,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
 			query.setWhere(where);
 
-			CloseableIterator<PlayerData> itr = query.iterator();
+			CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
 
 			while (itr.hasNext()) {
 				players.add(itr.next());
