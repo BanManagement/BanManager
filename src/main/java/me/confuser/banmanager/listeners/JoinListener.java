@@ -98,6 +98,10 @@ public class JoinListener extends Listeners<BanManager> {
 		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
 			public void run() {
+				// Handle quick disconnects
+				if (event.getPlayer() == null)
+					return;
+
 				CloseableIterator<PlayerWarnData> warnings;
 				try {
 					warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(plugin.getPlayerStorage().getOnline(event.getPlayer()));
