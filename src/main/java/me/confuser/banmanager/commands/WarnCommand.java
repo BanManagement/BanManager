@@ -26,6 +26,11 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 		if (args.length < 2)
 			return false;
 		
+		if (args[0].toLowerCase().equals(sender.getName())) {
+			sender.sendMessage(Message.getString("noSelf"));
+			return true;
+		}
+		
 		// Check if UUID vs name
 		final String playerName = args[0];
 		final boolean isUUID = playerName.length() > 16;

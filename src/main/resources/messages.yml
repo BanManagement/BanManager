@@ -64,3 +64,4 @@ messages:
   bminfoIpStatsSummary: 'This ip has been banned [bans] times'
   bminfoBanned: 'They are currently banned for [reason] by [actor] at [created] which expires in [expires]'
   bminfoMuted: 'They are currently muted for [reason] by [actor] at [created] which expires in [expires]'
+  noSelf: '&cYou cannot perform that action on yourself!'

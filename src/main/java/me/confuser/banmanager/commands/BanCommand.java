@@ -25,6 +25,11 @@ public class BanCommand extends BukkitCommand<BanManager> {
 	public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
 		if (args.length < 2)
 			return false;
+		
+		if (args[0].toLowerCase().equals(sender.getName())) {
+			sender.sendMessage(Message.getString("noSelf"));
+			return true;
+		}
 
 		// Check if UUID vs name
 		final String playerName = args[0];

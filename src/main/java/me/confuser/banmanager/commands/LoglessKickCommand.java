@@ -22,6 +22,11 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
 		if (args.length < 1)
 			return false;
 		
+		if (args[0].toLowerCase().equals(sender.getName())) {
+			sender.sendMessage(Message.getString("noSelf"));
+			return true;
+		}
+		
 		String playerName = args[0];
 		Player player = Bukkit.getPlayer(playerName);
 		
