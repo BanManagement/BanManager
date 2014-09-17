@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>me.confuser</groupId>
 			<artifactId>BukkitPluginUtil</artifactId>
-			<version>1.4.0</version>
+			<version>1.4.1</version>
 		</dependency>
 	</dependencies>
 	<properties>
