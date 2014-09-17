@@ -25,7 +25,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
 		if (args.length < 1)
 			return false;
 		
-		if (args[0].toLowerCase().equals(sender.getName())) {
+		if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
 			sender.sendMessage(Message.getString("noSelf"));
 			return true;
 		}
