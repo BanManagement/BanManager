@@ -36,6 +36,7 @@ messages:
   alreadyBanned: '&c[player] is already banned'
   kickNoReason: 'You have been kicked'
   kickReason: 'You have been kicked for [reason]'
+  playerKicked: '[player] has been kicked by [actor] for [reason]'
   banKick: 'You have been banned permanently for [reason]'
   playerBanned: '[player] has been permanently banned by [actor] for [reason]'
   invalidTime: '&cYour time length is invalid'
