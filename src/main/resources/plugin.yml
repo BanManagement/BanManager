@@ -27,7 +27,7 @@ commands:
   unban:
     description: "unban a player"
     usage: "/unban <username>"
-    aliases: [bmunban]
+    aliases: [bmunban, pardon]
     permission: bm.command.unban
   unbanall:
     description: "unban a player across multiple servers"
@@ -62,7 +62,7 @@ commands:
   unbanip:
     description: "unban's an ip"
     usage: "/unbanip <IP Address>"
-    aliases: [bmunbanip]
+    aliases: [bmunbanip, pardonip]
     permission: bm.command.unbanip
   unbanipall:
     description: "unban's an ip across multiple servers"
