@@ -9,17 +9,18 @@ import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 
 public class ReloadCommand extends BukkitCommand<BanManager> {
-	public ReloadCommand() {
-		super("bmreload");
-	}
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandName, String[] args) {
-		plugin.getDefaultConfig().load();
-		new MessagesConfig().load();
-		
-		sender.sendMessage(Message.get("configReloaded").toString());
-		
-		return true;
-	}
+      public ReloadCommand() {
+            super("bmreload");
+      }
+
+      @Override
+      public boolean onCommand(CommandSender sender, Command command, String commandName, String[] args) {
+            plugin.getConfiguration().load();
+            new MessagesConfig().load();
+
+            sender.sendMessage(Message.get("configReloaded").toString());
+
+            return true;
+      }
 }

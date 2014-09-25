@@ -4,19 +4,20 @@ import java.util.HashMap;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class ConvertDatabaseConfig extends DatabaseConfig {
-	private HashMap<String, String> tableNames = new HashMap<String, String>();
 
-	public ConvertDatabaseConfig(ConfigurationSection conf) {
-		super(conf);
+      private HashMap<String, String> tableNames = new HashMap<>();
 
-		for (String key : conf.getConfigurationSection("tables").getKeys(false)) {
-			String path = "tables." + key;
-			tableNames.put(key, conf.getString(path));
-		}
-	}
+      public ConvertDatabaseConfig(ConfigurationSection conf) {
+            super(conf);
 
-	public String getTableName(String key) {
-		return tableNames.get(key);
-	}
+            for (String key : conf.getConfigurationSection("tables").getKeys(false)) {
+                  String path = "tables." + key;
+                  tableNames.put(key, conf.getString(path));
+            }
+      }
+
+      public String getTableName(String key) {
+            return tableNames.get(key);
+      }
 
 }

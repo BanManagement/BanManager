@@ -21,125 +21,129 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
-	private BanManager plugin = BanManager.getPlugin();
-	private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<UUID, PlayerData>();
-	private PlayerData console;
 
-	public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
-		super(connection, tableConfig);
-	}
+      private BanManager plugin = BanManager.getPlugin();
+      private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
+      private PlayerData console;
 
-	public void setupConsole() throws SQLException {
-		// Get the console
-		String name = plugin.getConsoleConfig().getName();
-		UUID uuid = plugin.getConsoleConfig().getUUID();
+      public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
+            super(connection, tableConfig);
+      }
 
-		console = queryForId(UUIDUtils.toBytes(uuid));
+      public void setupConsole() throws SQLException {
+            // Get the console
+            String name = plugin.getConsoleConfig().getName();
+            UUID uuid = plugin.getConsoleConfig().getUUID();
 
-		if (console == null) {
-			// Create it
-			console = new PlayerData(uuid, name);
-			create(console);
-		}
-	}
+            console = queryForId(UUIDUtils.toBytes(uuid));
 
-	public void addOnline(PlayerData player) {
-		online.put(player.getUUID(), player);
-	}
+            if (console == null) {
+                  // Create it
+                  console = new PlayerData(uuid, name);
+                  create(console);
+            }
+      }
 
-	public void addOnline(PlayerData player, boolean save) throws SQLException {
-		createOrUpdate(player);
+      public void addOnline(PlayerData player) {
+            online.put(player.getUUID(), player);
+      }
 
-		addOnline(player);
-	}
+      public void addOnline(PlayerData player, boolean save) throws SQLException {
+            createOrUpdate(player);
 
-	public PlayerData removeOnline(UUID uuid) {
-		return online.remove(uuid);
-	}
+            addOnline(player);
+      }
 
-	public boolean isOnline(UUID uuid) {
-		return online.get(uuid) != null;
-	}
+      public PlayerData removeOnline(UUID uuid) {
+            return online.remove(uuid);
+      }
 
-	public boolean isOnline(Player player) {
-		return isOnline(player.getUniqueId());
-	}
+      public boolean isOnline(UUID uuid) {
+            return online.get(uuid) != null;
+      }
 
-	public PlayerData getOnline(UUID uuid) {
-		return online.get(uuid);
-	}
+      public boolean isOnline(Player player) {
+            return isOnline(player.getUniqueId());
+      }
 
-	public PlayerData getOnline(Player player) {
-		return getOnline(player.getUniqueId());
-	}
+      public PlayerData getOnline(UUID uuid) {
+            return online.get(uuid);
+      }
 
-	public PlayerData getConsole() {
-		return console;
-	}
+      public PlayerData getOnline(Player player) {
+            return getOnline(player.getUniqueId());
+      }
 
-	public PlayerData retrieve(String name, boolean mojangLookup) {
-		// Check if online first
-		for (PlayerData player : online.values()) {
-			if (player.getName().equalsIgnoreCase(name))
-				return player;
-		}
+      public PlayerData getConsole() {
+            return console;
+      }
 
-		try {
-			List<PlayerData> results = queryForEq("name", name);
-			if (results.size() == 1) {
-				return results.get(0);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+      public PlayerData retrieve(String name, boolean mojangLookup) {
+            // Check if online first
+            for (PlayerData player : online.values()) {
+                  if (player.getName().equalsIgnoreCase(name)) {
+                        return player;
+                  }
+            }
 
-		if (!mojangLookup)
-			return null;
+            try {
+                  List<PlayerData> results = queryForEq("name", name);
+                  if (results.size() == 1) {
+                        return results.get(0);
+                  }
+            } catch (SQLException e) {
+                  e.printStackTrace();
+            }
 
-		// UUID Lookup :(
-		try {
-			UUIDProfile player = UUIDUtils.getUUIDOf(name);
-			if (player == null)
-				return null;
+            if (!mojangLookup) {
+                  return null;
+            }
 
-			// Lets store for caching
-			PlayerData data = new PlayerData(player.getUUID(), player.getName());
+            // UUID Lookup :(
+            try {
+                  UUIDProfile player = UUIDUtils.getUUIDOf(name);
+                  if (player == null) {
+                        return null;
+                  }
 
-			create(data);
+                  // Lets store for caching
+                  PlayerData data = new PlayerData(player.getUuid(), player.getName());
 
-			return data;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+                  create(data);
 
-		return null;
-	}
+                  return data;
+            } catch (Exception e) {
+                  e.printStackTrace();
+            }
 
-	public List<PlayerData> getDuplicates(long ip) {
-		ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+            return null;
+      }
 
-		QueryBuilder<PlayerData, byte[]> query = queryBuilder();
-		try {
-			query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
+      public List<PlayerData> getDuplicates(long ip) {
+            ArrayList<PlayerData> players = new ArrayList<>();
 
-			Where<PlayerData, byte[]> where = query.where();
+            QueryBuilder<PlayerData, byte[]> query = queryBuilder();
+            try {
+                  query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
 
-			where.eq("ip", ip);
+                  Where<PlayerData, byte[]> where = query.where();
 
-			query.setWhere(where);
+                  where.eq("ip", ip);
 
-			CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
+                  query.setWhere(where);
 
-			while (itr.hasNext()) {
-				players.add(itr.next());
-			}
+                  CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
 
-			itr.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+                  while (itr.hasNext()) {
+                        players.add(itr.next());
+                  }
 
-		return players;
-	}
+                  itr.close();
+            } catch (SQLException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+            }
+
+            return players;
+      }
 }

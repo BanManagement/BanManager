@@ -7,49 +7,50 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class PlayerKickData {
-	@DatabaseField(generatedId = true)
-	private int id;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-	private PlayerData player;
-	@DatabaseField(canBeNull = false)
-	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-	private PlayerData actor;
-	// Should always be database time
-	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
-	private long created = System.currentTimeMillis() / 1000L;
 
-	PlayerKickData() {
+      @DatabaseField(generatedId = true)
+      private int id;
+      @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      private PlayerData player;
+      @DatabaseField(canBeNull = false)
+      private String reason;
+      @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      private PlayerData actor;
+      // Should always be database time
+      @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      private long created = System.currentTimeMillis() / 1000L;
 
-	}
+      PlayerKickData() {
 
-	public PlayerKickData(PlayerData player, PlayerData actor, String reason) {
-		this.player = player;
-		this.reason = reason;
-		this.actor = actor;
-	}
+      }
 
-	// Imports only!
-	public PlayerKickData(PlayerData player, PlayerData actor, String reason, long created) {
-		this.player = player;
-		this.reason = reason;
-		this.actor = actor;
-		this.created = created;
-	}
+      public PlayerKickData(PlayerData player, PlayerData actor, String reason) {
+            this.player = player;
+            this.reason = reason;
+            this.actor = actor;
+      }
 
-	public PlayerData getPlayer() {
-		return player;
-	}
+      // Imports only!
+      public PlayerKickData(PlayerData player, PlayerData actor, String reason, long created) {
+            this.player = player;
+            this.reason = reason;
+            this.actor = actor;
+            this.created = created;
+      }
 
-	public PlayerData getActor() {
-		return actor;
-	}
+      public PlayerData getPlayer() {
+            return player;
+      }
 
-	public String getReason() {
-		return reason;
-	}
+      public PlayerData getActor() {
+            return actor;
+      }
 
-	public long getCreated() {
-		return created;
-	}
+      public String getReason() {
+            return reason;
+      }
+
+      public long getCreated() {
+            return created;
+      }
 }

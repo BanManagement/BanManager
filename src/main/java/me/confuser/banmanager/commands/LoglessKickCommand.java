@@ -13,62 +13,63 @@ import org.bukkit.entity.Player;
 
 public class LoglessKickCommand extends BukkitCommand<BanManager> {
 
-	public LoglessKickCommand() {
-		super("nlkick");
-	}
+      public LoglessKickCommand() {
+            super("nlkick");
+      }
 
-	@Override
-	public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
-		if (args.length < 1)
-			return false;
-		
-		if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
-			sender.sendMessage(Message.getString("noSelf"));
-			return true;
-		}
-		
-		String playerName = args[0];
-		Player player = Bukkit.getPlayer(playerName);
-		
-		if (player == null) {
-			Message message = Message.get("playerOffline")
-				.set("[player]", playerName);
+      @Override
+      public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
+            if (args.length < 1) {
+                  return false;
+            }
 
-			sender.sendMessage(message.toString());
-			return true;
-		}
-		
-		String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length - 1) : "";
-		
-		PlayerData actor;
-		
-		if (sender instanceof Player) {
-			actor = plugin.getPlayerStorage().getOnline((Player) sender);
-		} else {
-			actor = plugin.getPlayerStorage().getConsole();
-		}
-		
-		Message kickMessage;
-		
-		if (reason.isEmpty()) {
-			kickMessage = Message.get("kickNoReason");
-		} else {
-			kickMessage = Message.get("kickReason").set("reason", reason);
-		}
-		
-		kickMessage
-			.set("displayName", player.getDisplayName())
-			.set("player", player.getName())
-			.set("actor", actor.getName());
-			
-		player.kickPlayer(kickMessage.toString());
-		
-		Message message = Message.get("playerKicked");
-		message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+            if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
+                  sender.sendMessage(Message.getString("noSelf"));
+                  return true;
+            }
 
-		plugin.getServer().broadcast(message.toString(), "bm.notify.kick");
+            String playerName = args[0];
+            Player player = Bukkit.getPlayer(playerName);
 
-		return true;
-	}
+            if (player == null) {
+                  Message message = Message.get("playerOffline")
+                          .set("[player]", playerName);
+
+                  sender.sendMessage(message.toString());
+                  return true;
+            }
+
+            String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length - 1) : "";
+
+            PlayerData actor;
+
+            if (sender instanceof Player) {
+                  actor = plugin.getPlayerStorage().getOnline((Player) sender);
+            } else {
+                  actor = plugin.getPlayerStorage().getConsole();
+            }
+
+            Message kickMessage;
+
+            if (reason.isEmpty()) {
+                  kickMessage = Message.get("kickNoReason");
+            } else {
+                  kickMessage = Message.get("kickReason").set("reason", reason);
+            }
+
+            kickMessage
+                    .set("displayName", player.getDisplayName())
+                    .set("player", player.getName())
+                    .set("actor", actor.getName());
+
+            player.kickPlayer(kickMessage.toString());
+
+            Message message = Message.get("playerKicked");
+            message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+
+            plugin.getServer().broadcast(message.toString(), "bm.notify.kick");
+
+            return true;
+      }
 
 }

@@ -9,64 +9,69 @@ import me.confuser.banmanager.data.IpBanRecord;
 import me.confuser.banmanager.storage.IpBanStorage;
 
 public class IpSync implements Runnable {
-	private BanManager plugin = BanManager.getPlugin();
-	private IpBanStorage banStorage = plugin.getIpBanStorage();
-	private long lastChecked = 0;
 
-	public IpSync() {
-		lastChecked = plugin.getSchedulesConfig().getLastChecked("ipBans");
-	}
+      private BanManager plugin = BanManager.getPlugin();
+      private IpBanStorage banStorage = plugin.getIpBanStorage();
+      private long lastChecked = 0;
 
-	@Override
-	public void run() {
-		// New/updated bans check
-		try {
-			newBans();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+      public IpSync() {
+            lastChecked = plugin.getSchedulesConfig().getLastChecked("ipBans");
+      }
 
-		// New unbans
-		try {
-			newUnbans();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+      @Override
+      public void run() {
+            // New/updated bans check
+            try {
+                  newBans();
+            } catch (SQLException e) {
+                  e.printStackTrace();
+            }
 
-		lastChecked = System.currentTimeMillis() / 1000L;
-		plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
-	}
+            // New unbans
+            try {
+                  newUnbans();
+            } catch (SQLException e) {
+                  e.printStackTrace();
+            }
 
-	private void newBans() throws SQLException {
+            lastChecked = System.currentTimeMillis() / 1000L;
+            plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
+      }
 
-		CloseableIterator<IpBanData> itr = banStorage.findBans(lastChecked);
+      private void newBans() throws SQLException {
 
-		while (itr.hasNext()) {
-			final IpBanData ban = itr.next();
+            CloseableIterator<IpBanData> itr = banStorage.findBans(lastChecked);
 
-			if (banStorage.isBanned(ban.getIp()) && ban.getUpdated() < lastChecked)
-				continue;
+            while (itr.hasNext()) {
+                  final IpBanData ban = itr.next();
 
-			banStorage.addBan(ban);
-		}
+                  if (banStorage.isBanned(ban.getIp()) && ban.getUpdated() < lastChecked) {
+                        continue;
+                  }
 
-		itr.close();
-	}
+                  banStorage.addBan(ban);
+            }
 
-	private void newUnbans() throws SQLException {
+            itr.close();
+            itr = null;
+      }
 
-		CloseableIterator<IpBanRecord> itr = plugin.getIpBanRecordStorage().findUnbans(lastChecked);
+      private void newUnbans() throws SQLException {
 
-		while (itr.hasNext()) {
-			final IpBanRecord ban = itr.next();
+            CloseableIterator<IpBanRecord> itr = plugin.getIpBanRecordStorage().findUnbans(lastChecked);
 
-			if (!banStorage.isBanned(ban.getIp()))
-				continue;
+            while (itr.hasNext()) {
+                  final IpBanRecord ban = itr.next();
 
-			banStorage.removeBan(ban.getIp());
+                  if (!banStorage.isBanned(ban.getIp())) {
+                        continue;
+                  }
 
-		}
+                  banStorage.removeBan(ban.getIp());
 
-		itr.close();
-	}
+            }
+
+            itr.close();
+            itr = null;
+      }
 }

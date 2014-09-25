@@ -6,16 +6,16 @@ import me.confuser.bukkitutil.configs.Config;
 
 public class MessagesConfig extends Config<BanManager> {
 
-	public MessagesConfig() {
-		super("messages.yml");
-	}
+      public MessagesConfig() {
+            super("messages.yml");
+      }
 
-	public void afterLoad() {
-		Message.load(conf);
-	}
+      public void afterLoad() {
+            Message.load(conf);
+      }
 
-    public void onSave() {
+      public void onSave() {
 
-    }
+      }
 
 }

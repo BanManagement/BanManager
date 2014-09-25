@@ -9,8 +9,8 @@ import me.confuser.bukkitutil.listeners.Listeners;
 
 public class LeaveListener extends Listeners<BanManager> {
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onLeave(PlayerQuitEvent event) {
-		plugin.getPlayerStorage().removeOnline(event.getPlayer().getUniqueId());
-	}
+      @EventHandler(priority = EventPriority.MONITOR)
+      public void onLeave(PlayerQuitEvent event) {
+            plugin.getPlayerStorage().removeOnline(event.getPlayer().getUniqueId());
+      }
 }
