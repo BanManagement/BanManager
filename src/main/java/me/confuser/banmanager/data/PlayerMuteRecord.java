@@ -4,6 +4,7 @@ import me.confuser.banmanager.storage.mysql.ByteArray;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import lombok.Getter;
 
 @DatabaseTable
 public class PlayerMuteRecord {
@@ -11,6 +12,7 @@ public class PlayerMuteRecord {
       @DatabaseField(generatedId = true)
       private int id;
       @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      @Getter
       private PlayerData player;
       @DatabaseField(canBeNull = false)
       private String reason;
@@ -48,9 +50,5 @@ public class PlayerMuteRecord {
 
             this.actor = actor;
             this.created = created;
-      }
-
-      public PlayerData getPlayer() {
-            return player;
       }
 }

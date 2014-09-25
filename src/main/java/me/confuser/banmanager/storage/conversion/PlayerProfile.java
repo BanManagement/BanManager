@@ -1,14 +1,19 @@
 package me.confuser.banmanager.storage.conversion;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
 public class PlayerProfile {
 
-      public String name;
-      public long ip;
-      public long lastSeen;
-
-      public PlayerProfile(String name, long ip, long lastSeen) {
-            this.name = name;
-            this.ip = ip;
-            this.lastSeen = lastSeen;
-      }
+      @Getter
+      @Setter
+      private String name;
+      @Getter
+      @Setter
+      private long ip;
+      @Getter
+      @Setter
+      private long lastSeen;
 }

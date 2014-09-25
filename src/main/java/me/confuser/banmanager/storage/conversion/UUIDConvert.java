@@ -322,7 +322,7 @@ public class UUIDConvert {
                         }
 
                         if (player == null) {
-					// Reuse classes for ease, and stop polluting with a class
+                              // Reuse classes for ease, and stop polluting with a class
                               // for each data type
                               toLookup.put(name.toLowerCase(), new PlayerBan(name, actor, reason, created, 0));
 
@@ -361,15 +361,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerBan ban = toLookup.remove(entry.getKey().toLowerCase());
 
-                  ban.name = entry.getKey();
+                  ban.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), ban.name);
+                        PlayerData player = new PlayerData(entry.getValue(), ban.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerKickStorage().create(new PlayerKickData(player, ban.actor, ban.reason, ban.created));
+                        plugin.getPlayerKickStorage().create(new PlayerKickData(player, ban.getActor(), ban.getReason(), ban.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(ban.name + " kick creation failed");
+                        plugin.getLogger().severe(ban.getName() + " kick creation failed");
                   }
             }
 
@@ -407,7 +407,7 @@ public class UUIDConvert {
                         }
 
                         if (player == null) {
-					// Reuse classes for ease, and stop polluting with a class
+                              // Reuse classes for ease, and stop polluting with a class
                               // for each data type
                               toLookup.put(name.toLowerCase(), new PlayerBan(name, actor, reason, created, 0));
 
@@ -446,15 +446,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerBan ban = toLookup.remove(entry.getKey().toLowerCase());
 
-                  ban.name = entry.getKey();
+                  ban.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), ban.name);
+                        PlayerData player = new PlayerData(entry.getValue(), ban.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerWarnStorage().create(new PlayerWarnData(player, ban.actor, ban.reason, true, ban.created));
+                        plugin.getPlayerWarnStorage().create(new PlayerWarnData(player, ban.getActor(), ban.getReason(), true, ban.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(ban.name + "warning creation failed");
+                        plugin.getLogger().severe(ban.getName() + "warning creation failed");
                   }
             }
 
@@ -538,15 +538,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerRecordBan record = toLookup.remove(entry.getKey().toLowerCase());
 
-                  record.name = entry.getKey();
+                  record.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), record.name);
+                        PlayerData player = new PlayerData(entry.getValue(), record.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerMuteRecordStorage().create(new PlayerMuteRecord(new PlayerMuteData(player, record.banActor, record.reason, record.expires, record.pastCreated), record.unbannedActor, record.created));
+                        plugin.getPlayerMuteRecordStorage().create(new PlayerMuteRecord(new PlayerMuteData(player, record.getBanActor(), record.getReason(), record.getExpires(), record.getPastCreated()), record.getUnbannedActor(), record.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(record.name + " mute record creation failed");
+                        plugin.getLogger().severe(record.getName() + " mute record creation failed");
                   }
             }
 
@@ -622,15 +622,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerBan ban = toLookup.remove(entry.getKey().toLowerCase());
 
-                  ban.name = entry.getKey();
+                  ban.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), ban.name);
+                        PlayerData player = new PlayerData(entry.getValue(), ban.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerBanStorage().create(new PlayerBanData(player, ban.actor, ban.reason, ban.expires, ban.created));
+                        plugin.getPlayerBanStorage().create(new PlayerBanData(player, ban.getActor(), ban.getReason(), ban.getExpires(), ban.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(ban.name + "ban creation failed");
+                        plugin.getLogger().severe(ban.getName() + "ban creation failed");
                   }
             }
 
@@ -714,15 +714,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerRecordBan record = toLookup.remove(entry.getKey().toLowerCase());
 
-                  record.name = entry.getKey();
+                  record.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), record.name);
+                        PlayerData player = new PlayerData(entry.getValue(), record.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerBanRecordStorage().create(new PlayerBanRecord(new PlayerBanData(player, record.banActor, record.reason, record.expires, record.pastCreated), record.unbannedActor, record.created));
+                        plugin.getPlayerBanRecordStorage().create(new PlayerBanRecord(new PlayerBanData(player, record.getBanActor(), record.getReason(), record.getExpires(), record.getPastCreated()), record.getUnbannedActor(), record.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(record.name + "ban record creation failed");
+                        plugin.getLogger().severe(record.getName() + "ban record creation failed");
                   }
             }
 
@@ -798,15 +798,15 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerBan ban = toLookup.remove(entry.getKey().toLowerCase());
 
-                  ban.name = entry.getKey();
+                  ban.setName(entry.getKey());
 
                   try {
-                        PlayerData player = new PlayerData(entry.getValue(), ban.name);
+                        PlayerData player = new PlayerData(entry.getValue(), ban.getName());
                         playerStorage.create(player);
-                        plugin.getPlayerBanStorage().create(new PlayerBanData(player, ban.actor, ban.reason, ban.expires, ban.created));
+                        plugin.getPlayerBanStorage().create(new PlayerBanData(player, ban.getActor(), ban.getReason(), ban.getExpires(), ban.getCreated()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(ban.name + "ban creation failed");
+                        plugin.getLogger().severe(ban.getName() + "ban creation failed");
                   }
             }
 
@@ -862,13 +862,13 @@ public class UUIDConvert {
             for (Entry<String, UUID> entry : uuids.entrySet()) {
                   PlayerProfile profile = profiles.remove(entry.getKey().toLowerCase());
 
-                  profile.name = entry.getKey();
+                  profile.setName(entry.getKey());
 
                   try {
-                        playerStorage.create(new PlayerData(entry.getValue(), profile.name, profile.ip, profile.lastSeen));
+                        playerStorage.create(new PlayerData(entry.getValue(), profile.getName(), profile.getIp(), profile.getLastSeen()));
                   } catch (SQLException e) {
                         e.printStackTrace();
-                        plugin.getLogger().severe(profile.name + " creation failed");
+                        plugin.getLogger().severe(profile.getName() + " creation failed");
                   }
             }
 
