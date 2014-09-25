@@ -22,7 +22,7 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	private BanManager plugin = BanManager.getPlugin();
-	private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<UUID, PlayerData>();
+	private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
 	private PlayerData console;
 
 	public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
@@ -116,7 +116,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	}
 
 	public List<PlayerData> getDuplicates(long ip) {
-		ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+		ArrayList<PlayerData> players = new ArrayList<>();
 
 		QueryBuilder<PlayerData, byte[]> query = queryBuilder();
 		try {

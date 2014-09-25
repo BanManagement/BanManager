@@ -4,7 +4,7 @@ import java.util.HashMap;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class ConvertDatabaseConfig extends DatabaseConfig {
-	private HashMap<String, String> tableNames = new HashMap<String, String>();
+	private HashMap<String, String> tableNames = new HashMap<>();
 
 	public ConvertDatabaseConfig(ConfigurationSection conf) {
 		super(conf);

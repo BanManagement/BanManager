@@ -2,8 +2,6 @@ package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
 
-import me.confuser.banmanager.BanManager;
-
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,13 +15,13 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
+import me.confuser.banmanager.BanManager;
 
 /**
  * Based on UUIDFetcher by evilmidget38
  */
 public class UUIDUtils implements Callable<Map<String, UUID>> {
-	private Logger logger = BanManager.getPlugin().getLogger();
+
     private static final double PROFILES_PER_REQUEST = 100;
     private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
     private final JSONParser jsonParser = new JSONParser();
@@ -45,8 +43,8 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     }
 
     public Map<String, UUID> call() throws Exception {
-    	logger.info("Requesting UUIDs for " + StringUtils.join(names, ','));
-        Map<String, UUID> uuidMap = new HashMap<String, UUID>();
+    	 BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
+        Map<String, UUID> uuidMap = new HashMap<>();
         int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
         for (int i = 0; i < requests; i++) {
             HttpURLConnection connection = createConnection();

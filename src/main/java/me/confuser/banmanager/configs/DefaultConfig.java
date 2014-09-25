@@ -10,7 +10,7 @@ import me.confuser.bukkitutil.configs.Config;
 public class DefaultConfig extends Config<BanManager> {
 	private DatabaseConfig localDb;
 	private DatabaseConfig externalDb;
-	private HashSet<String> mutedBlacklistCommands = new HashSet<String>();
+	private HashSet<String> mutedBlacklistCommands = new HashSet<>();
 	private boolean dupeIpCheck = true;
 	private boolean logKicks = false;
 	private boolean debug = false;

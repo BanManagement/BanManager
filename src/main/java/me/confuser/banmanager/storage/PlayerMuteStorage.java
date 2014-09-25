@@ -22,7 +22,7 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
-	private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<UUID, PlayerMuteData>();
+	private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<>();
 
 	public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteData> tableConfig) throws SQLException {
 		super(connection, tableConfig);

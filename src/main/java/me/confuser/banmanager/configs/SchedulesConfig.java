@@ -6,8 +6,8 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.configs.Config;
 
 public class SchedulesConfig extends Config<BanManager> {
-	private HashMap<String, Integer> schedules = new HashMap<String, Integer>(6);
-	private HashMap<String, Long> lastChecked = new HashMap<String, Long>(4);
+	private HashMap<String, Integer> schedules = new HashMap<>(6);
+	private HashMap<String, Long> lastChecked = new HashMap<>(4);
 
 	public SchedulesConfig() {
 		super("schedules.yml");
