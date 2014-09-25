@@ -326,7 +326,8 @@ public class BanManager extends BukkitPlugin {
 		// only keep the connections open for 5 minutes
 		conversionConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
 		conversionConn.setDatabaseType(new MySQLDatabase());
-
+            conversionConn.initialize();
+            
 		return true;
 	}
 
