@@ -6,78 +6,79 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class PlayerMuteData {
-	@DatabaseField(generatedId = true)
-	private int id;
-	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-	private PlayerData player;
-	@DatabaseField(canBeNull = false)
-	private String reason;
-	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-	private PlayerData actor;
 
-	// Should always be database time
-	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
-	private long created = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
-	private long updated = System.currentTimeMillis() / 1000L;
-	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
-	private long expires = 0;
+      @DatabaseField(generatedId = true)
+      private int id;
+      @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      private PlayerData player;
+      @DatabaseField(canBeNull = false)
+      private String reason;
+      @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      private PlayerData actor;
 
-	PlayerMuteData() {
+      // Should always be database time
+      @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      private long created = System.currentTimeMillis() / 1000L;
+      @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      private long updated = System.currentTimeMillis() / 1000L;
+      @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      private long expires = 0;
 
-	}
+      PlayerMuteData() {
 
-	public PlayerMuteData(PlayerData player, PlayerData actor, String reason) {
-		this.player = player;
-		this.reason = reason;
-		this.actor = actor;
-	}
+      }
 
-	public PlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires) {
-		this.player = player;
-		this.reason = reason;
-		this.actor = actor;
-		this.expires = expires;
-	}
+      public PlayerMuteData(PlayerData player, PlayerData actor, String reason) {
+            this.player = player;
+            this.reason = reason;
+            this.actor = actor;
+      }
 
-	// Only use for imports!
-	public PlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires, long created) {
-		this.player = player;
-		this.reason = reason;
-		this.actor = actor;
-		this.expires = expires;
-		this.created = created;
-	}
+      public PlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires) {
+            this.player = player;
+            this.reason = reason;
+            this.actor = actor;
+            this.expires = expires;
+      }
 
-	public PlayerData getPlayer() {
-		return player;
-	}
+      // Only use for imports!
+      public PlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires, long created) {
+            this.player = player;
+            this.reason = reason;
+            this.actor = actor;
+            this.expires = expires;
+            this.created = created;
+      }
 
-	public PlayerData getActor() {
-		return actor;
-	}
+      public PlayerData getPlayer() {
+            return player;
+      }
 
-	public long getExpires() {
-		return expires;
-	}
+      public PlayerData getActor() {
+            return actor;
+      }
 
-	public String getReason() {
-		return reason;
-	}
+      public long getExpires() {
+            return expires;
+      }
 
-	public long getCreated() {
-		return created;
-	}
+      public String getReason() {
+            return reason;
+      }
 
-	public boolean hasExpired() {
-		return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
-	}
+      public long getCreated() {
+            return created;
+      }
 
-	public long getUpdated() {
-		return updated;
-	}
-	
-	public int getId() {
-		return id;
-	}
+      public boolean hasExpired() {
+            return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
+      }
+
+      public long getUpdated() {
+            return updated;
+      }
+
+      public int getId() {
+            return id;
+      }
 }

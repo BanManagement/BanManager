@@ -16,72 +16,74 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "players", daoClass = PlayerStorage.class)
 public class PlayerData {
-	@DatabaseField(id = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-	private byte[] id;
-	@DatabaseField(index = true, width = 16, columnDefinition = "VARCHAR(16) NOT NULL")
-	private String name;
-	@DatabaseField(index = true, columnDefinition = "INT UNSIGNED NOT NULL")
-	private long ip;
-	@DatabaseField(columnDefinition = "INT(10) NOT NULL")
-	private long lastSeen = System.currentTimeMillis() / 1000L;
 
-	private UUID uuid = null;
+      @DatabaseField(id = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      private byte[] id;
+      @DatabaseField(index = true, width = 16, columnDefinition = "VARCHAR(16) NOT NULL")
+      private String name;
+      @DatabaseField(index = true, columnDefinition = "INT UNSIGNED NOT NULL")
+      private long ip;
+      @DatabaseField(columnDefinition = "INT(10) NOT NULL")
+      private long lastSeen = System.currentTimeMillis() / 1000L;
 
-	PlayerData() {
+      private UUID uuid = null;
 
-	}
+      PlayerData() {
 
-	public PlayerData(Player player) {
-		uuid = player.getUniqueId();
-		id = UUIDUtils.toBytes(uuid);
-		name = player.getName();
-		ip = IPUtils.toLong(player.getAddress().getAddress());
-	}
+      }
 
-	public PlayerData(UUID uuid, String name) {
-		this.uuid = uuid;
-		this.id = UUIDUtils.toBytes(uuid);
-		this.name = name;
-		this.ip = IPUtils.toLong("127.0.0.1");
-		this.lastSeen = System.currentTimeMillis() / 1000L;
-	}
+      public PlayerData(Player player) {
+            uuid = player.getUniqueId();
+            id = UUIDUtils.toBytes(uuid);
+            name = player.getName();
+            ip = IPUtils.toLong(player.getAddress().getAddress());
+      }
 
-	public PlayerData(UUID uuid, String name, InetAddress ip) {
-		this.uuid = uuid;
-		this.id = UUIDUtils.toBytes(uuid);
-		this.name = name;
-		this.ip = IPUtils.toLong(ip);
-		this.lastSeen = System.currentTimeMillis() / 1000L;
-	}
+      public PlayerData(UUID uuid, String name) {
+            this.uuid = uuid;
+            this.id = UUIDUtils.toBytes(uuid);
+            this.name = name;
+            this.ip = IPUtils.toLong("127.0.0.1");
+            this.lastSeen = System.currentTimeMillis() / 1000L;
+      }
 
-	public PlayerData(UUID uuid, String name, long ip, long lastSeen) {
-		this.uuid = uuid;
-		this.id = UUIDUtils.toBytes(uuid);
-		this.name = name;
-		this.ip = ip;
-		this.lastSeen = lastSeen;
-	}
+      public PlayerData(UUID uuid, String name, InetAddress ip) {
+            this.uuid = uuid;
+            this.id = UUIDUtils.toBytes(uuid);
+            this.name = name;
+            this.ip = IPUtils.toLong(ip);
+            this.lastSeen = System.currentTimeMillis() / 1000L;
+      }
 
-	public UUID getUUID() {
-		if (uuid == null)
-			uuid = UUIDUtils.fromBytes(id);
+      public PlayerData(UUID uuid, String name, long ip, long lastSeen) {
+            this.uuid = uuid;
+            this.id = UUIDUtils.toBytes(uuid);
+            this.name = name;
+            this.ip = ip;
+            this.lastSeen = lastSeen;
+      }
 
-		return uuid;
-	}
+      public UUID getUUID() {
+            if (uuid == null) {
+                  uuid = UUIDUtils.fromBytes(id);
+            }
 
-	public String getName() {
-		return name;
-	}
+            return uuid;
+      }
 
-	public long getIP() {
-		return ip;
-	}
+      public String getName() {
+            return name;
+      }
 
-	public long getLastSeen() {
-		return lastSeen;
-	}
+      public long getIP() {
+            return ip;
+      }
 
-	public Player getPlayer() {
-		return Bukkit.getPlayer(uuid);
-	}
+      public long getLastSeen() {
+            return lastSeen;
+      }
+
+      public Player getPlayer() {
+            return Bukkit.getPlayer(uuid);
+      }
 }
