@@ -9,6 +9,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import com.j256.ormlite.dao.CloseableIterator;
+
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
@@ -53,8 +55,8 @@ public class JoinListener extends Listeners<BanManager> {
 			message.set("reason", data.getReason());
 			message.set("actor", data.getActor().getName());
 			
-                  event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-                  event.setKickMessage(message.toString());
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message.toString());
+			
 			return;
 		}
 		if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
@@ -105,11 +107,13 @@ public class JoinListener extends Listeners<BanManager> {
 				if (event.getPlayer() == null || !event.getPlayer().isOnline())
 					return;
 
-				List<PlayerWarnData> warnings;
+				CloseableIterator<PlayerWarnData> warnings;
 				try {
 					warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(plugin.getPlayerStorage().getOnline(event.getPlayer()));
 					
-					for (PlayerWarnData warning : warnings) {
+					while (warnings.hasNext()) {
+						PlayerWarnData warning = warnings.next();
+						
 						Message.get("warned")
 							.set("displayName", event.getPlayer().getDisplayName())
 							.set("player", event.getPlayer().getName())
@@ -122,7 +126,7 @@ public class JoinListener extends Listeners<BanManager> {
 						plugin.getPlayerWarnStorage().update(warning);
 					}
 					
-					warnings = null;
+					warnings.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

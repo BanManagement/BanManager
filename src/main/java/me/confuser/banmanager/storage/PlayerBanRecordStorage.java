@@ -8,12 +8,11 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer> {
 
@@ -25,9 +24,9 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
 		create(new PlayerBanRecord(ban, actor));
 	}
 	
-	public List<PlayerBanRecord> findUnbans(long fromTime) throws SQLException {
+	public CloseableIterator<PlayerBanRecord> findUnbans(long fromTime) throws SQLException {
 		if (fromTime == 0)
-			return new ArrayList<>();
+			return iterator();
 		
 		long checkTime = fromTime + DateUtils.getTimeDiff();
 		
@@ -38,7 +37,7 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
 		
 		query.setWhere(where);
 		
-		return query.query();
+		return query.iterator();
 		
 	}
 	

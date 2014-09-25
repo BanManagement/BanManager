@@ -14,6 +14,7 @@ import me.confuser.banmanager.util.UUIDProfile;
 import me.confuser.banmanager.util.UUIDUtils;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -21,7 +22,7 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	private BanManager plugin = BanManager.getPlugin();
-	private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<UUID, PlayerData>();
 	private PlayerData console;
 
 	public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
@@ -115,7 +116,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 	}
 
 	public List<PlayerData> getDuplicates(long ip) {
-		ArrayList<PlayerData> players = new ArrayList<>();
+		ArrayList<PlayerData> players = new ArrayList<PlayerData>();
 
 		QueryBuilder<PlayerData, byte[]> query = queryBuilder();
 		try {
@@ -127,13 +128,13 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
 			query.setWhere(where);
 
-			List<PlayerData> player_datas = query.limit(300L).query();
+			CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
 
-			for (PlayerData player_data : player_datas) {
-				players.add(player_data);
+			while (itr.hasNext()) {
+				players.add(itr.next());
 			}
 
-			player_datas = null;
+			itr.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

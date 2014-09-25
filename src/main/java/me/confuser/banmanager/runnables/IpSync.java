@@ -2,7 +2,7 @@ package me.confuser.banmanager.runnables;
 
 import java.sql.SQLException;
 
-import java.util.List;
+import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
@@ -34,30 +34,31 @@ public class IpSync implements Runnable {
 		}
 
 		lastChecked = System.currentTimeMillis() / 1000L;
-	           plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
-      }
+		plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
+	}
 
-      private void newBans() throws SQLException {
+	private void newBans() throws SQLException {
 
-            List<IpBanData> ip_ban_data = banStorage.findBans(lastChecked);
+		CloseableIterator<IpBanData> itr = banStorage.findBans(lastChecked);
 
-            for (IpBanData ban : ip_ban_data) {
+		while (itr.hasNext()) {
+			final IpBanData ban = itr.next();
 
-                  if (banStorage.isBanned(ban.getIp()) && ban.getUpdated() < lastChecked) {
-                        continue;
-                  }
+			if (banStorage.isBanned(ban.getIp()) && ban.getUpdated() < lastChecked)
+				continue;
 
-                  banStorage.addBan(ban);
-            }
+			banStorage.addBan(ban);
+		}
 
-            ip_ban_data = null;
+		itr.close();
 	}
 
 	private void newUnbans() throws SQLException {
 
-		List<IpBanRecord> ip_bans = plugin.getIpBanRecordStorage().findUnbans(lastChecked);
+		CloseableIterator<IpBanRecord> itr = plugin.getIpBanRecordStorage().findUnbans(lastChecked);
 
-		for (IpBanRecord ban : ip_bans) {
+		while (itr.hasNext()) {
+			final IpBanRecord ban = itr.next();
 
 			if (!banStorage.isBanned(ban.getIp()))
 				continue;
@@ -66,6 +67,6 @@ public class IpSync implements Runnable {
 
 		}
 
-		ip_bans = null;
+		itr.close();
 	}
 }

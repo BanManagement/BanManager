@@ -1,8 +1,8 @@
 package me.confuser.banmanager.runnables;
 
 import java.sql.SQLException;
-import java.util.List;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.data.PlayerMuteRecord;
@@ -39,9 +39,11 @@ public class MuteSync implements Runnable {
 
 	private void newMutes() throws SQLException {
 		
-		List<PlayerMuteData> player_mute_data = muteStorage.findMutes(lastChecked);
+		CloseableIterator<PlayerMuteData> itr = muteStorage.findMutes(lastChecked);
 		
-		for (PlayerMuteData mute : player_mute_data) {
+		while(itr.hasNext()) {
+			final PlayerMuteData mute = itr.next();
+			
 			if (muteStorage.isMuted(mute.getPlayer().getUUID()) && mute.getUpdated() < lastChecked)
 				continue;
 			
@@ -49,14 +51,15 @@ public class MuteSync implements Runnable {
 
 		}
 		
-		player_mute_data = null;
+		itr.close();
 	}
 	
 	private void newUnmutes() throws SQLException {
 		
-		List<PlayerMuteRecord> player_mute_records = plugin.getPlayerMuteRecordStorage().findUnmutes(lastChecked);
+		CloseableIterator<PlayerMuteRecord> itr = plugin.getPlayerMuteRecordStorage().findUnmutes(lastChecked);
 		
-		for (PlayerMuteRecord mute : player_mute_records) {
+		while(itr.hasNext()) {
+			final PlayerMuteRecord mute = itr.next();
 			
 			if (!muteStorage.isMuted(mute.getPlayer().getUUID()))
 				continue;
@@ -65,6 +68,6 @@ public class MuteSync implements Runnable {
 
 		}
 		
-		player_mute_records = null;
+		itr.close();
 	}
 }
