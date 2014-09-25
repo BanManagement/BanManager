@@ -112,11 +112,18 @@ public class BanManager extends BukkitPlugin {
             }
       }
 
+      @Override
       public void onDisable() {
-            localConn.closeQuietly();
+            if (localConn != null) {
+                  localConn.closeQuietly();
+            }
 
             if (externalConn != null) {
                   externalConn.closeQuietly();
+            }
+            
+            if (conversionConn != null) {
+                  conversionConn.closeQuietly();
             }
       }
 
@@ -384,19 +391,19 @@ public class BanManager extends BukkitPlugin {
 
       @Override
       public void setupRunnables() {
-            if (schedulesConfig.getSchedule("playerBans") != 0) {
+            if (schedulesConfig.getSchedule("playerBans") > 0) {
                   getServer().getScheduler().runTaskTimerAsynchronously(plugin, new BanSync(), schedulesConfig.getSchedule("playerBans"), schedulesConfig.getSchedule("playerBans"));
             }
 
-            if (schedulesConfig.getSchedule("playerMutes") != 0) {
+            if (schedulesConfig.getSchedule("playerMutes") > 0) {
                   getServer().getScheduler().runTaskTimerAsynchronously(plugin, new MuteSync(), schedulesConfig.getSchedule("playerMutes"), schedulesConfig.getSchedule("playerMutes"));
             }
 
-            if (schedulesConfig.getSchedule("ipBans") != 0) {
+            if (schedulesConfig.getSchedule("ipBans") > 0) {
                   getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans"), schedulesConfig.getSchedule("ipBans"));
             }
 
-            if (schedulesConfig.getSchedule("expiresCheck") != 0) {
+            if (schedulesConfig.getSchedule("expiresCheck") > 0) {
                   getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck"), schedulesConfig.getSchedule("expiresCheck"));
             }
 
