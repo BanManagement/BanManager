@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.j256.ormlite.dao.GenericRawResults;
+import lombok.Getter;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.Message;
@@ -15,6 +16,7 @@ import me.confuser.bukkitutil.Message;
 public class DateUtils {
 
       private static BanManager plugin = BanManager.getPlugin();
+      @Getter
       private static long timeDiff = 0;
 
       public static String formatDifference(long time) {
@@ -143,10 +145,6 @@ public class DateUtils {
                   c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
             }
             return c.getTimeInMillis() / 1000L;
-      }
-
-      public static long getTimeDiff() {
-            return timeDiff;
       }
 
       public static long findTimeDiff() throws SQLException {

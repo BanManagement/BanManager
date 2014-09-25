@@ -1,16 +1,14 @@
 package me.confuser.banmanager.events;
 
+import lombok.Getter;
 import me.confuser.banmanager.data.PlayerMuteData;
 
 public class PlayerMuteEvent extends CustomCancellableEvent {
 
-      private PlayerMuteData data;
+      @Getter
+      private PlayerMuteData mute;
 
-      public PlayerMuteEvent(PlayerMuteData data) {
-            this.data = data;
-      }
-
-      public PlayerMuteData getMute() {
-            return data;
+      public PlayerMuteEvent(PlayerMuteData mute) {
+            this.mute = mute;
       }
 }

@@ -1,17 +1,15 @@
 package me.confuser.banmanager.events;
 
+import lombok.Getter;
 import me.confuser.banmanager.data.PlayerBanData;
 
 public class PlayerBanEvent extends CustomCancellableEvent {
 
-      private PlayerBanData data;
+      @Getter
+      private PlayerBanData ban;
 
-      public PlayerBanEvent(PlayerBanData data) {
-            this.data = data;
-      }
-
-      public PlayerBanData getBan() {
-            return data;
+      public PlayerBanEvent(PlayerBanData ban) {
+            this.ban = ban;
       }
 
 }
