@@ -54,6 +54,7 @@ public class MuteSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 
       private void newUnmutes() throws SQLException {
@@ -72,5 +73,6 @@ public class MuteSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 }

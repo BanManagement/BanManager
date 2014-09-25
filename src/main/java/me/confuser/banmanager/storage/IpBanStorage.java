@@ -24,7 +24,7 @@ import me.confuser.banmanager.util.IPUtils;
 public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
       private BanManager plugin = BanManager.getPlugin();
-      private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<Long, IpBanData>();
+      private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<>();
 
       public IpBanStorage(ConnectionSource connection, DatabaseTableConfig<IpBanData> tableConfig) throws SQLException {
             super(connection, tableConfig);

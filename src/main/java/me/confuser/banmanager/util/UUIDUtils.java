@@ -108,7 +108,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
       public static UUIDProfile getUUIDOf(String name) throws Exception {
             Map<String, UUID> players = new UUIDUtils(Arrays.asList(name)).call();
 
-            if (players.size() == 0) {
+            if (players.isEmpty()) {
                   return null;
             }
 

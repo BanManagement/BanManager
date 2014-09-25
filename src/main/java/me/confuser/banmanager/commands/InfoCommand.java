@@ -73,7 +73,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
                   return;
             }
 
-            ArrayList<String> messages = new ArrayList<String>();
+            ArrayList<String> messages = new ArrayList<>();
 
             long banTotal = plugin.getPlayerBanRecordStorage().getCount(player);
             long muteTotal = plugin.getPlayerMuteRecordStorage().getCount(player);

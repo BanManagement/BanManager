@@ -77,6 +77,7 @@ public class BanSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 
       private void newUnbans() throws SQLException {
@@ -95,5 +96,6 @@ public class BanSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 }

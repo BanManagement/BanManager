@@ -55,8 +55,8 @@ public class JoinListener extends Listeners<BanManager> {
                   message.set("reason", data.getReason());
                   message.set("actor", data.getActor().getName());
 
-                  event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message.toString());
-
+                  event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                  event.setKickMessage(message.toString()); 
                   return;
             }
             if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
@@ -128,6 +128,7 @@ public class JoinListener extends Listeners<BanManager> {
                               }
 
                               warnings.close();
+                              warnings = null;
                         } catch (SQLException e) {
                               e.printStackTrace();
                         }

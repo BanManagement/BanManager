@@ -20,7 +20,7 @@ public class PlayerKickData {
       @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
       private long created = System.currentTimeMillis() / 1000L;
 
-      PlayerKickData() {
+      public PlayerKickData() {
 
       }
 

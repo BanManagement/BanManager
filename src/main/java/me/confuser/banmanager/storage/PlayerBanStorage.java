@@ -25,7 +25,7 @@ import me.confuser.banmanager.util.DateUtils;
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
       private BanManager plugin = BanManager.getPlugin();
-      private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<UUID, PlayerBanData>();
+      private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<>();
 
       public PlayerBanStorage(ConnectionSource connection, DatabaseTableConfig<PlayerBanData> tableConfig) throws SQLException {
             super(connection, tableConfig);

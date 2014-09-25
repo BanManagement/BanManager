@@ -53,6 +53,7 @@ public class IpSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 
       private void newUnbans() throws SQLException {
@@ -71,5 +72,6 @@ public class IpSync implements Runnable {
             }
 
             itr.close();
+            itr = null;
       }
 }
