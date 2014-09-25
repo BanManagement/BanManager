@@ -286,46 +286,51 @@ public class BanManager extends BukkitPlugin {
 	}
 
 	public boolean setupConnections() throws SQLException {
-		DatabaseConfig localDb = config.getLocalDb();
+                DatabaseConfig localDb = config.getLocalDb();
 
-		if (!localDb.isEnabled()) {
-			getLogger().warning("Local Database is not enabled, disabling plugin");
-			plugin.getPluginLoader().disablePlugin(this);
-			return false;
-		}
+                if (!localDb.isEnabled()) {
+                        getLogger().warning("Local Database is not enabled, disabling plugin");
+                        plugin.getPluginLoader().disablePlugin(this);
+                        return false;
+                }
 
-		localConn = new JdbcPooledConnectionSource(localDb.getJDBCUrl());
+                localConn = new JdbcPooledConnectionSource(localDb.getJDBCUrl());
 
-		if (!localDb.getUser().isEmpty())
-			localConn.setUsername(localDb.getUser());
-		if (!localDb.getPassword().isEmpty())
-			localConn.setPassword(localDb.getPassword());
+                if (!localDb.getUser().isEmpty()) {
+                        localConn.setUsername(localDb.getUser());
+                }
+                if (!localDb.getPassword().isEmpty()) {
+                        localConn.setPassword(localDb.getPassword());
+                }
 
-		localConn.setMaxConnectionsFree(localDb.getMaxConnections());
-		localConn.setTestBeforeGet(true);
-		// only keep the connections open for 5 minutes
-		localConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
-		localConn.setDatabaseType(new MySQLDatabase());
+                localConn.setMaxConnectionsFree(localDb.getMaxConnections());
+                localConn.setTestBeforeGet(false);
+                localConn.setMaxConnectionAgeMillis(Long.MAX_VALUE);
+                localConn.setDatabaseType(new MySQLDatabase());
+                localConn.setCheckConnectionsEveryMillis(Long.MAX_VALUE);
+                localConn.initialize();
 
-		localConn.initialize();
+                if (!config.getConversionDb().isEnabled()) {
+                        return true;
+                }
 
-		if (!config.getConversionDb().isEnabled())
-			return true;
+                DatabaseConfig conversionDb = config.getConversionDb();
 
-		DatabaseConfig conversionDb = config.getConversionDb();
+                conversionConn = new JdbcPooledConnectionSource(conversionDb.getJDBCUrl());
 
-		conversionConn = new JdbcPooledConnectionSource(conversionDb.getJDBCUrl());
+                if (!conversionDb.getUser().isEmpty()) {
+                        conversionConn.setUsername(conversionDb.getUser());
+                }
+                if (!conversionDb.getPassword().isEmpty()) {
+                        conversionConn.setPassword(conversionDb.getPassword());
+                }
 
-		if (!conversionDb.getUser().isEmpty())
-			conversionConn.setUsername(conversionDb.getUser());
-		if (!conversionDb.getPassword().isEmpty())
-			conversionConn.setPassword(conversionDb.getPassword());
-
-		conversionConn.setMaxConnectionsFree(conversionDb.getMaxConnections());
-		conversionConn.setTestBeforeGet(true);
-		// only keep the connections open for 5 minutes
-		conversionConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
-		conversionConn.setDatabaseType(new MySQLDatabase());
+                conversionConn.setMaxConnectionsFree(conversionDb.getMaxConnections());
+                conversionConn.setTestBeforeGet(false);
+                conversionConn.setMaxConnectionAgeMillis(Long.MAX_VALUE);
+                conversionConn.setDatabaseType(new MySQLDatabase());
+                conversionConn.setCheckConnectionsEveryMillis(Long.MAX_VALUE);
+                conversionConn.initialize();
 
 		return true;
 	}
