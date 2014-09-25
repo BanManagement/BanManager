@@ -63,6 +63,7 @@ public class BanManager extends BukkitPlugin {
       @Getter
       private SchedulesConfig schedulesConfig;
 
+      @Override
       public void onEnable() {
             plugin = this;
 
@@ -121,7 +122,7 @@ public class BanManager extends BukkitPlugin {
             if (externalConn != null) {
                   externalConn.closeQuietly();
             }
-            
+
             if (conversionConn != null) {
                   conversionConn.closeQuietly();
             }
@@ -407,7 +408,7 @@ public class BanManager extends BukkitPlugin {
                   getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck"), schedulesConfig.getSchedule("expiresCheck"));
             }
 
-            /* Rgus task should be ran last with a 1L offset as it gets modified above. */
+            /* This task should be ran last with a 1L offset as it gets modified above. */
             getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), (schedulesConfig.getSchedule("saveLastChecked") + 1L), (schedulesConfig.getSchedule("saveLastChecked") + 1L));
       }
 }

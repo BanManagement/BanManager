@@ -8,7 +8,7 @@ public class IpUnbanEvent extends CustomCancellableEvent {
       @Getter
       private IpBanData ban;
 
-      public IpUnbanEvent(IpBanData bam) {
+      public IpUnbanEvent(IpBanData ban) {
             this.ban = ban;
       }
 }

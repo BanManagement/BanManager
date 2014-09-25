@@ -132,7 +132,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
                           .toString());
             }
 
-		// TODO Show last warning
+            // TODO Show last warning
             for (String message : messages) {
                   sender.sendMessage(message);
             }

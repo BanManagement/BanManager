@@ -3,25 +3,33 @@ package me.confuser.banmanager.data;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import lombok.Getter;
 
 @DatabaseTable
 public class PlayerBanData {
 
       @DatabaseField(generatedId = true)
+      @Getter
       private int id;
       @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      @Getter
       private PlayerData player;
       @DatabaseField(canBeNull = false)
+      @Getter
       private String reason;
+      @Getter
       @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
       private PlayerData actor;
 
       // Should always be database time
       @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      @Getter
       private long created = System.currentTimeMillis() / 1000L;
       @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      @Getter
       private long updated = System.currentTimeMillis() / 1000L;
       @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+      @Getter
       private long expires = 0;
 
       PlayerBanData() {
@@ -50,35 +58,7 @@ public class PlayerBanData {
             this.created = created;
       }
 
-      public PlayerData getPlayer() {
-            return player;
-      }
-
-      public PlayerData getActor() {
-            return actor;
-      }
-
-      public long getExpires() {
-            return expires;
-      }
-
-      public String getReason() {
-            return reason;
-      }
-
-      public long getCreated() {
-            return created;
-      }
-
       public boolean hasExpired() {
             return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
-      }
-
-      public long getUpdated() {
-            return updated;
-      }
-
-      public int getId() {
-            return id;
       }
 }

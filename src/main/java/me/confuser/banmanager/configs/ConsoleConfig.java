@@ -16,7 +16,7 @@ public class ConsoleConfig extends Config<BanManager> {
       public ConsoleConfig() {
             super("console.yml");
       }
-      
+
       @Override
       public void afterLoad() {
             if (conf.getString("uuid", "0").equals("0")) {

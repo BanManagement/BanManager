@@ -56,7 +56,7 @@ public class JoinListener extends Listeners<BanManager> {
                   message.set("actor", data.getActor().getName());
 
                   event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-                  event.setKickMessage(message.toString()); 
+                  event.setKickMessage(message.toString());
                   return;
             }
             if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
@@ -104,7 +104,7 @@ public class JoinListener extends Listeners<BanManager> {
             if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
                   return;
             }
-            
+
             plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                   public void run() {
                         // Handle quick disconnects
