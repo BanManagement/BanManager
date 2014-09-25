@@ -299,16 +299,19 @@ public class BanManager extends BukkitPlugin {
 		if (!localDb.getUser().isEmpty())
 			localConn.setUsername(localDb.getUser());
 		if (!localDb.getPassword().isEmpty())
-			localConn.setPassword(localDb.getPassword());
+		                localConn.setPassword(localDb.getPassword());
 
-		localConn.setMaxConnectionsFree(localDb.getMaxConnections());
-		localConn.setTestBeforeGet(true);
-		/* Keep the connection open for 15 minutes */
-		localConn.setMaxConnectionAgeMillis(900000);
-		localConn.setDatabaseType(new MySQLDatabase());
-		localConn.initialize();
+            localConn.setMaxConnectionsFree(localDb.getMaxConnections());
+            /* There is a memory leak in ormlite-jbcd that means we should not use this. AutoReconnect handles this for us. */
+            localConn.setTestBeforeGet(false);
+            /* Keep the connection open for 15 minutes */
+            localConn.setMaxConnectionAgeMillis(900000);
+            /* We should not use this. Auto reconnect does this for us. Waste of packets and CPU. */
+            localConn.setCheckConnectionsEveryMillis(0);
+            localConn.setDatabaseType(new MySQLDatabase());
+            localConn.initialize();
 
-		if (!config.getConversionDb().isEnabled())
+            if (!config.getConversionDb().isEnabled())
 			return true;
 
 		DatabaseConfig conversionDb = config.getConversionDb();
@@ -321,9 +324,12 @@ public class BanManager extends BukkitPlugin {
 			conversionConn.setPassword(conversionDb.getPassword());
 
 		conversionConn.setMaxConnectionsFree(conversionDb.getMaxConnections());
-		conversionConn.setTestBeforeGet(true);
+            /* There is a memory leak in ormlite-jbcd that means we should not use this. AutoReconnect handles this for us. */
+		conversionConn.setTestBeforeGet(false);
 		/* Keep the connection open for 15 minutes */
 		conversionConn.setMaxConnectionAgeMillis(900000);
+            /* We should not use this. Auto reconnect does this for us. Waste of packets and CPU. */
+            conversionConn.setCheckConnectionsEveryMillis(0);
 		conversionConn.setDatabaseType(new MySQLDatabase());
             conversionConn.initialize();
             

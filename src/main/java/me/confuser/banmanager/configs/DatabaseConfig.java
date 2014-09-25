@@ -14,7 +14,7 @@ public abstract class DatabaseConfig {
 	private final String password;
 	private final boolean isEnabled;
 	private final int maxConnections;
-	private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<String, DatabaseTableConfig<?>>();
+	private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
 	public DatabaseConfig(ConfigurationSection conf) {
 		host = conf.getString("host");
