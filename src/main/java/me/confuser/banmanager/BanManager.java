@@ -22,9 +22,8 @@ import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.BukkitPlugin;
 
 public class BanManager extends BukkitPlugin {
-	private static BanManager statPlugin;
 
-	private BanManager plugin;
+	public static BanManager plugin;
 
 	private JdbcPooledConnectionSource localConn;
 	private JdbcPooledConnectionSource externalConn;
@@ -46,7 +45,7 @@ public class BanManager extends BukkitPlugin {
 	private SchedulesConfig schedulesConfig;
 
 	public void onEnable() {
-		statPlugin = plugin = this;
+		plugin = this;
 
 		setupConfigs();
 		try {
@@ -153,7 +152,7 @@ public class BanManager extends BukkitPlugin {
 	}
 
 	public static BanManager getPlugin() {
-		return statPlugin;
+		return plugin;
 	}
 
 	private void disableDatabaseLogging() {
