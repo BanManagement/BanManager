@@ -4,6 +4,7 @@ import me.confuser.banmanager.storage.mysql.ByteArray;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import lombok.Getter;
 
 @DatabaseTable
 public class IpBanRecord {
@@ -11,6 +12,7 @@ public class IpBanRecord {
       @DatabaseField(generatedId = true)
       private int id;
       @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
+      @Getter
       private long ip;
       @DatabaseField(canBeNull = false)
       private String reason;
@@ -48,9 +50,5 @@ public class IpBanRecord {
 
             this.actor = actor;
             this.created = created;
-      }
-
-      public long getIp() {
-            return ip;
       }
 }

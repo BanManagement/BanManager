@@ -33,7 +33,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       public void setupConsole() throws SQLException {
             // Get the console
             String name = plugin.getConsoleConfig().getName();
-            UUID uuid = plugin.getConsoleConfig().getUUID();
+            UUID uuid = plugin.getConsoleConfig().getUuid();
 
             console = queryForId(UUIDUtils.toBytes(uuid));
 
