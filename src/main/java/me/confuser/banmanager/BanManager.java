@@ -303,10 +303,9 @@ public class BanManager extends BukkitPlugin {
 
 		localConn.setMaxConnectionsFree(localDb.getMaxConnections());
 		localConn.setTestBeforeGet(true);
-		// only keep the connections open for 5 minutes
-		localConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
+		/* Keep the connection open for 15 minutes */
+		localConn.setMaxConnectionAgeMillis(900000);
 		localConn.setDatabaseType(new MySQLDatabase());
-
 		localConn.initialize();
 
 		if (!config.getConversionDb().isEnabled())
@@ -323,8 +322,8 @@ public class BanManager extends BukkitPlugin {
 
 		conversionConn.setMaxConnectionsFree(conversionDb.getMaxConnections());
 		conversionConn.setTestBeforeGet(true);
-		// only keep the connections open for 5 minutes
-		conversionConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
+		/* Keep the connection open for 15 minutes */
+		conversionConn.setMaxConnectionAgeMillis(900000);
 		conversionConn.setDatabaseType(new MySQLDatabase());
             conversionConn.initialize();
             
