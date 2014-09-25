@@ -399,18 +399,18 @@ public class BanManager extends BukkitPlugin {
 
 	@Override
 	public void setupRunnables() {
-		getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), schedulesConfig.getSchedule("saveLastChecked"), schedulesConfig.getSchedule("saveLastChecked"));
+		getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), schedulesConfig.getSchedule("saveLastChecked") * 20, schedulesConfig.getSchedule("saveLastChecked") * 20);
 
 		if (schedulesConfig.getSchedule("playerBans") != 0)
-			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new BanSync(), schedulesConfig.getSchedule("playerBans"), schedulesConfig.getSchedule("playerBans"));
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new BanSync(), schedulesConfig.getSchedule("playerBans") * 20, schedulesConfig.getSchedule("playerBans") * 20);
 
 		if (schedulesConfig.getSchedule("playerMutes") != 0)
-			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new MuteSync(), schedulesConfig.getSchedule("playerMutes"), schedulesConfig.getSchedule("playerMutes"));
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new MuteSync(), schedulesConfig.getSchedule("playerMutes") * 20, schedulesConfig.getSchedule("playerMutes") * 20);
 
 		if (schedulesConfig.getSchedule("ipBans") != 0)
-			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans"), schedulesConfig.getSchedule("ipBans"));
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new IpSync(), schedulesConfig.getSchedule("ipBans") * 20, schedulesConfig.getSchedule("ipBans") * 20);
 
 		if (schedulesConfig.getSchedule("expiresCheck") != 0)
-			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck"), schedulesConfig.getSchedule("expiresCheck"));
+			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck") * 20, schedulesConfig.getSchedule("expiresCheck") * 20);
 	}
 }
