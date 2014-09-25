@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.bukkit.entity.Player;
 
-import com.j256.ormlite.dao.CloseableIterator;
+import java.util.List;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerBanRecord;
@@ -42,11 +42,9 @@ public class BanSync implements Runnable {
 
 	private void newBans() throws SQLException {
 		
-		CloseableIterator<PlayerBanData> itr = banStorage.findBans(lastChecked);
+		List<PlayerBanData> bans = banStorage.findBans(lastChecked);
 		
-		while(itr.hasNext()) {
-			final PlayerBanData ban = itr.next();
-			
+		for (final PlayerBanData ban : bans) {
 			if (banStorage.isBanned(ban.getPlayer().getUUID()) && ban.getUpdated() < lastChecked)
 				continue;
 			
@@ -56,7 +54,6 @@ public class BanSync implements Runnable {
 				continue;
 			
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable(){
-
 				@Override
 				public void run() {
 					Player bukkitPlayer = plugin.getServer().getPlayer(ban.getPlayer().getUUID());
@@ -73,16 +70,14 @@ public class BanSync implements Runnable {
 
 		}
 		
-		itr.close();
+		bans = null;
 	}
 	
 	private void newUnbans() throws SQLException {
 		
-		CloseableIterator<PlayerBanRecord> itr = plugin.getPlayerBanRecordStorage().findUnbans(lastChecked);
+		List<PlayerBanRecord> ban_records = plugin.getPlayerBanRecordStorage().findUnbans(lastChecked);
 		
-		while(itr.hasNext()) {
-			final PlayerBanRecord ban = itr.next();
-			
+		for (PlayerBanRecord ban : ban_records) {
 			if (!banStorage.isBanned(ban.getPlayer().getUUID()))
 				continue;
 			
@@ -90,6 +85,6 @@ public class BanSync implements Runnable {
 
 		}
 		
-		itr.close();
+		ban_records = null;
 	}
 }

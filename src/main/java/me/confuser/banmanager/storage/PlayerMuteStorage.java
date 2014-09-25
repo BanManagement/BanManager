@@ -19,6 +19,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
@@ -109,9 +111,9 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, Integer> {
 		return true;
 	}
 
-	public CloseableIterator<PlayerMuteData> findMutes(long fromTime) throws SQLException {
+	public List<PlayerMuteData> findMutes(long fromTime) throws SQLException {
 		if (fromTime == 0)
-			return iterator();
+			return new ArrayList<>();
 		
 		long checkTime = fromTime + DateUtils.getTimeDiff();
 		
@@ -124,6 +126,6 @@ public class PlayerMuteStorage  extends BaseDaoImpl<PlayerMuteData, Integer> {
 		
 		query.setWhere(where);
 		
-		return query.iterator();
+		return query.query();
 	}
 }

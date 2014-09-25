@@ -115,7 +115,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 		return true;
 	}
 	
-	public CloseableIterator<PlayerBanData> findBans(long fromTime) throws SQLException {
+      public List<PlayerBanData> findBans(long fromTime) throws SQLException {
 		if (fromTime == 0)
 			return iterator();
 		
@@ -130,7 +130,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 		
 		query.setWhere(where);
 		
-		return query.iterator();
+		return query.query()
 		
 	}
 

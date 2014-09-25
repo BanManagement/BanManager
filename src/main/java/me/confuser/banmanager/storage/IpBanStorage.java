@@ -12,6 +12,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
@@ -23,7 +25,7 @@ import me.confuser.banmanager.util.IPUtils;
 
 public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 	private BanManager plugin = BanManager.getPlugin();
-	private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<Long, IpBanData>();
+	private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<>();
 
 	public IpBanStorage(ConnectionSource connection, DatabaseTableConfig<IpBanData> tableConfig) throws SQLException {
 		super(connection, tableConfig);
@@ -31,7 +33,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 		if (!this.isTableExists())
 			return;
 		
-		CloseableIterator<IpBanData> itr = iterator();
+	      CloseableIterator<IpBanData> itr = iterator();
 		
 		while(itr.hasNext()) {
 			IpBanData ban = itr.next();
@@ -99,29 +101,29 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 		delete(ban);
 		bans.remove(ban.getIp());
 		
-		plugin.getIpBanRecordStorage().addRecord(ban, actor);
-		
-		return true;
-	}
-	
-	public CloseableIterator<IpBanData> findBans(long fromTime) throws SQLException {
-		if (fromTime == 0)
-			return iterator();
-		
-		long checkTime = fromTime + DateUtils.getTimeDiff();
-		
-		QueryBuilder<IpBanData, Integer> query = queryBuilder();
-		Where<IpBanData, Integer> where = query.where();
-		where
-			.ge("created", checkTime)
-			.or()
-			.ge("updated", checkTime);
-		
-		query.setWhere(where);
-		
-		return query.iterator();
-		
-	}
+            plugin.getIpBanRecordStorage().addRecord(ban, actor);
 
-	
+            return true;
+      }
+
+      public List<IpBanData> findBans(long fromTime) throws SQLException {
+            if (fromTime == 0) {
+                  return new ArrayList<>();
+            }
+
+            long checkTime = fromTime + DateUtils.getTimeDiff();
+
+            QueryBuilder<IpBanData, Integer> query = queryBuilder();
+            Where<IpBanData, Integer> where = query.where();
+            where
+                    .ge("created", checkTime)
+                    .or()
+                    .ge("updated", checkTime);
+
+            query.setWhere(where);
+
+            return query.query();
+
+      }
+
 }
