@@ -23,7 +23,7 @@ import me.confuser.bukkitutil.listeners.Listeners;
 
 public class JoinListener extends Listeners<BanManager> {
 
-      @EventHandler(priority = EventPriority.MONITOR)
+      @EventHandler(priority = EventPriority.HIGHEST)
       public void banCheck(final AsyncPlayerPreLoginEvent event) {
             /* Why waste time of they are already going to be denied to join? */
             if (!event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
@@ -101,6 +101,10 @@ public class JoinListener extends Listeners<BanManager> {
 
       @EventHandler(priority = EventPriority.MONITOR)
       public void onPlayerLogin(final PlayerLoginEvent event) {
+            if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+                  return;
+            }
+            
             plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
                   public void run() {
                         // Handle quick disconnects
