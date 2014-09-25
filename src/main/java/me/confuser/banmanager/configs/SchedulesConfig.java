@@ -29,13 +29,11 @@ public class SchedulesConfig extends Config<BanManager> {
       @Override
       public void afterLoad() {
             for (String key : conf.getConfigurationSection("scheduler").getKeys(false)) {
-                  String path = "scheduler." + key;
-                  schedules.put(key, conf.getInt(path, 0) * 20);
+                  schedules.put(key, (conf.getInt(("scheduler." + key), 0) * 20));
             }
 
             for (String key : conf.getConfigurationSection("lastChecked").getKeys(false)) {
-                  String path = "lastChecked." + key;
-                  lastChecked.put(key, conf.getLong(path, 0));
+                  lastChecked.put(key, conf.getLong(("lastChecked." + key), 0));
             }
 
       }
