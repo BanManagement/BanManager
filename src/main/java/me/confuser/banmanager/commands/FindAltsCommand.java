@@ -58,7 +58,7 @@ public class FindAltsCommand extends BukkitCommand<BanManager> {
                         }
 
                         List<PlayerData> players = plugin.getPlayerStorage().getDuplicates(ip);
-                        ArrayList<String> names = new ArrayList<String>(players.size());
+                        ArrayList<String> names = new ArrayList<>(players.size());
 
                         for (PlayerData player : players) {
                               names.add(player.getName());
@@ -66,7 +66,7 @@ public class FindAltsCommand extends BukkitCommand<BanManager> {
 
                         sender.sendMessage(Message.get("altsFound").set("ip", ipStr).toString());
 
-                        if (names.size() == 0) {
+                        if (names.isEmpty()) {
                               sender.sendMessage(Message.get("none").toString());
                               return;
                         }
