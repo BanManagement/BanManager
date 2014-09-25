@@ -23,8 +23,13 @@ import me.confuser.bukkitutil.listeners.Listeners;
 
 public class JoinListener extends Listeners<BanManager> {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void banCheck(final AsyncPlayerPreLoginEvent event) {
+            /* Why waste time of they are already going to be denied to join? */
+            if (!event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
+                 return; 
+            }
+            
 		if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
 			IpBanData data = plugin.getIpBanStorage().getBan(event.getAddress());
 			
@@ -89,17 +94,17 @@ public class JoinListener extends Listeners<BanManager> {
 		message.set("player", data.getPlayer().getName());
 		message.set("reason", data.getReason());
 		message.set("actor", data.getActor().getName());
-		
-		event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message.toString());
-	}
+
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+            event.setKickMessage(message.toString());
+      }
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
 		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-
 			public void run() {
 				// Handle quick disconnects
-				if (event.getPlayer() == null)
+				if (event.getPlayer() == null || !event.getPlayer().isOnline())
 					return;
 
 				CloseableIterator<PlayerWarnData> warnings;
@@ -132,13 +137,12 @@ public class JoinListener extends Listeners<BanManager> {
 			return;
 		
 		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-
 			public void run() {
 				final long ip = IPUtils.toLong(event.getAddress());
 				final UUID uuid = event.getPlayer().getUniqueId();
 				List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 				
-				if (duplicates.size() == 0)
+				if (duplicates.isEmpty())
 					return;
 				
 				StringBuilder sb = new StringBuilder();

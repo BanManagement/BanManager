@@ -405,8 +405,6 @@ public class BanManager extends BukkitPlugin {
 
 	@Override
 	public void setupRunnables() {
-		getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), schedulesConfig.getSchedule("saveLastChecked"), schedulesConfig.getSchedule("saveLastChecked"));
-
 		if (schedulesConfig.getSchedule("playerBans") != 0)
 			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new BanSync(), schedulesConfig.getSchedule("playerBans"), schedulesConfig.getSchedule("playerBans"));
 
@@ -418,5 +416,8 @@ public class BanManager extends BukkitPlugin {
 
 		if (schedulesConfig.getSchedule("expiresCheck") != 0)
 			getServer().getScheduler().runTaskTimerAsynchronously(plugin, new ExpiresSync(), schedulesConfig.getSchedule("expiresCheck"), schedulesConfig.getSchedule("expiresCheck"));
-	}
+	
+            /* Rgus task should be ran last with a 1L offset as it gets modified above. */
+            getServer().getScheduler().runTaskTimerAsynchronously(plugin, new SaveLastChecked(), (schedulesConfig.getSchedule("saveLastChecked") + 1L), (schedulesConfig.getSchedule("saveLastChecked") + 1L));
+      }
 }
