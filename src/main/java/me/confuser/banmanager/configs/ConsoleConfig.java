@@ -1,27 +1,22 @@
 package me.confuser.banmanager.configs;
 
 import java.util.UUID;
+import lombok.Getter;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.configs.Config;
 
 public class ConsoleConfig extends Config<BanManager> {
 
+      @Getter
       private String name;
+      @Getter
       private UUID uuid;
 
       public ConsoleConfig() {
             super("console.yml");
       }
-
-      public String getName() {
-            return name;
-      }
-
-      public UUID getUUID() {
-            return uuid;
-      }
-
+      
       @Override
       public void afterLoad() {
             if (conf.getString("uuid", "0").equals("0")) {

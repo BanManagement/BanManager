@@ -1,6 +1,7 @@
 package me.confuser.banmanager.configs;
 
 import java.util.HashSet;
+import lombok.Getter;
 
 import org.bukkit.command.PluginCommand;
 
@@ -9,12 +10,18 @@ import me.confuser.bukkitutil.configs.Config;
 
 public class DefaultConfig extends Config<BanManager> {
 
+      @Getter
       private DatabaseConfig localDb;
+      @Getter
       private DatabaseConfig externalDb;
+      @Getter
       private HashSet<String> mutedBlacklistCommands = new HashSet<>();
-      private boolean dupeIpCheck = true;
-      private boolean logKicks = false;
-      private boolean debug = false;
+      @Getter
+      private boolean duplicateIpCheckEnabled = true;
+      @Getter
+      private boolean kickLoggingEnabled = false;
+      @Getter
+      private boolean debugEnabled = false;
 
       public DefaultConfig() {
             super("config.yml");
@@ -24,9 +31,9 @@ public class DefaultConfig extends Config<BanManager> {
       public void afterLoad() {
             localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
             //externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
-            dupeIpCheck = conf.getBoolean("duplicateIpCheck", true);
-            logKicks = conf.getBoolean("logKicks", false);
-            debug = conf.getBoolean("debug", false);
+            duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
+            kickLoggingEnabled = conf.getBoolean("logKicks", false);
+            debugEnabled = conf.getBoolean("debug", false);
 
             // Run this after startup to ensure all aliases are found
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -61,15 +68,7 @@ public class DefaultConfig extends Config<BanManager> {
 
             });
       }
-
-      public DatabaseConfig getLocalDb() {
-            return localDb;
-      }
-
-      public DatabaseConfig getExternalDb() {
-            return externalDb;
-      }
-
+      
       public ConvertDatabaseConfig getConversionDb() {
             return new ConvertDatabaseConfig(conf.getConfigurationSection("databases.convert"));
       }
@@ -81,18 +80,6 @@ public class DefaultConfig extends Config<BanManager> {
 
       public boolean isBlockedCommand(String cmd) {
             return mutedBlacklistCommands.contains(cmd);
-      }
-
-      public boolean isDuplicateIpCheckEnabled() {
-            return dupeIpCheck;
-      }
-
-      public boolean isKickLoggingEnabled() {
-            return logKicks;
-      }
-
-      public boolean isDebugEnabled() {
-            return debug;
       }
 
 }

@@ -86,7 +86,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
                     .set("warns", Long.toString(warnTotal)).toString());
 
             messages.add(Message.get("bminfoConnection")
-                    .set("ip", IPUtils.toString(player.getIP()))
+                    .set("ip", IPUtils.toString(player.getIp()))
                     .set("lastSeen", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new java.util.Date(player.getLastSeen() * 1000L)))
                     .toString());
 
@@ -94,7 +94,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
 
             StringBuilder duplicates = new StringBuilder();
 
-            for (PlayerData duplicatePlayer : plugin.getPlayerStorage().getDuplicates(player.getIP())) {
+            for (PlayerData duplicatePlayer : plugin.getPlayerStorage().getDuplicates(player.getIp())) {
                   duplicates.append(duplicatePlayer.getName() + ", ");
             }
 
@@ -102,7 +102,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
 
             messages.add(duplicates.toString());
 
-            long ipBanTotal = plugin.getIpBanRecordStorage().getCount(player.getIP());
+            long ipBanTotal = plugin.getIpBanRecordStorage().getCount(player.getIp());
 
             messages.add(Message.get("bminfoIpStatsSummary")
                     .set("bans", Long.toString(ipBanTotal))

@@ -64,7 +64,7 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
                                     return;
                               }
 
-                              ip = player.getIP();
+                              ip = player.getIp();
                         } else {
                               ip = IPUtils.toLong(ipStr);
                         }

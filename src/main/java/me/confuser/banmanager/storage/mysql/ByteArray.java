@@ -16,6 +16,7 @@ public class ByteArray extends ByteArrayType {
             return true;
       }
 
+      /* This cannot be lombok. */
       public static ByteArray getSingleton() {
             return singleTon;
       }

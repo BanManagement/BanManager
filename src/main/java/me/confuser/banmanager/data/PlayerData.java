@@ -13,16 +13,21 @@ import org.bukkit.entity.Player;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import lombok.Getter;
 
 @DatabaseTable(tableName = "players", daoClass = PlayerStorage.class)
 public class PlayerData {
 
       @DatabaseField(id = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      @Getter
       private byte[] id;
       @DatabaseField(index = true, width = 16, columnDefinition = "VARCHAR(16) NOT NULL")
+      @Getter
       private String name;
+      @Getter
       @DatabaseField(index = true, columnDefinition = "INT UNSIGNED NOT NULL")
       private long ip;
+      @Getter
       @DatabaseField(columnDefinition = "INT(10) NOT NULL")
       private long lastSeen = System.currentTimeMillis() / 1000L;
 
@@ -69,18 +74,6 @@ public class PlayerData {
             }
 
             return uuid;
-      }
-
-      public String getName() {
-            return name;
-      }
-
-      public long getIP() {
-            return ip;
-      }
-
-      public long getLastSeen() {
-            return lastSeen;
       }
 
       public Player getPlayer() {

@@ -52,7 +52,7 @@ public class FindAltsCommand extends BukkitCommand<BanManager> {
                                     return;
                               }
 
-                              ip = srcPlayer.getIP();
+                              ip = srcPlayer.getIp();
                         } else {
                               ip = IPUtils.toLong(ipStr);
                         }
