@@ -302,9 +302,11 @@ public class BanManager extends BukkitPlugin {
 			localConn.setPassword(localDb.getPassword());
 
 		localConn.setMaxConnectionsFree(localDb.getMaxConnections());
-		localConn.setTestBeforeGet(true);
+		/* Causes massive CPU spikes up to 100%. */
+		localConn.setTestBeforeGet(false);
+		/* Causes massive CPU spikes up to 100%. */
 		// only keep the connections open for 5 minutes
-		localConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
+		/* localConn.setMaxConnectionAgeMillis(5 * 60 * 1000); */
 		localConn.setDatabaseType(new MySQLDatabase());
 
 		localConn.initialize();
@@ -322,10 +324,13 @@ public class BanManager extends BukkitPlugin {
 			conversionConn.setPassword(conversionDb.getPassword());
 
 		conversionConn.setMaxConnectionsFree(conversionDb.getMaxConnections());
-		conversionConn.setTestBeforeGet(true);
+		/* Causes massive CPU spikes up to 100%. */
+		conversionConn.setTestBeforeGet(false);
 		// only keep the connections open for 5 minutes
-		conversionConn.setMaxConnectionAgeMillis(5 * 60 * 1000);
+		/* Causes massive CPU spikes up to 100%. */
+		/* conversionConn.setMaxConnectionAgeMillis(5 * 60 * 1000); */
 		conversionConn.setDatabaseType(new MySQLDatabase());
+		conversionConn.initialize();
 
 		return true;
 	}
