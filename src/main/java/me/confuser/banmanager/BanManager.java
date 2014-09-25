@@ -9,9 +9,15 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import lombok.Getter;
 
 import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.configs.*;
+import me.confuser.banmanager.configs.ConsoleConfig;
+import me.confuser.banmanager.configs.ConvertDatabaseConfig;
+import me.confuser.banmanager.configs.DatabaseConfig;
+import me.confuser.banmanager.configs.DefaultConfig;
+import me.confuser.banmanager.configs.MessagesConfig;
+import me.confuser.banmanager.configs.SchedulesConfig;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
@@ -23,25 +29,38 @@ import me.confuser.bukkitutil.BukkitPlugin;
 
 public class BanManager extends BukkitPlugin {
 
+      @Getter
 	public static BanManager plugin;
 
 	private JdbcPooledConnectionSource localConn;
 	private JdbcPooledConnectionSource externalConn;
 	private JdbcPooledConnectionSource conversionConn;
 
+      @Getter
 	private PlayerBanStorage playerBanStorage;
+      @Getter
 	private PlayerBanRecordStorage playerBanRecordStorage;
+      @Getter
 	private PlayerKickStorage playerKickStorage;
+      @Getter
 	private PlayerMuteStorage playerMuteStorage;
+      @Getter
 	private PlayerMuteRecordStorage playerMuteRecordStorage;
+      @Getter
 	private PlayerStorage playerStorage;
+      @Getter
 	private PlayerWarnStorage playerWarnStorage;
 
+      @Getter
 	private IpBanStorage ipBanStorage;
+      @Getter
 	private IpBanRecordStorage ipBanRecordStorage;
 
-	private DefaultConfig config;
+      @Getter
+	private DefaultConfig configuration;
+      @Getter
 	private ConsoleConfig consoleConfig;
+      @Getter
 	private SchedulesConfig schedulesConfig;
 
 	public void onEnable() {
@@ -49,7 +68,7 @@ public class BanManager extends BukkitPlugin {
 
 		setupConfigs();
 		try {
-			if (!config.isDebugEnabled())
+			if (!configuration.isDebugEnabled())
 				disableDatabaseLogging();
 
 			if (!setupConnections())
@@ -99,71 +118,15 @@ public class BanManager extends BukkitPlugin {
 		}
 	}
 
-	public PlayerBanStorage getPlayerBanStorage() {
-		return playerBanStorage;
-	}
-
-	public PlayerBanRecordStorage getPlayerBanRecordStorage() {
-		return playerBanRecordStorage;
-	}
-
-	public PlayerKickStorage getPlayerKickStorage() {
-		return playerKickStorage;
-	}
-
-	public PlayerMuteStorage getPlayerMuteStorage() {
-		return playerMuteStorage;
-	}
-
-	public PlayerMuteRecordStorage getPlayerMuteRecordStorage() {
-		return playerMuteRecordStorage;
-	}
-
-	public PlayerWarnStorage getPlayerWarnStorage() {
-		return playerWarnStorage;
-	}
-
-	public PlayerStorage getPlayerStorage() {
-		return playerStorage;
-	}
-
-	public IpBanStorage getIpBanStorage() {
-		return ipBanStorage;
-	}
-
-	public IpBanRecordStorage getIpBanRecordStorage() {
-		return ipBanRecordStorage;
-	}
-
-	public DefaultConfig getDefaultConfig() {
-		return config;
-	}
-
-	public ConsoleConfig getConsoleConfig() {
-		return consoleConfig;
-	}
-
-	public SchedulesConfig getSchedulesConfig() {
-		return schedulesConfig;
-	}
-
-	public JdbcPooledConnectionSource getLocalConnection() {
-		return localConn;
-	}
-
-	public static BanManager getPlugin() {
-		return plugin;
-	}
-
 	private void disableDatabaseLogging() {
 		System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
 	}
 
 	private void setupConversion() {
 		getLogger().info("Running pre-conversion launch checks");
-		ConvertDatabaseConfig conversionDb = config.getConversionDb();
+		ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
 
-		if (config.getLocalDb().getHost().equals(conversionDb.getHost()) && config.getLocalDb().getName().equals(conversionDb.getName())) {
+		if (configuration.getLocalDb().getHost().equals(conversionDb.getHost()) && configuration.getLocalDb().getName().equals(conversionDb.getName())) {
 			if (!conversionChecks())
 				return;
 		}
@@ -180,7 +143,7 @@ public class BanManager extends BukkitPlugin {
 	}
 
 	private boolean conversionChecks() {
-		ConvertDatabaseConfig conversionDb = config.getConversionDb();
+		ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
 
 		if (playerStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("playerIpsTable"))) {
 			getLogger().severe("players table equals playerIpsTable, aborting");
@@ -274,8 +237,8 @@ public class BanManager extends BukkitPlugin {
 	public void setupConfigs() {
 		new MessagesConfig().load();
 
-		config = new DefaultConfig();
-		config.load();
+		configuration = new DefaultConfig();
+		configuration.load();
 
 		consoleConfig = new ConsoleConfig();
 		consoleConfig.load();
@@ -285,7 +248,7 @@ public class BanManager extends BukkitPlugin {
 	}
 
 	public boolean setupConnections() throws SQLException {
-		DatabaseConfig localDb = config.getLocalDb();
+		DatabaseConfig localDb = configuration.getLocalDb();
 
 		if (!localDb.isEnabled()) {
 			getLogger().warning("Local Database is not enabled, disabling plugin");
@@ -310,10 +273,10 @@ public class BanManager extends BukkitPlugin {
             localConn.setDatabaseType(new MySQLDatabase());
             localConn.initialize();
 
-            if (!config.getConversionDb().isEnabled())
+            if (!configuration.getConversionDb().isEnabled())
 			return true;
 
-		DatabaseConfig conversionDb = config.getConversionDb();
+		DatabaseConfig conversionDb = configuration.getConversionDb();
 
 		conversionConn = new JdbcPooledConnectionSource(conversionDb.getJDBCUrl());
 
@@ -337,7 +300,7 @@ public class BanManager extends BukkitPlugin {
 
 	@SuppressWarnings("unchecked")
 	public void setupStorages() throws SQLException {
-		DatabaseTableConfig<PlayerData> playerConfig = (DatabaseTableConfig<PlayerData>) config.getLocalDb().getTable("players");
+		DatabaseTableConfig<PlayerData> playerConfig = (DatabaseTableConfig<PlayerData>) configuration.getLocalDb().getTable("players");
 		playerStorage = new PlayerStorage(localConn, playerConfig);
 
 		if (!playerStorage.isTableExists())
@@ -345,49 +308,49 @@ public class BanManager extends BukkitPlugin {
 		
 		playerStorage.setupConsole();
 
-		DatabaseTableConfig<PlayerBanData> playerBansConfig = (DatabaseTableConfig<PlayerBanData>) config.getLocalDb().getTable("playerBans");
+		DatabaseTableConfig<PlayerBanData> playerBansConfig = (DatabaseTableConfig<PlayerBanData>) configuration.getLocalDb().getTable("playerBans");
 		playerBanStorage = new PlayerBanStorage(localConn, playerBansConfig);
 
 		if (!playerBanStorage.isTableExists())
 			TableUtils.createTable(localConn, playerBansConfig);
 
-		DatabaseTableConfig<PlayerBanRecord> playerBanRecordsConfig = (DatabaseTableConfig<PlayerBanRecord>) config.getLocalDb().getTable("playerBanRecords");
+		DatabaseTableConfig<PlayerBanRecord> playerBanRecordsConfig = (DatabaseTableConfig<PlayerBanRecord>) configuration.getLocalDb().getTable("playerBanRecords");
 		playerBanRecordStorage = new PlayerBanRecordStorage(localConn, playerBanRecordsConfig);
 
 		if (!playerBanRecordStorage.isTableExists())
 			TableUtils.createTable(localConn, playerBanRecordsConfig);
 
-		DatabaseTableConfig<PlayerMuteData> playerMutesConfig = (DatabaseTableConfig<PlayerMuteData>) config.getLocalDb().getTable("playerMutes");
+		DatabaseTableConfig<PlayerMuteData> playerMutesConfig = (DatabaseTableConfig<PlayerMuteData>) configuration.getLocalDb().getTable("playerMutes");
 		playerMuteStorage = new PlayerMuteStorage(localConn, playerMutesConfig);
 
 		if (!playerMuteStorage.isTableExists())
 			TableUtils.createTable(localConn, playerMutesConfig);
 
-		DatabaseTableConfig<PlayerMuteRecord> playerMuteRecordsConfig = (DatabaseTableConfig<PlayerMuteRecord>) config.getLocalDb().getTable("playerMuteRecords");
+		DatabaseTableConfig<PlayerMuteRecord> playerMuteRecordsConfig = (DatabaseTableConfig<PlayerMuteRecord>) configuration.getLocalDb().getTable("playerMuteRecords");
 		playerMuteRecordStorage = new PlayerMuteRecordStorage(localConn, playerMuteRecordsConfig);
 
 		if (!playerMuteRecordStorage.isTableExists())
 			TableUtils.createTable(localConn, playerMuteRecordsConfig);
 
-		DatabaseTableConfig<PlayerWarnData> playerWarningsConfig = (DatabaseTableConfig<PlayerWarnData>) config.getLocalDb().getTable("playerWarnings");
+		DatabaseTableConfig<PlayerWarnData> playerWarningsConfig = (DatabaseTableConfig<PlayerWarnData>) configuration.getLocalDb().getTable("playerWarnings");
 		playerWarnStorage = new PlayerWarnStorage(localConn, playerWarningsConfig);
 
 		if (!playerWarnStorage.isTableExists())
 			TableUtils.createTable(localConn, playerWarningsConfig);
 
-		DatabaseTableConfig<PlayerKickData> playerKickConfig = (DatabaseTableConfig<PlayerKickData>) config.getLocalDb().getTable("playerKicks");
+		DatabaseTableConfig<PlayerKickData> playerKickConfig = (DatabaseTableConfig<PlayerKickData>) configuration.getLocalDb().getTable("playerKicks");
 		playerKickStorage = new PlayerKickStorage(localConn, playerKickConfig);
 
 		if (!playerKickStorage.isTableExists())
 			TableUtils.createTable(localConn, playerKickConfig);
 
-		DatabaseTableConfig<IpBanData> ipBansConfig = (DatabaseTableConfig<IpBanData>) config.getLocalDb().getTable("ipBans");
+		DatabaseTableConfig<IpBanData> ipBansConfig = (DatabaseTableConfig<IpBanData>) configuration.getLocalDb().getTable("ipBans");
 		ipBanStorage = new IpBanStorage(localConn, ipBansConfig);
 
 		if (!ipBanStorage.isTableExists())
 			TableUtils.createTable(localConn, ipBansConfig);
 
-		DatabaseTableConfig<IpBanRecord> ipBanRecordsConfig = (DatabaseTableConfig<IpBanRecord>) config.getLocalDb().getTable("ipBanRecords");
+		DatabaseTableConfig<IpBanRecord> ipBanRecordsConfig = (DatabaseTableConfig<IpBanRecord>) configuration.getLocalDb().getTable("ipBanRecords");
 		ipBanRecordStorage = new IpBanRecordStorage(localConn, ipBanRecordsConfig);
 
 		if (!ipBanRecordStorage.isTableExists())

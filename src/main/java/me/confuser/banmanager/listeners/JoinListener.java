@@ -133,7 +133,7 @@ public class JoinListener extends Listeners<BanManager> {
 			}
 		}, 20L);
 
-		if (!plugin.getDefaultConfig().isDuplicateIpCheckEnabled())
+		if (!plugin.getConfiguration().isDuplicateIpCheckEnabled())
 			return;
 		
 		plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {

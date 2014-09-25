@@ -51,7 +51,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
 			actor = plugin.getPlayerStorage().getConsole();
 		}
 		
-		if (plugin.getDefaultConfig().isKickLoggingEnabled()) {
+		if (plugin.getConfiguration().isKickLoggingEnabled()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 				@Override

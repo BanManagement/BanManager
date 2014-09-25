@@ -20,7 +20,7 @@ public class CommandListener extends Listeners<BanManager> {
 		// Get rid of the first /
 		String cmd = args[0].replace("/", "").toLowerCase();
 
-		if (!plugin.getDefaultConfig().isBlockedCommand(cmd))
+		if (!plugin.getConfiguration().isBlockedCommand(cmd))
 			return;
 		
 		event.setCancelled(true);
