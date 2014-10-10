@@ -16,34 +16,38 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integer> {
 
-      public PlayerMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteRecord> tableConfig) throws SQLException {
-            super(connection, tableConfig);
-      }
+	public PlayerMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteRecord> tableConfig) throws SQLException {
+		super(connection, tableConfig);
+	}
 
-      public void addRecord(PlayerMuteData mute, PlayerData actor) throws SQLException {
-            create(new PlayerMuteRecord(mute, actor));
-      }
+	public void addRecord(PlayerMuteData mute, PlayerData actor) throws SQLException {
+		create(new PlayerMuteRecord(mute, actor));
+	}
 
-      public CloseableIterator<PlayerMuteRecord> findUnmutes(long fromTime) throws SQLException {
-            if (fromTime == 0) {
-                  return iterator();
-            }
+	public CloseableIterator<PlayerMuteRecord> findUnmutes(long fromTime) throws SQLException {
+		if (fromTime == 0) {
+			return iterator();
+		}
 
-            long checkTime = fromTime + DateUtils.getTimeDiff();
+		long checkTime = fromTime + DateUtils.getTimeDiff();
 
-            QueryBuilder<PlayerMuteRecord, Integer> query = queryBuilder();
-            Where<PlayerMuteRecord, Integer> where = query.where();
+		QueryBuilder<PlayerMuteRecord, Integer> query = queryBuilder();
+		Where<PlayerMuteRecord, Integer> where = query.where();
 
-            where.ge("created", checkTime);
+		where.ge("created", checkTime);
 
-            query.setWhere(where);
+		query.setWhere(where);
 
-            return query.iterator();
+		return query.iterator();
 
-      }
+	}
 
-      public long getCount(PlayerData player) throws SQLException {
-            return queryBuilder().where().eq("player_id", player).countOf();
-      }
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
+
+	public CloseableIterator<PlayerMuteRecord> getRecords(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).iterator();
+	}
 
 }

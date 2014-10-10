@@ -16,33 +16,37 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer> {
 
-      public PlayerBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<PlayerBanRecord> tableConfig) throws SQLException {
-            super(connection, tableConfig);
-      }
+	public PlayerBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<PlayerBanRecord> tableConfig) throws SQLException {
+		super(connection, tableConfig);
+	}
 
-      public void addRecord(PlayerBanData ban, PlayerData actor) throws SQLException {
-            create(new PlayerBanRecord(ban, actor));
-      }
+	public void addRecord(PlayerBanData ban, PlayerData actor) throws SQLException {
+		create(new PlayerBanRecord(ban, actor));
+	}
 
-      public CloseableIterator<PlayerBanRecord> findUnbans(long fromTime) throws SQLException {
-            if (fromTime == 0) {
-                  return iterator();
-            }
+	public CloseableIterator<PlayerBanRecord> findUnbans(long fromTime) throws SQLException {
+		if (fromTime == 0) {
+			return iterator();
+		}
 
-            long checkTime = fromTime + DateUtils.getTimeDiff();
+		long checkTime = fromTime + DateUtils.getTimeDiff();
 
-            QueryBuilder<PlayerBanRecord, Integer> query = queryBuilder();
-            Where<PlayerBanRecord, Integer> where = query.where();
+		QueryBuilder<PlayerBanRecord, Integer> query = queryBuilder();
+		Where<PlayerBanRecord, Integer> where = query.where();
 
-            where.ge("created", checkTime);
+		where.ge("created", checkTime);
 
-            query.setWhere(where);
+		query.setWhere(where);
 
-            return query.iterator();
+		return query.iterator();
 
-      }
+	}
 
-      public long getCount(PlayerData player) throws SQLException {
-            return queryBuilder().where().eq("player_id", player).countOf();
-      }
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
+
+	public CloseableIterator<PlayerBanRecord> getRecords(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).iterator();
+	}
 }

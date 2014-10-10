@@ -45,4 +45,8 @@ public class IpBanRecordStorage extends BaseDaoImpl<IpBanRecord, Integer> {
       public long getCount(long ip) throws SQLException {
             return queryBuilder().where().eq("ip", ip).countOf();
       }
+      
+      public CloseableIterator<IpBanRecord> getRecords(long ip) throws SQLException {
+  		return queryBuilder().where().eq("ip", ip).iterator();
+  	}
 }

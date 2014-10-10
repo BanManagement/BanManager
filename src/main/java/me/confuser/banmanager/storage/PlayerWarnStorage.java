@@ -15,26 +15,30 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 
 public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
-      public PlayerWarnStorage(ConnectionSource connection, DatabaseTableConfig<PlayerWarnData> tableConfig) throws SQLException {
-            super(connection, tableConfig);
-      }
+	public PlayerWarnStorage(ConnectionSource connection, DatabaseTableConfig<PlayerWarnData> tableConfig) throws SQLException {
+		super(connection, tableConfig);
+	}
 
-      public boolean addWarning(PlayerWarnData data) throws SQLException {
-            PlayerWarnEvent event = new PlayerWarnEvent(data);
-            Bukkit.getServer().getPluginManager().callEvent(event);
+	public boolean addWarning(PlayerWarnData data) throws SQLException {
+		PlayerWarnEvent event = new PlayerWarnEvent(data);
+		Bukkit.getServer().getPluginManager().callEvent(event);
 
-            if (event.isCancelled()) {
-                  return false;
-            }
+		if (event.isCancelled()) {
+			return false;
+		}
 
-            return create(data) == 1;
-      }
+		return create(data) == 1;
+	}
 
-      public CloseableIterator<PlayerWarnData> getUnreadWarnings(PlayerData player) throws SQLException {
-            return queryBuilder().where().eq("player_id", player).and().eq("read", false).iterator();
-      }
+	public CloseableIterator<PlayerWarnData> getUnreadWarnings(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).and().eq("read", false).iterator();
+	}
+	
+	public CloseableIterator<PlayerWarnData> getWarnings(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).iterator();
+	}
 
-      public long getCount(PlayerData player) throws SQLException {
-            return queryBuilder().where().eq("player_id", player).countOf();
-      }
+	public long getCount(PlayerData player) throws SQLException {
+		return queryBuilder().where().eq("player_id", player).countOf();
+	}
 }
