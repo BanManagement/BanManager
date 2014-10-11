@@ -253,7 +253,7 @@ public class BmAPI {
 	 * @param name
 	 * @return
 	 */
-	public static boolean isMutened(String name) {
+	public static boolean isMuted(String name) {
 		return plugin.getPlayerMuteStorage().isMuted(name);
 	}
 
