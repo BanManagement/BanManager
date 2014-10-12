@@ -116,6 +116,10 @@ public class MuteCommand extends BukkitCommand<BanManager> {
                                 .set("player", player.getName())
                                 .set("actor", actor.getName())
                                 .set("reason", mute.getReason());
+                        
+                        if (!sender.hasPermission("bm.notify.mute")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.mute");
                   }

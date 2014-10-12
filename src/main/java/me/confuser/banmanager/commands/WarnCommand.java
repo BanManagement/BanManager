@@ -103,6 +103,10 @@ public class WarnCommand extends BukkitCommand<BanManager> {
                                 .set("player", player.getName())
                                 .set("actor", actor.getName())
                                 .set("reason", warning.getReason());
+                        
+                        if (!sender.hasPermission("bm.notify.warn")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.warn");
                   }

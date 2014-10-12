@@ -91,6 +91,10 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
                         message
                                 .set("ip", ipStr)
                                 .set("actor", actor.getName());
+                        
+                        if (!sender.hasPermission("bm.notify.unbanip")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.unbanip");
                   }

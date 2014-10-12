@@ -87,6 +87,10 @@ public class UnbanCommand extends BukkitCommand<BanManager> {
                         message
                                 .set("player", ban.getPlayer().getName())
                                 .set("actor", actor.getName());
+                        
+                        if (!sender.hasPermission("bm.notify.unban")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.unban");
                   }

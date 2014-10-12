@@ -136,6 +136,10 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
                                 .set("actor", actor.getName())
                                 .set("reason", ban.getReason())
                                 .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+                        
+                        if (!sender.hasPermission("bm.notify.tempban")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.tempban");
                   }

@@ -119,6 +119,10 @@ public class BanCommand extends BukkitCommand<BanManager> {
 
                         Message message = Message.get("playerBanned");
                         message.set("player", player.getName()).set("actor", actor.getName()).set("reason", ban.getReason());
+                        
+                        if (!sender.hasPermission("bm.notify.ban")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.ban");
                   }

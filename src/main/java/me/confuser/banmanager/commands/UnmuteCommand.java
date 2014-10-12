@@ -87,6 +87,10 @@ public class UnmuteCommand extends BukkitCommand<BanManager> {
                         message
                                 .set("player", mute.getPlayer().getName())
                                 .set("actor", actor.getName());
+                        
+                        if (!sender.hasPermission("bm.notify.unmute")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.unmute");
                   }

@@ -121,6 +121,10 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
                                 .set("actor", actor.getName())
                                 .set("reason", ban.getReason())
                                 .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+                        
+                        if (!sender.hasPermission("bm.notify.tempbanip")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.tempbanip");
                   }

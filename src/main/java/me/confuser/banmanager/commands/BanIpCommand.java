@@ -109,6 +109,10 @@ public class BanIpCommand extends BukkitCommand<BanManager> {
                                 .set("ip", ipStr)
                                 .set("actor", actor.getName())
                                 .set("reason", ban.getReason());
+                        
+                        if (!sender.hasPermission("bm.notify.ipban")) {
+                        	message.sendTo(sender);
+                        }
 
                         plugin.getServer().broadcast(message.toString(), "bm.notify.ipban");
                   }
