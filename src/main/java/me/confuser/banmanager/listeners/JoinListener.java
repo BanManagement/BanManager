@@ -111,10 +111,16 @@ public class JoinListener extends Listeners<BanManager> {
                         if (event.getPlayer() == null || !event.getPlayer().isOnline()) {
                               return;
                         }
+                        
+                        PlayerData onlinePlayer = plugin.getPlayerStorage().getOnline(event.getPlayer());
+                        
+                        if (onlinePlayer == null) {
+                        	return;
+                        }
 
                         CloseableIterator<PlayerWarnData> warnings;
                         try {
-                              warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(plugin.getPlayerStorage().getOnline(event.getPlayer()));
+                              warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(onlinePlayer);
 
                               while (warnings.hasNext()) {
                                     PlayerWarnData warning = warnings.next();
