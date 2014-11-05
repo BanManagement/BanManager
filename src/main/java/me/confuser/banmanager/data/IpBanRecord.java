@@ -9,46 +9,53 @@ import lombok.Getter;
 @DatabaseTable
 public class IpBanRecord {
 
-      @DatabaseField(generatedId = true)
-      private int id;
-      @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
-      @Getter
-      private long ip;
-      @DatabaseField(canBeNull = false)
-      private String reason;
-      @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
-      private long expired;
-      @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-      private PlayerData actor;
-      @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
-      private PlayerData pastActor;
-      @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
-      private long pastCreated;
-      @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
-      private long created = System.currentTimeMillis() / 1000L;
+	@DatabaseField(generatedId = true)
+	@Getter
+	private int id;
+	@DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
+	@Getter
+	private long ip;
+	@DatabaseField(canBeNull = false)
+	@Getter
+	private String reason;
+	@DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+	@Getter
+	private long expired;
+	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@Getter
+	private PlayerData actor;
+	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@Getter
+	private PlayerData pastActor;
+	@DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+	@Getter
+	private long pastCreated;
+	@DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+	@Getter
+	private long created = System.currentTimeMillis() / 1000L;
 
-      IpBanRecord() {
+	IpBanRecord() {
 
-      }
+	}
 
-      public IpBanRecord(IpBanData ban, PlayerData actor) {
-            ip = ban.getIp();
-            reason = ban.getReason();
-            expired = ban.getExpires();
-            pastActor = ban.getActor();
-            pastCreated = ban.getCreated();
+	public IpBanRecord(IpBanData ban, PlayerData actor) {
+		ip = ban.getIp();
+		reason = ban.getReason();
+		expired = ban.getExpires();
+		pastActor = ban.getActor();
+		pastCreated = ban.getCreated();
 
-            this.actor = actor;
-      }
+		this.actor = actor;
+	}
 
-      public IpBanRecord(IpBanData ban, PlayerData actor, long created) {
-            ip = ban.getIp();
-            reason = ban.getReason();
-            expired = ban.getExpires();
-            pastActor = ban.getActor();
-            pastCreated = ban.getCreated();
+	public IpBanRecord(IpBanData ban, PlayerData actor, long created) {
+		ip = ban.getIp();
+		reason = ban.getReason();
+		expired = ban.getExpires();
+		pastActor = ban.getActor();
+		pastCreated = ban.getCreated();
 
-            this.actor = actor;
-            this.created = created;
-      }
+		this.actor = actor;
+		this.created = created;
+	}
 }
