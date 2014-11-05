@@ -41,21 +41,21 @@ public class DateUtils {
             if (hours > 0) {
                   sb.append(hours)
                           .append(" ")
-                          .append(Message.get(day == 1 ? "timeHour" : "timeHours").toString())
+                          .append(Message.get(hours == 1 ? "timeHour" : "timeHours").toString())
                           .append(" ");
             }
 
             if (minutes > 0) {
                   sb.append(minutes)
                           .append(" ")
-                          .append(Message.get(day == 1 ? "timeMinute" : "timeMinutes").toString())
+                          .append(Message.get(minutes == 1 ? "timeMinute" : "timeMinutes").toString())
                           .append(" ");
             }
 
             if (seconds > 0) {
                   sb.append(seconds)
                           .append(" ")
-                          .append(Message.get(day == 1 ? "timeSeconds" : "timeSeconds").toString());
+                          .append(Message.get(seconds == 1 ? "timeSeconds" : "timeSeconds").toString());
             }
 
             String diff = sb.toString();
