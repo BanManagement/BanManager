@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.command.PluginCommand;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.configs.Config;
 
 public class DefaultConfig extends Config<BanManager> {
@@ -21,6 +22,8 @@ public class DefaultConfig extends Config<BanManager> {
       @Getter
       private boolean duplicateIpCheckEnabled = true;
       @Getter
+      private HashSet<Long> bypassPlayerIps = new HashSet<>();
+      @Getter
       private boolean kickLoggingEnabled = false;
       @Getter
       private boolean debugEnabled = false;
@@ -35,6 +38,11 @@ public class DefaultConfig extends Config<BanManager> {
             //externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
             timeLimits = new TimeLimitsConfig(conf.getConfigurationSection("timeLimits"));
             duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
+            
+            for (String ip : conf.getStringList("bypassDuplicateChecks")) {
+            	bypassPlayerIps.add(IPUtils.toLong(ip));
+            }
+            
             kickLoggingEnabled = conf.getBoolean("logKicks", false);
             debugEnabled = conf.getBoolean("debug", false);
 

@@ -77,3 +77,7 @@ timeLimits:
     Moderator: 1d
   ipBans:
     Moderator: 1d
+
+# A list of IPs to exclude from the banned player duplicate check
+bypassDuplicateChecks:
+- 0.0.0.0

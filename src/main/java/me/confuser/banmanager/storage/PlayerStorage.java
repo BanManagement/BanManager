@@ -121,6 +121,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
       public List<PlayerData> getDuplicates(long ip) {
             ArrayList<PlayerData> players = new ArrayList<>();
+            
+            if (plugin.getConfiguration().getBypassPlayerIps().contains(ip)) {
+            	return players;
+            }
 
             QueryBuilder<PlayerData, byte[]> query = queryBuilder();
             try {
