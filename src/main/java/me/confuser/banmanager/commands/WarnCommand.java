@@ -122,7 +122,11 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 				
 				final String actionCommand;
 				try {
-					actionCommand = plugin.getConfiguration().getWarningActions().getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
+					actionCommand = plugin.getConfiguration().getWarningActions()
+						.getCommand((int) plugin.getPlayerWarnStorage().getCount(player))
+						.replace("[player]", player.getName())
+						.replace("[actor]", actor.getName())
+						.replace("[reason]", warning.getReason());
 				} catch (SQLException e) {
 					e.printStackTrace();
 					return;
