@@ -58,6 +58,7 @@ messages:
   notMuted: '[player] is not muted'
   warned: '&cYou have been warned by [actor] for [reason]'
   playerWarned: '[player] has been warned by [actor] for [reason]'
+  warnCooldown: '&cThis player was warned too recently, try again later'
   altsFound: 'Possible alts found:'
   # Info
   bminfoStatsSummary: '[player] has been banned [bans] times, muted [mutes] times and warned [warns] times'

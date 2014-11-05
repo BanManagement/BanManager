@@ -27,6 +27,8 @@ public class DefaultConfig extends Config<BanManager> {
       private boolean kickLoggingEnabled = false;
       @Getter
       private boolean debugEnabled = false;
+      @Getter
+      private long warningCooldown;
 
       public DefaultConfig() {
             super("config.yml");
@@ -43,6 +45,7 @@ public class DefaultConfig extends Config<BanManager> {
             	bypassPlayerIps.add(IPUtils.toLong(ip));
             }
             
+            warningCooldown = conf.getLong("warningCooldown", 0);
             kickLoggingEnabled = conf.getBoolean("logKicks", false);
             debugEnabled = conf.getBoolean("debug", false);
 

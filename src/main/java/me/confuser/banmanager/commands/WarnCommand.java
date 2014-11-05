@@ -17,102 +17,112 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 
 public class WarnCommand extends BukkitCommand<BanManager> {
 
-      public WarnCommand() {
-            super("warn");
-      }
+	public WarnCommand() {
+		super("warn");
+	}
 
-      @Override
-      public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-            if (args.length < 2) {
-                  return false;
-            }
+	@Override
+	public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+		if (args.length < 2) {
+			return false;
+		}
 
-            if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
-                  sender.sendMessage(Message.getString("noSelf"));
-                  return true;
-            }
+		if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
+			sender.sendMessage(Message.getString("noSelf"));
+			return true;
+		}
 
-            // Check if UUID vs name
-            final String playerName = args[0];
-            final boolean isUUID = playerName.length() > 16;
-            final String reason = StringUtils.join(args, " ", 1, args.length);
+		// Check if UUID vs name
+		final String playerName = args[0];
+		final boolean isUUID = playerName.length() > 16;
+		final String reason = StringUtils.join(args, " ", 1, args.length);
 
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-                  @Override
-                  public void run() {
-                        PlayerData player;
+			@Override
+			public void run() {
+				PlayerData player;
 
-                        if (isUUID) {
-                              try {
-                                    player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-                              } catch (SQLException e) {
-                                    sender.sendMessage(Message.get("errorOccurred").toString());
-                                    e.printStackTrace();
-                                    return;
-                              }
-                        } else {
-                              player = plugin.getPlayerStorage().retrieve(playerName, true);
-                        }
+				if (isUUID) {
+					try {
+						player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
+					} catch (SQLException e) {
+						sender.sendMessage(Message.get("errorOccurred").toString());
+						e.printStackTrace();
+						return;
+					}
+				} else {
+					player = plugin.getPlayerStorage().retrieve(playerName, true);
+				}
 
-                        if (player == null) {
-                              sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
-                              return;
-                        }
+				if (player == null) {
+					sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
+					return;
+				}
 
-                        PlayerData actor;
+				try {
+					if (plugin.getPlayerWarnStorage().isRecentlyWarned(player)) {
+						Message.get("warnCooldown").sendTo(sender);
+						return;
+					}
+				} catch (SQLException e) {
+					sender.sendMessage(Message.get("errorOccurred").toString());
+					e.printStackTrace();
+					return;
+				}
 
-                        if (sender instanceof Player) {
-                              actor = plugin.getPlayerStorage().getOnline((Player) sender);
-                        } else {
-                              actor = plugin.getPlayerStorage().getConsole();
-                        }
+				PlayerData actor;
 
-                        boolean isOnline = plugin.getPlayerStorage().isOnline(player.getUUID());
+				if (sender instanceof Player) {
+					actor = plugin.getPlayerStorage().getOnline((Player) sender);
+				} else {
+					actor = plugin.getPlayerStorage().getConsole();
+				}
 
-                        PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
+				boolean isOnline = plugin.getPlayerStorage().isOnline(player.getUUID());
 
-                        boolean created = false;
+				PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
 
-                        try {
-                              created = plugin.getPlayerWarnStorage().addWarning(warning);
-                        } catch (SQLException e) {
-                              sender.sendMessage(Message.get("errorOccurred").toString());
-                              e.printStackTrace();
-                              return;
-                        }
+				boolean created = false;
 
-                        if (!created) {
-                              return;
-                        }
+				try {
+					created = plugin.getPlayerWarnStorage().addWarning(warning);
+				} catch (SQLException e) {
+					sender.sendMessage(Message.get("errorOccurred").toString());
+					e.printStackTrace();
+					return;
+				}
 
-                        if (isOnline) {
-                              Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+				if (!created) {
+					return;
+				}
 
-                              Message warningMessage = Message.get("warned")
-                                      .set("displayName", bukkitPlayer.getDisplayName())
-                                      .set("player", player.getName())
-                                      .set("reason", warning.getReason())
-                                      .set("actor", actor.getName());
+				if (isOnline) {
+					Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 
-                              bukkitPlayer.sendMessage(warningMessage.toString());
-                        }
+					Message warningMessage = Message.get("warned")
+						.set("displayName", bukkitPlayer.getDisplayName())
+						.set("player", player.getName())
+						.set("reason", warning.getReason())
+						.set("actor", actor.getName());
 
-                        Message message = Message.get("playerWarned");
-                        message
-                                .set("player", player.getName())
-                                .set("actor", actor.getName())
-                                .set("reason", warning.getReason());
-                        
-                        if (!sender.hasPermission("bm.notify.warn")) {
-                        	message.sendTo(sender);
-                        }
+					bukkitPlayer.sendMessage(warningMessage.toString());
+				}
 
-                        plugin.getServer().broadcast(message.toString(), "bm.notify.warn");
-                  }
+				Message message = Message.get("playerWarned")
+					.set("player", player.getName())
+					.set("actor", actor.getName())
+					.set("reason", warning.getReason());
 
-            });
+				if (!sender.hasPermission("bm.notify.warn")) {
+					message.sendTo(sender);
+				}
 
-            return true;
-      }
+				plugin.getServer().broadcast(message.toString(), "bm.notify.warn");
+			}
+
+		});
+
+		return true;
+	}
 }
