@@ -119,6 +119,27 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 				}
 
 				plugin.getServer().broadcast(message.toString(), "bm.notify.warn");
+				
+				final String actionCommand;
+				try {
+					actionCommand = plugin.getConfiguration().getWarningActions().getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
+				} catch (SQLException e) {
+					e.printStackTrace();
+					return;
+				}
+				
+				if (actionCommand == null || actionCommand.isEmpty()) {
+					return;
+				}
+				
+				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+					}
+					
+				});
 			}
 
 		});

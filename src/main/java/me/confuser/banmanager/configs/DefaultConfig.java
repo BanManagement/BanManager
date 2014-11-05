@@ -29,6 +29,8 @@ public class DefaultConfig extends Config<BanManager> {
       private boolean debugEnabled = false;
       @Getter
       private long warningCooldown;
+      @Getter
+      private WarningActionsConfig warningActions;
 
       public DefaultConfig() {
             super("config.yml");
@@ -46,6 +48,7 @@ public class DefaultConfig extends Config<BanManager> {
             }
             
             warningCooldown = conf.getLong("warningCooldown", 0);
+            warningActions = new WarningActionsConfig(conf.getConfigurationSection("warningActions"));
             kickLoggingEnabled = conf.getBoolean("logKicks", false);
             debugEnabled = conf.getBoolean("debug", false);
 
