@@ -67,3 +67,13 @@ duplicateIpCheck: true
 
 # Log /kick to the database?
 logKicks: false
+
+# Simply give the permission bm.timelimit.playerMutes.X or bm.timelimit.playerBans.X to apply the time limits
+# replace X with the group defined here, can be anything you like.
+timeLimits:
+  playerMutes:
+    Moderator: 1h
+  playerBans:
+    Moderator: 1d
+  ipBans:
+    Moderator: 1d

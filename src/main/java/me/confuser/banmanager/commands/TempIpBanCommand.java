@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.google.common.net.InetAddresses;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
@@ -46,6 +47,11 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
             } catch (Exception e1) {
                   sender.sendMessage(Message.get("invalidTime").toString());
                   return true;
+            }
+            
+            if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
+            	Message.get("timeLimitError").sendTo(sender);
+            	return true;
             }
 
             final long expires = expiresCheck;

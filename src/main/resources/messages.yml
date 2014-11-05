@@ -15,6 +15,7 @@ messages:
   muted: 'You have been permanently muted for [reason] by [actor]'
   tempMuted: 'You have been temporarily muted for [reason] by [actor] which expires in [expires]'
   configReloaded: '&aConfiguration reloaded successfully!'
+  timeLimitError: '&cYou cannot perform this action for that length of time'
   timeNow: 'now'
   timeYear: 'year'
   timeYears: 'years'

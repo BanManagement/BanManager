@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
@@ -59,6 +60,11 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
             } catch (Exception e1) {
                   sender.sendMessage(Message.get("invalidTime").toString());
                   return true;
+            }
+            
+            if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_BAN, expiresCheck)) {
+            	Message.get("timeLimitError").sendTo(sender);
+            	return true;
             }
 
             final long expires = expiresCheck;

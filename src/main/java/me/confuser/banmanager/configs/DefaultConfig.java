@@ -15,6 +15,8 @@ public class DefaultConfig extends Config<BanManager> {
       @Getter
       private DatabaseConfig externalDb;
       @Getter
+      private TimeLimitsConfig timeLimits;
+      @Getter
       private HashSet<String> mutedBlacklistCommands = new HashSet<>();
       @Getter
       private boolean duplicateIpCheckEnabled = true;
@@ -31,6 +33,7 @@ public class DefaultConfig extends Config<BanManager> {
       public void afterLoad() {
             localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
             //externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
+            timeLimits = new TimeLimitsConfig(conf.getConfigurationSection("timeLimits"));
             duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
             kickLoggingEnabled = conf.getBoolean("logKicks", false);
             debugEnabled = conf.getBoolean("debug", false);
