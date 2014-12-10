@@ -104,21 +104,21 @@
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
 			<artifactId>metrics-lite</artifactId>
-                  <version>R6</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>me.confuser</groupId>
-                  <artifactId>BukkitPluginUtil</artifactId>
-                  <version>1.4.2</version>
-            </dependency>
-            <dependency>
-                  <groupId>org.projectlombok</groupId>
-                  <artifactId>lombok</artifactId>
-                  <version>1.14.2</version>
-                  <scope>provided</scope>
-            </dependency>
-      </dependencies>
+			<version>R6</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>me.confuser</groupId>
+			<artifactId>BukkitPluginUtil</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.14.2</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
