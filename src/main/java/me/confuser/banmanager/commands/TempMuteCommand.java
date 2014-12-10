@@ -129,18 +129,6 @@ public class TempMuteCommand extends BukkitCommand<BanManager> {
                               bukkitPlayer.sendMessage(muteMessage.toString());
                         }
 
-                        Message message = Message.get("playerTempMuted");
-                        message
-                                .set("player", player.getName())
-                                .set("actor", actor.getName())
-                                .set("reason", mute.getReason())
-                                .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
-                        
-                        if (!sender.hasPermission("bm.notify.tempmute")) {
-                        	message.sendTo(sender);
-                        }
-
-                        plugin.getServer().broadcast(message.toString(), "bm.notify.tempmute");
                   }
 
             });

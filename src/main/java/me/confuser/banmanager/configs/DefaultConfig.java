@@ -31,6 +31,8 @@ public class DefaultConfig extends Config<BanManager> {
       private long warningCooldown;
       @Getter
       private WarningActionsConfig warningActions;
+      @Getter
+      private boolean displayNotificationsEnabled = true;
 
       public DefaultConfig() {
             super("config.yml");
@@ -51,6 +53,7 @@ public class DefaultConfig extends Config<BanManager> {
             warningActions = new WarningActionsConfig(conf.getConfigurationSection("warningActions"));
             kickLoggingEnabled = conf.getBoolean("logKicks", false);
             debugEnabled = conf.getBoolean("debug", false);
+            displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
 
             // Run this after startup to ensure all aliases are found
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

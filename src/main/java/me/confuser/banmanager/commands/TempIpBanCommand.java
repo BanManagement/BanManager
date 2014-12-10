@@ -19,124 +19,110 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 
 public class TempIpBanCommand extends BukkitCommand<BanManager> {
 
-      public TempIpBanCommand() {
-            super("tempbanip");
-      }
+	public TempIpBanCommand() {
+		super("tempbanip");
+	}
 
-      @Override
-      public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-            if (args.length < 3) {
-                  return false;
-            }
+	@Override
+	public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+		if (args.length < 3) {
+			return false;
+		}
 
-            final String ipStr = args[0];
-            final boolean isName = !InetAddresses.isInetAddress(ipStr);
+		final String ipStr = args[0];
+		final boolean isName = !InetAddresses.isInetAddress(ipStr);
 
-            if (isName && ipStr.length() > 16) {
-                  Message message = Message.get("invalidIp");
-                  message.set("ip", ipStr);
+		if (isName && ipStr.length() > 16) {
+			Message message = Message.get("invalidIp");
+			message.set("ip", ipStr);
 
-                  sender.sendMessage(message.toString());
-                  return true;
-            }
+			sender.sendMessage(message.toString());
+			return true;
+		}
 
-            long expiresCheck;
+		long expiresCheck;
 
-            try {
-                  expiresCheck = DateUtils.parseDateDiff(args[1], true);
-            } catch (Exception e1) {
-                  sender.sendMessage(Message.get("invalidTime").toString());
-                  return true;
-            }
-            
-            if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
-            	Message.get("timeLimitError").sendTo(sender);
-            	return true;
-            }
+		try {
+			expiresCheck = DateUtils.parseDateDiff(args[1], true);
+		} catch (Exception e1) {
+			sender.sendMessage(Message.get("invalidTime").toString());
+			return true;
+		}
 
-            final long expires = expiresCheck;
-            final String reason = StringUtils.join(args, " ", 2, args.length);
+		if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
+			Message.get("timeLimitError").sendTo(sender);
+			return true;
+		}
 
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+		final long expires = expiresCheck;
+		final String reason = StringUtils.join(args, " ", 2, args.length);
 
-                  @Override
-                  public void run() {
-                        final long ip;
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-                        if (isName) {
-                              PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
-                              if (player == null) {
-                                    sender.sendMessage(Message.get("playerNotFound").set("player", ipStr).toString());
-                                    return;
-                              }
+			@Override
+			public void run() {
+				final long ip;
 
-                              ip = player.getIp();
-                        } else {
-                              ip = IPUtils.toLong(ipStr);
-                        }
+				if (isName) {
+					PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+					if (player == null) {
+						sender.sendMessage(Message.get("playerNotFound").set("player", ipStr).toString());
+						return;
+					}
 
-                        if (plugin.getIpBanStorage().isBanned(ip)) {
-                              Message message = Message.get("ipAlreadyBanned");
-                              message.set("ip", ipStr);
+					ip = player.getIp();
+				} else {
+					ip = IPUtils.toLong(ipStr);
+				}
 
-                              sender.sendMessage(message.toString());
-                              return;
-                        }
+				if (plugin.getIpBanStorage().isBanned(ip)) {
+					Message message = Message.get("ipAlreadyBanned");
+					message.set("ip", ipStr);
 
-                        final PlayerData actor;
+					sender.sendMessage(message.toString());
+					return;
+				}
 
-                        if (sender instanceof Player) {
-                              actor = plugin.getPlayerStorage().getOnline((Player) sender);
-                        } else {
-                              actor = plugin.getPlayerStorage().getConsole();
-                        }
+				final PlayerData actor;
 
-                        final IpBanData ban = new IpBanData(ip, actor, reason, expires);
-                        boolean created = false;
+				if (sender instanceof Player) {
+					actor = plugin.getPlayerStorage().getOnline((Player) sender);
+				} else {
+					actor = plugin.getPlayerStorage().getConsole();
+				}
 
-                        try {
-                              created = plugin.getIpBanStorage().ban(ban);
-                        } catch (SQLException e) {
-                              sender.sendMessage(Message.get("errorOccurred").toString());
-                              e.printStackTrace();
-                              return;
-                        }
+				final IpBanData ban = new IpBanData(ip, actor, reason, expires);
+				boolean created = false;
 
-                        if (!created) {
-                              return;
-                        }
+				try {
+					created = plugin.getIpBanStorage().ban(ban);
+				} catch (SQLException e) {
+					sender.sendMessage(Message.get("errorOccurred").toString());
+					e.printStackTrace();
+					return;
+				}
 
-                        // Find online players
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-                              public void run() {
-                                    Message kickMessage = Message.get("ipTempBanKick")
-                                            .set("reason", ban.getReason())
-                                            .set("actor", actor.getName());
+				if (!created) {
+					return;
+				}
 
-                                    for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-                                          if (IPUtils.toLong(onlinePlayer.getAddress().getAddress()) == ip) {
-                                                onlinePlayer.kickPlayer(kickMessage.toString());
-                                          }
-                                    }
-                              }
-                        });
+				// Find online players
+				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+					public void run() {
+						Message kickMessage = Message.get("ipTempBanKick").set("reason", ban.getReason()).set("actor", actor.getName());
 
-                        Message message = Message.get("ipTempBanned");
-                        message
-                                .set("ip", ipStr)
-                                .set("actor", actor.getName())
-                                .set("reason", ban.getReason())
-                                .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-                        
-                        if (!sender.hasPermission("bm.notify.tempbanip")) {
-                        	message.sendTo(sender);
-                        }
+						for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+							if (IPUtils.toLong(onlinePlayer.getAddress().getAddress()) == ip) {
+								onlinePlayer.kickPlayer(kickMessage.toString());
+							}
+						}
+					}
+				});
 
-                        plugin.getServer().broadcast(message.toString(), "bm.notify.tempbanip");
-                  }
+			}
 
-            });
+		});
 
-            return true;
-      }
+		return true;
+	}
 }

@@ -65,8 +65,15 @@ mutedCommandBlacklist:
 # Displays a warning to those with bm.notify.duplicateips permission if joining players have the same ip as a banned player
 duplicateIpCheck: true
 
+# A list of IPs to exclude from the banned player duplicate check
+bypassDuplicateChecks:
+- 0.0.0.0
+
 # Log /kick to the database?
 logKicks: false
+
+# Broadcasts events to those with bm.notify.X permissions, including command success
+displayNotifications: true
 
 # Simply give the permission bm.timelimit.playerMutes.X or bm.timelimit.playerBans.X to apply the time limits
 # replace X with the group defined here, can be anything you like.
@@ -77,10 +84,6 @@ timeLimits:
     Moderator: 1d
   ipBans:
     Moderator: 1d
-
-# A list of IPs to exclude from the banned player duplicate check
-bypassDuplicateChecks:
-- 0.0.0.0
 
 # To prevent duplicate warnings you can set a cooldown to limit the amount in seconds before a player can be warned again
 # Set to 0 to disable
