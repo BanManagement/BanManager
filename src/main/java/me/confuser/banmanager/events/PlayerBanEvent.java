@@ -11,5 +11,9 @@ public class PlayerBanEvent extends CustomCancellableEvent {
       public PlayerBanEvent(PlayerBanData ban) {
             this.ban = ban;
       }
+      
+      public PlayerBanData getBanData() {
+            return ban;
+      }
 
 }
