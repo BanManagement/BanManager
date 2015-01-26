@@ -6,7 +6,9 @@ scheduler:
   playerBans: 30
   playerMutes: 30
   ipBans: 30
-  external: 120
+  externalPlayerBans: 120
+  externalPlayerMutes: 120
+  externalIpBans: 120
   saveLastChecked: 60
 
 # Don't change these!
@@ -14,4 +16,6 @@ lastChecked:
   playerBans: 0
   playerMutes: 0
   ipBans: 0
-  external: 0
+  externalPlayerBans: 0
+  externalPlayerMutes: 0
+  externalIpBans: 0

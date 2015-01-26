@@ -41,7 +41,7 @@ public class DefaultConfig extends Config<BanManager> {
       @Override
       public void afterLoad() {
             localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
-            //externalDb = new DatabaseConfig(conf.getConfigurationSection("databases.external"));
+            externalDb = new ExternalDatabaseConfig(conf.getConfigurationSection("databases.external"));
             timeLimits = new TimeLimitsConfig(conf.getConfigurationSection("timeLimits"));
             duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
             
