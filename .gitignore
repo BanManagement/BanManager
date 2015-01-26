@@ -3,6 +3,8 @@
 .classpath
 bin
 .project
+.idea
+*.iml
 .externalToolBuilders
 build.xml
 .DS_Store
