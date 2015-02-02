@@ -26,13 +26,7 @@ public class ExternalPlayerBanStorage extends BaseDaoImpl<ExternalPlayerBanData,
     long checkTime = fromTime + DateUtils.getTimeDiff();
 
     QueryBuilder<ExternalPlayerBanData, Integer> query = queryBuilder();
-    Where<ExternalPlayerBanData, Integer> where = query.where();
-    where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
-
-    query.setWhere(where);
+    query.setWhere(queryBuilder().where().ge("created", checkTime));
 
     return query.iterator();
 

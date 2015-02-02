@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class BanIpAllCommand extends BukkitCommand<BanManager> {
 
   public BanIpAllCommand() {
-    super("ipbanall");
+    super("banipall");
   }
 
   @Override

@@ -451,7 +451,7 @@ public class BanManager extends BukkitPlugin {
             ExternalIpBanData>) configuration.getExternalDb().getTable("ipBans");
     externalIpBanStorage = new ExternalIpBanStorage(externalConn, externalIpBanConfig);
 
-    if (!externalIpBanRecordStorage.isTableExists()) {
+    if (!externalIpBanStorage.isTableExists()) {
       TableUtils.createTable(externalConn, externalIpBanConfig);
     }
 

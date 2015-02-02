@@ -26,13 +26,7 @@ public class ExternalPlayerMuteStorage extends BaseDaoImpl<ExternalPlayerMuteDat
     long checkTime = fromTime + DateUtils.getTimeDiff();
 
     QueryBuilder<ExternalPlayerMuteData, Integer> query = queryBuilder();
-    Where<ExternalPlayerMuteData, Integer> where = query.where();
-    where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
-
-    query.setWhere(where);
+    query.setWhere(query.where().ge("created", checkTime));
 
     return query.iterator();
 

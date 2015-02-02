@@ -26,13 +26,7 @@ public class ExternalIpBanStorage extends BaseDaoImpl<ExternalIpBanData, Integer
     long checkTime = fromTime + DateUtils.getTimeDiff();
 
     QueryBuilder<ExternalIpBanData, Integer> query = queryBuilder();
-    Where<ExternalIpBanData, Integer> where = query.where();
-    where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
-
-    query.setWhere(where);
+    query.setWhere(query.where().ge("created", checkTime));
 
     return query.iterator();
 
