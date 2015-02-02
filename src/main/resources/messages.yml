@@ -78,7 +78,7 @@ messages:
       exists: '&c[player] is already banned'
 
   banall:
-    notify: '[player] will been permanently banned across all servers by [actor] for [reason]'
+    notify: '[player] will be permanently banned by [actor] for [reason]'
 
   tempban:
     player:
@@ -87,7 +87,7 @@ messages:
     notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
 
   tempbanall:
-    notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+    notify: '[player] will be temporarily banned for [expires] by [actor] for [reason]'
 
   unban:
     notify: '[player] has been unbanned by [actor]'
@@ -95,7 +95,7 @@ messages:
       noExists: '&c[player] is not banned'
 
   unbanall:
-    notify: '[player] has been unbanned by [actor]'
+    notify: '[player] will be unbanned by [actor]'
 
   mute:
     player:
@@ -106,7 +106,7 @@ messages:
       exists: '&c[player] is already muted'
 
   muteall:
-    notify: '[player] has been permanently muted by [actor] for [reason]'
+    notify: '[player] will be permanently muted by [actor] for [reason]'
 
   tempmute:
     player:
@@ -116,7 +116,7 @@ messages:
       exists: '&c[player] is already muted'
 
   tempmuteall:
-    notify: '&c[player] has been temporarily muted for [expires] by [actor] for [reason]'
+    notify: '&c[player] will be temporarily muted for [expires] by [actor] for [reason]'
 
   unmute:
     notify: '[player] has been unmuted by [actor]'
@@ -124,7 +124,7 @@ messages:
       noExists: '&c[player] is not muted'
 
   unmuteall:
-    notify: '[player] has been unmuted by [actor]'
+    notify: '[player] will be unmuted by [actor]'
 
   banip:
     ip:
@@ -135,7 +135,7 @@ messages:
       exists: '&c[ip] is already banned'
 
   banipall:
-    notify: '[ip] has been permanently banned by [actor] for [reason]'
+    notify: '[ip] will be permanently banned by [actor] for [reason]'
 
   tempbanip:
     ip:
@@ -144,7 +144,7 @@ messages:
     notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
 
   tempbanipall:
-    notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+    notify: '[player] will be temporarily banned for [expires] by [actor] for [reason]'
 
   unbanip:
     notify: '[ip] has been unbanned by [actor]'
@@ -152,7 +152,7 @@ messages:
       noExists: '&c[ip] is not banned'
 
   unbanipall:
-    notify: '[ip] has been unbanned by [actor]'
+    notify: '[ip] will be unbanned by [actor]'
 
   warn:
     player:
