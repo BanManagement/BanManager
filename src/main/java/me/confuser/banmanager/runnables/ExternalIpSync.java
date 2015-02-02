@@ -68,7 +68,7 @@ public class ExternalIpSync implements Runnable {
 
         @Override
         public void run() {
-          Message kickMessage = Message.get("ipBanKick").set("reason", localBan.getReason())
+          Message kickMessage = Message.get("banip.ip.kick").set("reason", localBan.getReason())
                                        .set("actor", localBan.getActor().getName());
 
           for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {

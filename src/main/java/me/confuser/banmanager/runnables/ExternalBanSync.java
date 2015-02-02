@@ -8,6 +8,7 @@ import me.confuser.banmanager.data.external.ExternalPlayerBanRecordData;
 import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.banmanager.storage.external.ExternalPlayerBanRecordStorage;
 import me.confuser.banmanager.storage.external.ExternalPlayerBanStorage;
+import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 
@@ -74,7 +75,16 @@ public class ExternalBanSync implements Runnable {
           // TODO move into a listener
           Player bukkitPlayer = plugin.getServer().getPlayer(localBan.getPlayer().getUUID());
 
-          Message kickMessage = Message.get("banKick")
+          Message kickMessage;
+
+          if (localBan.getExpires() == 0) {
+            kickMessage = Message.get("ban.player.kick");
+          } else {
+            kickMessage = Message.get("tempban.player.kick");
+            kickMessage.set("expires", DateUtils.getDifferenceFormat(localBan.getExpires()));
+          }
+
+          kickMessage
                                        .set("displayName", bukkitPlayer.getDisplayName())
                                        .set("player", localBan.getPlayer().getName())
                                        .set("reason", localBan.getReason())

@@ -87,6 +87,7 @@ public class MuteAllCommand  extends BukkitCommand<BanManager> {
         Message.get("muteall.notify")
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())
+               .set("player", player.getName())
                .sendTo(sender);
       }
 

@@ -86,6 +86,7 @@ public class BanAllCommand extends BukkitCommand<BanManager> {
         Message.get("banall.notify")
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())
+               .set("player", player.getName())
                .sendTo(sender);
       }
 

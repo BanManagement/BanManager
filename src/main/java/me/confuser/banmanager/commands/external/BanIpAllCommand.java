@@ -83,6 +83,7 @@ public class BanIpAllCommand extends BukkitCommand<BanManager> {
         Message.get("banipall.notify")
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())
+               .set("ip", ipStr)
                .sendTo(sender);
       }
 

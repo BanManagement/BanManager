@@ -108,6 +108,7 @@ public class TempMuteAllCommand extends BukkitCommand<BanManager> {
                .set("actor", mute.getActorName())
                .set("reason", mute.getReason())
                .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()))
+               .set("player", player.getName())
                .sendTo(sender);
       }
 
