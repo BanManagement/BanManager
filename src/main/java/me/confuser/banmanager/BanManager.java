@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.commands.external.BanAllCommand;
+import me.confuser.banmanager.commands.external.*;
 import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.data.external.*;
@@ -259,6 +259,16 @@ public class BanManager extends BukkitPlugin {
     if (externalConn == null) return;
 
     new BanAllCommand().register();
+    new TempBanAllCommand().register();
+    new UnbanAllCommand().register();
+
+    new MuteAllCommand().register();
+    new TempMuteAllCommand().register();
+    new UnmuteAllCommand().register();
+
+    new BanIpAllCommand().register();
+    new TempBanIpAllCommand().register();
+    new UnbanIpAllCommand().register();
   }
 
   @Override
