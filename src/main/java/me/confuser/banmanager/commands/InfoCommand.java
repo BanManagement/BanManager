@@ -99,7 +99,7 @@ public class InfoCommand extends BukkitCommand<BanManager> {
         duplicates.append(duplicatePlayer.getName() + ", ");
       }
 
-      duplicates.setLength(duplicates.length() - 2);
+      if (duplicates.length() >= 2) duplicates.setLength(duplicates.length() - 2);
 
       messages.add(duplicates.toString());
     }
