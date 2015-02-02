@@ -1,5 +1,6 @@
 package me.confuser.banmanager.commands;
 
+import com.google.common.base.Strings;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
@@ -121,13 +122,11 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 
         final String actionCommand;
         try {
-          actionCommand = plugin.getConfiguration().getWarningActions()
-                                .getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
-          if (actionCommand != null) {
-            actionCommand.replace("[player]", player.getName())
-                         .replace("[actor]", actor.getName())
-                         .replace("[reason]", warning.getReason());
-          }
+          actionCommand = Strings.nullToEmpty(plugin.getConfiguration().getWarningActions()
+                                .getCommand((int) plugin.getPlayerWarnStorage().getCount(player)))
+                                .replace("[player]", player.getName())
+                                .replace("[actor]", actor.getName())
+                                .replace("[reason]", warning.getReason());
         } catch (SQLException e) {
           e.printStackTrace();
           return;
