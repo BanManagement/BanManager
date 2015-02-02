@@ -91,7 +91,7 @@ public class UnbanIpAllCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message.get("unbanipall.player.notify")
+        Message.get("unbanipall.notify")
                .set("actor", actor.getName())
                .set("ip", ban.getIp())
                .sendTo(sender);

@@ -1,102 +1,101 @@
 package me.confuser.banmanager.commands;
 
-import java.sql.SQLException;
-import java.util.UUID;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 public class UnbanCommand extends BukkitCommand<BanManager> {
 
-      public UnbanCommand() {
-            super("unban");
-      }
+  public UnbanCommand() {
+    super("unban");
+  }
+
+  @Override
+  public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    if (args.length < 1) {
+      return false;
+    }
+
+    // Check if UUID vs name
+    final String playerName = args[0];
+    final boolean isUUID = playerName.length() > 16;
+    boolean isBanned = false;
+
+    if (isUUID) {
+      isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
+    } else {
+      isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
+    }
+
+    if (!isBanned) {
+      Message message = Message.get("unban.error.noExists");
+      message.set("player", playerName);
+
+      sender.sendMessage(message.toString());
+      return true;
+    }
+
+    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
-      public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-            if (args.length < 1) {
-                  return false;
-            }
+      public void run() {
+        PlayerBanData ban;
 
-            // Check if UUID vs name
-            final String playerName = args[0];
-            final boolean isUUID = playerName.length() > 16;
-            boolean isBanned = false;
+        if (isUUID) {
+          ban = plugin.getPlayerBanStorage().getBan(UUID.fromString(playerName));
+        } else {
+          ban = plugin.getPlayerBanStorage().getBan(playerName);
+        }
 
-            if (isUUID) {
-                  isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
-            } else {
-                  isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
-            }
+        if (ban == null) {
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+          return;
+        }
 
-            if (!isBanned) {
-                  Message message = Message.get("notBanned");
-                  message.set("player", playerName);
+        PlayerData actor;
 
-                  sender.sendMessage(message.toString());
-                  return true;
-            }
+        if (sender instanceof Player) {
+          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+        } else {
+          actor = plugin.getPlayerStorage().getConsole();
+        }
 
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        boolean unbanned = false;
 
-                  @Override
-                  public void run() {
-                        PlayerBanData ban;
+        try {
+          unbanned = plugin.getPlayerBanStorage().unban(ban, actor);
+        } catch (SQLException e) {
+          sender.sendMessage(Message.get("sender.error.exception").toString());
+          e.printStackTrace();
+          return;
+        }
 
-                        if (isUUID) {
-                              ban = plugin.getPlayerBanStorage().getBan(UUID.fromString(playerName));
-                        } else {
-                              ban = plugin.getPlayerBanStorage().getBan(playerName);
-                        }
+        if (!unbanned) {
+          return;
+        }
 
-                        if (ban == null) {
-                              sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
-                              return;
-                        }
+        Message message = Message.get("unban.notify");
+        message
+                .set("player", ban.getPlayer().getName())
+                .set("actor", actor.getName());
 
-                        PlayerData actor;
+        if (!sender.hasPermission("bm.notify.unban")) {
+          message.sendTo(sender);
+        }
 
-                        if (sender instanceof Player) {
-                              actor = plugin.getPlayerStorage().getOnline((Player) sender);
-                        } else {
-                              actor = plugin.getPlayerStorage().getConsole();
-                        }
-
-                        boolean unbanned = false;
-
-                        try {
-                              unbanned = plugin.getPlayerBanStorage().unban(ban, actor);
-                        } catch (SQLException e) {
-                              sender.sendMessage(Message.get("errorOccurred").toString());
-                              e.printStackTrace();
-                              return;
-                        }
-
-                        if (!unbanned) {
-                              return;
-                        }
-
-                        Message message = Message.get("playerUnbanned");
-                        message
-                                .set("player", ban.getPlayer().getName())
-                                .set("actor", actor.getName());
-                        
-                        if (!sender.hasPermission("bm.notify.unban")) {
-                        	message.sendTo(sender);
-                        }
-
-                        plugin.getServer().broadcast(message.toString(), "bm.notify.unban");
-                  }
-
-            });
-
-            return true;
+        plugin.getServer().broadcast(message.toString(), "bm.notify.unban");
       }
+
+    });
+
+    return true;
+  }
 }

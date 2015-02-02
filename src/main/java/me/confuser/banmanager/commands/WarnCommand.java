@@ -28,7 +28,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
     }
 
     if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
-      sender.sendMessage(Message.getString("noSelf"));
+      sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
 
@@ -47,7 +47,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
           try {
             player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("errorOccurred").toString());
+            sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
             return;
           }
@@ -56,17 +56,17 @@ public class WarnCommand extends BukkitCommand<BanManager> {
         }
 
         if (player == null) {
-          sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
           return;
         }
 
         try {
           if (plugin.getPlayerWarnStorage().isRecentlyWarned(player)) {
-            Message.get("warnCooldown").sendTo(sender);
+            Message.get("warn.error.cooldown").sendTo(sender);
             return;
           }
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("errorOccurred").toString());
+          sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
           return;
         }
@@ -88,7 +88,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
         try {
           created = plugin.getPlayerWarnStorage().addWarning(warning);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("errorOccurred").toString());
+          sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
           return;
         }
@@ -100,7 +100,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
         if (isOnline) {
           Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 
-          Message warningMessage = Message.get("warned")
+          Message warningMessage = Message.get("warn.player.warned")
                                           .set("displayName", bukkitPlayer.getDisplayName())
                                           .set("player", player.getName())
                                           .set("reason", warning.getReason())
@@ -109,7 +109,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
           bukkitPlayer.sendMessage(warningMessage.toString());
         }
 
-        Message message = Message.get("playerWarned")
+        Message message = Message.get("warn.notify")
                                  .set("player", player.getName())
                                  .set("actor", actor.getName())
                                  .set("reason", warning.getReason());
@@ -123,10 +123,10 @@ public class WarnCommand extends BukkitCommand<BanManager> {
         final String actionCommand;
         try {
           actionCommand = Strings.nullToEmpty(plugin.getConfiguration().getWarningActions()
-                                .getCommand((int) plugin.getPlayerWarnStorage().getCount(player)))
-                                .replace("[player]", player.getName())
-                                .replace("[actor]", actor.getName())
-                                .replace("[reason]", warning.getReason());
+                                                    .getCommand((int) plugin.getPlayerWarnStorage().getCount(player)))
+                                 .replace("[player]", player.getName())
+                                 .replace("[actor]", actor.getName())
+                                 .replace("[reason]", warning.getReason());
         } catch (SQLException e) {
           e.printStackTrace();
           return;

@@ -34,33 +34,33 @@ public class DateUtils {
             if (day > 0) {
                   sb.append(day)
                           .append(" ")
-                          .append(Message.get(day == 1 ? "timeDay" : "timeDays").toString())
+                          .append(Message.get(day == 1 ? "time.day" : "time.days").toString())
                           .append(" ");
             }
 
             if (hours > 0) {
                   sb.append(hours)
                           .append(" ")
-                          .append(Message.get(hours == 1 ? "timeHour" : "timeHours").toString())
+                          .append(Message.get(hours == 1 ? "time.hour" : "time.hours").toString())
                           .append(" ");
             }
 
             if (minutes > 0) {
                   sb.append(minutes)
                           .append(" ")
-                          .append(Message.get(minutes == 1 ? "timeMinute" : "timeMinutes").toString())
+                          .append(Message.get(minutes == 1 ? "time.minute" : "time.minutes").toString())
                           .append(" ");
             }
 
             if (seconds > 0) {
                   sb.append(seconds)
                           .append(" ")
-                          .append(Message.get(seconds == 1 ? "timeSeconds" : "timeSeconds").toString());
+                          .append(Message.get(seconds == 1 ? "time.second" : "time.seconds").toString());
             }
 
             String diff = sb.toString();
 
-            return diff.isEmpty() ? Message.getString("timeNow") : diff;
+            return diff.isEmpty() ? Message.getString("time.now") : diff;
       }
 
       public static String getDifferenceFormat(long timestamp) {

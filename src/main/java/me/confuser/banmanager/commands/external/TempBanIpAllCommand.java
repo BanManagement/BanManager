@@ -44,12 +44,12 @@ public class TempBanIpAllCommand extends BukkitCommand<BanManager> {
     try {
       expiresCheck = DateUtils.parseDateDiff(args[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("invalidTime").toString());
+      sender.sendMessage(Message.get("time.error.invalid").toString());
       return true;
     }
 
     if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
-      Message.get("timeLimitError").sendTo(sender);
+      Message.get("time.error.limit").sendTo(sender);
       return true;
     }
 
@@ -98,7 +98,7 @@ public class TempBanIpAllCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message.get("tempbanipall.player.notify")
+        Message.get("tempbanipall.notify")
                .set("ip", ipStr)
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())

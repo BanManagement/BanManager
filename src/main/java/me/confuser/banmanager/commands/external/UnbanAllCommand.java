@@ -85,7 +85,7 @@ public class UnbanAllCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message.get("unbanall.player.notify")
+        Message.get("unbanall.notify")
                .set("actor", actor.getName())
                .set("player", ban.getPlayer().getName())
                .sendTo(sender);

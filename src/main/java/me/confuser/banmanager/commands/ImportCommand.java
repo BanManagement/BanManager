@@ -1,18 +1,6 @@
 package me.confuser.banmanager.commands;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.UUID;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonReader;
-
 import com.google.common.net.InetAddresses;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
@@ -20,249 +8,278 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonReader;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 public class ImportCommand extends BukkitCommand<BanManager> {
 
-      private boolean importInProgress = false;
+  private boolean importInProgress = false;
 
-      public ImportCommand() {
-            super("bmimport");
-      }
+  public ImportCommand() {
+    super("bmimport");
+  }
+
+  @Override
+  public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
+    if (args.length != 1) {
+      return false;
+    }
+
+    if (!args[0].equals("player") && !args[0].equals("ip") && !args[0].equals("players") && !args[0].equals("ips")) {
+      return false;
+    }
+    if (importInProgress) {
+      sender.sendMessage(Message.getString("import.error.inProgress"));
+      return true;
+    }
+
+    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
-      public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
-            if (args.length != 1) {
-                  return false;
-            }
+      public void run() {
+        String finishedMessage = "";
 
-            if (!args[0].equals("player") && !args[0].equals("ip") && !args[0].equals("players") && !args[0].equals("ips")) {
-                  return false;
-            }
-            if (importInProgress) {
-                  sender.sendMessage(Message.get("importInProgressError").toString());
-                  return true;
-            }
+        if (args[0].startsWith("player")) {
+          sender.sendMessage(Message.getString("import.player.started"));
+          finishedMessage = Message.getString("import.player.finished");
 
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+          importPlayers();
+        } else if (args[0].startsWith("ip")) {
+          sender.sendMessage(Message.getString("import.ip.started"));
+          finishedMessage = Message.getString("import.player.finished");
 
-                  @Override
-                  public void run() {
-                        if (args[0].startsWith("player")) {
-                              importPlayers();
-                        } else if (args[0].startsWith("ip")) {
-                              importIps();
-                        }
-                  }
+          importIps();
+        }
 
-            });
-
-            return true;
+        if (sender != null) {
+          sender.sendMessage(finishedMessage);
+        }
       }
 
-      private void importPlayers() {
-            importInProgress = true;
+    });
 
-            try {
-                  JsonReader reader = new JsonReader(new FileReader("banned-players.json"));
-                  reader.beginArray();
+    return true;
+  }
 
-                  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+  private void importPlayers() {
+    importInProgress = true;
 
-                  while (reader.hasNext()) {
-                        reader.beginObject();
+    plugin.getLogger().info(Message.getString("import.player.started"));
 
-                        UUID uuid = null;
-                        String name = null;
-                        Long created = null;
-                        PlayerData actor = null;
-                        Long expires = null;
-                        String reason = null;
+    try {
+      JsonReader reader = new JsonReader(new FileReader("banned-players.json"));
+      reader.beginArray();
 
-                        while (reader.hasNext()) {
-                              switch (reader.nextName()) {
-                                    case "uuid":
-                                          uuid = UUID.fromString(reader.nextString());
-                                          break;
-                                    case "name":
-                                          name = reader.nextString();
-                                          break;
-                                    case "created":
-                                          try {
-                                                created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
-                                          } catch (ParseException e) {
-                                                e.printStackTrace();
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-                                                continue;
-                                          }
-                                          break;
-                                    case "source":
-                                          String sourceName = reader.nextString();
+      while (reader.hasNext()) {
+        reader.beginObject();
 
-                                          if (sourceName.equals("CONSOLE")) {
-                                                actor = plugin.getPlayerStorage().getConsole();
-                                          } else {
-                                                actor = plugin.getPlayerStorage().retrieve(sourceName, false);
+        UUID uuid = null;
+        String name = null;
+        Long created = null;
+        PlayerData actor = null;
+        Long expires = null;
+        String reason = null;
 
-                                                if (actor == null) {
-                                                      actor = plugin.getPlayerStorage().getConsole();
-                                                }
-                                          }
-                                          break;
-                                    case "expires":
-                                          String expiresStr = reader.nextString();
+        while (reader.hasNext()) {
+          switch (reader.nextName()) {
+            case "uuid":
+              uuid = UUID.fromString(reader.nextString());
+              break;
+            case "name":
+              name = reader.nextString();
+              break;
+            case "created":
+              try {
+                created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
+              } catch (ParseException e) {
+                e.printStackTrace();
 
-                                          if (expiresStr.equals("forever")) {
-                                                expires = 0L;
-                                          } else {
-                                                try {
-                                                      created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
-                                                } catch (ParseException e) {
-                                                      e.printStackTrace();
+                continue;
+              }
+              break;
+            case "source":
+              String sourceName = reader.nextString();
 
-                                                      continue;
-                                                }
-                                          }
-                                          break;
-                                    case "reason":
-                                          reason = reader.nextString();
-                                          break;
-                              }
-                        }
+              if (sourceName.equals("CONSOLE")) {
+                actor = plugin.getPlayerStorage().getConsole();
+              } else {
+                actor = plugin.getPlayerStorage().retrieve(sourceName, false);
 
-                        reader.endObject();
+                if (actor == null) {
+                  actor = plugin.getPlayerStorage().getConsole();
+                }
+              }
+              break;
+            case "expires":
+              String expiresStr = reader.nextString();
 
-                        if (uuid == null || name == null || created == null || actor == null || expires == null || reason == null) {
-                              continue;
-                        }
-
-                        if (plugin.getPlayerBanStorage().isBanned(uuid)) {
-                              continue;
-                        }
-
-                        PlayerData player = plugin.getPlayerStorage().retrieve(name, true);
-
-                        if (player == null) {
-                              plugin.getLogger().warning("Unable to import " + name + " due to look up issue");
-                              continue;
-                        }
-
-                        PlayerBanData ban = new PlayerBanData(player, actor, reason, expires, created);
-                        try {
-                              plugin.getPlayerBanStorage().create(ban);
-                        } catch (SQLException e) {
-                              e.printStackTrace();
-                              continue;
-                        }
-                  }
-
-                  reader.endArray();
-
-                  reader.close();
-            } catch (IOException e) {
+              if (expiresStr.equals("forever")) {
+                expires = 0L;
+              } else {
+                try {
+                  created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
+                } catch (ParseException e) {
                   e.printStackTrace();
-            }
 
-            importInProgress = false;
+                  continue;
+                }
+              }
+              break;
+            case "reason":
+              reason = reader.nextString();
+              break;
+          }
+        }
+
+        reader.endObject();
+
+        if (uuid == null || name == null || created == null || actor == null || expires == null || reason == null) {
+          continue;
+        }
+
+        if (plugin.getPlayerBanStorage().isBanned(uuid)) {
+          continue;
+        }
+
+        PlayerData player = plugin.getPlayerStorage().retrieve(name, true);
+
+        if (player == null) {
+          plugin.getLogger().warning("Unable to import " + name + " due to look up issue");
+          continue;
+        }
+
+        PlayerBanData ban = new PlayerBanData(player, actor, reason, expires, created);
+        try {
+          plugin.getPlayerBanStorage().create(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+          continue;
+        }
       }
 
-      private void importIps() {
-            importInProgress = true;
+      reader.endArray();
 
-            try {
-                  JsonReader reader = new JsonReader(new FileReader("banned-ips.json"));
-                  reader.beginArray();
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-                  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    importInProgress = false;
+    plugin.getLogger().info(Message.getString("import.player.finished"));
+  }
 
-                  while (reader.hasNext()) {
-                        reader.beginObject();
+  private void importIps() {
+    importInProgress = true;
 
-                        String ipStr = null;
-                        Long created = null;
-                        PlayerData actor = null;
-                        Long expires = null;
-                        String reason = null;
+    plugin.getLogger().info(Message.getString("import.ip.started"));
 
-                        while (reader.hasNext()) {
-                              switch (reader.nextName()) {
-                                    case "ip":
-                                          ipStr = reader.nextString();
-                                          break;
-                                    case "created":
-                                          try {
-                                                created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
-                                          } catch (ParseException e) {
-                                                e.printStackTrace();
+    try {
+      JsonReader reader = new JsonReader(new FileReader("banned-ips.json"));
+      reader.beginArray();
 
-                                                continue;
-                                          }
-                                          break;
-                                    case "source":
-                                          String sourceName = reader.nextString();
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-                                          if (sourceName.equals("CONSOLE")) {
-                                                actor = plugin.getPlayerStorage().getConsole();
-                                          } else {
-                                                actor = plugin.getPlayerStorage().retrieve(sourceName, false);
+      while (reader.hasNext()) {
+        reader.beginObject();
 
-                                                if (actor == null) {
-                                                      actor = plugin.getPlayerStorage().getConsole();
-                                                }
-                                          }
-                                          break;
-                                    case "expires":
-                                          String expiresStr = reader.nextString();
+        String ipStr = null;
+        Long created = null;
+        PlayerData actor = null;
+        Long expires = null;
+        String reason = null;
 
-                                          if (expiresStr.equals("forever")) {
-                                                expires = 0L;
-                                          } else {
-                                                try {
-                                                      created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
-                                                } catch (ParseException e) {
-                                                      e.printStackTrace();
+        while (reader.hasNext()) {
+          switch (reader.nextName()) {
+            case "ip":
+              ipStr = reader.nextString();
+              break;
+            case "created":
+              try {
+                created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
+              } catch (ParseException e) {
+                e.printStackTrace();
 
-                                                      continue;
-                                                }
-                                          }
-                                          break;
-                                    case "reason":
-                                          reason = reader.nextString();
-                                          break;
-                              }
-                        }
+                continue;
+              }
+              break;
+            case "source":
+              String sourceName = reader.nextString();
 
-                        reader.endObject();
+              if (sourceName.equals("CONSOLE")) {
+                actor = plugin.getPlayerStorage().getConsole();
+              } else {
+                actor = plugin.getPlayerStorage().retrieve(sourceName, false);
 
-                        if (ipStr == null || created == null || actor == null || expires == null || reason == null) {
-                              continue;
-                        }
+                if (actor == null) {
+                  actor = plugin.getPlayerStorage().getConsole();
+                }
+              }
+              break;
+            case "expires":
+              String expiresStr = reader.nextString();
 
-                        if (!InetAddresses.isInetAddress(ipStr)) {
-                              continue;
-                        }
-
-                        long ip = IPUtils.toLong(ipStr);
-
-                        if (plugin.getIpBanStorage().isBanned(ip)) {
-                              continue;
-                        }
-
-                        IpBanData ban = new IpBanData(ip, actor, reason, expires, created);
-                        try {
-                              plugin.getIpBanStorage().create(ban);
-                        } catch (SQLException e) {
-                              e.printStackTrace();
-                              continue;
-                        }
-                  }
-
-                  reader.endArray();
-
-                  reader.close();
-            } catch (IOException e) {
+              if (expiresStr.equals("forever")) {
+                expires = 0L;
+              } else {
+                try {
+                  created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
+                } catch (ParseException e) {
                   e.printStackTrace();
-            }
 
-            importInProgress = false;
+                  continue;
+                }
+              }
+              break;
+            case "reason":
+              reason = reader.nextString();
+              break;
+          }
+        }
+
+        reader.endObject();
+
+        if (ipStr == null || created == null || actor == null || expires == null || reason == null) {
+          continue;
+        }
+
+        if (!InetAddresses.isInetAddress(ipStr)) {
+          continue;
+        }
+
+        long ip = IPUtils.toLong(ipStr);
+
+        if (plugin.getIpBanStorage().isBanned(ip)) {
+          continue;
+        }
+
+        IpBanData ban = new IpBanData(ip, actor, reason, expires, created);
+        try {
+          plugin.getIpBanStorage().create(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+          continue;
+        }
       }
+
+      reader.endArray();
+
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    importInProgress = false;
+
+    plugin.getLogger().info(Message.getString("import.ip.finished"));
+  }
 }

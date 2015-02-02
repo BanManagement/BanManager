@@ -80,7 +80,7 @@ public class BanIpAllCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message.get("banipall.player.notify")
+        Message.get("banipall.notify")
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())
                .sendTo(sender);

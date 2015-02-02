@@ -85,7 +85,7 @@ public class UnmuteAllCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message.get("unmuteall.player.notify")
+        Message.get("unmuteall.notify")
                .set("actor", actor.getName())
                .set("player", mute.getPlayer().getName())
                .sendTo(sender);

@@ -1,9 +1,5 @@
 package me.confuser.banmanager.listeners;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
@@ -13,70 +9,75 @@ import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 public class BanListener extends Listeners<BanManager> {
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void notifyOnBan(PlayerBanEvent event) {
-		PlayerBanData ban = event.getBan();
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void notifyOnBan(PlayerBanEvent event) {
+    PlayerBanData ban = event.getBan();
 
-		String broadcastPermission;
-		Message message;
+    String broadcastPermission;
+    Message message;
 
-		if (ban.getExpires() == 0) {
-			broadcastPermission = "bm.notify.ban";
-			message = Message.get("playerBanned");
-		} else {
-			broadcastPermission = "bm.notify.tempban";
-			message = Message.get("playerTempBanned");
-			message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-		}
+    if (ban.getExpires() == 0) {
+      broadcastPermission = "bm.notify.ban";
+      message = Message.get("ban.notify");
+    } else {
+      broadcastPermission = "bm.notify.tempban";
+      message = Message.get("tempban.notify");
+      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
 
-		message.set("player", ban.getPlayer().getName()).set("actor", ban.getActor().getName()).set("reason", ban.getReason());
+    message.set("player", ban.getPlayer().getName()).set("actor", ban.getActor().getName())
+           .set("reason", ban.getReason());
 
-		plugin.getServer().broadcast(message.toString(), broadcastPermission);
+    plugin.getServer().broadcast(message.toString(), broadcastPermission);
 
-		// Check if the sender is online and does not have the
-		// broadcastPermission
-		Player player;
-		if ((player = plugin.getServer().getPlayer(ban.getActor().getUUID())) == null) {
-			return;
-		}
+    // Check if the sender is online and does not have the
+    // broadcastPermission
+    Player player;
+    if ((player = plugin.getServer().getPlayer(ban.getActor().getUUID())) == null) {
+      return;
+    }
 
-		if (!player.hasPermission(broadcastPermission)) {
-			message.sendTo(player);
-		}
-	}
+    if (!player.hasPermission(broadcastPermission)) {
+      message.sendTo(player);
+    }
+  }
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void notifyOnIpBan(IpBanEvent event) {
-		IpBanData ban = event.getBan();
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void notifyOnIpBan(IpBanEvent event) {
+    IpBanData ban = event.getBan();
 
-		String broadcastPermission;
-		Message message;
+    String broadcastPermission;
+    Message message;
 
-		if (ban.getExpires() == 0) {
-			broadcastPermission = "bm.notify.ipban";
-			message = Message.get("ipBanned");
-		} else {
-			broadcastPermission = "bm.notify.iptempban";
-			message = Message.get("ipTempBanned");
-			message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-		}
+    if (ban.getExpires() == 0) {
+      broadcastPermission = "bm.notify.ipban";
+      message = Message.get("ip.notify");
+    } else {
+      broadcastPermission = "bm.notify.iptempban";
+      message = Message.get("tempbanip.notify");
+      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
 
-		message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName()).set("reason", ban.getReason());
+    message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName())
+           .set("reason", ban.getReason());
 
-		plugin.getServer().broadcast(message.toString(), broadcastPermission);
+    plugin.getServer().broadcast(message.toString(), broadcastPermission);
 
-		// Check if the sender is online and does not have the
-		// broadcastPermission
-		Player player;
-		if ((player = plugin.getServer().getPlayer(ban.getActor().getUUID())) == null) {
-			return;
-		}
+    // Check if the sender is online and does not have the
+    // broadcastPermission
+    Player player;
+    if ((player = plugin.getServer().getPlayer(ban.getActor().getUUID())) == null) {
+      return;
+    }
 
-		if (!player.hasPermission(broadcastPermission)) {
-			message.sendTo(player);
-		}
-	}
+    if (!player.hasPermission(broadcastPermission)) {
+      message.sendTo(player);
+    }
+  }
 }
