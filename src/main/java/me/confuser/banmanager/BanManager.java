@@ -162,7 +162,7 @@ public class BanManager extends BukkitPlugin {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    getLogger().info("Launching conversion procedres");
+    getLogger().info("Launching conversion process");
     new UUIDConvert(conversionConn);
   }
 
