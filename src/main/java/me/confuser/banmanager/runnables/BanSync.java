@@ -64,7 +64,7 @@ public class BanSync implements Runnable {
                         public void run() {
                               Player bukkitPlayer = plugin.getServer().getPlayer(ban.getPlayer().getUUID());
 
-                              Message kickMessage = Message.get("banKick")
+                              Message kickMessage = Message.get("ban.player.kick")
                                       .set("displayName", bukkitPlayer.getDisplayName())
                                       .set("player", ban.getPlayer().getName())
                                       .set("reason", ban.getReason())
