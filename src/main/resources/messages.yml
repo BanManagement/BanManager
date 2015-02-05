@@ -163,3 +163,7 @@ messages:
     error:
       cooldown: '&cThis player was warned too recently, try again later'
 
+  dwarn:
+    notify: 'The most recent warning for [player] has been deleted'
+    error:
+      noWarnings: '&c[player] has no warnings to delete'
