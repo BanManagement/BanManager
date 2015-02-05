@@ -7,12 +7,15 @@ import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class UnmuteCommand extends BukkitCommand<BanManager> {
+public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompleter {
 
   public UnmuteCommand() {
     super("unmute");
@@ -98,5 +101,24 @@ public class UnmuteCommand extends BukkitCommand<BanManager> {
     });
 
     return true;
+  }
+
+  @Override
+  public List<String> onTabComplete(CommandSender sender, Command command, String commandName, String[] args) {
+
+    ArrayList<String> mostLike = new ArrayList<>();
+
+    if (!sender.hasPermission(command.getPermission())) return mostLike;
+    if (args.length != 1) return mostLike;
+
+    String nameSearch = args[0].toLowerCase();
+
+    for (PlayerMuteData ban : plugin.getPlayerMuteStorage().getMutes().values()) {
+      if (ban.getPlayer().getName().toLowerCase().startsWith(nameSearch)) {
+        mostLike.add(ban.getPlayer().getName());
+      }
+    }
+
+    return mostLike;
   }
 }
