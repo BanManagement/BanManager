@@ -71,7 +71,7 @@ commands:
     permission: bm.command.unbanipall
   bmimport:
     description: "imports bans"
-    usage: "/bmimport <player || ip> <reason>"
+    usage: "/bmimport <player || ip>"
     aliases: [bmbanimport]
     permission: bm.command.import
   kick:
