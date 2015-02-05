@@ -141,25 +141,24 @@ permissions:
     bm.*:
         description: Gives access to all BanManager commands
         children:
-            bm.ban: true
-            bm.unban: true
-            bm.tempban: true
-            bm.exempt: true
-            bm.bminfo: true
-            bm.notify: true
-            bm.banip: true
-            bm.tempbanip: true
-            bm.unbanip: true
-            bm.import: true
-            bm.kick: true
+            bm.command.ban: true
+            bm.command.unban: true
+            bm.command.tempban: true
+            bm.command.exempt: true
+            bm.command.bminfo: true
+            bm.command.banip: true
+            bm.command.tempbanip: true
+            bm.command.unbanip: true
+            bm.command.import: true
+            bm.command.kick: true
             bm.update: true
-            bm.mute: true
-            bm.tempmute: true
-            bm.unmute: true
-            bm.banoffline: true
-            bm.tempbanoffline: true
-            bm.warn: true
-            bm.clear: true
+            bm.command.mute: true
+            bm.command.tempmute: true
+            bm.command.unmute: true
+            bm.command.ban.offline: true
+            bm.command.tempban.offline: true
+            bm.command.warn: true
+            bm.command.clear: true
     bm.notify.*:
         description: Players with this permission will be notified of bans
         default: op
@@ -188,57 +187,54 @@ permissions:
           bm.exempt.tempipban: true
           bm.exempt.tempmute: true
           bm.exempt.warn: true
-    bm.unban:
+    bm.command.unban:
         description: Allows you to unban a user
         default: op
-    bm.ban:
+    bm.command.ban:
         description: Allows you to ban a user
         default: op
-    bm.banoffline:
+    bm.command.ban.offline:
         description: Allows you to ban an offline user
         default: op
-    bm.tempban:
+    bm.command.tempban:
         description: Allows you to tempban a user
         default: op
-    bm.tempbanoffline:
+    bm.command.tempban.offline:
         description: Allows you to tempban an offline user
         default: op
-    bm.exempt:
-        description: Prevents this user from being banned or kicked
-        default: op
-    bm.bminfo:
+    bm.command.info:
         description: Allows you to see information on players
         default: op
-    bm.banip:
+    bm.command.banip:
         description: Allows you to ban an ip
         default: op
-    bm.tempbanip:
+    bm.command.tempbanip:
         description: Allows you to temban an ip
         default: op
-    bm.unbanip:
+    bm.command.unbanip:
         description: Allows you to unban an ip
         default: op
-    bm.import:
+    bm.command.import:
         description: Allows importing of banned players and ips from Bukkit
         default: op
-    bm.kick:
+    bm.command.kick:
         description: Allows a player to kick another player
         default: op
-    bm.update:
+    bm.command.update:
         description: Notifies player of a plugin update
         default: op
-    bm.mute:
+    bm.command.mute:
         description: Allows you to mute a player
         default: op
-    bm.tempmute:
+    bm.command.tempmute:
         description: Allows you to temp mute a player
         default: op
-    bm.unmute:
+    bm.command.unmute:
         description: Allows you to unmute a player
         default: op
-    bm.warn:
+    bm.command.warn:
         description: Allows you to warn a player
         default: op
-    bm.clear:
+    bm.command.clear:
         description: Allows you to clear a player's records
         default: op
