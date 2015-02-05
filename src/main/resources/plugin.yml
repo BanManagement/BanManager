@@ -118,10 +118,6 @@ commands:
     description: "Reloads from the config everything except database connection info"
     usage: "/bmreload"
     permission: bm.command.reload
-  bmtools:
-    description: "Collection of random utilities"
-    usage: "/bmtools <tool>"
-    permission: bm.command.tools
   warn:
     description: "Warn a player"
     usage: "/warn <player> <reason>"
