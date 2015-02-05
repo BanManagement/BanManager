@@ -57,7 +57,7 @@ public class BanListener extends Listeners<BanManager> {
 
     if (ban.getExpires() == 0) {
       broadcastPermission = "bm.notify.ipban";
-      message = Message.get("ip.notify");
+      message = Message.get("banip.notify");
     } else {
       broadcastPermission = "bm.notify.iptempban";
       message = Message.get("tempbanip.notify");
