@@ -52,6 +52,25 @@ public class TempMuteCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
+    Player onlinePlayer;
+
+    if (isUUID) {
+      onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+    } else {
+      onlinePlayer = plugin.getServer().getPlayer(playerName);
+    }
+
+    if (onlinePlayer == null) {
+      if (!sender.hasPermission("bm.command.tempmute.offline")) {
+        sender.sendMessage(Message.getString("sender.error.offlinePermission"));
+        return true;
+      }
+    } else if (!sender.hasPermission("bm.exempt.override.tempmute")
+            && onlinePlayer.hasPermission("bm.exempt.tempmute")) {
+      Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
+      return true;
+    }
+
     long expiresCheck;
 
     try {

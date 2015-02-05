@@ -50,6 +50,24 @@ public class MuteCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
+    Player onlinePlayer;
+
+    if (isUUID) {
+      onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+    } else {
+      onlinePlayer = plugin.getServer().getPlayer(playerName);
+    }
+
+    if (onlinePlayer == null) {
+      if (!sender.hasPermission("bm.command.mute.offline")) {
+        sender.sendMessage(Message.getString("sender.error.offlinePermission"));
+        return true;
+      }
+    } else if (!sender.hasPermission("bm.exempt.override.mute") && onlinePlayer.hasPermission("bm.exempt.mute")) {
+      Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
+      return true;
+    }
+
     final String reason = StringUtils.join(args, " ", 1, args.length);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {

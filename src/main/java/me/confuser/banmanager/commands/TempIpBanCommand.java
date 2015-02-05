@@ -39,6 +39,16 @@ public class TempIpBanCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
+    if (isName) {
+      Player onlinePlayer = plugin.getServer().getPlayer(ipStr);
+
+      if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.banip")
+              && onlinePlayer.hasPermission("bm.exempt.banip")) {
+        Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
+        return true;
+      }
+    }
+
     long expiresCheck;
 
     try {

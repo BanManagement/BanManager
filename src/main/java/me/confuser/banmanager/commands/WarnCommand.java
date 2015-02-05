@@ -37,6 +37,24 @@ public class WarnCommand extends BukkitCommand<BanManager> {
     final boolean isUUID = playerName.length() > 16;
     final String reason = StringUtils.join(args, " ", 1, args.length);
 
+    Player onlinePlayer;
+
+    if (isUUID) {
+      onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+    } else {
+      onlinePlayer = plugin.getServer().getPlayer(playerName);
+    }
+
+    if (onlinePlayer == null) {
+      if (!sender.hasPermission("bm.command.warn.offline")) {
+        sender.sendMessage(Message.getString("sender.error.offlinePermission"));
+        return true;
+      }
+    } else if (!sender.hasPermission("bm.exempt.override.warn") && onlinePlayer.hasPermission("bm.exempt.warn")) {
+      Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
+      return true;
+    }
+
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override

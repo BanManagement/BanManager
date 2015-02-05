@@ -37,6 +37,8 @@ messages:
       noSelf: '&cYou cannot perform that action on yourself!'
       exception: '&cAn error occured whilst attempting to perform that command. Please check the console for the error'
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
+      offlinePermission: '&cYou may not perform this action on an offline player'
+      exempt: '&c[player] is exempt from that action'
 # Commands
   alts:
     header: 'Possible alts found:'

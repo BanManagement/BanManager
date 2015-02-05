@@ -52,6 +52,24 @@ public class TempBanCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
+    Player onlinePlayer;
+
+    if (isUUID) {
+      onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+    } else {
+      onlinePlayer = plugin.getServer().getPlayer(playerName);
+    }
+
+    if (onlinePlayer == null) {
+      if (!sender.hasPermission("bm.command.tempban.offline")) {
+        sender.sendMessage(Message.getString("sender.error.offlinePermission"));
+        return true;
+      }
+    } else if (!sender.hasPermission("bm.exempt.override.tempban") && onlinePlayer.hasPermission("bm.exempt.tempban")) {
+      Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
+      return true;
+    }
+
     long expiresCheck;
 
     try {

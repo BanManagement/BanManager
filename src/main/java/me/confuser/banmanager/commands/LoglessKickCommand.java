@@ -5,7 +5,6 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,13 +27,16 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
     }
 
     String playerName = args[0];
-    Player player = Bukkit.getPlayer(playerName);
+    Player player = plugin.getServer().getPlayer(playerName);
 
     if (player == null) {
       Message message = Message.get("sender.error.offline")
                                .set("[player]", playerName);
 
       sender.sendMessage(message.toString());
+      return true;
+    } else if (!sender.hasPermission("bm.exempt.override.kick") && player.hasPermission("bm.exempt.kick")) {
+      Message.get("sender.error.exempt").set("player", player.getName()).sendTo(sender);
       return true;
     }
 
