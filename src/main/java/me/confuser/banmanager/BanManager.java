@@ -257,6 +257,8 @@ public class BanManager extends BukkitPlugin {
     new WarnCommand().register();
     new DeleteLastWarningCommand().register();
 
+    new ClearCommand().register();
+
     if (externalConn == null) return;
 
     new BanAllCommand().register();

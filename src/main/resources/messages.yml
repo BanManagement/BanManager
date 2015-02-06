@@ -167,3 +167,8 @@ messages:
     notify: 'The most recent warning for [player] has been deleted'
     error:
       noWarnings: '&c[player] has no warnings to delete'
+
+  bmclear:
+    notify: '[player] has had their [type] cleared'
+    error:
+      invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks or warnings'
