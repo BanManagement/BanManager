@@ -1,5 +1,6 @@
 package me.confuser.banmanager.commands;
 
+import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -77,23 +78,29 @@ public class ClearCommand extends BukkitCommand<BanManager> {
 
         for (String type : types) {
           try {
+            DeleteBuilder builder = null;
             switch (type) {
               case "banrecords":
-                plugin.getPlayerBanRecordStorage().deleteBuilder().where().eq("player_id", player).query();
+                builder = plugin.getPlayerBanRecordStorage().deleteBuilder();
+
                 break;
 
               case "muterecords":
-                plugin.getPlayerMuteRecordStorage().deleteBuilder().where().eq("player_id", player).query();
+                builder = plugin.getPlayerMuteRecordStorage().deleteBuilder();
+
                 break;
 
               case "kicks":
-                plugin.getPlayerKickStorage().deleteBuilder().where().eq("player_id", player).query();
+                builder = plugin.getPlayerKickStorage().deleteBuilder();
                 break;
 
               case "warnings":
-                plugin.getPlayerWarnStorage().deleteBuilder().where().eq("player_id", player).query();
+                builder = plugin.getPlayerWarnStorage().deleteBuilder();
                 break;
             }
+
+            builder.where().eq("player_id", player);
+            builder.delete();
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();

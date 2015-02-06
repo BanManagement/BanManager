@@ -130,7 +130,7 @@ commands:
     permission: bm.command.alts
   bmclear:
     description: "Clear a player's records"
-    usage: "/bmclear <type> <player>"
+    usage: "/bmclear <player> [type]"
     permission: bm.command.clear
   dwarn:
     description: "Delete a player's last warning"
