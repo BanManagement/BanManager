@@ -3,6 +3,7 @@ package me.confuser.banmanager.data;
 import java.net.InetAddress;
 import java.util.UUID;
 
+import lombok.Setter;
 import me.confuser.banmanager.storage.PlayerStorage;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 import me.confuser.banmanager.util.IPUtils;
@@ -23,6 +24,7 @@ public class PlayerData {
       private byte[] id;
       @DatabaseField(index = true, width = 16, columnDefinition = "VARCHAR(16) NOT NULL")
       @Getter
+      @Setter
       private String name;
       @Getter
       @DatabaseField(index = true, columnDefinition = "INT UNSIGNED NOT NULL")

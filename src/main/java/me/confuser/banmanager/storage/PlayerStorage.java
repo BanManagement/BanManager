@@ -76,6 +76,36 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return console;
   }
 
+  @Override
+  public CreateOrUpdateStatus createOrUpdate(PlayerData data) throws SQLException {
+    CreateOrUpdateStatus status = super.createOrUpdate(data);
+
+    // Check for duplicates
+    List<PlayerData> results = queryForEq("name", data.getName());
+    if (results.size() == 1) return status;
+
+    // Duplicates found!
+    for (PlayerData player : results) {
+      if (player.getUUID().equals(data.getUUID())) continue;
+
+      String newName;
+
+      try {
+        newName = UUIDUtils.getCurrentName(player.getUUID());
+      } catch (Exception e) {
+        e.printStackTrace();
+        continue;
+      }
+
+      if (newName == null || newName.isEmpty() || player.getName().equals(newName)) continue;
+
+      player.setName(newName);
+      update(player);
+    }
+
+    return status;
+  }
+
   public PlayerData createIfNotExists(UUID uuid, String name) throws SQLException {
     PlayerData player = queryForId(UUIDUtils.toBytes(uuid));
 
