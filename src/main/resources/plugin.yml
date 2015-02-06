@@ -138,103 +138,115 @@ commands:
     aliases: [bmdwarn]
     permission: bm.command.dwarn
 permissions:
-    bm.*:
-        description: Gives access to all BanManager commands
-        children:
-            bm.command.ban: true
-            bm.command.unban: true
-            bm.command.tempban: true
-            bm.command.exempt: true
-            bm.command.bminfo: true
-            bm.command.banip: true
-            bm.command.tempbanip: true
-            bm.command.unbanip: true
-            bm.command.import: true
-            bm.command.kick: true
-            bm.update: true
-            bm.command.mute: true
-            bm.command.tempmute: true
-            bm.command.unmute: true
-            bm.command.ban.offline: true
-            bm.command.tempban.offline: true
-            bm.command.warn: true
-            bm.command.clear: true
-    bm.notify.*:
-        description: Players with this permission will be notified of bans
-        default: op
-        children:
-          bm.notify.ban: true
-          bm.notify.ipban: true
-          bm.notify.kick: true
-          bm.notify.mute: true
-          bm.notify.tempban: true
-          bm.notify.tempipban: true
-          bm.notify.tempmute: true
-          bm.notify.unban: true
-          bm.notify.unipban: true
-          bm.notify.unmute: true
-          bm.notify.warn: true
-          bm.notify.duplicateips: true
-    bm.exempt.*:
-        description: Players with this permission cannot be banned, kicked or muted
-        default: op
-        children:
-          bm.exempt.ban: true
-          bm.exempt.banip: true
-          bm.exempt.kick: true
-          bm.exempt.mute: true
-          bm.exempt.tempban: true
-          bm.exempt.tempipban: true
-          bm.exempt.tempmute: true
-          bm.exempt.warn: true
-    bm.command.unban:
-        description: Allows you to unban a user
-        default: op
-    bm.command.ban:
-        description: Allows you to ban a user
-        default: op
-    bm.command.ban.offline:
-        description: Allows you to ban an offline user
-        default: op
-    bm.command.tempban:
-        description: Allows you to tempban a user
-        default: op
-    bm.command.tempban.offline:
-        description: Allows you to tempban an offline user
-        default: op
-    bm.command.info:
-        description: Allows you to see information on players
-        default: op
-    bm.command.banip:
-        description: Allows you to ban an ip
-        default: op
-    bm.command.tempbanip:
-        description: Allows you to temban an ip
-        default: op
-    bm.command.unbanip:
-        description: Allows you to unban an ip
-        default: op
-    bm.command.import:
-        description: Allows importing of banned players and ips from Bukkit
-        default: op
-    bm.command.kick:
-        description: Allows a player to kick another player
-        default: op
-    bm.command.update:
-        description: Notifies player of a plugin update
-        default: op
-    bm.command.mute:
-        description: Allows you to mute a player
-        default: op
-    bm.command.tempmute:
-        description: Allows you to temp mute a player
-        default: op
-    bm.command.unmute:
-        description: Allows you to unmute a player
-        default: op
-    bm.command.warn:
-        description: Allows you to warn a player
-        default: op
-    bm.command.clear:
-        description: Allows you to clear a player's records
-        default: op
+  bm.*:
+    description: Gives access to all BanManager commands
+    children:
+      bm.command.ban: true
+      bm.command.unban: true
+      bm.command.tempban: true
+      bm.command.exempt: true
+      bm.command.bminfo: true
+      bm.command.banip: true
+      bm.command.tempbanip: true
+      bm.command.unbanip: true
+      bm.command.import: true
+      bm.command.kick: true
+      bm.update: true
+      bm.command.mute: true
+      bm.command.tempmute: true
+      bm.command.unmute: true
+      bm.command.ban.offline: true
+      bm.command.tempban.offline: true
+      bm.command.warn: true
+      bm.command.clear: true
+  bm.notify.*:
+    description: Players with this permission will be notified of bans
+    default: op
+    children:
+      bm.notify.ban: true
+      bm.notify.ipban: true
+      bm.notify.kick: true
+      bm.notify.mute: true
+      bm.notify.tempban: true
+      bm.notify.tempipban: true
+      bm.notify.tempmute: true
+      bm.notify.unban: true
+      bm.notify.unipban: true
+      bm.notify.unmute: true
+      bm.notify.warn: true
+      bm.notify.duplicateips: true
+  bm.exempt.*:
+    description: Players with this permission cannot be banned, kicked or muted
+    default: op
+    children:
+      bm.exempt.ban: true
+      bm.exempt.banip: true
+      bm.exempt.kick: true
+      bm.exempt.mute: true
+      bm.exempt.tempban: true
+      bm.exempt.tempipban: true
+      bm.exempt.tempmute: true
+      bm.exempt.warn: true
+  bm.command.unban:
+    description: Allows you to unban a user
+    default: op
+  bm.command.ban:
+    description: Allows you to ban a user
+    default: op
+  bm.command.ban.offline:
+    description: Allows you to ban an offline user
+    default: op
+  bm.command.tempban:
+    description: Allows you to tempban a user
+    default: op
+  bm.command.tempban.offline:
+    description: Allows you to tempban an offline user
+    default: op
+  bm.command.info:
+    description: Allows you to see information on players
+    default: op
+  bm.command.info.playerstats:
+   description: Allows you to see player statistics
+   default: op
+  bm.command.info.ipstats:
+    description: Allows you to see ip statistics
+    default: op
+  bm.command.info.connection:
+    description: Allows you to see connection information
+    default: op
+  bm.command.info.alts:
+    description: Allows you to see possible alts
+    default: op
+  bm.command.banip:
+    description: Allows you to ban an ip
+    default: op
+  bm.command.tempbanip:
+    description: Allows you to temban an ip
+    default: op
+  bm.command.unbanip:
+    description: Allows you to unban an ip
+    default: op
+  bm.command.import:
+    description: Allows importing of banned players and ips from Bukkit
+    default: op
+  bm.command.kick:
+    description: Allows a player to kick another player
+    default: op
+  bm.command.update:
+    description: Notifies player of a plugin update
+    default: op
+  bm.command.mute:
+    description: Allows you to mute a player
+    default: op
+  bm.command.tempmute:
+    description: Allows you to temp mute a player
+    default: op
+  bm.command.unmute:
+    description: Allows you to unmute a player
+    default: op
+  bm.command.warn:
+    description: Allows you to warn a player
+    default: op
+  bm.command.clear:
+    description: Allows you to clear a player's records
+    default: op
