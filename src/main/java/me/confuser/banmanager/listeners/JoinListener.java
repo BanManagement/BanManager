@@ -23,7 +23,15 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
-            /* Why waste time of they are already going to be denied to join? */
+    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+
+    try {
+      plugin.getPlayerStorage().createOrUpdate(player);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    /* Why waste time of they are already going to be denied to join? */
     if (!event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
       return;
     }
@@ -37,10 +45,12 @@ public class JoinListener extends Listeners<BanManager> {
         } catch (SQLException e) {
           e.printStackTrace();
         }
+
+        plugin.getPlayerStorage().addOnline(player);
         return;
       }
 
-      Message message = null;
+      Message message;
 
       if (data.getExpires() == 0) {
         message = Message.get("banip.ip.disallowed");
@@ -57,31 +67,26 @@ public class JoinListener extends Listeners<BanManager> {
       event.setKickMessage(message.toString());
       return;
     }
-    if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
-      try {
-        plugin.getPlayerStorage()
-              .addOnline(new PlayerData(event.getUniqueId(), event.getName(), event.getAddress()), true);
-      } catch (SQLException e) {
-        e.printStackTrace();
-
-        return;
-      }
-
-      return;
-    }
 
     PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
 
-    if (data.hasExpired()) {
+    if (data!= null && data.hasExpired()) {
       try {
         plugin.getPlayerBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
       } catch (SQLException e) {
         e.printStackTrace();
       }
+
+      plugin.getPlayerStorage().addOnline(player);
       return;
     }
 
-    Message message = null;
+    if (data == null) {
+      plugin.getPlayerStorage().addOnline(player);
+      return;
+    }
+
+    Message message;
 
     if (data.getExpires() == 0) {
       message = Message.get("ban.player.disallowed");
