@@ -106,7 +106,9 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
     JSONArray array = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
 
-    JSONObject jsonProfile = (JSONObject) array.get(array.size());
+    if (array.size() == 0) return null;
+
+    JSONObject jsonProfile = (JSONObject) array.get(array.size() - 1);
 
     return (String) jsonProfile.get("name");
   }
