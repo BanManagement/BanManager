@@ -70,7 +70,7 @@ public class JoinListener extends Listeners<BanManager> {
 
     PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
 
-    if (data!= null && data.hasExpired()) {
+    if (data != null && data.hasExpired()) {
       try {
         plugin.getPlayerBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
       } catch (SQLException e) {
@@ -176,7 +176,8 @@ public class JoinListener extends Listeners<BanManager> {
           sb.append(", ");
         }
 
-        sb.setLength(sb.length() - 2);
+        if (sb.length() == 0) return;
+        if (sb.length() >= 2) sb.setLength(sb.length() - 2);
 
         Message message = Message.get("duplicateIP");
         message.set("player", event.getPlayer().getName());
