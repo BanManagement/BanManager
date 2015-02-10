@@ -30,7 +30,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    boolean isBanned = false;
+    boolean isBanned;
 
     if (isUUID) {
       isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
@@ -71,7 +71,14 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        boolean unbanned = false;
+        //TODO refactor if async perm check is problem
+        if (actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.ban")
+                && sender.hasPermission("bm.command.unban.own")) {
+          Message.get("unban.error.notOwn").set("player", ban.getPlayer().getName()).sendTo(sender);
+          return;
+        }
+
+        boolean unbanned;
 
         try {
           unbanned = plugin.getPlayerBanStorage().unban(ban, actor);

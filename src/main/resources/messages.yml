@@ -95,6 +95,7 @@ messages:
     notify: '[player] has been unbanned by [actor]'
     error:
       noExists: '&c[player] is not banned'
+      notOwn: '&c[player] was not banned by you, unable to unban'
 
   unbanall:
     notify: '[player] will be unbanned by [actor]'
@@ -124,6 +125,7 @@ messages:
     notify: '[player] has been unmuted by [actor]'
     error:
       noExists: '&c[player] is not muted'
+      notOwn: '&c[player] was not muted by you, unable to unmute'
 
   unmuteall:
     notify: '[player] will be unmuted by [actor]'
