@@ -142,22 +142,30 @@ permissions:
     description: Gives access to all BanManager commands
     children:
       bm.command.ban: true
+      bm.command.ban.offline: true
       bm.command.unban: true
       bm.command.tempban: true
+      bm.command.tempban.offline: true
       bm.command.exempt: true
       bm.command.bminfo: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
       bm.command.banip: true
       bm.command.tempbanip: true
       bm.command.unbanip: true
       bm.command.import: true
       bm.command.kick: true
-      bm.update: true
+      bm.command.nlkick: true
+      bm.command.update: true
       bm.command.mute: true
+      bm.command.mute.offline: true
       bm.command.tempmute: true
+      bm.command.tempmute.offline: true
       bm.command.unmute: true
-      bm.command.ban.offline: true
-      bm.command.tempban.offline: true
       bm.command.warn: true
+      bm.command.dwarn: true
       bm.command.clear: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
