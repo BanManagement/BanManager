@@ -113,6 +113,25 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     return (String) jsonProfile.get("name");
   }
 
+  public static UUIDProfile getUUIDProfile(String name, long time) throws Exception {
+    BanManager.plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
+    String url = "https://api.mojang.com/user/profiles/minecraft/" + name + "?at=" + time;
+
+    HttpURLConnection connection = createConnection(url, "GET");
+
+    int status = connection.getResponseCode();
+
+    if (status != 200) throw new Exception("Error retrieving name from " + url);
+
+    JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
+
+    if (obj.size() == 0) return null;
+
+    UUIDProfile profile = new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
+
+    return profile;
+  }
+
   public Map<String, UUID> call() throws Exception {
     BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
     Map<String, UUID> uuidMap = new HashMap<>();
