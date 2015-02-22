@@ -49,7 +49,7 @@ public class MuteConverter extends Converter {
 
         if (plugin.getPlayerMuteStorage().isMuted(player.getUUID())) continue;
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, created, expires);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, expires, created);
 
         plugin.getPlayerMuteStorage().create(mute);
       }

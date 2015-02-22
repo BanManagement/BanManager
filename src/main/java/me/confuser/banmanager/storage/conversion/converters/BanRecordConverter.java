@@ -55,7 +55,7 @@ public class BanRecordConverter extends Converter {
           }
         }
 
-        PlayerBanData ban = new PlayerBanData(player, banActor, reason, pastCreated, expires);
+        PlayerBanData ban = new PlayerBanData(player, banActor, reason, expires, created);
         PlayerBanRecord record = new PlayerBanRecord(ban, actor);
 
         // Disallow duplicates
