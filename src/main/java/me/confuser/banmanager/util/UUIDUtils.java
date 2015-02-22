@@ -115,7 +115,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
   public static UUIDProfile getUUIDProfile(String name, long time) throws Exception {
     BanManager.plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
-    String url = "https://api.mojang.com/user/profiles/minecraft/" + name + "?at=" + time;
+    String url = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + time;
 
     HttpURLConnection connection = createConnection(url, "GET");
 
