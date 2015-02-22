@@ -55,8 +55,8 @@ public class MuteRecordConverter extends Converter {
           }
         }
 
-        PlayerMuteData ban = new PlayerMuteData(player, banActor, reason, pastCreated, expires);
-        PlayerMuteRecord record = new PlayerMuteRecord(ban, actor);
+        PlayerMuteData ban = new PlayerMuteData(player, banActor, reason, expires, pastCreated);
+        PlayerMuteRecord record = new PlayerMuteRecord(ban, actor, created);
 
         // Disallow duplicates
         if (plugin.getPlayerMuteRecordStorage().queryForMatchingArgs(record).size() != 0) continue;

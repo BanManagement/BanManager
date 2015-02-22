@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.UUIDProfile;
@@ -22,6 +23,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   private BanManager plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
+  @Getter
   private PlayerData console;
 
   public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
@@ -46,12 +48,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     online.put(player.getUUID(), player);
   }
 
-  public void addOnline(PlayerData player, boolean save) throws SQLException {
-    createOrUpdate(player);
-
-    addOnline(player);
-  }
-
   public PlayerData removeOnline(UUID uuid) {
     return online.remove(uuid);
   }
@@ -60,20 +56,12 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return online.get(uuid) != null;
   }
 
-  public boolean isOnline(Player player) {
-    return isOnline(player.getUniqueId());
-  }
-
   public PlayerData getOnline(UUID uuid) {
     return online.get(uuid);
   }
 
   public PlayerData getOnline(Player player) {
     return getOnline(player.getUniqueId());
-  }
-
-  public PlayerData getConsole() {
-    return console;
   }
 
   @Override

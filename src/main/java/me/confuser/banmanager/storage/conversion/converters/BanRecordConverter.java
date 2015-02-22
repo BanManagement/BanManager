@@ -55,8 +55,8 @@ public class BanRecordConverter extends Converter {
           }
         }
 
-        PlayerBanData ban = new PlayerBanData(player, banActor, reason, expires, created);
-        PlayerBanRecord record = new PlayerBanRecord(ban, actor);
+        PlayerBanData ban = new PlayerBanData(player, banActor, reason, expires, pastCreated);
+        PlayerBanRecord record = new PlayerBanRecord(ban, actor, created);
 
         // Disallow duplicates
         if (plugin.getPlayerBanRecordStorage().queryForMatchingArgs(record).size() != 0) continue;

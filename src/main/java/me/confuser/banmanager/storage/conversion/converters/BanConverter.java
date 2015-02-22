@@ -50,7 +50,7 @@ public class BanConverter extends Converter {
 
         if (plugin.getPlayerBanStorage().isBanned(player.getUUID())) continue;
 
-        PlayerBanData ban = new PlayerBanData(player, actor, reason, created, expires);
+        PlayerBanData ban = new PlayerBanData(player, actor, reason, expires, created);
         
         plugin.getPlayerBanStorage().create(ban);
       }

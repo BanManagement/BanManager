@@ -42,7 +42,7 @@ public class IpBanConverter extends Converter {
           actor = playerStorage.getConsole();
         }
 
-        IpBanData ban = new IpBanData(ip, actor, reason, created, expires);
+        IpBanData ban = new IpBanData(ip, actor, reason, expires, created);
 
         plugin.getIpBanStorage().create(ban);
       }
