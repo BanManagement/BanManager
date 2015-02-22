@@ -30,7 +30,6 @@ public abstract class Converter {
     try {
       profile = UUIDUtils.getUUIDProfile(name, lastSeen);
     } catch (Exception e) {
-      e.printStackTrace();
       return null;
     }
 
@@ -43,6 +42,12 @@ public abstract class Converter {
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
+    }
+
+    try {
+      Thread.sleep(1000L);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     return data;
