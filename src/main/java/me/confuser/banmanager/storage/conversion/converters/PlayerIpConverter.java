@@ -6,6 +6,8 @@ import com.j256.ormlite.support.DatabaseResults;
 
 import java.sql.SQLException;
 
+import me.confuser.banmanager.data.PlayerData;
+
 public class PlayerIpConverter extends Converter {
 
   @Override
@@ -25,8 +27,12 @@ public class PlayerIpConverter extends Converter {
         String name = result.getString(0);
         long ip = result.getLong(1);
         long lastSeen = result.getLong(2);
-
-        findAndCreate(name, lastSeen, ip);
+        
+        PlayerData player = playerStorage.retrieve(name, false);
+        
+        if (player == null) {
+        	findAndCreate(name, lastSeen, ip);
+        }
 
       }
     } catch (SQLException e) {
