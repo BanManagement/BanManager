@@ -38,14 +38,14 @@ public abstract class Converter {
     PlayerData data = new PlayerData(profile.getUuid(), profile.getName(), ip, lastSeen);
 
     try {
-      playerStorage.create(data);
+      playerStorage.createOrUpdate(data);
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
     }
 
     try {
-      Thread.sleep(1000L);
+      Thread.sleep(1010L);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

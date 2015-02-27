@@ -31,7 +31,7 @@ public class PlayerIpConverter extends Converter {
         PlayerData player = playerStorage.retrieve(name, false);
         
         if (player == null) {
-        	findAndCreate(name, lastSeen, ip);
+          findAndCreate(name, lastSeen, ip);
         }
 
       }
