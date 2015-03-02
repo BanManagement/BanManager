@@ -23,20 +23,7 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
-    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
-
-    try {
-      plugin.getPlayerStorage().createOrUpdate(player);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-
-    /* Why waste time of they are already going to be denied to join? */
-    if (!event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
-      return;
-    }
-
-    if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
+     if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
       IpBanData data = plugin.getIpBanStorage().getBan(event.getAddress());
 
       if (data.hasExpired()) {
@@ -46,7 +33,6 @@ public class JoinListener extends Listeners<BanManager> {
           e.printStackTrace();
         }
 
-        plugin.getPlayerStorage().addOnline(player);
         return;
       }
 
@@ -77,12 +63,10 @@ public class JoinListener extends Listeners<BanManager> {
         e.printStackTrace();
       }
 
-      plugin.getPlayerStorage().addOnline(player);
       return;
     }
 
     if (data == null) {
-      plugin.getPlayerStorage().addOnline(player);
       return;
     }
 
@@ -101,6 +85,21 @@ public class JoinListener extends Listeners<BanManager> {
 
     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
     event.setKickMessage(message.toString());
+  }
+  
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onJoin(AsyncPlayerPreLoginEvent event) {
+	if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
+	  
+	PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+
+	try {
+      plugin.getPlayerStorage().createOrUpdate(player);
+	} catch (SQLException e) {
+	  e.printStackTrace();
+	}
+	    
+	plugin.getPlayerStorage().addOnline(player);
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
