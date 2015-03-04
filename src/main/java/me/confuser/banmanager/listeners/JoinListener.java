@@ -13,6 +13,7 @@ import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.sql.SQLException;
@@ -87,19 +88,24 @@ public class JoinListener extends Listeners<BanManager> {
     event.setKickMessage(message.toString());
   }
   
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void onJoin(AsyncPlayerPreLoginEvent event) {
-	if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
-	  
-	PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onJoin(final PlayerJoinEvent event) {
+	plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-	try {
-      plugin.getPlayerStorage().createOrUpdate(player);
-	} catch (SQLException e) {
-	  e.printStackTrace();
-	}
-	    
-	plugin.getPlayerStorage().addOnline(player);
+      @Override
+      public void run() {
+        PlayerData player = new PlayerData(event.getPlayer());
+
+        try {
+          plugin.getPlayerStorage().createOrUpdate(player);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+			    
+        plugin.getPlayerStorage().addOnline(player);	
+      }
+		
+	});
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
