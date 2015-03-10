@@ -44,12 +44,13 @@ public abstract class Converter {
       return null;
     }
 
-    try {
-      Thread.sleep(1010L);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) {
+      try {
+        Thread.sleep(1010L);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
-
     return data;
   }
 }

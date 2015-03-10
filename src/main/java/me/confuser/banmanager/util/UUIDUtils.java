@@ -1,7 +1,9 @@
 package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
+
 import me.confuser.banmanager.BanManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -114,6 +117,9 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static UUIDProfile getUUIDProfile(String name, long time) throws Exception {
+    if (!BanManager.getPlugin().getConfiguration().isOnlineMode())
+      return new UUIDProfile(name, createUUID(name));
+
     BanManager.plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
     String url = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + time;
 
@@ -135,6 +141,13 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   public Map<String, UUID> call() throws Exception {
     BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
     Map<String, UUID> uuidMap = new HashMap<>();
+
+    if (!BanManager.getPlugin().getConfiguration().isOnlineMode()) {
+        for (String s : names)
+            uuidMap.put(s, createUUID(s));
+        return uuidMap;
+    }
+    
     int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
     for (int i = 0; i < requests; i++) {
       HttpURLConnection connection = createConnection(PROFILE_URL, "POST");
@@ -154,5 +167,13 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
       }
     }
     return uuidMap;
+  }
+
+  private static UUID createUUID(String s) { 
+    try { 
+      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s).getBytes("UTF-8")); 
+    } catch (UnsupportedEncodingException e) { 
+      return null; 
+    } 
   }
 }

@@ -97,3 +97,6 @@ warningActions:
 #    '10':
 #     - ban [player] [reason]
 #     - mute [player] [reason]
+
+# Use Mojang UUID's?
+onlineMode: true
