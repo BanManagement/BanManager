@@ -61,9 +61,11 @@ messages:
     ban:
       permanent: 'Currently banned for [reason] by [actor] at [created]'
       temporary: 'Currently banned for [reason] by [actor] at [created] which expires in [expires]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     mute:
       permanent: 'Currently muted for [reason] by [actor] at [created]'
       temporary: 'Currently muted for [reason] by [actor] at [created] which expires in [expires]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
 
   kick:
     player:

@@ -124,11 +124,13 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
       }
 
+      String dateTimeFormat = Message.getString("info.ban.dateTimeFormat");
+
       messages.add(message
               .set("player", player.getName())
               .set("reason", ban.getReason())
               .set("actor", ban.getActor().getName())
-              .set("created", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+              .set("created", new SimpleDateFormat(dateTimeFormat)
                       .format(new java.util.Date(ban.getCreated() * 1000L)))
               .toString());
     }
@@ -145,11 +147,13 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
       }
 
+      String dateTimeFormat = Message.getString("info.mute.dateTimeFormat");
+
       messages.add(message
               .set("player", player.getName())
               .set("reason", mute.getReason())
               .set("actor", mute.getActor().getName())
-              .set("created", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+              .set("created", new SimpleDateFormat(dateTimeFormat)
                       .format(new java.util.Date(mute.getCreated() * 1000L)))
               .toString());
     }
