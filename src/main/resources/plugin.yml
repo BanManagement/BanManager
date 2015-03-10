@@ -72,7 +72,7 @@ commands:
   bmimport:
     description: "imports bans"
     usage: "/bmimport <player || ip>"
-    aliases: [bmbanimport]
+    aliases: [bmbanimport, banimport]
     permission: bm.command.import
   kick:
     description: "kick a player"
