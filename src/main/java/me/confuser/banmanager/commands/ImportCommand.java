@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -110,7 +111,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
             case "source":
               String sourceName = reader.nextString();
 
-              if (sourceName.equals("CONSOLE")) {
+              if (!isValidSource(sourceName)) {
                 actor = plugin.getPlayerStorage().getConsole();
               } else {
                 actor = plugin.getPlayerStorage().retrieve(sourceName, false);
@@ -127,7 +128,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
                 expires = 0L;
               } else {
                 try {
-                  created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
+                  created = dateFormat.parse(expiresStr).getTime() / 1000L;
                 } catch (ParseException e) {
                   e.printStackTrace();
 
@@ -147,15 +148,21 @@ public class ImportCommand extends BukkitCommand<BanManager> {
           continue;
         }
 
+        if (!isValidSource(name)) {
+          plugin.getLogger().warning("Invalid name " + name + " skipping its import");
+          continue;
+        }
+
         if (plugin.getPlayerBanStorage().isBanned(uuid)) {
           continue;
         }
 
-        PlayerData player = plugin.getPlayerStorage().retrieve(name, true);
+        PlayerData player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid));
 
         if (player == null) {
-          plugin.getLogger().warning("Unable to import " + name + " due to look up issue");
-          continue;
+          player = new PlayerData(uuid, name);
+
+          plugin.getPlayerStorage().create(player);
         }
 
         PlayerBanData ban = new PlayerBanData(player, actor, reason, expires, created);
@@ -171,6 +178,8 @@ public class ImportCommand extends BukkitCommand<BanManager> {
 
       reader.close();
     } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SQLException e) {
       e.printStackTrace();
     }
 
@@ -215,7 +224,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
             case "source":
               String sourceName = reader.nextString();
 
-              if (sourceName.equals("CONSOLE")) {
+              if (!isValidSource(sourceName)) {
                 actor = plugin.getPlayerStorage().getConsole();
               } else {
                 actor = plugin.getPlayerStorage().retrieve(sourceName, false);
@@ -281,5 +290,9 @@ public class ImportCommand extends BukkitCommand<BanManager> {
     importInProgress = false;
 
     plugin.getLogger().info(Message.getString("import.ip.finished"));
+  }
+
+  private boolean isValidSource(String name) {
+    return !name.equals("CONSOLE") && !name.equals("(UNKNOWN)") && name.length() <= 16;
   }
 }
