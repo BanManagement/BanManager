@@ -57,6 +57,10 @@
                                     <pattern>com.googlecode.concurrenttrees</pattern>
                                     <shadedPattern>me.confuser.banmanager.concurrenttrees</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>net.gravitydevelopment.updater</pattern>
+                                    <shadedPattern>me.confuser.banmanager.updater</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -80,6 +84,10 @@
         <repository>
             <id>Central</id>
             <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>gravity-repo</id>
+            <url>http://repo.gravitydevelopment.net</url>
         </repository>
     </repositories>
     <dependencies>
@@ -126,6 +134,11 @@
             <artifactId>lombok</artifactId>
             <version>1.14.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.gravitydevelopment.updater</groupId>
+            <artifactId>updater</artifactId>
+            <version>2.3</version>
         </dependency>
     </dependencies>
     <properties>

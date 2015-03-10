@@ -100,3 +100,6 @@ warningActions:
 
 # Use Mojang UUID's?
 onlineMode: true
+
+# Set to false to disable update checks
+checkForUpdates: true
