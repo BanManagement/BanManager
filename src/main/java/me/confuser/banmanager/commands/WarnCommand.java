@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,11 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
     if (args.length < 2) {
       return false;
+    }
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
     }
 
     if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {

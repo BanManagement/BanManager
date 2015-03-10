@@ -2,6 +2,7 @@ package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
@@ -20,6 +21,11 @@ public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanMana
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
     if (args.length < 1) {
       return false;
+    }
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
     }
 
     // Check if UUID vs name

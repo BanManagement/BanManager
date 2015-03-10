@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -25,6 +26,11 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
     if (args.length < 1) {
       return false;
+    }
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
     }
 
     // Check if UUID vs name

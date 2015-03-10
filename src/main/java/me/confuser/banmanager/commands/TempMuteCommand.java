@@ -4,6 +4,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
@@ -25,6 +26,11 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
     if (args.length < 3) {
       return false;
+    }
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
     }
 
     if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {

@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
@@ -33,6 +34,11 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
   public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
 
     if (args.length == 0) return false;
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
+    }
 
     // Check if UUID vs name
     final String playerName = args[0];

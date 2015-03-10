@@ -4,6 +4,7 @@ import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +24,11 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
     if (args.length < 2) {
       return false;
+    }
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, commandName, args);
+      return true;
     }
 
     final String ipStr = args[0];
