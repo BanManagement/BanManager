@@ -68,6 +68,7 @@ duplicateIpCheck: true
 # A list of IPs to exclude from the banned player duplicate check
 bypassDuplicateChecks:
 - 0.0.0.0
+- 127.0.0.1
 
 # Log /kick to the database?
 logKicks: false
@@ -79,11 +80,11 @@ displayNotifications: true
 # replace X with the group defined here, can be anything you like.
 timeLimits:
   playerMutes:
-    Moderator: 1h
+#    Moderator: 1h
   playerBans:
-    Moderator: 1d
+#    Moderator: 1d
   ipBans:
-    Moderator: 1d
+#    Moderator: 1d
 
 # To prevent duplicate warnings you can set a cooldown to limit the amount in seconds before a player can be warned again
 # Set to 0 to disable
@@ -93,6 +94,6 @@ warningCooldown: 10
 warningActions:
   enabled: false
   actions:
-    '10':
-     - ban [player] [reason]
-     - mute [player] [reason]
+#    '10':
+#     - ban [player] [reason]
+#     - mute [player] [reason]
