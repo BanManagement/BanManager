@@ -156,6 +156,7 @@ permissions:
       bm.command.bminfo.connection: true
       bm.command.bminfo.ipstats: true
       bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
       bm.command.banip: true
       bm.command.tempbanip: true
       bm.command.unbanip: true
@@ -216,20 +217,23 @@ permissions:
   bm.command.tempban.offline:
     description: Allows you to tempban an offline user
     default: op
-  bm.command.info:
+  bm.command.bminfo:
     description: Allows you to see information on players
     default: op
-  bm.command.info.playerstats:
+  bm.command.bminfo.playerstats:
    description: Allows you to see player statistics
    default: op
-  bm.command.info.ipstats:
+  bm.command.bminfo.ipstats:
     description: Allows you to see ip statistics
     default: op
-  bm.command.info.connection:
+  bm.command.bminfo.connection:
     description: Allows you to see connection information
     default: op
-  bm.command.info.alts:
+  bm.command.bminfo.alts:
     description: Allows you to see possible alts
+    default: op
+  bm.command.bminfo.website:
+    description: Allows you to see a website link
     default: op
   bm.command.banip:
     description: Allows you to ban an ip

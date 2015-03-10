@@ -158,6 +158,13 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
               .toString());
     }
 
+    if (sender.hasPermission("bm.command.bminfo.website")) {
+      messages.add(Message.get("info.website.player")
+                          .set("player", player.getName())
+                          .set("uuid", player.getUUID().toString())
+                          .toString());
+    }
+
     // TODO Show last warning
     for (String message : messages) {
       sender.sendMessage(message);
