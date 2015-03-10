@@ -80,6 +80,11 @@ public class DefaultConfig extends Config<BanManager> {
 
           info += " - ";
 
+          if (!mutedBlacklistCommands.contains(command.getName())) {
+            mutedBlacklistCommands.add(command.getName());
+            info += command.getName() + " ";
+          }
+
           for (String aliasCmd : command.getAliases()) {
             info += aliasCmd + " ";
             mutedBlacklistCommands.add(aliasCmd);
