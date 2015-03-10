@@ -33,6 +33,8 @@ public class DefaultConfig extends Config<BanManager> {
       private WarningActionsConfig warningActions;
       @Getter
       private boolean displayNotificationsEnabled = true;
+      @Getter
+      private boolean onlineMode = true;
 
       public DefaultConfig() {
             super("config.yml");
@@ -44,6 +46,7 @@ public class DefaultConfig extends Config<BanManager> {
             externalDb = new ExternalDatabaseConfig(conf.getConfigurationSection("databases.external"));
             timeLimits = new TimeLimitsConfig(conf.getConfigurationSection("timeLimits"));
             duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
+            onlineMode = conf.getBoolean("onlineMode", true);
             
             for (String ip : conf.getStringList("bypassDuplicateChecks")) {
             	bypassPlayerIps.add(IPUtils.toLong(ip));
