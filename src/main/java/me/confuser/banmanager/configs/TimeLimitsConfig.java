@@ -1,58 +1,62 @@
 package me.confuser.banmanager.configs;
 
-import java.util.HashMap;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.util.DateUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashMap;
+
 public class TimeLimitsConfig {
-	private HashMap<String, HashMap<String, String>> limits;
 
-	public TimeLimitsConfig(ConfigurationSection config) {
-		limits = new HashMap<>();
+  private HashMap<String, HashMap<String, String>> limits;
 
-		for (TimeLimitType type : TimeLimitType.values()) {
-			ConfigurationSection typeSection = config.getConfigurationSection(type.getName());
-			HashMap<String, String> groups = new HashMap<>();
+  public TimeLimitsConfig(ConfigurationSection config) {
+    limits = new HashMap<>();
 
-			for (String name : typeSection.getKeys(false)) {
-				String time = typeSection.getString(name);
+    for (TimeLimitType type : TimeLimitType.values()) {
+      ConfigurationSection typeSection = config.getConfigurationSection(type.getName());
 
-				try {
-					DateUtils.parseDateDiff(time, true);
-				} catch (Exception e) {
-					BanManager.getPlugin().getLogger().warning("Ignored " + type.getName() + " " + name + " due to invalid time");
-					continue;
-				}
+      if (typeSection == null) continue;
 
-				groups.put(name, time);
-			}
+      HashMap<String, String> groups = new HashMap<>();
 
-			limits.put(type.getName(), groups);
-		}
-	}
+      for (String name : typeSection.getKeys(false)) {
+        String time = typeSection.getString(name);
 
-	public boolean isPastLimit(CommandSender sender, TimeLimitType type, long expires) {
-		if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass")) {
-			return false;
-		}
+        try {
+          DateUtils.parseDateDiff(time, true);
+        } catch (Exception e) {
+          BanManager.getPlugin().getLogger().warning("Ignored " + type.getName() + " " + name + " due to invalid time");
+          continue;
+        }
 
-		HashMap<String, String> groups = limits.get(type.getName());
+        groups.put(name, time);
+      }
 
-		for (String group : groups.keySet()) {
-			if (sender.hasPermission("bm.timelimit." + type.getName() + "." + group)) {
-				try {
-					if (expires > DateUtils.parseDateDiff(groups.get(group), true)) {
-						return true;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+      limits.put(type.getName(), groups);
+    }
+  }
 
-		return false;
-	}
+  public boolean isPastLimit(CommandSender sender, TimeLimitType type, long expires) {
+    if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass")) {
+      return false;
+    }
+
+    HashMap<String, String> groups = limits.get(type.getName());
+
+    for (String group : groups.keySet()) {
+      if (sender.hasPermission("bm.timelimit." + type.getName() + "." + group)) {
+        try {
+          if (expires > DateUtils.parseDateDiff(groups.get(group), true)) {
+            return true;
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    return false;
+  }
 }

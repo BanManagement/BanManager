@@ -19,14 +19,17 @@ public class WarningActionsConfig {
   public WarningActionsConfig(ConfigurationSection config) {
     isEnabled = config.getBoolean("enabled", false);
     actions = new HashMap<>();
+    ConfigurationSection actionsConf = config.getConfigurationSection("actions");
 
-    for (String amount : config.getConfigurationSection("actions").getKeys(false)) {
+    if (actionsConf == null) return;
+
+    for (String amount : actionsConf.getKeys(false)) {
       if (!StringUtils.isNumeric(amount)) {
         plugin.getLogger().warning("Invalid warning action, " + amount + " is not numeric");
         continue;
       }
 
-      actions.put(NumberUtils.toInt(amount), config.getStringList("actions." + amount));
+      actions.put(NumberUtils.toInt(amount), actionsConf.getStringList(amount));
     }
   }
 
