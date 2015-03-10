@@ -24,7 +24,7 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
-     if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
+    if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
       IpBanData data = plugin.getIpBanStorage().getBan(event.getAddress());
 
       if (data.hasExpired()) {
@@ -87,10 +87,10 @@ public class JoinListener extends Listeners<BanManager> {
     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
     event.setKickMessage(message.toString());
   }
-  
+
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onJoin(final PlayerJoinEvent event) {
-	plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
@@ -101,18 +101,11 @@ public class JoinListener extends Listeners<BanManager> {
         } catch (SQLException e) {
           e.printStackTrace();
         }
-			    
-        plugin.getPlayerStorage().addOnline(player);	
-      }
-		
-	});
-  }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void onPlayerLogin(final PlayerLoginEvent event) {
-    if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-      return;
-    }
+        plugin.getPlayerStorage().addOnline(player);
+      }
+
+    });
 
     plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
@@ -154,6 +147,13 @@ public class JoinListener extends Listeners<BanManager> {
         }
       }
     }, 20L);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onPlayerLogin(final PlayerLoginEvent event) {
+    if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+      return;
+    }
 
     if (!plugin.getConfiguration().isDuplicateIpCheckEnabled()) {
       return;
