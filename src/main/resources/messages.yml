@@ -174,3 +174,8 @@ messages:
     notify: '[player] has had their [type] cleared'
     error:
       invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks or warnings'
+
+  sync:
+    player:
+      started: '&aStarting force [type] synchronisation'
+      finished: '&aForced [type] synchronisation complete'

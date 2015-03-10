@@ -1,6 +1,7 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.external.ExternalIpBanData;
@@ -21,6 +22,8 @@ public class ExternalIpSync implements Runnable {
   private IpBanStorage localBanStorage = plugin.getIpBanStorage();
   private ExternalIpBanRecordStorage recordStorage = plugin.getExternalIpBanRecordStorage();
   private long lastChecked = 0;
+  @Getter
+  private boolean isRunning = false;
 
   public ExternalIpSync() {
     lastChecked = plugin.getSchedulesConfig().getLastChecked("externalIpBans");
@@ -28,6 +31,7 @@ public class ExternalIpSync implements Runnable {
 
   @Override
   public void run() {
+    isRunning = true;
     // New/updated bans check
     try {
       newBans();
@@ -44,6 +48,7 @@ public class ExternalIpSync implements Runnable {
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("externalIpBans", lastChecked);
+    isRunning = false;
   }
 
 

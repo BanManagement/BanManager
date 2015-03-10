@@ -73,6 +73,22 @@ public class BanManager extends BukkitPlugin {
   @Getter
   private SchedulesConfig schedulesConfig;
 
+  @Getter
+  private BanSync banSync;
+  @Getter
+  private MuteSync muteSync;
+  @Getter
+  private IpSync ipSync;
+  @Getter
+  private ExpiresSync expiresSync;
+
+  @Getter
+  private ExternalBanSync externalBanSync;
+  @Getter
+  private ExternalMuteSync externalMuteSync;
+  @Getter
+  private ExternalIpSync externalIpSync;
+
   @Override
   public void onEnable() {
     plugin = this;
@@ -258,6 +274,8 @@ public class BanManager extends BukkitPlugin {
     new DeleteLastWarningCommand().register();
 
     new ClearCommand().register();
+
+    new SyncCommand().register();
 
     if (externalConn == null) return;
 
@@ -482,15 +500,24 @@ public class BanManager extends BukkitPlugin {
 
   @Override
   public void setupRunnables() {
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerBans"), new BanSync());
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerMutes"), new MuteSync());
-    setupAsyncRunnable(schedulesConfig.getSchedule("ipBans"), new IpSync());
-    setupAsyncRunnable(schedulesConfig.getSchedule("expiresCheck"), new ExpiresSync());
+    banSync = new BanSync();
+    muteSync = new MuteSync();
+    ipSync = new IpSync();
+    expiresSync = new ExpiresSync();
+
+    setupAsyncRunnable(schedulesConfig.getSchedule("playerBans"), banSync);
+    setupAsyncRunnable(schedulesConfig.getSchedule("playerMutes"), muteSync);
+    setupAsyncRunnable(schedulesConfig.getSchedule("ipBans"), ipSync);
+    setupAsyncRunnable(schedulesConfig.getSchedule("expiresCheck"), expiresSync);
 
     if (externalConn != null) {
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerBans"), new ExternalBanSync());
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerMutes"), new ExternalMuteSync());
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalIpBans"), new ExternalIpSync());
+      externalBanSync = new ExternalBanSync();
+      externalMuteSync = new ExternalMuteSync();
+      externalIpSync = new ExternalIpSync();
+
+      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerBans"), externalBanSync);
+      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerMutes"), externalMuteSync);
+      setupAsyncRunnable(schedulesConfig.getSchedule("externalIpBans"), externalIpSync);
     }
 
     /*

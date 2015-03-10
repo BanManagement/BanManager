@@ -1,6 +1,7 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerBanRecord;
@@ -15,6 +16,8 @@ public class BanSync implements Runnable {
   private BanManager plugin = BanManager.getPlugin();
   private PlayerBanStorage banStorage = plugin.getPlayerBanStorage();
   private long lastChecked = 0;
+  @Getter
+  private boolean isRunning = false;
 
   public BanSync() {
     lastChecked = plugin.getSchedulesConfig().getLastChecked("playerBans");
@@ -22,6 +25,7 @@ public class BanSync implements Runnable {
 
   @Override
   public void run() {
+    isRunning = true;
     // New/updated bans check
     try {
       newBans();
@@ -38,6 +42,7 @@ public class BanSync implements Runnable {
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("playerBans", lastChecked);
+    isRunning = false;
   }
 
   private void newBans() throws SQLException {

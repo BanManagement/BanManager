@@ -1,6 +1,7 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.data.PlayerMuteRecord;
@@ -13,6 +14,8 @@ public class MuteSync implements Runnable {
   private BanManager plugin = BanManager.getPlugin();
   private PlayerMuteStorage muteStorage = plugin.getPlayerMuteStorage();
   private long lastChecked = 0;
+  @Getter
+  private boolean isRunning = false;
 
   public MuteSync() {
     lastChecked = plugin.getSchedulesConfig().getLastChecked("playerMutes");
@@ -20,6 +23,7 @@ public class MuteSync implements Runnable {
 
   @Override
   public void run() {
+    isRunning = true;
     // New/updated mutes check
     try {
       newMutes();
@@ -36,6 +40,7 @@ public class MuteSync implements Runnable {
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("playerMutes", lastChecked);
+    isRunning = false;
   }
 
   private void newMutes() throws SQLException {

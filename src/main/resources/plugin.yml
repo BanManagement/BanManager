@@ -137,6 +137,10 @@ commands:
     usage: "/dwarn <player>"
     aliases: [bmdwarn]
     permission: bm.command.dwarn
+  bmsync:
+    description: "Forces synchronisation from database"
+    usage: "/bmsync <local || external>"
+    permission: bm.command.sync
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -167,6 +171,7 @@ permissions:
       bm.command.warn: true
       bm.command.dwarn: true
       bm.command.clear: true
+      bm.command.sync: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -257,4 +262,7 @@ permissions:
     default: op
   bm.command.clear:
     description: Allows you to clear a player's records
+    default: op
+  bm.command.sync:
+    description: Allows you to force synchronisation with the database
     default: op

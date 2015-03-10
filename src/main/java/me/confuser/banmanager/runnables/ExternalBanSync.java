@@ -1,6 +1,7 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.external.ExternalPlayerBanData;
@@ -21,6 +22,8 @@ public class ExternalBanSync implements Runnable {
   private PlayerBanStorage localBanStorage = plugin.getPlayerBanStorage();
   private ExternalPlayerBanRecordStorage recordStorage = plugin.getExternalPlayerBanRecordStorage();
   private long lastChecked = 0;
+  @Getter
+  private boolean isRunning = false;
 
   public ExternalBanSync() {
     lastChecked = plugin.getSchedulesConfig().getLastChecked("externalPlayerBans");
@@ -28,6 +31,7 @@ public class ExternalBanSync implements Runnable {
 
   @Override
   public void run() {
+    isRunning = true;
     // New/updated bans check
     try {
       newBans();
@@ -44,6 +48,7 @@ public class ExternalBanSync implements Runnable {
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("externalPlayerBans", lastChecked);
+    isRunning = false;
   }
 
 
@@ -85,10 +90,10 @@ public class ExternalBanSync implements Runnable {
           }
 
           kickMessage
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", localBan.getPlayer().getName())
-                                       .set("reason", localBan.getReason())
-                                       .set("actor", localBan.getActor().getName());
+                  .set("displayName", bukkitPlayer.getDisplayName())
+                  .set("player", localBan.getPlayer().getName())
+                  .set("reason", localBan.getReason())
+                  .set("actor", localBan.getActor().getName());
 
           bukkitPlayer.kickPlayer(kickMessage.toString());
         }
