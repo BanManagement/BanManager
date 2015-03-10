@@ -9,12 +9,15 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class BanCommand extends BukkitCommand<BanManager> {
+public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public BanCommand() {
     super("ban");
@@ -140,4 +143,6 @@ public class BanCommand extends BukkitCommand<BanManager> {
 
     return true;
   }
+
+
 }

@@ -6,7 +6,6 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
-public class BanIpCommand extends BukkitCommand<BanManager> {
+public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public BanIpCommand() {
     super("banip");

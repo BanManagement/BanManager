@@ -8,7 +8,6 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
-public class TempIpBanCommand extends BukkitCommand<BanManager> {
+public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public TempIpBanCommand() {
     super("tempbanip");

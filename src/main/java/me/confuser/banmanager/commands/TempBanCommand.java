@@ -7,7 +7,6 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class TempBanCommand extends BukkitCommand<BanManager> {
+public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public TempBanCommand() {
     super("tempban");

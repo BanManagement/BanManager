@@ -1,5 +1,9 @@
 package me.confuser.banmanager.storage;
 
+import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
+import com.googlecode.concurrenttrees.radix.RadixTree;
+import com.googlecode.concurrenttrees.radix.node.concrete.SmartArrayBasedNodeFactory;
+import com.googlecode.concurrenttrees.radix.node.concrete.voidvalue.VoidValue;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -24,6 +28,9 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   private BanManager plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
   @Getter
+  private RadixTree<VoidValue> autoCompleteTree;
+
+  @Getter
   private PlayerData console;
 
   public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
@@ -42,6 +49,17 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       console = new PlayerData(uuid, name);
       create(console);
     }
+  }
+
+  public void setupAutoComplete() throws SQLException {
+    autoCompleteTree = new ConcurrentRadixTree<>(new SmartArrayBasedNodeFactory());
+    CloseableIterator<PlayerData> itr = this.queryBuilder().selectColumns("name").iterator();
+
+    while(itr.hasNext()) {
+      autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
+    }
+
+    itr.close();
   }
 
   public void addOnline(PlayerData player) {

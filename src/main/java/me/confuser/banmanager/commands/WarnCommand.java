@@ -5,7 +5,6 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public class WarnCommand extends BukkitCommand<BanManager> {
+public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public WarnCommand() {
     super("warn");

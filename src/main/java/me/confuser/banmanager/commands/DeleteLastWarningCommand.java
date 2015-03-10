@@ -4,14 +4,13 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class DeleteLastWarningCommand extends BukkitCommand<BanManager> {
+public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public DeleteLastWarningCommand() {
     super("dwarn");

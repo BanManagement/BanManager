@@ -8,7 +8,6 @@ import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -16,7 +15,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class InfoCommand extends BukkitCommand<BanManager> {
+public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public InfoCommand() {
     super("bminfo");

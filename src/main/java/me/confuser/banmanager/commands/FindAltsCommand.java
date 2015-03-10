@@ -5,7 +5,6 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FindAltsCommand extends BukkitCommand<BanManager> {
+public class FindAltsCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   public FindAltsCommand() {
     super("alts");

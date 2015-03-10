@@ -5,7 +5,6 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class ClearCommand extends BukkitCommand<BanManager> {
+public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   private static HashSet<String> types = new HashSet<String>() {
 
