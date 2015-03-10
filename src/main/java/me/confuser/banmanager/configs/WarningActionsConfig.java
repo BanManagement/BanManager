@@ -1,6 +1,7 @@
 package me.confuser.banmanager.configs;
 
 import java.util.HashMap;
+import java.util.List;
 
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
@@ -13,7 +14,7 @@ public class WarningActionsConfig {
 	private BanManager plugin = BanManager.getPlugin();
 	@Getter
 	private boolean isEnabled = false;
-	private HashMap<Integer, String> actions;
+	private HashMap<Integer, List<String>> actions;
 
 	public WarningActionsConfig(ConfigurationSection config) {
 		isEnabled = config.getBoolean("enabled", false);
@@ -25,11 +26,11 @@ public class WarningActionsConfig {
 				continue;
 			}
 			
-			actions.put(NumberUtils.toInt(amount), config.getString("actions." + amount));
+			actions.put(NumberUtils.toInt(amount), config.getStringList("actions." + amount));
 		}
 	}
 	
-	public String getCommand(int amount) {
+	public List<String> getCommand(int amount) {
 		return actions.get(amount);
 	}
 

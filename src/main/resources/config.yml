@@ -37,7 +37,7 @@ databases:
       playerUnmutes: bm_player_unmute_all
       ipBans: bm_ip_ban_all
       ipUnbans: bm_ip_unban_all
-  
+
   # Only for converting a non-UUID v4 BanManager database
   convert:
     enabled: false
@@ -93,4 +93,6 @@ warningCooldown: 10
 warningActions:
   enabled: false
   actions:
-    '10': ban [player] [reason]
+    '10':
+     - ban [player] [reason]
+     - mute [player] [reason]

@@ -1,6 +1,5 @@
 package me.confuser.banmanager.commands;
 
-import com.google.common.base.Strings;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
@@ -13,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 public class WarnCommand extends BukkitCommand<BanManager> {
@@ -59,7 +59,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 
       @Override
       public void run() {
-        PlayerData player;
+        final PlayerData player;
 
         if (isUUID) {
           try {
@@ -89,7 +89,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        PlayerData actor;
+        final PlayerData actor;
 
         if (sender instanceof Player) {
           actor = plugin.getPlayerStorage().getOnline((Player) sender);
@@ -99,7 +99,7 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 
         boolean isOnline = plugin.getPlayerStorage().isOnline(player.getUUID());
 
-        PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
 
         boolean created = false;
 
@@ -138,19 +138,17 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 
         plugin.getServer().broadcast(message.toString(), "bm.notify.warn");
 
-        final String actionCommand;
+        final List<String> actionCommands;
+
         try {
-          actionCommand = Strings.nullToEmpty(plugin.getConfiguration().getWarningActions()
-                                                    .getCommand((int) plugin.getPlayerWarnStorage().getCount(player)))
-                                 .replace("[player]", player.getName())
-                                 .replace("[actor]", actor.getName())
-                                 .replace("[reason]", warning.getReason());
+          actionCommands = plugin.getConfiguration().getWarningActions()
+                                 .getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
         } catch (SQLException e) {
           e.printStackTrace();
           return;
         }
 
-        if (actionCommand == null || actionCommand.isEmpty()) {
+        if (actionCommands == null || actionCommands.isEmpty()) {
           return;
         }
 
@@ -158,7 +156,14 @@ public class WarnCommand extends BukkitCommand<BanManager> {
 
           @Override
           public void run() {
-            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+            for (String command : actionCommands) {
+              String actionCommand = command
+                      .replace("[player]", player.getName())
+                      .replace("[actor]", actor.getName())
+                      .replace("[reason]", warning.getReason());
+
+              plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
+            }
           }
 
         });
