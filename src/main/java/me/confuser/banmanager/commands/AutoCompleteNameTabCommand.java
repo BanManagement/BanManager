@@ -1,6 +1,7 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,8 +23,19 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
     if (!sender.hasPermission(command.getPermission())) return mostLike;
     if (args.length != 1) return mostLike;
 
-    for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
-      mostLike.add(charSequence.toString());
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      String[] names = CommandUtils.splitNameDelimiter(args[0]);
+
+      String lookup = names[names.length - 1];
+
+      for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
+        mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+      }
+
+    } else {
+      for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
+        mostLike.add(charSequence.toString());
+      }
     }
 
     if (mostLike.size() > 100) return mostLike.subList(0, 99);
