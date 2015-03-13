@@ -39,7 +39,7 @@ public class TimeLimitsConfig {
   }
 
   public boolean isPastLimit(CommandSender sender, TimeLimitType type, long expires) {
-    if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass")) {
+    if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass") || sender.hasPermission("bm.*")) {
       return false;
     }
 
