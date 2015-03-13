@@ -128,7 +128,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
                 expires = 0L;
               } else {
                 try {
-                  created = dateFormat.parse(expiresStr).getTime() / 1000L;
+                  expires = dateFormat.parse(expiresStr).getTime() / 1000L;
                 } catch (ParseException e) {
                   e.printStackTrace();
 
