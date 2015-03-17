@@ -12,6 +12,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
 import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
@@ -59,6 +60,14 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
   public boolean isBanned(String playerName) {
     return getBan(playerName) != null;
+  }
+
+  public PlayerBanData retrieveBan(UUID uuid) throws SQLException {
+    List<PlayerBanData> bans = queryForEq("player_id", UUIDUtils.toBytes(uuid));
+
+    if (bans.isEmpty()) return null;
+
+    return bans.get(0);
   }
 
   public PlayerBanData getBan(UUID uuid) {

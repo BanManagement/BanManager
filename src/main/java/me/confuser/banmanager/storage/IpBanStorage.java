@@ -1,18 +1,11 @@
 package me.confuser.banmanager.storage;
 
-import java.net.InetAddress;
-import java.sql.SQLException;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
-
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
@@ -20,112 +13,126 @@ import me.confuser.banmanager.events.IpBanEvent;
 import me.confuser.banmanager.events.IpUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import org.bukkit.Bukkit;
+
+import java.net.InetAddress;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
-      private BanManager plugin = BanManager.getPlugin();
-      private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<>();
+  private BanManager plugin = BanManager.getPlugin();
+  private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<>();
 
-      public IpBanStorage(ConnectionSource connection, DatabaseTableConfig<IpBanData> tableConfig) throws SQLException {
-            super(connection, tableConfig);
+  public IpBanStorage(ConnectionSource connection, DatabaseTableConfig<IpBanData> tableConfig) throws SQLException {
+    super(connection, tableConfig);
 
-            if (!this.isTableExists()) {
-                  return;
-            }
+    if (!this.isTableExists()) {
+      return;
+    }
 
-            CloseableIterator<IpBanData> itr = iterator();
+    CloseableIterator<IpBanData> itr = iterator();
 
-            while (itr.hasNext()) {
-                  IpBanData ban = itr.next();
+    while (itr.hasNext()) {
+      IpBanData ban = itr.next();
 
-                  bans.put(ban.getIp(), ban);
-            }
+      bans.put(ban.getIp(), ban);
+    }
 
-            itr.close();
+    itr.close();
 
-            plugin.getLogger().info("Loaded " + bans.size() + " ip bans into memory");
-      }
+    plugin.getLogger().info("Loaded " + bans.size() + " ip bans into memory");
+  }
 
-      public ConcurrentHashMap<Long, IpBanData> getBans() {
-            return bans;
-      }
+  public ConcurrentHashMap<Long, IpBanData> getBans() {
+    return bans;
+  }
 
-      public boolean isBanned(long ip) {
-            return bans.get(ip) != null;
-      }
+  public boolean isBanned(long ip) {
+    return bans.get(ip) != null;
+  }
 
-      public boolean isBanned(InetAddress address) {
-            return isBanned(IPUtils.toLong(address));
-      }
+  public boolean isBanned(InetAddress address) {
+    return isBanned(IPUtils.toLong(address));
+  }
 
-      public IpBanData getBan(long ip) {
-            return bans.get(ip);
-      }
+  public IpBanData retrieveBan(long ip) throws SQLException {
+    List<IpBanData> bans = queryForEq("ip", ip);
 
-      public IpBanData getBan(InetAddress address) {
-            return getBan(IPUtils.toLong(address));
-      }
+    if (bans.isEmpty()) return null;
 
-      public void addBan(IpBanData ban) {
-            bans.put(ban.getIp(), ban);
-      }
+    return bans.get(0);
+  }
 
-      public void removeBan(IpBanData ban) {
-            removeBan(ban.getIp());
-      }
+  public IpBanData getBan(long ip) {
+    return bans.get(ip);
+  }
 
-      public void removeBan(long ip) {
-            bans.remove(ip);
-      }
+  public IpBanData getBan(InetAddress address) {
+    return getBan(IPUtils.toLong(address));
+  }
 
-      public boolean ban(IpBanData ban) throws SQLException {
-            IpBanEvent event = new IpBanEvent(ban);
-            Bukkit.getServer().getPluginManager().callEvent(event);
+  public void addBan(IpBanData ban) {
+    bans.put(ban.getIp(), ban);
+  }
 
-            if (event.isCancelled()) {
-                  return false;
-            }
+  public void removeBan(IpBanData ban) {
+    removeBan(ban.getIp());
+  }
 
-            create(ban);
-            bans.put(ban.getIp(), ban);
+  public void removeBan(long ip) {
+    bans.remove(ip);
+  }
 
-            return true;
-      }
+  public boolean ban(IpBanData ban) throws SQLException {
+    IpBanEvent event = new IpBanEvent(ban);
+    Bukkit.getServer().getPluginManager().callEvent(event);
 
-      public boolean unban(IpBanData ban, PlayerData actor) throws SQLException {
-            IpUnbanEvent event = new IpUnbanEvent(ban);
-            Bukkit.getServer().getPluginManager().callEvent(event);
+    if (event.isCancelled()) {
+      return false;
+    }
 
-            if (event.isCancelled()) {
-                  return false;
-            }
+    create(ban);
+    bans.put(ban.getIp(), ban);
 
-            delete(ban);
-            bans.remove(ban.getIp());
+    return true;
+  }
 
-            plugin.getIpBanRecordStorage().addRecord(ban, actor);
+  public boolean unban(IpBanData ban, PlayerData actor) throws SQLException {
+    IpUnbanEvent event = new IpUnbanEvent(ban);
+    Bukkit.getServer().getPluginManager().callEvent(event);
 
-            return true;
-      }
+    if (event.isCancelled()) {
+      return false;
+    }
 
-      public CloseableIterator<IpBanData> findBans(long fromTime) throws SQLException {
-            if (fromTime == 0) {
-                  return iterator();
-            }
+    delete(ban);
+    bans.remove(ban.getIp());
 
-            long checkTime = fromTime + DateUtils.getTimeDiff();
+    plugin.getIpBanRecordStorage().addRecord(ban, actor);
 
-            QueryBuilder<IpBanData, Integer> query = queryBuilder();
-            Where<IpBanData, Integer> where = query.where();
-            where
-                    .ge("created", checkTime)
-                    .or()
-                    .ge("updated", checkTime);
+    return true;
+  }
 
-            query.setWhere(where);
+  public CloseableIterator<IpBanData> findBans(long fromTime) throws SQLException {
+    if (fromTime == 0) {
+      return iterator();
+    }
 
-            return query.iterator();
+    long checkTime = fromTime + DateUtils.getTimeDiff();
 
-      }
+    QueryBuilder<IpBanData, Integer> query = queryBuilder();
+    Where<IpBanData, Integer> where = query.where();
+    where
+            .ge("created", checkTime)
+            .or()
+            .ge("updated", checkTime);
+
+    query.setWhere(where);
+
+    return query.iterator();
+
+  }
 
 }

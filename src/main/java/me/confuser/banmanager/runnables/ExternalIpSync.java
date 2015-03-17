@@ -61,7 +61,7 @@ public class ExternalIpSync implements Runnable {
 
       final IpBanData localBan = ban.toLocal();
 
-      if (localBanStorage.isBanned(ban.getIp())) {
+      if (localBanStorage.isBanned(ban.getIp()) || localBanStorage.retrieveBan(ban.getIp()) != null) {
         // External ban overrides local
         localBanStorage
                 .unban(localBan, ban.getActor());
