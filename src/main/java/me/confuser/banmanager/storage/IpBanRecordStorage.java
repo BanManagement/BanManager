@@ -1,52 +1,58 @@
 package me.confuser.banmanager.storage;
 
-import java.sql.SQLException;
-
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.IpBanRecord;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.DateUtils;
-
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
+import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.IpBanRecord;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.DateUtils;
+
+import java.sql.SQLException;
 
 public class IpBanRecordStorage extends BaseDaoImpl<IpBanRecord, Integer> {
 
-      public IpBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<IpBanRecord> tableConfig) throws SQLException {
-            super(connection, tableConfig);
-      }
+  public IpBanRecordStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<IpBanRecord>) BanManager.getPlugin().getConfiguration().getLocalDb()
+                                                                   .getTable("ipBanRecords"));
 
-      public void addRecord(IpBanData ban, PlayerData actor) throws SQLException {
-            create(new IpBanRecord(ban, actor));
-      }
+    if (!this.isTableExists()) {
+      TableUtils.createTable(connection, tableConfig);
+    }
+  }
 
-      public CloseableIterator<IpBanRecord> findUnbans(long fromTime) throws SQLException {
-            if (fromTime == 0) {
-                  return iterator();
-            }
+  public void addRecord(IpBanData ban, PlayerData actor) throws SQLException {
+    create(new IpBanRecord(ban, actor));
+  }
 
-            long checkTime = fromTime + DateUtils.getTimeDiff();
+  public CloseableIterator<IpBanRecord> findUnbans(long fromTime) throws SQLException {
+    if (fromTime == 0) {
+      return iterator();
+    }
 
-            QueryBuilder<IpBanRecord, Integer> query = queryBuilder();
-            Where<IpBanRecord, Integer> where = query.where();
+    long checkTime = fromTime + DateUtils.getTimeDiff();
 
-            where.ge("created", checkTime);
+    QueryBuilder<IpBanRecord, Integer> query = queryBuilder();
+    Where<IpBanRecord, Integer> where = query.where();
 
-            query.setWhere(where);
+    where.ge("created", checkTime);
 
-            return query.iterator();
+    query.setWhere(where);
 
-      }
+    return query.iterator();
 
-      public long getCount(long ip) throws SQLException {
-            return queryBuilder().where().eq("ip", ip).countOf();
-      }
-      
-      public CloseableIterator<IpBanRecord> getRecords(long ip) throws SQLException {
-  		return queryBuilder().where().eq("ip", ip).iterator();
-  	}
+  }
+
+  public long getCount(long ip) throws SQLException {
+    return queryBuilder().where().eq("ip", ip).countOf();
+  }
+
+  public CloseableIterator<IpBanRecord> getRecords(long ip) throws SQLException {
+    return queryBuilder().where().eq("ip", ip).iterator();
+  }
 }

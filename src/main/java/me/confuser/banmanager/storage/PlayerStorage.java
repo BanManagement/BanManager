@@ -10,6 +10,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
@@ -33,8 +34,16 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   @Getter
   private PlayerData console;
 
-  public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<PlayerData> tableConfig) throws SQLException {
-    super(connection, tableConfig);
+  public PlayerStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+                                                                  .getTable("players"));
+
+    if (!isTableExists()) {
+      TableUtils.createTable(connection, tableConfig);
+    }
+
+    setupConsole();
+    setupAutoComplete();
   }
 
   public void setupConsole() throws SQLException {
@@ -55,7 +64,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     autoCompleteTree = new ConcurrentRadixTree<>(new SmartArrayBasedNodeFactory());
     CloseableIterator<PlayerData> itr = this.queryBuilder().selectColumns("name").iterator();
 
-    while(itr.hasNext()) {
+    while (itr.hasNext()) {
       autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
     }
 

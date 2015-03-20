@@ -3,9 +3,10 @@ package me.confuser.banmanager.storage.external;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
+import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.external.ExternalPlayerMuteData;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -13,9 +14,13 @@ import java.sql.SQLException;
 
 public class ExternalPlayerMuteStorage extends BaseDaoImpl<ExternalPlayerMuteData, Integer> {
 
-  public ExternalPlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<ExternalPlayerMuteData>
-          tableConfig) throws SQLException {
-    super(connection, tableConfig);
+  public ExternalPlayerMuteStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<ExternalPlayerMuteData>) BanManager.getPlugin().getConfiguration()
+                                                                              .getExternalDb().getTable("playerMutes"));
+
+    if (!this.isTableExists()) {
+      TableUtils.createTable(connection, tableConfig);
+    }
   }
 
   public CloseableIterator<ExternalPlayerMuteData> findMutes(long fromTime) throws SQLException {

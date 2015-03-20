@@ -359,132 +359,26 @@ public class BanManager extends BukkitPlugin {
   @SuppressWarnings("unchecked")
   public void setupStorages() throws SQLException {
     // TODO Refactor this
-    DatabaseTableConfig<PlayerData> playerConfig = (DatabaseTableConfig<PlayerData>) configuration.getLocalDb()
-                                                                                                  .getTable("players");
-    playerStorage = new PlayerStorage(localConn, playerConfig);
-
-    if (!playerStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerConfig);
-    }
-
-    playerStorage.setupConsole();
-    playerStorage.setupAutoComplete();
-
-    DatabaseTableConfig<PlayerBanData> playerBansConfig = (DatabaseTableConfig<PlayerBanData>) configuration
-            .getLocalDb().getTable("playerBans");
-    playerBanStorage = new PlayerBanStorage(localConn, playerBansConfig);
-
-    if (!playerBanStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerBansConfig);
-    }
-
-    DatabaseTableConfig<PlayerBanRecord> playerBanRecordsConfig = (DatabaseTableConfig<PlayerBanRecord>) configuration
-            .getLocalDb().getTable("playerBanRecords");
-    playerBanRecordStorage = new PlayerBanRecordStorage(localConn, playerBanRecordsConfig);
-
-    if (!playerBanRecordStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerBanRecordsConfig);
-    }
-
-    DatabaseTableConfig<PlayerMuteData> playerMutesConfig = (DatabaseTableConfig<PlayerMuteData>) configuration
-            .getLocalDb().getTable("playerMutes");
-    playerMuteStorage = new PlayerMuteStorage(localConn, playerMutesConfig);
-
-    if (!playerMuteStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerMutesConfig);
-    }
-
-    DatabaseTableConfig<PlayerMuteRecord> playerMuteRecordsConfig = (DatabaseTableConfig<PlayerMuteRecord>) configuration
-            .getLocalDb().getTable("playerMuteRecords");
-    playerMuteRecordStorage = new PlayerMuteRecordStorage(localConn, playerMuteRecordsConfig);
-
-    if (!playerMuteRecordStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerMuteRecordsConfig);
-    }
-
-    DatabaseTableConfig<PlayerWarnData> playerWarningsConfig = (DatabaseTableConfig<PlayerWarnData>) configuration
-            .getLocalDb().getTable("playerWarnings");
-    playerWarnStorage = new PlayerWarnStorage(localConn, playerWarningsConfig);
-
-    if (!playerWarnStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerWarningsConfig);
-    }
-
-    DatabaseTableConfig<PlayerKickData> playerKickConfig = (DatabaseTableConfig<PlayerKickData>) configuration
-            .getLocalDb().getTable("playerKicks");
-    playerKickStorage = new PlayerKickStorage(localConn, playerKickConfig);
-
-    if (!playerKickStorage.isTableExists()) {
-      TableUtils.createTable(localConn, playerKickConfig);
-    }
-
-    DatabaseTableConfig<IpBanData> ipBansConfig = (DatabaseTableConfig<IpBanData>) configuration.getLocalDb()
-                                                                                                .getTable("ipBans");
-    ipBanStorage = new IpBanStorage(localConn, ipBansConfig);
-
-    if (!ipBanStorage.isTableExists()) {
-      TableUtils.createTable(localConn, ipBansConfig);
-    }
-
-    DatabaseTableConfig<IpBanRecord> ipBanRecordsConfig = (DatabaseTableConfig<IpBanRecord>) configuration.getLocalDb()
-                                                                                                          .getTable("ipBanRecords");
-    ipBanRecordStorage = new IpBanRecordStorage(localConn, ipBanRecordsConfig);
-
-    if (!ipBanRecordStorage.isTableExists()) {
-      TableUtils.createTable(localConn, ipBanRecordsConfig);
-    }
+    playerStorage = new PlayerStorage(localConn);
+    playerBanStorage = new PlayerBanStorage(localConn);
+    playerBanRecordStorage = new PlayerBanRecordStorage(localConn);
+    playerMuteStorage = new PlayerMuteStorage(localConn);
+    playerMuteRecordStorage = new PlayerMuteRecordStorage(localConn);
+    playerWarnStorage = new PlayerWarnStorage(localConn);
+    playerKickStorage = new PlayerKickStorage(localConn);
+    ipBanStorage = new IpBanStorage(localConn);
+    ipBanRecordStorage = new IpBanRecordStorage(localConn);
 
     if (externalConn == null) {
       return;
     }
 
-    DatabaseTableConfig<ExternalPlayerBanData> externalPlayerBanConfig = (DatabaseTableConfig<
-            ExternalPlayerBanData>) configuration.getExternalDb().getTable("playerBans");
-    externalPlayerBanStorage = new ExternalPlayerBanStorage(externalConn, externalPlayerBanConfig);
-
-    if (!externalPlayerBanStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalPlayerBanConfig);
-    }
-
-    DatabaseTableConfig<ExternalPlayerBanRecordData> externalPlayerBanRecordConfig = (DatabaseTableConfig<
-            ExternalPlayerBanRecordData>) configuration.getExternalDb().getTable("playerUnbans");
-    externalPlayerBanRecordStorage = new ExternalPlayerBanRecordStorage(externalConn, externalPlayerBanRecordConfig);
-
-    if (!externalPlayerBanRecordStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalPlayerBanRecordConfig);
-    }
-
-    DatabaseTableConfig<ExternalPlayerMuteData> externalPlayerMuteConfig = (DatabaseTableConfig<
-            ExternalPlayerMuteData>) configuration.getExternalDb().getTable("playerMutes");
-    externalPlayerMuteStorage = new ExternalPlayerMuteStorage(externalConn, externalPlayerMuteConfig);
-
-    if (!externalPlayerMuteStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalPlayerMuteConfig);
-    }
-
-    DatabaseTableConfig<ExternalPlayerMuteRecordData> externalPlayerMuteRecordConfig = (DatabaseTableConfig<
-            ExternalPlayerMuteRecordData>) configuration.getExternalDb().getTable("playerUnmutes");
-    externalPlayerMuteRecordStorage = new ExternalPlayerMuteRecordStorage(externalConn, externalPlayerMuteRecordConfig);
-
-    if (!externalPlayerMuteRecordStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalPlayerMuteRecordConfig);
-    }
-
-    DatabaseTableConfig<ExternalIpBanData> externalIpBanConfig = (DatabaseTableConfig<
-            ExternalIpBanData>) configuration.getExternalDb().getTable("ipBans");
-    externalIpBanStorage = new ExternalIpBanStorage(externalConn, externalIpBanConfig);
-
-    if (!externalIpBanStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalIpBanConfig);
-    }
-
-    DatabaseTableConfig<ExternalIpBanRecordData> externalIpBanRecordConfig = (DatabaseTableConfig<
-            ExternalIpBanRecordData>) configuration.getExternalDb().getTable("ipUnbans");
-    externalIpBanRecordStorage = new ExternalIpBanRecordStorage(externalConn, externalIpBanRecordConfig);
-
-    if (!externalIpBanRecordStorage.isTableExists()) {
-      TableUtils.createTable(externalConn, externalIpBanRecordConfig);
-    }
+    externalPlayerBanStorage = new ExternalPlayerBanStorage(externalConn);
+    externalPlayerBanRecordStorage = new ExternalPlayerBanRecordStorage(externalConn);
+    externalPlayerMuteStorage = new ExternalPlayerMuteStorage(externalConn);
+    externalPlayerMuteRecordStorage = new ExternalPlayerMuteRecordStorage(externalConn);
+    externalIpBanStorage = new ExternalIpBanStorage(externalConn);
+    externalIpBanRecordStorage = new ExternalIpBanRecordStorage(externalConn);
   }
 
   @Override

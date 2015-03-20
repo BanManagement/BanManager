@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
@@ -26,10 +27,12 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   private BanManager plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<>();
 
-  public PlayerBanStorage(ConnectionSource connection, DatabaseTableConfig<PlayerBanData> tableConfig) throws SQLException {
-    super(connection, tableConfig);
+  public PlayerBanStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerBanData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+                                                                     .getTable("playerBans"));
 
     if (!this.isTableExists()) {
+      TableUtils.createTable(connection, tableConfig);
       return;
     }
 

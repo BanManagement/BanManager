@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
@@ -25,11 +26,12 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   private BanManager plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<>();
 
-  public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteData> tableConfig) throws SQLException {
-    super(connection, tableConfig);
+  public PlayerMuteStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerMuteData>) BanManager.getPlugin().getConfiguration()
+                                                                      .getLocalDb().getTable("playerMutes"));
 
     if (!this.isTableExists()) {
-      return;
+      TableUtils.createTable(connection, tableConfig);
     }
 
     CloseableIterator<PlayerMuteData> itr = iterator();

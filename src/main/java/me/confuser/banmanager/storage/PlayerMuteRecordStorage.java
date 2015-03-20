@@ -1,53 +1,59 @@
 package me.confuser.banmanager.storage;
 
-import java.sql.SQLException;
-
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerMuteData;
-import me.confuser.banmanager.data.PlayerMuteRecord;
-import me.confuser.banmanager.util.DateUtils;
-
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
+import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.data.PlayerMuteRecord;
+import me.confuser.banmanager.util.DateUtils;
+
+import java.sql.SQLException;
 
 public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integer> {
 
-	public PlayerMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<PlayerMuteRecord> tableConfig) throws SQLException {
-		super(connection, tableConfig);
-	}
+  public PlayerMuteRecordStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerMuteRecord>) BanManager.getPlugin().getConfiguration()
+                                                                        .getLocalDb().getTable("playerMuteRecords"));
 
-	public void addRecord(PlayerMuteData mute, PlayerData actor) throws SQLException {
-		create(new PlayerMuteRecord(mute, actor));
-	}
+    if (!this.isTableExists()) {
+      TableUtils.createTable(connection, tableConfig);
+    }
+  }
 
-	public CloseableIterator<PlayerMuteRecord> findUnmutes(long fromTime) throws SQLException {
-		if (fromTime == 0) {
-			return iterator();
-		}
+  public void addRecord(PlayerMuteData mute, PlayerData actor) throws SQLException {
+    create(new PlayerMuteRecord(mute, actor));
+  }
 
-		long checkTime = fromTime + DateUtils.getTimeDiff();
+  public CloseableIterator<PlayerMuteRecord> findUnmutes(long fromTime) throws SQLException {
+    if (fromTime == 0) {
+      return iterator();
+    }
 
-		QueryBuilder<PlayerMuteRecord, Integer> query = queryBuilder();
-		Where<PlayerMuteRecord, Integer> where = query.where();
+    long checkTime = fromTime + DateUtils.getTimeDiff();
 
-		where.ge("created", checkTime);
+    QueryBuilder<PlayerMuteRecord, Integer> query = queryBuilder();
+    Where<PlayerMuteRecord, Integer> where = query.where();
 
-		query.setWhere(where);
+    where.ge("created", checkTime);
 
-		return query.iterator();
+    query.setWhere(where);
 
-	}
+    return query.iterator();
 
-	public long getCount(PlayerData player) throws SQLException {
-		return queryBuilder().where().eq("player_id", player).countOf();
-	}
+  }
 
-	public CloseableIterator<PlayerMuteRecord> getRecords(PlayerData player) throws SQLException {
-		return queryBuilder().where().eq("player_id", player).iterator();
-	}
+  public long getCount(PlayerData player) throws SQLException {
+    return queryBuilder().where().eq("player_id", player).countOf();
+  }
+
+  public CloseableIterator<PlayerMuteRecord> getRecords(PlayerData player) throws SQLException {
+    return queryBuilder().where().eq("player_id", player).iterator();
+  }
 
 }
