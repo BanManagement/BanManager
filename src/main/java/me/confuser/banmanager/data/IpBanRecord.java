@@ -30,7 +30,7 @@ public class IpBanRecord {
 	@DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
 	@Getter
 	private long pastCreated;
-	@DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+	@DatabaseField(index = true, canBeNull = false, columnDefinition = "INT(10) NOT NULL")
 	@Getter
 	private long created = System.currentTimeMillis() / 1000L;
 
