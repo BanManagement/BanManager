@@ -103,3 +103,6 @@ onlineMode: true
 
 # Set to false to disable update checks
 checkForUpdates: true
+
+# Set to false to disable offline name completion
+offlineAutoComplete: true

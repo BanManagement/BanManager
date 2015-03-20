@@ -43,7 +43,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     setupConsole();
-    setupAutoComplete();
+    if (plugin.getConfiguration().isOfflineAutoComplete()) setupAutoComplete();
   }
 
   public void setupConsole() throws SQLException {

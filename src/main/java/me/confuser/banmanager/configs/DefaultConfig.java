@@ -36,6 +36,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean onlineMode = true;
   @Getter
   private boolean checkForUpdates = false;
+  @Getter
+  private boolean offlineAutoComplete = true;
 
   public DefaultConfig() {
     super("config.yml");
@@ -49,6 +51,7 @@ public class DefaultConfig extends Config<BanManager> {
     duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
     onlineMode = conf.getBoolean("onlineMode", true);
     checkForUpdates = conf.getBoolean("checkForUpdates", false);
+    offlineAutoComplete = conf.getBoolean("offlineAutoComplete", true);
 
     for (String ip : conf.getStringList("bypassDuplicateChecks")) {
       bypassPlayerIps.add(IPUtils.toLong(ip));
