@@ -57,6 +57,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       // Create it
       console = new PlayerData(uuid, name);
       create(console);
+    } else if (!console.getName().equals(name)) {
+      console.setName(name);
+      plugin.getLogger().info("Console name change detected, updating database");
+      update(console);
     }
   }
 
