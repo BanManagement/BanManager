@@ -45,6 +45,8 @@ public class TimeLimitsConfig {
 
     HashMap<String, String> groups = limits.get(type.getName());
 
+    if (groups == null) return false;
+
     for (String group : groups.keySet()) {
       if (sender.hasPermission("bm.timelimit." + type.getName() + "." + group)) {
         try {
