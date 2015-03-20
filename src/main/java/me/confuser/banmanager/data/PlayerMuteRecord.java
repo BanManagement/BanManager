@@ -20,10 +20,10 @@ public class PlayerMuteRecord {
   @DatabaseField(canBeNull = false)
   @Getter
   private long expired;
-  @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData actor;
-  @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData pastActor;
   @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")

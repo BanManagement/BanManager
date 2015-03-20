@@ -13,13 +13,13 @@ public class PlayerKickData {
 	@DatabaseField(generatedId = true)
 	private int id;
 	@Getter
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData player;
 	@Getter
 	@DatabaseField(canBeNull = false)
 	private String reason;
 	@Getter
-	@DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
 	private PlayerData actor;
 	// Should always be database time
 	@DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
