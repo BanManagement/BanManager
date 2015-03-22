@@ -6,6 +6,7 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,27 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
 
       String lookup = names[names.length - 1];
 
-      for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
-        mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+      if (plugin.getConfiguration().isOfflineAutoComplete()) {
+        for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
+          mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+        }
+      } else {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+          if (player.getName().toLowerCase().startsWith(lookup.toLowerCase())) {
+            mostLike.add(args[0] + player.getName().substring(lookup.length()));
+          }
+        }
       }
 
-    } else {
+    } else if (plugin.getConfiguration().isOfflineAutoComplete()) {
       for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
         mostLike.add(charSequence.toString());
+      }
+    } else {
+      for (Player player : plugin.getServer().getOnlinePlayers()) {
+        if (player.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+          mostLike.add(player.getName());
+        }
       }
     }
 
