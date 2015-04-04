@@ -150,10 +150,10 @@ messages:
     ip:
       disallowed: 'You have been banned from this server for [reason] \nIt expires in [expires]'
       kick: 'You have been temporarily banned for [reason]'
-    notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+    notify: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
 
   tempbanipall:
-    notify: '[player] will be temporarily banned for [expires] by [actor] for [reason]'
+    notify: '[ip] will be temporarily banned for [expires] by [actor] for [reason]'
 
   unbanip:
     notify: '[ip] has been unbanned by [actor]'
