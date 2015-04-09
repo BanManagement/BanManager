@@ -17,11 +17,11 @@ public class DefaultConfig extends Config<BanManager> {
   @Getter
   private TimeLimitsConfig timeLimits;
   @Getter
-  private HashSet<String> mutedBlacklistCommands = new HashSet<>();
+  private HashSet<String> mutedBlacklistCommands;
   @Getter
   private boolean duplicateIpCheckEnabled = true;
   @Getter
-  private HashSet<Long> bypassPlayerIps = new HashSet<>();
+  private HashSet<Long> bypassPlayerIps;
   @Getter
   private boolean kickLoggingEnabled = false;
   @Getter
@@ -55,6 +55,7 @@ public class DefaultConfig extends Config<BanManager> {
     checkForUpdates = conf.getBoolean("checkForUpdates", false);
     offlineAutoComplete = conf.getBoolean("offlineAutoComplete", true);
 
+    bypassPlayerIps = new HashSet<>();
     for (String ip : conf.getStringList("bypassDuplicateChecks")) {
       bypassPlayerIps.add(IPUtils.toLong(ip));
     }
@@ -66,6 +67,7 @@ public class DefaultConfig extends Config<BanManager> {
     displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
     punishAlts = conf.getBoolean("punishAlts", false);
 
+    mutedBlacklistCommands = new HashSet<>();
     // Run this after startup to ensure all aliases are found
     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
