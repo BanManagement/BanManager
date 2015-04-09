@@ -47,6 +47,8 @@ public class BanManager extends BukkitPlugin {
   private PlayerStorage playerStorage;
   @Getter
   private PlayerWarnStorage playerWarnStorage;
+  @Getter
+  private PlayerNoteStorage playerNoteStorage;
 
   @Getter
   private IpBanStorage ipBanStorage;
@@ -274,6 +276,9 @@ public class BanManager extends BukkitPlugin {
     new WarnCommand().register();
     new DeleteLastWarningCommand().register();
 
+    new AddNoteCommand().register();
+    new NotesCommand().register();
+
     new ClearCommand().register();
 
     new SyncCommand().register();
@@ -366,6 +371,8 @@ public class BanManager extends BukkitPlugin {
     playerMuteRecordStorage = new PlayerMuteRecordStorage(localConn);
     playerWarnStorage = new PlayerWarnStorage(localConn);
     playerKickStorage = new PlayerKickStorage(localConn);
+    playerNoteStorage = new PlayerNoteStorage(localConn);
+
     ipBanStorage = new IpBanStorage(localConn);
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
 
@@ -391,6 +398,7 @@ public class BanManager extends BukkitPlugin {
     if (configuration.isDisplayNotificationsEnabled()) {
       new BanListener().register();
       new MuteListener().register();
+      new NoteListener().register();
     }
   }
 

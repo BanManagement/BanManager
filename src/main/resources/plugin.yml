@@ -141,6 +141,14 @@ commands:
     description: "Forces synchronisation from database"
     usage: "/bmsync <local || external>"
     permission: bm.command.sync
+  addnote:
+    description: "Attach a private note to a player"
+    usage: "/addnote <player> <message>"
+    permission: bm.command.addnote
+  notes:
+    description: "View private notes attached to a player"
+    usage: "/notes <player>"
+    permission: bm.command.notes
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -173,6 +181,8 @@ permissions:
       bm.command.dwarn: true
       bm.command.clear: true
       bm.command.sync: true
+      bm.command.addnote: true
+      bm.command.notes: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -272,4 +282,10 @@ permissions:
     default: op
   bm.command.sync:
     description: Allows you to force synchronisation with the database
+    default: op
+  bm.command.addnote:
+    description: Allows you to attach a private note to a player
+    default: op
+  bm.command.notes:
+    description: Allows you to view private notes attached to a player
     default: op

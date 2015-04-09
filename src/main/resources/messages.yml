@@ -190,3 +190,10 @@ messages:
 
   update:
     notify: '&a[BanManager] An update is available'
+
+  notes:
+    header: '&6[player] has the following notes:'
+    note: '&6[[player]] &e[message]'
+    notify: '[player] has a new note attached by [actor]: [message]'
+    error:
+      noNotes: '&c[player] has no notes'

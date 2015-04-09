@@ -2,10 +2,7 @@ package me.confuser.banmanager.listeners;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerWarnData;
+import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
@@ -17,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -135,7 +133,40 @@ public class JoinListener extends Listeners<BanManager> {
           return;
         }
 
-        CloseableIterator<PlayerWarnData> warnings;
+        CloseableIterator<PlayerNoteData> notesItr = null;
+
+        try {
+          notesItr = plugin.getPlayerNoteStorage().getNotes(onlinePlayer);
+          ArrayList<String> notes = new ArrayList<String>();
+
+          while (notesItr.hasNext()) {
+            PlayerNoteData note = notesItr.next();
+
+            Message noteMessage = Message.get("notes.note")
+                                         .set("player", note.getActor().getName())
+                                         .set("message", note.getMessage());
+            notes.add(noteMessage.toString());
+          }
+
+          if (notes.size() != 0) {
+            String header = Message.get("notes.header")
+                                   .set("player", onlinePlayer.getName())
+                                   .toString();
+
+            plugin.getServer().broadcast(header, "bm.notify.notes.join");
+
+            for (String message : notes) {
+              plugin.getServer().broadcast(message, "bm.notify.notes.join");
+            }
+
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+        } finally {
+          notesItr.closeQuietly();
+        }
+
+        CloseableIterator<PlayerWarnData> warnings = null;
         try {
           warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(onlinePlayer);
 
@@ -153,11 +184,10 @@ public class JoinListener extends Listeners<BanManager> {
             // TODO Move to one update query to set all warnings for player to read
             plugin.getPlayerWarnStorage().update(warning);
           }
-
-          warnings.close();
-          warnings = null;
         } catch (SQLException e) {
           e.printStackTrace();
+        } finally {
+          warnings.closeQuietly();
         }
       }
     }, 20L);

@@ -20,8 +20,9 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
 
     {
       add("banrecords");
-      add("muterecords");
       add("kicks");
+      add("muterecords");
+      add("notes");
       add("warnings");
     }
   };
@@ -87,12 +88,14 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
             switch (type) {
               case "banrecords":
                 builder = plugin.getPlayerBanRecordStorage().deleteBuilder();
-
                 break;
 
               case "muterecords":
                 builder = plugin.getPlayerMuteRecordStorage().deleteBuilder();
+                break;
 
+              case "notes":
+                builder = plugin.getPlayerNoteStorage().deleteBuilder();
                 break;
 
               case "kicks":
