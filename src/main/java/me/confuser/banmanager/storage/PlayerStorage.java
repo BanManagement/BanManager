@@ -43,7 +43,19 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     setupConsole();
-    if (plugin.getConfiguration().isOfflineAutoComplete()) setupAutoComplete();
+    if (plugin.getConfiguration().isOfflineAutoComplete()) {
+      plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            setupAutoComplete();
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+      });
+    }
   }
 
   public void setupConsole() throws SQLException {
