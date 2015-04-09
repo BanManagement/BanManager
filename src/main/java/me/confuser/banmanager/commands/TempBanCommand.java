@@ -115,6 +115,11 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        if (plugin.getExemptionsConfig().isExempt(player, "tempban")) {
+          sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+          return;
+        }
+
         final PlayerData actor;
 
         if (sender instanceof Player) {

@@ -83,6 +83,11 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        if (plugin.getExemptionsConfig().isExempt(player, "tempban")) {
+          sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+          return;
+        }
+
         try {
           if (plugin.getPlayerWarnStorage().isRecentlyWarned(player)) {
             Message.get("warn.error.cooldown").sendTo(sender);

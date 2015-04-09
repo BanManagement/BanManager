@@ -75,6 +75,8 @@ public class BanManager extends BukkitPlugin {
   private ConsoleConfig consoleConfig;
   @Getter
   private SchedulesConfig schedulesConfig;
+  @Getter
+  private ExemptionsConfig exemptionsConfig;
 
   @Getter
   private BanSync banSync;
@@ -310,6 +312,9 @@ public class BanManager extends BukkitPlugin {
 
     schedulesConfig = new SchedulesConfig();
     schedulesConfig.load();
+
+    exemptionsConfig = new ExemptionsConfig();
+    exemptionsConfig.load();
   }
 
   public boolean setupConnections() throws SQLException {

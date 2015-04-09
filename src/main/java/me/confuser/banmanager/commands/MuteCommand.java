@@ -98,6 +98,11 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        if (plugin.getExemptionsConfig().isExempt(player, "tempban")) {
+          sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+          return;
+        }
+
         PlayerData actor;
 
         if (sender instanceof Player) {
