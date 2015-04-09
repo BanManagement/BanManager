@@ -13,7 +13,7 @@ public class PlayerWarnData {
       @DatabaseField(generatedId = true)
       @Getter
       private int id;
-      @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+      @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
       @Getter
       private PlayerData player;
       @DatabaseField(canBeNull = false)
