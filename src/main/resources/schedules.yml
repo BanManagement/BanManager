@@ -6,6 +6,7 @@ scheduler:
   playerBans: 30
   playerMutes: 30
   ipBans: 30
+  ipRangeBans: 30
   externalPlayerBans: 120
   externalPlayerMutes: 120
   externalIpBans: 120
@@ -16,6 +17,7 @@ lastChecked:
   playerBans: 0
   playerMutes: 0
   ipBans: 0
+  ipRangeBans: 0
   externalPlayerBans: 0
   externalPlayerMutes: 0
   externalIpBans: 0

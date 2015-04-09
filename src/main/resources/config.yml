@@ -20,6 +20,8 @@ databases:
       playerWarnings: bm_player_warnings
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
+      ipRangeBans: bm_ip_range_bans
+      ipRangeBanRecords: bm_ip_range_ban_records
 
   # External is only required if you want to sync with other servers, but still have separate bans, mutes etc.
   # This will enable /*all commands, e.g. /banall, /muteall

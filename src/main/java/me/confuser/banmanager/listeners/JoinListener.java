@@ -25,6 +25,37 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
+    if (plugin.getIpRangeBanStorage().isBanned(event.getAddress())) {
+      IpRangeBanData data = plugin.getIpRangeBanStorage().getBan(event.getAddress());
+
+      if (data.hasExpired()) {
+        try {
+          plugin.getIpRangeBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        return;
+      }
+
+      Message message;
+
+      if (data.getExpires() == 0) {
+        message = Message.get("baniprange.ip.disallowed");
+      } else {
+        message = Message.get("tempbaniprange.ip.disallowed");
+        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+      }
+
+      message.set("ip", event.getAddress().toString());
+      message.set("reason", data.getReason());
+      message.set("actor", data.getActor().getName());
+
+      event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+      event.setKickMessage(message.toString());
+      return;
+    }
+
     if (plugin.getIpBanStorage().isBanned(event.getAddress())) {
       IpBanData data = plugin.getIpBanStorage().getBan(event.getAddress());
 

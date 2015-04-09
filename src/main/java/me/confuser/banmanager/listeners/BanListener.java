@@ -2,9 +2,11 @@ package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpBanEvent;
+import me.confuser.banmanager.events.IpRangeBanEvent;
 import me.confuser.banmanager.events.PlayerBanEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
@@ -82,6 +84,41 @@ public class BanListener extends Listeners<BanManager> {
     message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName())
            .set("reason", ban.getReason())
            .set("players", playerNames.toString());
+
+    CommandUtils.broadcast(message.toString(), broadcastPermission);
+
+    // Check if the sender is online and does not have the
+    // broadcastPermission
+    Player player;
+    if ((player = plugin.getServer().getPlayer(ban.getActor().getUUID())) == null) {
+      return;
+    }
+
+    if (!player.hasPermission(broadcastPermission)) {
+      message.sendTo(player);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void notifyOnIpRangeBan(IpRangeBanEvent event) {
+    IpRangeBanData ban = event.getBan();
+
+    String broadcastPermission;
+    Message message;
+
+    if (ban.getExpires() == 0) {
+      broadcastPermission = "bm.notify.baniprange";
+      message = Message.get("baniprange.notify");
+    } else {
+      broadcastPermission = "bm.notify.tempbaniprange";
+      message = Message.get("tempbaniprange.notify");
+      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
+
+    message.set("from", IPUtils.toString(ban.getFromIp()))
+           .set("to", IPUtils.toString(ban.getToIp()))
+           .set("actor", ban.getActor().getName())
+           .set("reason", ban.getReason());
 
     CommandUtils.broadcast(message.toString(), broadcastPermission);
 

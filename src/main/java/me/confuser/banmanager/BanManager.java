@@ -51,6 +51,10 @@ public class BanManager extends BukkitPlugin {
   private IpBanStorage ipBanStorage;
   @Getter
   private IpBanRecordStorage ipBanRecordStorage;
+  @Getter
+  private IpRangeBanStorage ipRangeBanStorage;
+  @Getter
+  private IpRangeBanRecordStorage ipRangeBanRecordStorage;
 
   @Getter
   private ExternalPlayerBanStorage externalPlayerBanStorage;
@@ -83,6 +87,8 @@ public class BanManager extends BukkitPlugin {
   private MuteSync muteSync;
   @Getter
   private IpSync ipSync;
+  @Getter
+  private IpRangeSync ipRangeSync;
   @Getter
   private ExpiresSync expiresSync;
 
@@ -269,6 +275,9 @@ public class BanManager extends BukkitPlugin {
     new BanIpCommand().register();
     new TempIpBanCommand().register();
     new UnbanIpCommand().register();
+    new BanIpRangeCommand().register();
+    new TempIpRangeBanCommand().register();
+    new UnbanIpRangeCommand().register();
 
     // Misc
     new ExportCommand().register();
@@ -390,6 +399,8 @@ public class BanManager extends BukkitPlugin {
 
     ipBanStorage = new IpBanStorage(localConn);
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
+    ipRangeBanStorage = new IpRangeBanStorage(localConn);
+    ipRangeBanRecordStorage = new IpRangeBanRecordStorage(localConn);
 
     if (externalConn == null) {
       return;
@@ -422,11 +433,13 @@ public class BanManager extends BukkitPlugin {
     banSync = new BanSync();
     muteSync = new MuteSync();
     ipSync = new IpSync();
+    ipRangeSync = new IpRangeSync();
     expiresSync = new ExpiresSync();
 
     setupAsyncRunnable(schedulesConfig.getSchedule("playerBans"), banSync);
     setupAsyncRunnable(schedulesConfig.getSchedule("playerMutes"), muteSync);
     setupAsyncRunnable(schedulesConfig.getSchedule("ipBans"), ipSync);
+    setupAsyncRunnable(schedulesConfig.getSchedule("ipRangeBans"), ipRangeSync);
     setupAsyncRunnable(schedulesConfig.getSchedule("expiresCheck"), expiresSync);
 
     if (externalConn != null) {
