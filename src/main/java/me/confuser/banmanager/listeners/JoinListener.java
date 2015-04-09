@@ -52,6 +52,7 @@ public class JoinListener extends Listeners<BanManager> {
 
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
       event.setKickMessage(message.toString());
+      handleJoinDeny(event.getAddress().toString(), data.getReason());
       return;
     }
 
@@ -86,6 +87,19 @@ public class JoinListener extends Listeners<BanManager> {
 
     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
     event.setKickMessage(message.toString());
+    handleJoinDeny(data.getPlayer(), data.getReason());
+  }
+
+  private void handleJoinDeny(PlayerData player, String reason) {
+    Message message = Message.get("deniedNotify.player").set("player", player.getName()).set("reason", reason);
+
+    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.player");
+  }
+
+  private void handleJoinDeny(String ip, String reason) {
+    Message message = Message.get("deniedNotify.ip").set("ip", ip).set("reason", reason);
+
+    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.ip");
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

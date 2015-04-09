@@ -190,6 +190,8 @@ permissions:
       bm.notify.warn: true
       bm.notify.duplicateips: true
       bm.notify.update: true
+      bm.notify.denied.player: true
+      bm.notify.denied.ip: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
