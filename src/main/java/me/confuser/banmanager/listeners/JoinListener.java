@@ -5,8 +5,10 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -214,6 +216,14 @@ public class JoinListener extends Listeners<BanManager> {
           return;
         }
 
+        if (plugin.getConfiguration().isPunishAlts()) {
+          try {
+            punishAlts(duplicates, uuid);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
         StringBuilder sb = new StringBuilder();
 
         for (PlayerData player : duplicates) {
@@ -235,5 +245,64 @@ public class JoinListener extends Listeners<BanManager> {
         plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
       }
     }, 20L);
+  }
+
+  private void punishAlts(List<PlayerData> duplicates, UUID uuid) throws SQLException {
+
+    if (!plugin.getPlayerBanStorage().isBanned(uuid)) {
+      // Auto ban
+      for (PlayerData player : duplicates) {
+        if (player.getUUID().equals(uuid)) {
+          continue;
+        }
+
+        PlayerBanData ban = plugin.getPlayerBanStorage().getBan(player.getUUID());
+
+        if (ban == null) continue;
+        if (ban.hasExpired()) continue;
+
+        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
+                , plugin.getPlayerStorage().getConsole()
+                , ban.getReason()
+                , ban.getExpires());
+
+        plugin.getPlayerBanStorage().ban(newBan);
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            Player bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
+
+            Message kickMessage = Message.get("ban.player.kick")
+                                         .set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("player", newBan.getPlayer().getName())
+                                         .set("reason", newBan.getReason())
+                                         .set("actor", newBan.getActor().getName());
+
+            bukkitPlayer.kickPlayer(kickMessage.toString());
+          }
+        });
+      }
+    } else if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {
+      // Auto mute
+      for (PlayerData player : duplicates) {
+        if (player.getUUID().equals(uuid)) {
+          continue;
+        }
+
+        PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUUID());
+
+        if (mute == null) continue;
+        if (mute.hasExpired()) continue;
+
+        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
+                , plugin.getPlayerStorage().getConsole()
+                , mute.getReason()
+                , mute.getExpires());
+
+        plugin.getPlayerMuteStorage().mute(newMute);
+      }
+    }
   }
 }

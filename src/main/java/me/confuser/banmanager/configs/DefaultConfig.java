@@ -38,6 +38,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean checkForUpdates = false;
   @Getter
   private boolean offlineAutoComplete = true;
+  @Getter
+  private boolean punishAlts = false;
 
   public DefaultConfig() {
     super("config.yml");
@@ -62,6 +64,7 @@ public class DefaultConfig extends Config<BanManager> {
     kickLoggingEnabled = conf.getBoolean("logKicks", false);
     debugEnabled = conf.getBoolean("debug", false);
     displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
+    punishAlts = conf.getBoolean("punishAlts", false);
 
     // Run this after startup to ensure all aliases are found
     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
