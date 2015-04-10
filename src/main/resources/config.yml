@@ -111,3 +111,12 @@ offlineAutoComplete: true
 # Automatically apply punishments to alts
 # This is disabled by default as this could block siblings or those on shared networks
 punishAlts: false
+
+# Keep records for number of days, use 0 to never delete
+cleanUp:
+  kicks: 30
+  banRecords: 0
+  ipBanRecords: 0
+  muteRecords: 0
+  readWarnings: 0
+  unreadWarnings: 0

@@ -2,14 +2,10 @@ package me.confuser.banmanager;
 
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
-import com.j256.ormlite.table.DatabaseTableConfig;
-import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
 import me.confuser.banmanager.commands.external.*;
 import me.confuser.banmanager.configs.*;
-import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.data.external.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
@@ -434,6 +430,9 @@ public class BanManager extends BukkitPlugin {
      * above.
      */
     setupAsyncRunnable(schedulesConfig.getSchedule("saveLastChecked") + 1L, new SaveLastChecked());
+
+    // Purge
+    getServer().getScheduler().runTaskAsynchronously(plugin, new Purge());
 
     // TODO Refactor
     if (!getConfiguration().isCheckForUpdates()) return;

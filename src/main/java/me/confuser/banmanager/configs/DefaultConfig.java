@@ -6,6 +6,7 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.configs.Config;
 import org.bukkit.command.PluginCommand;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class DefaultConfig extends Config<BanManager> {
@@ -40,6 +41,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean offlineAutoComplete = true;
   @Getter
   private boolean punishAlts = false;
+  @Getter
+  private HashMap<String, CleanUp> cleanUps;
 
   public DefaultConfig() {
     super("config.yml");
@@ -66,6 +69,11 @@ public class DefaultConfig extends Config<BanManager> {
     debugEnabled = conf.getBoolean("debug", false);
     displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
     punishAlts = conf.getBoolean("punishAlts", false);
+
+    cleanUps = new HashMap<>(6);
+    for (String type : conf.getConfigurationSection("cleanUp").getKeys(false)) {
+      cleanUps.put(type, new CleanUp(conf.getInt("cleanUp." + type)));
+    }
 
     mutedBlacklistCommands = new HashSet<>();
     // Run this after startup to ensure all aliases are found
