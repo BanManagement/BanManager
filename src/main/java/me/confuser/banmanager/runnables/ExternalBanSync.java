@@ -61,10 +61,12 @@ public class ExternalBanSync implements Runnable {
 
       final PlayerBanData localBan = ban.toLocal();
 
-      if (localBanStorage.isBanned(ban.getUUID()) || localBanStorage.retrieveBan(ban.getUUID()) != null) {
+      if (localBanStorage.isBanned(ban.getUUID()) && localBanStorage.retrieveBan(ban.getUUID()) != null) {
         // External ban overrides local
         localBanStorage
                 .unban(localBan, ban.getActor());
+      } else if (localBanStorage.isBanned(ban.getUUID())) {
+        localBanStorage.removeBan(ban.getUUID());
       }
 
       localBanStorage.ban(localBan);

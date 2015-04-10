@@ -57,10 +57,12 @@ public class ExternalMuteSync implements Runnable {
 
       final PlayerMuteData localMute = mute.toLocal();
 
-      if (localMuteStorage.isMuted(mute.getUUID()) || localMuteStorage.retrieveMute(mute.getUUID()) != null) {
+      if (localMuteStorage.isMuted(mute.getUUID()) && localMuteStorage.retrieveMute(mute.getUUID()) != null) {
         // External mute overrides local
         localMuteStorage
                 .unmute(localMute, mute.getActor());
+      } else if (localMuteStorage.isMuted(mute.getUUID())) {
+        localMuteStorage.retrieveMute(mute.getUUID());
       }
 
       localMuteStorage.mute(localMute);
