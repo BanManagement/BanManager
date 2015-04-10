@@ -91,6 +91,18 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     online.put(player.getUUID(), player);
   }
 
+  public void addOnline(Player player) {
+    PlayerData playerData = new PlayerData(player);
+
+    try {
+      createOrUpdate(playerData);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    addOnline(playerData);
+  }
+
   public PlayerData removeOnline(UUID uuid) {
     return online.remove(uuid);
   }

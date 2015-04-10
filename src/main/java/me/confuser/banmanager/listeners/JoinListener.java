@@ -108,15 +108,7 @@ public class JoinListener extends Listeners<BanManager> {
 
       @Override
       public void run() {
-        PlayerData player = new PlayerData(event.getPlayer());
-
-        try {
-          plugin.getPlayerStorage().createOrUpdate(player);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-
-        plugin.getPlayerStorage().addOnline(player);
+        plugin.getPlayerStorage().addOnline(event.getPlayer());
       }
 
     });
