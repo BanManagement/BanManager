@@ -3,7 +3,6 @@ package me.confuser.banmanager.listeners;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.events.PlayerMuteEvent;
-import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
@@ -32,7 +31,7 @@ public class MuteListener extends Listeners<BanManager> {
     message.set("player", mute.getPlayer().getName()).set("actor", mute.getActor().getName())
            .set("reason", mute.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    plugin.getServer().broadcast(message.toString(), broadcastPermission);
 
     // Check if the sender is online and does not have the
     // broadcastPermission

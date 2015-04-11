@@ -5,7 +5,6 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.events.IpBanEvent;
 import me.confuser.banmanager.events.PlayerBanEvent;
-import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
@@ -35,7 +34,7 @@ public class BanListener extends Listeners<BanManager> {
     message.set("player", ban.getPlayer().getName()).set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    plugin.getServer().broadcast(message.toString(), broadcastPermission);
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -68,7 +67,7 @@ public class BanListener extends Listeners<BanManager> {
     message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    plugin.getServer().broadcast(message.toString(), broadcastPermission);
 
     // Check if the sender is online and does not have the
     // broadcastPermission

@@ -102,7 +102,7 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
           message.sendTo(sender);
         }
 
-        CommandUtils.broadcast(message.toString(), "bm.notify.unbanip");
+        plugin.getServer().broadcast(message.toString(), "bm.notify.unbanip");
       }
 
     });

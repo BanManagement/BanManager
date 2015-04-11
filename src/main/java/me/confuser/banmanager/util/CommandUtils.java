@@ -3,7 +3,6 @@ package me.confuser.banmanager.util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +46,5 @@ public class CommandUtils {
     }
 
     return str.split(delimiter);
-  }
-
-  public static void broadcast(String message, String permission) {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (player.hasPermission(permission)) {
-        player.sendMessage(message);
-      }
-    }
   }
 }
