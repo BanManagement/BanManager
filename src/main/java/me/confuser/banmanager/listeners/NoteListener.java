@@ -3,6 +3,7 @@ package me.confuser.banmanager.listeners;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ public class NoteListener extends Listeners<BanManager> {
            .set("actor", note.getActor().getName())
            .set("message", note.getMessage());
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.notes");
+    CommandUtils.broadcast(message.toString(), "bm.notify.notes");
 
     // Check if the sender is online and does not have the
     // broadcastPermission

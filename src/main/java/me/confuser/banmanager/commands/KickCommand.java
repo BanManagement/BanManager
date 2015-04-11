@@ -108,7 +108,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
       message.sendTo(sender);
     }
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.kick");
+    CommandUtils.broadcast(message.toString(), "bm.notify.kick");
 
     return true;
   }
