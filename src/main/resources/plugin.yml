@@ -149,6 +149,10 @@ commands:
     description: "View private notes attached to a player"
     usage: "/notes <player>"
     permission: bm.command.notes
+  bmexport:
+    description: "Export bans to vanilla format"
+    usage: "/bmexport <players || ips>"
+    permission: bm.command.export
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -183,6 +187,7 @@ permissions:
       bm.command.sync: true
       bm.command.addnote: true
       bm.command.notes: true
+      bm.command.export: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -288,4 +293,7 @@ permissions:
     default: op
   bm.command.notes:
     description: Allows you to view private notes attached to a player
+    default: op
+  bm.command.export:
+    description: Allows you to export bans to a vanilla compatible file
     default: op

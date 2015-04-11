@@ -46,6 +46,16 @@ messages:
   alts:
     header: 'Possible alts found:'
 
+  export:
+    error:
+      inProgress: '&cAn export is already in progress, please wait'
+    player:
+      started: '&aPlayer ban export started'
+      finished: '&aPlayer ban export finished, file [file] created'
+    ip:
+      started: '&aIP ban export started'
+      finished: '&aIP ban export finished, file [file] created'
+
   import:
     error:
       inProgress: '&cAn import is already in progress, please wait'
