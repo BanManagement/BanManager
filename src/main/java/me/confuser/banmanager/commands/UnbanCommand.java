@@ -107,7 +107,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
           message.sendTo(sender);
         }
 
-        CommandUtils.broadcast(message.toString(), "bm.notify.unban");
+        plugin.getServer().broadcast(message.toString(), "bm.notify.unban");
       }
 
     });
