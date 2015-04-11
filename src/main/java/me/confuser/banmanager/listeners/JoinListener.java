@@ -3,6 +3,7 @@ package me.confuser.banmanager.listeners;
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -93,13 +94,13 @@ public class JoinListener extends Listeners<BanManager> {
   private void handleJoinDeny(PlayerData player, String reason) {
     Message message = Message.get("deniedNotify.player").set("player", player.getName()).set("reason", reason);
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.player");
+    CommandUtils.broadcast(message.toString(), "bm.notify.denied.player");
   }
 
   private void handleJoinDeny(String ip, String reason) {
     Message message = Message.get("deniedNotify.ip").set("ip", ip).set("reason", reason);
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.ip");
+    CommandUtils.broadcast(message.toString(), "bm.notify.denied.ip");
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -147,10 +148,10 @@ public class JoinListener extends Listeners<BanManager> {
                                    .set("player", onlinePlayer.getName())
                                    .toString();
 
-            plugin.getServer().broadcast(header, "bm.notify.notes.join");
+            CommandUtils.broadcast(header, "bm.notify.notes.join");
 
             for (String message : notes) {
-              plugin.getServer().broadcast(message, "bm.notify.notes.join");
+              CommandUtils.broadcast(message, "bm.notify.notes.join");
             }
 
           }
@@ -234,7 +235,7 @@ public class JoinListener extends Listeners<BanManager> {
         message.set("player", event.getPlayer().getName());
         message.set("players", sb.toString());
 
-        plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
+        CommandUtils.broadcast(message.toString(), "bm.notify.duplicateips");
       }
     }, 20L);
   }
