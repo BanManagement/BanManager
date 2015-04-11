@@ -122,7 +122,7 @@
         <dependency>
             <groupId>me.confuser</groupId>
             <artifactId>BukkitPluginUtil</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.concurrent-trees</groupId>
