@@ -60,7 +60,7 @@ public class UnbanIpAllCommand extends BukkitCommand<BanManager> {
         IpBanData ban = plugin.getIpBanStorage().getBan(ip);
 
         if (ban == null) {
-          Message message = Message.get("unbanip.error.noexists");
+          Message message = Message.get("unbanip.error.noExists");
           message.set("ip", ipStr);
 
           sender.sendMessage(message.toString());
