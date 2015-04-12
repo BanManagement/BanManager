@@ -108,7 +108,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
           message.sendTo(sender);
         }
 
-        plugin.getServer().broadcast(message.toString(), "bm.notify.unmute");
+        CommandUtils.broadcast(message.toString(), "bm.notify.unmute");
       }
 
     });
