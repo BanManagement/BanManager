@@ -57,7 +57,7 @@ public class UnbanAllCommand extends BukkitCommand<BanManager> {
         }
 
         if (ban == null) {
-          sender.sendMessage(Message.get("playerNotFound").set("player", playerName).toString());
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
           return;
         }
 

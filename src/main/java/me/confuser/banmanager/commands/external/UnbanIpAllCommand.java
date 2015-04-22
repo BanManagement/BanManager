@@ -48,7 +48,7 @@ public class UnbanIpAllCommand extends BukkitCommand<BanManager> {
         if (isName) {
           PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
           if (player == null) {
-            sender.sendMessage(Message.get("playerNotFound").set("player", ipStr).toString());
+            sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
             return;
           }
 
