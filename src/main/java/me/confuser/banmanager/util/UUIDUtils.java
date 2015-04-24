@@ -171,7 +171,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
   private static UUID createUUID(String s) { 
     try { 
-      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s).getBytes("UTF-8")); 
+      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s.toLowerCase()).getBytes("UTF-8"));
     } catch (UnsupportedEncodingException e) { 
       return null; 
     } 
