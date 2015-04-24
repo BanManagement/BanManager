@@ -72,13 +72,21 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         if (args.length == 1) {
           // Clear everything
+          for (String type : ClearCommand.types) {
+            if (!sender.hasPermission("bm.command.clear." + type)) {
+              Message.get("sender.error.noPermission").sendTo(sender);
+              return;
+            }
+          }
           types.addAll(ClearCommand.types);
         } else if (args.length == 2) {
-          if (!ClearCommand.types.contains(args[1].toLowerCase())) {
+          String type = args[1].toLowerCase();
+
+          if (!ClearCommand.types.contains(type)) {
             Message.get("bmclear.error.invalid").sendTo(sender);
             return;
-          } else {
-            types.add(args[1].toLowerCase());
+          } else if (sender.hasPermission("bm.command.clear." + type)) {
+            types.add(type);
           }
         }
 

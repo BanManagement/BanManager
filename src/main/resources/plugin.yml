@@ -285,6 +285,21 @@ permissions:
   bm.command.clear:
     description: Allows you to clear a player's records
     default: op
+  bm.command.clear.banrecords:
+    description: Allows you to clear a player's ban records
+    default: op
+  bm.command.clear.kicks:
+    description: Allows you to clear a player's kick records
+    default: op
+  bm.command.clear.muterecords:
+    description: Allows you to clear a player's mute records
+    default: op
+  bm.command.clear.notes:
+    description: Allows you to clear a player's notes
+    default: op
+  bm.command.clear.warnings:
+    description: Allows you to clear a player's warnings
+    default: op
   bm.command.sync:
     description: Allows you to force synchronisation with the database
     default: op
