@@ -10,6 +10,7 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -23,11 +24,20 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    if (args.length < 1) {
+    if (args.length > 1) {
       return false;
     }
 
-    final String search = args[0];
+    if (args.length == 0 && !(sender instanceof Player)) {
+      return false;
+    }
+
+    if (args.length == 1 && !sender.hasPermission("bm.command.bminfo.others")) {
+      Message.get("sender.error.noPermission").sendTo(sender);
+      return true;
+    }
+
+    final String search = args.length == 1 ? args[0] : sender.getName();
     final boolean isName = !InetAddresses.isInetAddress(search);
 
     if (isName && search.length() > 16) {

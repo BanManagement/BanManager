@@ -42,6 +42,7 @@ messages:
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
       offlinePermission: '&cYou may not perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
+      noPermission: '&cYou do not have permission to perform that action'
 # Commands
   alts:
     header: 'Possible alts found:'
