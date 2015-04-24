@@ -49,7 +49,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    final String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length) : "";
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
 
     final PlayerData actor;
 

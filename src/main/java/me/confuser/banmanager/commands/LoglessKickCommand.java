@@ -46,7 +46,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    String reason = args.length > 1 ? StringUtils.join(args, " ", 1, args.length - 1) : "";
+    String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
 
     PlayerData actor;
 

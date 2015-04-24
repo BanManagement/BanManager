@@ -74,7 +74,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String reason = StringUtils.join(args, " ", 1, args.length);
+    final String reason = CommandUtils.getReason(1, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

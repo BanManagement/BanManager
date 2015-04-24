@@ -40,7 +40,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    final String reason = StringUtils.join(args, " ", 1, args.length);
+    final String reason = CommandUtils.getReason(2, args);
 
     Player onlinePlayer;
 

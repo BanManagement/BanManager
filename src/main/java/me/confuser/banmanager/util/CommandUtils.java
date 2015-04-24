@@ -1,5 +1,6 @@
 package me.confuser.banmanager.util;
 
+import me.confuser.banmanager.BanManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -58,5 +59,18 @@ public class CommandUtils {
         user.sendMessage(message);
       }
     }
+  }
+
+  public static String getReason(int start, String[] args) {
+    String reason = StringUtils.join(args, " ", start, args.length);
+
+    if (!args[start].startsWith("#")) return reason;
+
+    String key = args[start].replace("#", "");
+    String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
+
+    if (replace == null) return reason;
+
+    return reason.replace("#" + key, replace);
   }
 }

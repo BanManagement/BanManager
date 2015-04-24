@@ -18,6 +18,7 @@ public class ReloadCommand extends BukkitCommand<BanManager> {
     plugin.getConfiguration().load();
     new MessagesConfig().load();
     plugin.getExemptionsConfig().load();
+    plugin.getReasonsConfig().load();
 
     sender.sendMessage(Message.get("configReloaded").toString());
 
