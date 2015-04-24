@@ -103,17 +103,23 @@ public class JoinListener extends Listeners<BanManager> {
     CommandUtils.broadcast(message.toString(), "bm.notify.denied.ip");
   }
 
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onJoin(AsyncPlayerPreLoginEvent event) {
+    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+
+    try {
+      plugin.getPlayerStorage().createOrUpdate(player);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
+
+    plugin.getPlayerStorage().addOnline(player);
+  }
+
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onJoin(final PlayerJoinEvent event) {
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-      @Override
-      public void run() {
-        plugin.getPlayerStorage().addOnline(event.getPlayer());
-      }
-
-    });
-
     plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
       public void run() {
