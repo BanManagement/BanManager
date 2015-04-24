@@ -11,6 +11,7 @@ messages:
   deniedNotify:
     player: '&cWarning: [player] attempted to join the server but was denied due to [reason]'
     ip: '&cWarning: [player] attempted to join the server but was denied due to [reason]'
+  deniedMaxIp: '&cToo many players with your ip address online'
 
   time:
     now: 'now'

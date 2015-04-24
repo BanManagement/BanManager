@@ -43,6 +43,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean punishAlts = false;
   @Getter
   private HashMap<String, CleanUp> cleanUps;
+  @Getter
+  private int maxOnlinePerIp = 0;
 
   public DefaultConfig() {
     super("config.yml");
@@ -74,6 +76,8 @@ public class DefaultConfig extends Config<BanManager> {
     for (String type : conf.getConfigurationSection("cleanUp").getKeys(false)) {
       cleanUps.put(type, new CleanUp(conf.getInt("cleanUp." + type)));
     }
+
+    maxOnlinePerIp = conf.getInt("maxOnlinePerIp", 0);
 
     mutedBlacklistCommands = new HashSet<>();
     // Run this after startup to ensure all aliases are found

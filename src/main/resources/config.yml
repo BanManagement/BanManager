@@ -120,3 +120,6 @@ cleanUp:
   muteRecords: 0
   readWarnings: 0
   unreadWarnings: 0
+
+# Maximum amount of players allowed from a single ip, set to 0 to disable
+maxOnlinePerIp: 0

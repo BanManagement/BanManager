@@ -194,6 +194,21 @@ public class JoinListener extends Listeners<BanManager> {
       return;
     }
 
+    if (plugin.getConfiguration().getMaxOnlinePerIp() > 0) {
+      long ip = IPUtils.toLong(event.getPlayer().getAddress().getAddress());
+      int count = 1;
+
+      for (Player player : plugin.getServer().getOnlinePlayers()) {
+        if (IPUtils.toLong(player.getAddress().getAddress()) == ip) count++;
+      }
+
+      if (count >= plugin.getConfiguration().getMaxOnlinePerIp()) {
+        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.getString("deniedMaxIp"));
+        return;
+      }
+
+    }
+
     if (!plugin.getConfiguration().isDuplicateIpCheckEnabled()) {
       return;
     }
