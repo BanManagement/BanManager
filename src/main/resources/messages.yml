@@ -153,7 +153,7 @@ messages:
     ip:
       disallowed: 'You have been banned from this server for [reason]'
       kick: 'You have been banned permanently for [reason]'
-    notify: '[ip] has been permanently banned by [actor] for [reason]'
+    notify: '[ip] ([players]) has been permanently banned by [actor] for [reason]'
     error:
       exists: '&c[ip] is already banned'
 
@@ -164,7 +164,7 @@ messages:
     ip:
       disallowed: 'You have been banned from this server for [reason] \nIt expires in [expires]'
       kick: 'You have been temporarily banned for [reason]'
-    notify: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
+    notify: '[ip] ([players]) has been temporarily banned for [expires] by [actor] for [reason]'
 
   tempbanipall:
     notify: '[ip] will be temporarily banned for [expires] by [actor] for [reason]'

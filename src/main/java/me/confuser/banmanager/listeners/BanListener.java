@@ -3,6 +3,7 @@ package me.confuser.banmanager.listeners;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
+import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpBanEvent;
 import me.confuser.banmanager.events.PlayerBanEvent;
 import me.confuser.banmanager.util.CommandUtils;
@@ -13,6 +14,8 @@ import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+
+import java.util.List;
 
 public class BanListener extends Listeners<BanManager> {
 
@@ -65,8 +68,20 @@ public class BanListener extends Listeners<BanManager> {
       message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
     }
 
+    List<PlayerData> players = plugin.getPlayerStorage().getDuplicates(ban.getIp());
+    StringBuilder playerNames = new StringBuilder();
+
+    for (PlayerData player : players) {
+      playerNames.append(player.getName());
+      playerNames.append(", ");
+    }
+
+    if (playerNames.length() == 0) return;
+    if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
+
     message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName())
-           .set("reason", ban.getReason());
+           .set("reason", ban.getReason())
+           .set("players", playerNames.toString());
 
     CommandUtils.broadcast(message.toString(), broadcastPermission);
 
