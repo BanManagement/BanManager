@@ -1,7 +1,11 @@
 package me.confuser.banmanager.runnables;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.PlayerBanData;
+import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -23,43 +27,58 @@ public class ExpiresSync implements Runnable {
   public void run() {
     isRunning = true;
     long now = (System.currentTimeMillis() / 1000L) + DateUtils.getTimeDiff();
-    String nowStr = Long.toString(now);
-    String console = plugin.getPlayerStorage().getConsole().getUUID().toString().replace("-", "");
 
-    final String banExpireSQL = "INSERT INTO " + banRecordStorage.getTableInfo()
-                                                                 .getTableName() + " (player_id, reason, expired, actor_id, pastActor_id, pastCreated, created) SELECT b.player_id, b.reason, b.expires, b.actor_id, UNHEX(?), b.created, ? FROM " + banStorage
-            .getTableInfo().getTableName() + " b WHERE b.expires != '0' AND b.expires < ?";
-
+    CloseableIterator<PlayerBanData> bans = null;
     try {
-      banStorage.executeRaw(banExpireSQL, console, nowStr, nowStr);
-      banStorage.executeRaw("DELETE FROM " + banStorage.getTableInfo()
-                                                       .getTableName() + " WHERE expires != 0 AND expires < ?", nowStr);
+      bans = banStorage.queryBuilder().where().ne("expires", 0).and()
+                       .le("expires", now).iterator();
+
+      while (bans.hasNext()) {
+        PlayerBanData ban = bans.next();
+        banRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+
+        banStorage.removeBan(ban);
+        banStorage.delete(ban);
+      }
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      bans.closeQuietly();
     }
 
-    final String muteExpireSQL = "INSERT INTO " + muteRecordStorage.getTableInfo()
-                                                                   .getTableName() + " (player_id, reason, expired, actor_id, pastActor_id, pastCreated, created) SELECT b.player_id, b.reason, b.expires, b.actor_id, UNHEX(?), b.created, ? FROM " + muteStorage
-            .getTableInfo().getTableName() + " b WHERE b.expires != '0' AND b.expires < ?";
-
+    CloseableIterator<PlayerMuteData> mutes = null;
     try {
-      muteStorage.executeRaw(muteExpireSQL, console, nowStr, nowStr);
-      muteStorage.executeRaw("DELETE FROM " + muteStorage.getTableInfo()
-                                                         .getTableName() + " WHERE expires != 0 AND expires < ?", nowStr);
+      mutes = muteStorage.queryBuilder().where().ne("expires", 0).and().le("expires", now).iterator();
+
+      while (mutes.hasNext()) {
+        PlayerMuteData mute = mutes.next();
+        muteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole());
+
+        muteStorage.removeMute(mute);
+        muteStorage.delete(mute);
+      }
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      mutes.closeQuietly();
     }
 
-    final String ipExpireSQL = "INSERT INTO " + ipBanRecordStorage.getTableInfo()
-                                                                  .getTableName() + " (ip, reason, expired, actor_id, pastActor_id, pastCreated, created) SELECT b.ip, b.reason, b.expires, b.actor_id, UNHEX(?), b.created, ? FROM " + ipBanStorage
-            .getTableInfo().getTableName() + " b WHERE b.expires != '0' AND b.expires < ?";
-
+    CloseableIterator<IpBanData> ipBans = null;
     try {
-      ipBanStorage.executeRaw(ipExpireSQL, console, nowStr, nowStr);
-      ipBanStorage.executeRaw("DELETE FROM " + ipBanStorage.getTableInfo()
-                                                           .getTableName() + " WHERE expires != 0 AND expires < ?", nowStr);
+      ipBans = ipBanStorage.queryBuilder().where().ne("expires", 0).and()
+                           .le("expires", now).iterator();
+
+      while (ipBans.hasNext()) {
+        IpBanData ban = ipBans.next();
+        ipBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+
+        ipBanStorage.removeBan(ban);
+        ipBanStorage.delete(ban);
+      }
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      ipBans.closeQuietly();
     }
 
     isRunning = false;
