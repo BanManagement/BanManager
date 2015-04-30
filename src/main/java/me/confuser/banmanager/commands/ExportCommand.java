@@ -1,5 +1,6 @@
 package me.confuser.banmanager.commands;
 
+import com.google.gson.stream.JsonWriter;
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
@@ -9,7 +10,6 @@ import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonWriter;
 
 import java.io.File;
 import java.io.FileWriter;

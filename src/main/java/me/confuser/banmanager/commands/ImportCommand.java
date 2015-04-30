@@ -1,6 +1,7 @@
 package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
+import com.google.gson.stream.JsonReader;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
@@ -11,7 +12,6 @@ import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonReader;
 
 import java.io.FileReader;
 import java.io.IOException;
