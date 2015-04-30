@@ -6,67 +6,67 @@ website: http://dev.bukkit.org/bukkit-plugins/ban-management/
 commands: 
   ban: 
     description: "ban a player"
-    usage: "/ban <username> <reason>"
+    usage: "/ban <player> <reason>"
     aliases: [bmban]
     permission: bm.command.ban
   banall: 
     description: "ban a player across multiple servers"
-    usage: "/banall <username> <reason>"
+    usage: "/banall <player> <reason>"
     aliases: [bmbanall]
     permission: bm.command.banall
   tempban: 
     description: "tempban a player"
-    usage: "/tempban <username> <timeDiff> <reason>"
+    usage: "/tempban <player> <timeDiff> <reason>"
     aliases: [bmtempban]
     permission: bm.command.tempban
   tempbanall: 
     description: "tempban a player across multiple servers"
-    usage: "/tempbanall <username> <timeDiff> <reason>"
+    usage: "/tempbanall <player> <timeDiff> <reason>"
     aliases: [bmtempbanall]
     permission: bm.command.tempbanall
   unban:
     description: "unban a player"
-    usage: "/unban <username>"
+    usage: "/unban <player>"
     aliases: [bmunban, pardon]
     permission: bm.command.unban
   unbanall:
     description: "unban a player across multiple servers"
-    usage: "/unbanall <username>"
+    usage: "/unbanall <player>"
     aliases: [bmunbanall]
     permission: bm.command.unbanall
   bminfo:
     description: "see information on a player"
-    usage: "/bminfo <username>"
+    usage: "/bminfo <player>"
     aliases: [bmbminfo]
     permission: bm.command.bminfo
   banip:
     description: "ban an ip"
-    usage: "/banip <username || IP Address> <reason>"
+    usage: "/banip <player || ip> <reason>"
     aliases: [bmbanip]
     permission: bm.command.banip
   banipall:
     description: "ban an ip across multiple servers"
-    usage: "/banipall <username || IP Address> <reason>"
+    usage: "/banipall <player || ip> <reason>"
     aliases: [bmbanipall]
     permission: bm.command.banipall
   tempbanip: 
     description: "tempban an ip"
-    usage: "/tempbanip <username || IP Address> <timeDiff> <reason>"
+    usage: "/tempbanip <player || ip> <timeDiff> <reason>"
     aliases: [bmtempbanip]
     permission: bm.command.tempbanip
   tempbanipall: 
     description: "tempban an ip across multiple servers"
-    usage: "/tempbanipall <username || IP Address> <timeDiff> <reason>"
+    usage: "/tempbanipall <player || ip> <timeDiff> <reason>"
     aliases: [bmtempbanipall]
     permission: bm.command.tempbanipall
   unbanip:
     description: "unban's an ip"
-    usage: "/unbanip <IP Address>"
+    usage: "/unbanip <ip>"
     aliases: [bmunbanip, pardonip]
     permission: bm.command.unbanip
   unbanipall:
     description: "unban's an ip across multiple servers"
-    usage: "/unbanipall <IP Address>"
+    usage: "/unbanipall <ip>"
     aliases: [bmunbanipall]
     permission: bm.command.unbanipall
   bmimport:
@@ -101,12 +101,12 @@ commands:
     permission: bm.command.tempmuteall
   unmute:
     description: "unmute a player"
-    usage: "/unmute <username>"
+    usage: "/unmute <player>"
     aliases: [bmunmute]
     permission: bm.command.unmute
   unmuteall:
     description: "unmute a player across multiple servers"
-    usage: "/unmuteall <username>"
+    usage: "/unmuteall <player>"
     aliases: [bmunmuteall]
     permission: bm.command.unmuteall
   nlkick:
@@ -155,7 +155,7 @@ commands:
     permission: bm.command.export
   banlist:
     description: "View all players banned from this server"
-    usage: "/banlist [ips|players]"
+    usage: "/banlist [players || ips]"
     permission: bm.command.banlist
 permissions:
   bm.*:
