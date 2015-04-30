@@ -153,6 +153,10 @@ commands:
     description: "Export bans to vanilla format"
     usage: "/bmexport <players || ips>"
     permission: bm.command.export
+  banlist:
+    description: "View all players banned from this server"
+    usage: "/banlist [ips|players]"
+    permission: bm.command.banlist
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -188,6 +192,7 @@ permissions:
       bm.command.addnote: true
       bm.command.notes: true
       bm.command.export: true
+      bm.command.banlist: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -311,4 +316,7 @@ permissions:
     default: op
   bm.command.export:
     description: Allows you to export bans to a vanilla compatible file
+    default: op
+  bm.command.banlist:
+    description: Allows you to view currently banned players or ip addresses
     default: op

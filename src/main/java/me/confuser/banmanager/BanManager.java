@@ -276,6 +276,7 @@ public class BanManager extends BukkitPlugin {
     new FindAltsCommand().register();
     new ReloadCommand().register();
     new InfoCommand().register();
+    new BanListCommand().register();
 
     // Kicks
     new KickCommand().register();

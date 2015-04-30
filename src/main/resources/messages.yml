@@ -209,3 +209,6 @@ messages:
     notify: '[player] has a new note attached by [actor]: [message]'
     error:
       noNotes: '&c[player] has no notes'
+
+  banlist:
+    header: '&6There are [bans] [type] bans:'
