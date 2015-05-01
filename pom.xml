@@ -73,6 +73,10 @@
                                     <pattern>com.sk89q.guavabackport</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.guava</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.sampullara.cli</pattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.cli</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
