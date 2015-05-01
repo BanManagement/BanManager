@@ -208,6 +208,9 @@ permissions:
       bm.command.notes: true
       bm.command.export: true
       bm.command.banlist: true
+      bm.command.banlist.players: true
+      bm.command.banlist.ips: true
+      bm.command.banlist.ipranges: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -346,4 +349,13 @@ permissions:
     default: op
   bm.command.banlist:
     description: Allows you to view currently banned players or ip addresses
+    default: op
+  bm.command.banlist.players:
+    description: Allows you to view currently banned players
+    default: op
+  bm.command.banlist.ips:
+    description: Allows you to view currently banned ip addresses
+    default: op
+  bm.command.banlist.ipranges:
+    description: Allows you to view currently banned ip ranges
     default: op

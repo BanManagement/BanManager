@@ -30,6 +30,11 @@ public class BanListCommand extends BukkitCommand<BanManager> {
     int total = 0;
 
     if (type.startsWith("play")) {
+      if (!sender.hasPermission(command.getPermission() + ".players")) {
+        sender.sendMessage(Message.getString("sender.error.noPermission"));
+        return true;
+      }
+
       for (PlayerBanData ban : plugin.getPlayerBanStorage().getBans().values()) {
         list.append(ban.getPlayer().getName());
         list.append(", ");
@@ -37,6 +42,11 @@ public class BanListCommand extends BukkitCommand<BanManager> {
         total++;
       }
     } else if (type.startsWith("ipr")) {
+      if (!sender.hasPermission(command.getPermission() + ".ipranges")) {
+        sender.sendMessage(Message.getString("sender.error.noPermission"));
+        return true;
+      }
+
       for (IpRangeBanData ban : plugin.getIpRangeBanStorage().getBans().values()) {
         list.append(IPUtils.toString(ban.getFromIp()));
         list.append(" - ");
@@ -46,6 +56,11 @@ public class BanListCommand extends BukkitCommand<BanManager> {
         total++;
       }
     } else if (type.startsWith("ip")) {
+      if (!sender.hasPermission(command.getPermission() + ".ips")) {
+        sender.sendMessage(Message.getString("sender.error.noPermission"));
+        return true;
+      }
+
       for (IpBanData ban : plugin.getIpBanStorage().getBans().values()) {
         list.append(IPUtils.toString(ban.getIp()));
         list.append(", ");
