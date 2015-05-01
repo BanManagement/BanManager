@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.storage.*;
@@ -20,6 +21,8 @@ public class ExpiresSync implements Runnable {
   private PlayerMuteRecordStorage muteRecordStorage = plugin.getPlayerMuteRecordStorage();
   private IpBanStorage ipBanStorage = plugin.getIpBanStorage();
   private IpBanRecordStorage ipBanRecordStorage = plugin.getIpBanRecordStorage();
+  private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
+  private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   @Getter
   private boolean isRunning = false;
 
@@ -79,6 +82,24 @@ public class ExpiresSync implements Runnable {
       e.printStackTrace();
     } finally {
       ipBans.closeQuietly();
+    }
+
+    CloseableIterator<IpRangeBanData> ipRangeBans = null;
+    try {
+      ipRangeBans = ipRangeBanStorage.queryBuilder().where().ne("expires", 0).and()
+                           .le("expires", now).iterator();
+
+      while (ipRangeBans.hasNext()) {
+        IpRangeBanData ban = ipRangeBans.next();
+        ipRangeBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+
+        ipRangeBanStorage.removeBan(ban);
+        ipRangeBanStorage.delete(ban);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ipRangeBans.closeQuietly();
     }
 
     isRunning = false;

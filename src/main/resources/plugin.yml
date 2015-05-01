@@ -157,6 +157,18 @@ commands:
     description: "View all players banned from this server"
     usage: "/banlist [players || ips]"
     permission: bm.command.banlist
+  baniprange:
+    description: "Ban an entire ip range"
+    usage: "/baniprange <cidr || wildcard> <reason>"
+    permission: bm.command.baniprange
+  tempbaniprange:
+    description: "Temporarily ban an entire ip range"
+    usage: "/tempbaniprange <cidr || wildcard> <timeDiff> <reason>"
+    permission: bm.command.tempbaniprange
+  unbaniprange:
+    description: "Unban an entire ip range"
+    usage: "/unbaniprange <cidr || wildcard || player>"
+    permission: bm.command.unbaniprange
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -174,6 +186,9 @@ permissions:
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
       bm.command.banip: true
+      bm.command.baniprange: true
+      bm.command.tempbaniprange: true
+      bm.command.unbaniprange: true
       bm.command.tempbanip: true
       bm.command.unbanip: true
       bm.command.import: true
@@ -212,6 +227,9 @@ permissions:
       bm.notify.update: true
       bm.notify.denied.player: true
       bm.notify.denied.ip: true
+      bm.notify.baniprange: true
+      bm.notify.tempbaniprange: true
+      bm.notify.unbaniprange: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
@@ -265,6 +283,15 @@ permissions:
     default: op
   bm.command.unbanip:
     description: Allows you to unban an ip
+    default: op
+  bm.command.baniprange:
+    description: Allows you to ban an ip range
+    default: op
+  bm.command.tempbaniprange:
+    description: Allows you to temporarily ban an ip range
+    default: op
+  bm.command.unbaniprange:
+    description: Allows you to unban an ip range
     default: op
   bm.command.import:
     description: Allows importing of banned players and ips from Bukkit

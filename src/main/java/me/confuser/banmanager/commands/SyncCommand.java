@@ -43,6 +43,7 @@ public class SyncCommand extends BukkitCommand<BanManager> {
     if (!plugin.getBanSync().isRunning()) plugin.getBanSync().run();
     if (!plugin.getMuteSync().isRunning()) plugin.getMuteSync().run();
     if (!plugin.getIpSync().isRunning()) plugin.getIpSync().run();
+    if (!plugin.getIpRangeSync().isRunning()) plugin.getIpRangeSync().run();
     if (!plugin.getExpiresSync().isRunning()) plugin.getExpiresSync().run();
   }
 

@@ -36,7 +36,6 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
       } else {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
           if (player.getName().toLowerCase().startsWith(lookup.toLowerCase())) {
-            mostLike.add(args[0] + player.getName().substring(lookup.length()));
           }
         }
       }
