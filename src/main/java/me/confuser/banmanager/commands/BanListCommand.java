@@ -2,6 +2,7 @@ package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
+import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
@@ -31,6 +32,15 @@ public class BanListCommand extends BukkitCommand<BanManager> {
     if (type.startsWith("play")) {
       for (PlayerBanData ban : plugin.getPlayerBanStorage().getBans().values()) {
         list.append(ban.getPlayer().getName());
+        list.append(", ");
+
+        total++;
+      }
+    } else if (type.startsWith("ipr")) {
+      for (IpRangeBanData ban : plugin.getIpRangeBanStorage().getBans().values()) {
+        list.append(IPUtils.toString(ban.getFromIp()));
+        list.append(" - ");
+        list.append(IPUtils.toString(ban.getToIp()));
         list.append(", ");
 
         total++;

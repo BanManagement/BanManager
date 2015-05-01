@@ -155,7 +155,7 @@ commands:
     permission: bm.command.export
   banlist:
     description: "View all players banned from this server"
-    usage: "/banlist [players || ips]"
+    usage: "/banlist [players || ipranges || ips]"
     permission: bm.command.banlist
   baniprange:
     description: "Ban an entire ip range"
