@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.event.Cancellable;
 
-public class CustomCancellableEvent extends CustomEvent implements Cancellable {
+public abstract class CustomCancellableEvent extends CustomEvent implements Cancellable {
 
-      @Getter
-      @Setter
-      private boolean cancelled = false;
+  @Getter
+  @Setter
+  private boolean cancelled = false;
 }

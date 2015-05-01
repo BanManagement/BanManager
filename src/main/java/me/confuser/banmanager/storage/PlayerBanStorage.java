@@ -99,13 +99,14 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     return null;
   }
 
-  public boolean ban(PlayerBanData ban) throws SQLException {
-    PlayerBanEvent event = new PlayerBanEvent(ban);
+  public boolean ban(PlayerBanData ban, boolean isSilent) throws SQLException {
+    PlayerBanEvent event = new PlayerBanEvent(ban, isSilent);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {
       return false;
     }
+
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
 

@@ -32,7 +32,9 @@ public class MuteListener extends Listeners<BanManager> {
     message.set("player", mute.getPlayer().getName()).set("actor", mute.getActor().getName())
            .set("reason", mute.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    if (!event.isSilent()) {
+      CommandUtils.broadcast(message.toString(), broadcastPermission);
+    }
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -41,7 +43,7 @@ public class MuteListener extends Listeners<BanManager> {
       return;
     }
 
-    if (!player.hasPermission(broadcastPermission)) {
+    if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
       message.sendTo(player);
     }
   }

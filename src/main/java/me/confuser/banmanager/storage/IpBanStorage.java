@@ -87,8 +87,8 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     bans.remove(ip);
   }
 
-  public boolean ban(IpBanData ban) throws SQLException {
-    IpBanEvent event = new IpBanEvent(ban);
+  public boolean ban(IpBanData ban, boolean isSilent) throws SQLException {
+    IpBanEvent event = new IpBanEvent(ban, isSilent);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {

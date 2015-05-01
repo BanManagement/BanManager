@@ -69,7 +69,7 @@ public class ExternalIpSync implements Runnable {
         localBanStorage.removeBan(ban.getIp());
       }
 
-      localBanStorage.ban(localBan);
+      localBanStorage.ban(localBan, false);
 
       plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 

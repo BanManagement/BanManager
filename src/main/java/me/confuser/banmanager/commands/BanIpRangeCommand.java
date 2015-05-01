@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
@@ -21,6 +22,15 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    CommandParser parser = new CommandParser(args);
+    args = parser.getArgs();
+    final boolean isSilent = parser.isSilent();
+
+    if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (args.length < 2) {
       return false;
     }
@@ -72,7 +82,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
         boolean created = false;
 
         try {
-          created = plugin.getIpRangeBanStorage().ban(ban);
+          created = plugin.getIpRangeBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();

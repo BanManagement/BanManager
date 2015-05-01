@@ -47,15 +47,15 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
-                                    <shadedPattern>me.confuser.banmanager.mcstats</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.mcstats</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.j256.ormlite</pattern>
-                                    <shadedPattern>me.confuser.banmanager.ormlite</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.ormlite</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.googlecode.concurrenttrees</pattern>
-                                    <shadedPattern>me.confuser.banmanager.concurrenttrees</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.concurrenttrees</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>net.gravitydevelopment.updater</pattern>
@@ -63,15 +63,15 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
-                                    <shadedPattern>me.confuser.banmanager.gson</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.apache.commons.net</pattern>
-                                    <shadedPattern>me.confuser.banmanager.apache.commons.net</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.commons.net</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.sk89q.guavabackport</pattern>
-                                    <shadedPattern>me.confuser.banmanager.guava</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.guava</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -168,6 +168,11 @@
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spullara.cli-parser</groupId>
+            <artifactId>cli-parser</artifactId>
+            <version>1.1.2</version>
         </dependency>
     </dependencies>
     <properties>

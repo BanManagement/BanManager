@@ -124,8 +124,8 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     bans.remove(range);
   }
 
-  public boolean ban(IpRangeBanData ban) throws SQLException {
-    IpRangeBanEvent event = new IpRangeBanEvent(ban);
+  public boolean ban(IpRangeBanData ban, boolean silent) throws SQLException {
+    IpRangeBanEvent event = new IpRangeBanEvent(ban, silent);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {

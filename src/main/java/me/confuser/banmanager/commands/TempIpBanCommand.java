@@ -5,11 +5,11 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,6 +24,15 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    CommandParser parser = new CommandParser(args);
+    args = parser.getArgs();
+    final boolean isSilent = parser.isSilent();
+
+    if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (args.length < 3) {
       return false;
     }
@@ -109,7 +118,7 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         boolean created = false;
 
         try {
-          created = plugin.getIpBanStorage().ban(ban);
+          created = plugin.getIpBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();

@@ -65,7 +65,7 @@ public class ExternalMuteSync implements Runnable {
         localMuteStorage.removeMute(mute.getUUID());
       }
 
-      localMuteStorage.mute(localMute);
+      localMuteStorage.mute(localMute, false);
 
     }
 

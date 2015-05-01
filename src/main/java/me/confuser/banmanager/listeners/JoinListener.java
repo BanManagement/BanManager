@@ -311,7 +311,7 @@ public class JoinListener extends Listeners<BanManager> {
                 , ban.getReason()
                 , ban.getExpires());
 
-        plugin.getPlayerBanStorage().ban(newBan);
+        plugin.getPlayerBanStorage().ban(newBan, false);
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
@@ -346,7 +346,7 @@ public class JoinListener extends Listeners<BanManager> {
                 , mute.getReason()
                 , mute.getExpires());
 
-        plugin.getPlayerMuteStorage().mute(newMute);
+        plugin.getPlayerMuteStorage().mute(newMute, false);
       }
     }
   }

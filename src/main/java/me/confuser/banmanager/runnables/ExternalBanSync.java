@@ -69,7 +69,7 @@ public class ExternalBanSync implements Runnable {
         localBanStorage.removeBan(ban.getUUID());
       }
 
-      localBanStorage.ban(localBan);
+      localBanStorage.ban(localBan, false);
 
       if (!plugin.getPlayerStorage().isOnline(localBan.getPlayer().getUUID())) {
         continue;

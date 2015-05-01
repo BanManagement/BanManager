@@ -27,8 +27,8 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     }
   }
 
-  public boolean addWarning(PlayerWarnData data) throws SQLException {
-    PlayerWarnEvent event = new PlayerWarnEvent(data);
+  public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
+    PlayerWarnEvent event = new PlayerWarnEvent(data, silent);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {

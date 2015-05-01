@@ -40,7 +40,9 @@ public class BanListener extends Listeners<BanManager> {
     message.set("player", ban.getPlayer().getName()).set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    if (!event.isSilent()) {
+      CommandUtils.broadcast(message.toString(), broadcastPermission);
+    }
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -49,7 +51,7 @@ public class BanListener extends Listeners<BanManager> {
       return;
     }
 
-    if (!player.hasPermission(broadcastPermission)) {
+    if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
       message.sendTo(player);
     }
   }
@@ -85,7 +87,9 @@ public class BanListener extends Listeners<BanManager> {
            .set("reason", ban.getReason())
            .set("players", playerNames.toString());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    if (!event.isSilent()) {
+      CommandUtils.broadcast(message.toString(), broadcastPermission);
+    }
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -94,7 +98,7 @@ public class BanListener extends Listeners<BanManager> {
       return;
     }
 
-    if (!player.hasPermission(broadcastPermission)) {
+    if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
       message.sendTo(player);
     }
   }
@@ -120,7 +124,9 @@ public class BanListener extends Listeners<BanManager> {
            .set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 
-    CommandUtils.broadcast(message.toString(), broadcastPermission);
+    if (!event.isSilent()) {
+      CommandUtils.broadcast(message.toString(), broadcastPermission);
+    }
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -129,7 +135,7 @@ public class BanListener extends Listeners<BanManager> {
       return;
     }
 
-    if (!player.hasPermission(broadcastPermission)) {
+    if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
       message.sendTo(player);
     }
   }
