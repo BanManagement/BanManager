@@ -78,7 +78,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
         }
 
         //TODO refactor if async perm check is problem
-        if (actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.ban")
+        if (!actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.ban")
                 && sender.hasPermission("bm.command.unban.own")) {
           Message.get("unban.error.notOwn").set("player", ban.getPlayer().getName()).sendTo(sender);
           return;

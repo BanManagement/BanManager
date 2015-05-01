@@ -79,7 +79,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         }
 
         //TODO refactor if async perm check is problem
-        if (actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.mute")
+        if (!actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.mute")
                 && sender.hasPermission("bm.command.unmute.own")) {
           Message.get("unmute.error.notOwn").set("player", mute.getPlayer().getName()).sendTo(sender);
           return;
