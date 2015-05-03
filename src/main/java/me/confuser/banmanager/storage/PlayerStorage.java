@@ -136,7 +136,8 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       try {
         newName = UUIDUtils.getCurrentName(player.getUUID());
       } catch (Exception e) {
-        e.printStackTrace();
+        plugin.getLogger()
+              .warning("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
         continue;
       }
 
