@@ -231,3 +231,10 @@ messages:
 
   banlist:
     header: '&6There are [bans] [type] bans:'
+
+  bmactivity:
+    row:
+      all: '&a[&f[type]&a] &6[player]&f - &6[actor]&f - &e[created]'
+      player: '&a[&f[type]&a] &6[player]&f - &e[created]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
+    noResults: '&cNo results found'

@@ -46,6 +46,8 @@ public class BanManager extends BukkitPlugin {
   private PlayerWarnStorage playerWarnStorage;
   @Getter
   private PlayerNoteStorage playerNoteStorage;
+  @Getter
+  private ActivityStorage activityStorage;
 
   @Getter
   private IpBanStorage ipBanStorage;
@@ -286,6 +288,7 @@ public class BanManager extends BukkitPlugin {
     new ReloadCommand().register();
     new InfoCommand().register();
     new BanListCommand().register();
+    new ActivityCommand().register();
 
     // Kicks
     new KickCommand().register();
@@ -401,6 +404,8 @@ public class BanManager extends BukkitPlugin {
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
     ipRangeBanStorage = new IpRangeBanStorage(localConn);
     ipRangeBanRecordStorage = new IpRangeBanRecordStorage(localConn);
+
+    activityStorage = new ActivityStorage(localConn);
 
     if (externalConn == null) {
       return;

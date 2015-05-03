@@ -169,6 +169,10 @@ commands:
     description: "Unban an entire ip range"
     usage: "/unbaniprange <cidr || wildcard || player>"
     permission: bm.command.unbaniprange
+  bmactivity:
+    description: "View recent activity"
+    usage: "/bmactivity <timeDiff> [player]"
+    permission: bm.command.unbaniprange
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -211,6 +215,7 @@ permissions:
       bm.command.banlist.players: true
       bm.command.banlist.ips: true
       bm.command.banlist.ipranges: true
+      bm.command.bmactivity: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -358,4 +363,7 @@ permissions:
     default: op
   bm.command.banlist.ipranges:
     description: Allows you to view currently banned ip ranges
+    default: op
+  bm.command.bmactivity:
+    description: Allows you to view recent activity
     default: op
