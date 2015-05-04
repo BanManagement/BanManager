@@ -39,9 +39,9 @@ messages:
       notFound: '&c[player] not found, are you sure they exist?'
       offline: '&c[player] is offline'
       noSelf: '&cYou cannot perform that action on yourself!'
-      exception: '&cAn error occured whilst attempting to perform that command. Please check the console for the error'
+      exception: '&cAn error occured whilst attempting to perform this command. Please check the console for further details.'
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
-      offlinePermission: '&cYou may not perform this action on an offline player'
+      offlinePermission: '&cYou are not allowed to perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
 # Commands
@@ -104,7 +104,7 @@ messages:
 
   tempban:
     player:
-      disallowed: 'You have been banned from this server for [reason] \nIt expires in [expires]'
+      disallowed: 'You have been temporarily banned from this server for [reason] \nIt expires in [expires]'
       kick: 'You have been temporarily banned for [reason]'
     notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
 
