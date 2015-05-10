@@ -70,16 +70,16 @@ messages:
 
   info:
     stats:
-      player: '[player] has been banned [bans] times, muted [mutes] times and warned [warns] times'
-      ip: 'This ip has been banned [bans] times'
-    connection: 'Their last connection was with [ip] on [lastSeen]'
+      player: '&6[player] has been banned [bans] times, muted [mutes] times and warned [warns] times'
+      ip: '&6This ip has been banned [bans] times'
+    connection: '&6Their last connection was with [ip] on [lastSeen]'
     ban:
-      permanent: 'Currently banned for &4[reason] by [actor] at [created]'
-      temporary: 'Currently banned for &4[reason] by [actor] at [created] which expires in [expires]'
+      permanent: '&6Currently banned for &4[reason]&6 by [actor] at [created]'
+      temporary: '&6Currently banned for &4[reason]&6 by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     mute:
-      permanent: 'Currently muted for &4[reason] by [actor] at [created]'
-      temporary: 'Currently muted for &4[reason] by [actor] at [created] which expires in [expires]'
+      permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'
+      temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     website:
       player: 'http://yourdomain.com/index.php?action=viewplayer&player=[player]&server=0'
@@ -104,7 +104,7 @@ messages:
 
   tempban:
     player:
-      disallowed: '&6You have been temporarily banned from this server for &4[reason] \nIt expires in [expires]'
+      disallowed: '&6You have been temporarily banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for &4[reason]'
     notify: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
 
@@ -123,7 +123,7 @@ messages:
   mute:
     player:
       blocked: '&cYou may not use the [command] command whilst muted!'
-      disallowed: '&6You have been permanently muted for &4[reason] by [actor]'
+      disallowed: '&6You have been permanently muted for &4[reason]&6 by [actor]'
     notify: '&6[player] has been permanently muted by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
@@ -133,7 +133,7 @@ messages:
 
   tempmute:
     player:
-      disallowed: '&6You have been temporarily muted for &4[reason] by [actor] which expires in [expires]'
+      disallowed: '&6You have been temporarily muted for &4[reason]&6 by [actor] which expires in [expires]'
     notify: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
@@ -182,7 +182,7 @@ messages:
 
   tempbanip:
     ip:
-      disallowed: '&6You have been banned from this server for &4[reason] \nIt expires in [expires]'
+      disallowed: '&6You have been banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for &4[reason]'
     notify: '&6[ip] ([players]) has been temporarily banned for [expires] by [actor] for &4[reason]'
 
