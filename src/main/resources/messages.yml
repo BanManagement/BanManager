@@ -1,5 +1,5 @@
 # Variables
-# [reason] = Ban/Mute reason
+# &4[reason] = Ban/Mute reason
 # [player] = The name of the player
 # [ip] = The banned ip
 # [actor] = Who banned/muted
@@ -9,8 +9,8 @@ messages:
   duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
   configReloaded: '&aConfiguration reloaded successfully!'
   deniedNotify:
-    player: '&cWarning: [player] attempted to join the server but was denied due to [reason]'
-    ip: '&cWarning: [player] attempted to join the server but was denied due to [reason]'
+    player: '&cWarning: [player] attempted to join the server but was denied due to &4[reason]'
+    ip: '&cWarning: [player] attempted to join the server but was denied due to &4[reason]'
   deniedMaxIp: '&cToo many players with your ip address online'
 
   time:
@@ -74,12 +74,12 @@ messages:
       ip: 'This ip has been banned [bans] times'
     connection: 'Their last connection was with [ip] on [lastSeen]'
     ban:
-      permanent: 'Currently banned for [reason] by [actor] at [created]'
-      temporary: 'Currently banned for [reason] by [actor] at [created] which expires in [expires]'
+      permanent: 'Currently banned for &4[reason] by [actor] at [created]'
+      temporary: 'Currently banned for &4[reason] by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     mute:
-      permanent: 'Currently muted for [reason] by [actor] at [created]'
-      temporary: 'Currently muted for [reason] by [actor] at [created] which expires in [expires]'
+      permanent: 'Currently muted for &4[reason] by [actor] at [created]'
+      temporary: 'Currently muted for &4[reason] by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     website:
       player: 'http://yourdomain.com/index.php?action=viewplayer&player=[player]&server=0'
@@ -87,74 +87,74 @@ messages:
 
   kick:
     player:
-      noReason: 'You have been kicked'
-      reason: 'You have been kicked for [reason]'
-    notify: '[player] has been kicked by [actor] for [reason]'
+      noReason: '&6You have been kicked'
+      reason: '&6You have been kicked for &4[reason]'
+    notify: '&6[player] has been kicked by [actor] for &4&4[reason]'
 
   ban:
     player:
-      disallowed: 'You have been banned from this server for [reason]'
-      kick: 'You have been banned permanently for [reason]'
-    notify: '[player] has been permanently banned by [actor] for [reason]'
+      disallowed: '&6You have been banned from this server for &4[reason]'
+      kick: '&6You have been banned permanently for &4[reason]'
+    notify: '&6[player] has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already banned'
 
   banall:
-    notify: '[player] will be permanently banned by [actor] for [reason]'
+    notify: '&6[player] will be permanently banned by [actor] for &4[reason]'
 
   tempban:
     player:
-      disallowed: 'You have been temporarily banned from this server for [reason] \nIt expires in [expires]'
-      kick: 'You have been temporarily banned for [reason]'
-    notify: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+      disallowed: '&6You have been temporarily banned from this server for &4[reason] \nIt expires in [expires]'
+      kick: '&6You have been temporarily banned for &4[reason]'
+    notify: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
 
   tempbanall:
-    notify: '[player] will be temporarily banned for [expires] by [actor] for [reason]'
+    notify: '&6[player] will be temporarily banned for [expires] by [actor] for &4[reason]'
 
   unban:
-    notify: '[player] has been unbanned by [actor]'
+    notify: '&6[player] has been unbanned by [actor]'
     error:
       noExists: '&c[player] is not banned'
       notOwn: '&c[player] was not banned by you, unable to unban'
 
   unbanall:
-    notify: '[player] will be unbanned by [actor]'
+    notify: '&6[player] will be unbanned by [actor]'
 
   mute:
     player:
       blocked: '&cYou may not use the [command] command whilst muted!'
-      disallowed: 'You have been permanently muted for [reason] by [actor]'
-    notify: '[player] has been permanently muted by [actor] for [reason]'
+      disallowed: '&6You have been permanently muted for &4[reason] by [actor]'
+    notify: '&6[player] has been permanently muted by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
 
   muteall:
-    notify: '[player] will be permanently muted by [actor] for [reason]'
+    notify: '&6[player] will be permanently muted by [actor] for &4[reason]'
 
   tempmute:
     player:
-      disallowed: 'You have been temporarily muted for [reason] by [actor] which expires in [expires]'
-    notify: '&c[player] has been temporarily muted for [expires] by [actor] for [reason]'
+      disallowed: '&6You have been temporarily muted for &4[reason] by [actor] which expires in [expires]'
+    notify: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
 
   tempmuteall:
-    notify: '&c[player] will be temporarily muted for [expires] by [actor] for [reason]'
+    notify: '&6[player] will be temporarily muted for [expires] by [actor] for &4[reason]'
 
   unmute:
-    notify: '[player] has been unmuted by [actor]'
+    notify: '&6[player] has been unmuted by [actor]'
     error:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'
 
   unmuteall:
-    notify: '[player] will be unmuted by [actor]'
+    notify: '&6[player] will be unmuted by [actor]'
 
   banip:
     ip:
-      disallowed: 'You have been banned from this server for [reason]'
-      kick: 'You have been banned permanently for [reason]'
-    notify: '[ip] ([players]) has been permanently banned by [actor] for [reason]'
+      disallowed: '&6You have been banned from this server for &4[reason]'
+      kick: '&6You have been banned permanently for &4[reason]'
+    notify: '&6[ip] ([players]) has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[ip] is already banned'
 
@@ -164,53 +164,53 @@ messages:
       minMax: '&cRange must be lowest to higest'
       exists: '&cA ban containing those ranges already exists'
     ip:
-      disallowed: 'You have been banned from this server for [reason]'
-      kick: 'You have been banned permanently for [reason]'
-    notify: '[from] - [to] have been banned by [actor]'
+      disallowed: '&6You have been banned from this server for &4[reason]'
+      kick: '&6You have been banned permanently for &4[reason]'
+    notify: '&6[from] - [to] have been banned by [actor]'
 
   tempbaniprange:
-    notify: '[from] - [to] has been temporarily banned for [expires] by [actor]'
+    notify: '&6[from] - [to] has been temporarily banned for [expires] by [actor]'
     ip:
-      disallowed: 'You have been banned from this server for [reason] \nIt expires in [expires]'
-      kick: 'You have been temporarily banned for [expires] by [actor] for [reason]'
+      disallowed: '&6You have been banned from this server for &4[reason] \nIt expires in [expires]'
+      kick: '&6You have been temporarily banned for [expires] by [actor] for &4[reason]'
 
   unbaniprange:
-    notify: '[from] - [to] has been unbanned by [actor]'
+    notify: '&6[from] - [to] has been unbanned by [actor]'
 
   banipall:
-    notify: '[ip] will be permanently banned by [actor] for [reason]'
+    notify: '&6[ip] will be permanently banned by [actor] for &4[reason]'
 
   tempbanip:
     ip:
-      disallowed: 'You have been banned from this server for [reason] \nIt expires in [expires]'
-      kick: 'You have been temporarily banned for [reason]'
-    notify: '[ip] ([players]) has been temporarily banned for [expires] by [actor] for [reason]'
+      disallowed: '&6You have been banned from this server for &4[reason] \nIt expires in [expires]'
+      kick: '&6You have been temporarily banned for &4[reason]'
+    notify: '&6[ip] ([players]) has been temporarily banned for [expires] by [actor] for &4[reason]'
 
   tempbanipall:
-    notify: '[ip] will be temporarily banned for [expires] by [actor] for [reason]'
+    notify: '&6[ip] will be temporarily banned for [expires] by [actor] for &4[reason]'
 
   unbanip:
-    notify: '[ip] has been unbanned by [actor]'
+    notify: '&6[ip] has been unbanned by [actor]'
     error:
       noExists: '&c[ip] is not banned'
 
   unbanipall:
-    notify: '[ip] will be unbanned by [actor]'
+    notify: '&6[ip] will be unbanned by [actor]'
 
   warn:
     player:
-      warned: '&cYou have been warned by [actor] for [reason]'
-    notify: '[player] has been warned by [actor] for [reason]'
+      warned: '&6You have been warned by [actor] for &4[reason]'
+    notify: '&6[player] has been warned by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was warned too recently, try again later'
 
   dwarn:
-    notify: 'The most recent warning for [player] has been deleted'
+    notify: '&cThe most recent warning for [player] has been deleted'
     error:
       noWarnings: '&c[player] has no warnings to delete'
 
   bmclear:
-    notify: '[player] has had their [type] cleared'
+    notify: '&c[player] has had their [type] cleared'
     error:
       invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks or warnings'
 
