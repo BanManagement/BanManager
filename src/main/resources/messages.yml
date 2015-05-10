@@ -1,5 +1,5 @@
 # Variables
-# &4[reason] = Ban/Mute reason
+# [reason] = Ban/Mute reason
 # [player] = The name of the player
 # [ip] = The banned ip
 # [actor] = Who banned/muted
