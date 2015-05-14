@@ -184,6 +184,7 @@ permissions:
       bm.command.tempban.offline: true
       bm.command.exempt: true
       bm.command.bminfo: true
+      bm.command.bminfo.others: true
       bm.command.bminfo.playerstats: true
       bm.command.bminfo.connection: true
       bm.command.bminfo.ipstats: true
@@ -267,6 +268,9 @@ permissions:
     default: op
   bm.command.bminfo:
     description: Allows you to see information on players
+    default: op
+  bm.command.bminfo.others:
+    description: Allows you to see other players information
     default: op
   bm.command.bminfo.playerstats:
    description: Allows you to see player statistics
