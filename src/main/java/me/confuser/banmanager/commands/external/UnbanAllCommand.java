@@ -37,7 +37,7 @@ public class UnbanAllCommand extends BukkitCommand<BanManager> {
     }
 
     if (!isBanned) {
-      Message message = Message.get("notBanned");
+      Message message = Message.get("unban.error.noExists");
       message.set("player", playerName);
 
       sender.sendMessage(message.toString());
