@@ -93,7 +93,7 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message message = Message.get("upbanip.notify");
+        Message message = Message.get("unbanip.notify");
         message
                 .set("ip", ipStr)
                 .set("actor", actor.getName());
