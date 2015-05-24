@@ -190,6 +190,11 @@ permissions:
       bm.command.bminfo.ipstats: true
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
       bm.command.banip: true
       bm.command.baniprange: true
       bm.command.tempbaniprange: true
@@ -286,6 +291,21 @@ permissions:
     default: op
   bm.command.bminfo.website:
     description: Allows you to see a website link
+    default: op
+  bm.command.bminfo.history.bans:
+    description: Allows you to see ban records
+    default: op
+  bm.command.bminfo.history.mutes:
+    description: Allows you to see mute reocrds
+    default: op
+  bm.command.bminfo.history.kicks:
+    description: Allows you to see kicks
+    default: op
+  bm.command.bminfo.history.warnings:
+    description: Allows you to see warnings
+    default: op
+  bm.command.bminfo.history.notes:
+    description: Allows you to see notes
     default: op
   bm.command.banip:
     description: Allows you to ban an ip

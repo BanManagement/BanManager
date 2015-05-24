@@ -13,7 +13,7 @@ public class CommandParser {
 
   @Argument(alias = "s")
   @Getter
-  boolean silent = false;
+  private boolean silent = false;
 
 
   public CommandParser(String[] args) {

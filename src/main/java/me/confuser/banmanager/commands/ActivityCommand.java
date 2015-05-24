@@ -62,12 +62,13 @@ public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
         }
 
         String dateTimeFormat = Message.getString("bmactivity.row.dateTimeFormat");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(dateTimeFormat);
 
         for (HashMap<String, Object> result : results) {
           Message message = Message.get(messageType)
                                    .set("player", (String) result.get("player"))
                                    .set("type", (String) result.get("type"))
-                                   .set("created", new SimpleDateFormat(dateTimeFormat)
+                                   .set("created", dateFormatter
                                            .format(new java.util.Date((long) result.get("created") * 1000L)));
 
           if (result.get("actor") != null) message.set("actor", (String) result.get("actor"));

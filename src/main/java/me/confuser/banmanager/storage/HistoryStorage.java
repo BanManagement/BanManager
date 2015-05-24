@@ -1,0 +1,242 @@
+package me.confuser.banmanager.storage;
+
+import com.j256.ormlite.field.SqlType;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.stmt.StatementBuilder;
+import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
+import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.InfoCommandParser;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class HistoryStorage {
+
+  private BanManager plugin = BanManager.getPlugin();
+  private JdbcPooledConnectionSource localConn;
+
+  // Queries
+  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, created, reason" +
+          "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() + " t" +
+          "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                   .getTableName() + " actor ON actor_id = actor.id" +
+          "    WHERE player_id = ?";
+  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, created, reason" +
+          "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
+          "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                   .getTableName() + " actor ON actor_id = actor.id" +
+          "    WHERE player_id = ?";
+  final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason" +
+          "    FROM " + plugin.getPlayerKickStorage().getTableConfig().getTableName() + " t" +
+          "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                   .getTableName() + " actor ON actor_id = actor.id" +
+          "    WHERE player_id = ?";
+  final String warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason" +
+          "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() + " t" +
+          "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                   .getTableName() + " actor ON actor_id = actor.id" +
+          "    WHERE player_id = ?";
+  final String noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason" +
+          "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() + " t" +
+          "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                   .getTableName() + " actor ON actor_id = actor.id" +
+          "    WHERE player_id = ?";
+
+  private final String playerSql = "SELECT id, type, actor, created, reason FROM" +
+          "  ( {QUERIES}" +
+          "  ) subquery" +
+          " ORDER BY created DESC, FIELD(type, 'Ban', 'Warning', 'Mute', 'Kick', 'Note')";
+
+  public HistoryStorage(JdbcPooledConnectionSource localConn) {
+    this.localConn = localConn;
+  }
+
+  public ArrayList<HashMap<String, Object>> getSince(PlayerData player, long since, InfoCommandParser parser) {
+    DatabaseConnection connection;
+
+    try {
+      connection = localConn.getReadOnlyConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    final DatabaseResults result;
+    String sql = playerSql;
+    StringBuilder unions = new StringBuilder();
+    int typeCount = 0;
+
+    // TODO refactor
+    if (parser.isBans()) {
+      unions.append(banSql);
+      unions.append(" AND created >= " + since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    if (parser.isMutes()) {
+      unions.append(muteSql);
+      unions.append(" AND created >= " + since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isKicks()) {
+      unions.append(kickSql);
+      unions.append(" AND created >= " + since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isNotes()) {
+      unions.append(noteSql);
+      unions.append(" AND created >= " + since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isWarnings()) {
+      unions.append(warningSql);
+      unions.append(" AND created >= " + since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    unions.setLength(unions.length() - 11);
+
+    sql = playerSql.replace("{QUERIES}", unions.toString());
+
+    try {
+      CompiledStatement statement = connection
+              .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+                      .DEFAULT_RESULT_FLAGS);
+
+      for (int i = 0; i < typeCount; i++) {
+        statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
+      }
+
+      result = statement.runQuery(null);
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
+
+    try {
+      while (result.next()) {
+        results.add(new HashMap<String, Object>(4) {
+
+          {
+            put("id", result.getInt(0));
+            put("type", result.getString(1));
+            put("actor", result.getString(2));
+            put("created", result.getLong(3));
+            put("reason", result.getString(4));
+          }
+        });
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      result.closeQuietly();
+    }
+
+    connection.closeQuietly();
+
+    return results;
+  }
+
+  public ArrayList<HashMap<String, Object>> getAll(PlayerData player, InfoCommandParser parser) {
+    DatabaseConnection connection;
+
+    try {
+      connection = localConn.getReadOnlyConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    final DatabaseResults result;
+    String sql = playerSql;
+    StringBuilder unions = new StringBuilder();
+    int typeCount = 0;
+
+    // TODO refactor
+    if (parser.isBans()) {
+      unions.append(banSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    if (parser.isMutes()) {
+      unions.append(muteSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isKicks()) {
+      unions.append(kickSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isNotes()) {
+      unions.append(noteSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isWarnings()) {
+      unions.append(warningSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    unions.setLength(unions.length() - 11);
+
+    sql = playerSql.replace("{QUERIES}", unions.toString());
+
+    try {
+      CompiledStatement statement = connection
+              .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+                      .DEFAULT_RESULT_FLAGS);
+
+      for (int i = 0; i < typeCount; i++) {
+        statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
+      }
+
+      result = statement.runQuery(null);
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
+
+    try {
+      while (result.next()) {
+        results.add(new HashMap<String, Object>(4) {
+
+          {
+            put("id", result.getInt(0));
+            put("type", result.getString(1));
+            put("actor", result.getString(2));
+            put("created", result.getLong(3));
+            put("reason", result.getString(4));
+          }
+        });
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      result.closeQuietly();
+    }
+
+    connection.closeQuietly();
+
+    return results;
+  }
+}
