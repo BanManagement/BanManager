@@ -232,8 +232,8 @@ public class JoinListener extends Listeners<BanManager> {
     }
 
     if (plugin.getConfiguration().getMaxOnlinePerIp() > 0) {
-      long ip = IPUtils.toLong(event.getPlayer().getAddress().getAddress());
-      int count = 1;
+      long ip = IPUtils.toLong(event.getAddress());
+      int count = 0;
 
       for (Player player : plugin.getServer().getOnlinePlayers()) {
         if (IPUtils.toLong(player.getAddress().getAddress()) == ip) count++;
