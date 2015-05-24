@@ -157,12 +157,15 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         long banTotal = plugin.getPlayerBanRecordStorage().getCount(player);
         long muteTotal = plugin.getPlayerMuteRecordStorage().getCount(player);
         long warnTotal = plugin.getPlayerWarnStorage().getCount(player);
+        long kickTotal = plugin.getPlayerKickStorage().getCount(player);
 
         messages.add(Message.get("info.stats.player")
                             .set("player", player.getName())
                             .set("bans", Long.toString(banTotal))
                             .set("mutes", Long.toString(muteTotal))
-                            .set("warns", Long.toString(warnTotal)).toString());
+                            .set("warns", Long.toString(warnTotal))
+                            .set("kicks", Long.toString(kickTotal))
+                            .toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.connection")) {

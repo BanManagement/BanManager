@@ -70,7 +70,8 @@ messages:
 
   info:
     stats:
-      player: '[player] has been banned [bans] times, muted [mutes] times and warned [warns] times'
+      player: '[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
+      times'
       ip: 'This ip has been banned [bans] times'
     connection: 'Their last connection was with [ip] on [lastSeen]'
     ban:
