@@ -268,22 +268,22 @@ permissions:
       bm.exempt.tempmute: true
       bm.exempt.warn: true
   bm.command.unban:
-    description: Allows you to unban a user
+    description: Allows you to unban a player
     default: op
   bm.command.ban:
-    description: Allows you to ban a user
+    description: Allows you to ban a player
     default: op
   bm.command.ban.offline:
-    description: Allows you to ban an offline user
+    description: Allows you to ban an offline player
     default: op
   bm.command.ban.override:
     description: Allows you to ovveride a ban
     default: op
   bm.command.tempban:
-    description: Allows you to tempban a user
+    description: Allows you to tempban a player
     default: op
   bm.command.tempban.offline:
-    description: Allows you to tempban an offline user
+    description: Allows you to tempban an offline player
     default: op
   bm.command.tempban.override:
     description: Allows you to ovveride a temp ban
