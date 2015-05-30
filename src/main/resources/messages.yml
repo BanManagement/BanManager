@@ -243,3 +243,9 @@ messages:
       player: '&a[&f[type]&a] &6[player]&f - &e[created]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     noResults: '&cNo results found'
+
+  bmdelete:
+    notify: '&a[rows] rows deleted'
+    error:
+      invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks, notes or warnings'
+      invalidId: '&c[id] is not a valid number'

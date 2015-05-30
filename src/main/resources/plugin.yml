@@ -173,6 +173,10 @@ commands:
     description: "View recent activity"
     usage: "/bmactivity <timeDiff> [player]"
     permission: bm.command.unbaniprange
+  bmdelete:
+    description: "Delete records"
+    usage: "/bmdelete <type> <ids>"
+    permission: bm.command.delete
 permissions:
   bm.*:
     description: Gives access to all BanManager commands
@@ -222,6 +226,7 @@ permissions:
       bm.command.banlist.ips: true
       bm.command.banlist.ipranges: true
       bm.command.bmactivity: true
+      bm.command.delete: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -390,4 +395,22 @@ permissions:
     default: op
   bm.command.bmactivity:
     description: Allows you to view recent activity
+    default: op
+  bm.command.delete:
+    description: Allows you to delete records by id
+    default: op
+  bm.command.delete.banrecords:
+    description: Allows you to delete a player's ban records by id
+    default: op
+  bm.command.delete.kicks:
+    description: Allows you to delete a player's kick records by id
+    default: op
+  bm.command.delete.muterecords:
+    description: Allows you to delete a player's mute records by id
+    default: op
+  bm.command.delete.notes:
+    description: Allows you to delete a player's notes by id
+    default: op
+  bm.command.delete.warnings:
+    description: Allows you to clear a player's warnings by id
     default: op

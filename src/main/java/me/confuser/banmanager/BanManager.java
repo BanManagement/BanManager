@@ -303,6 +303,7 @@ public class BanManager extends BukkitPlugin {
     new NotesCommand().register();
 
     new ClearCommand().register();
+    new DeleteCommand().register();
 
     new SyncCommand().register();
 
