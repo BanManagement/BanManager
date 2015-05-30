@@ -360,11 +360,17 @@ permissions:
   bm.command.mute:
     description: Allows you to mute a player
     default: op
+  bm.command.mute.offline:
+    description: Allows you to mute an offline player
+    default: op
   bm.command.mute.override:
     description: Allows you to ovveride a mute
     default: op
   bm.command.tempmute:
     description: Allows you to temp mute a player
+    default: op
+  bm.command.tempmute.offline:
+    description: Allows you to temp mute an offline player
     default: op
   bm.command.tempmute.override:
     description: Allows you to ovveride a mute
