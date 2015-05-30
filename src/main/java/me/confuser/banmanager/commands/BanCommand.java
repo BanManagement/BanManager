@@ -48,7 +48,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    boolean isBanned;
+    final boolean isBanned;
 
     if (isUUID) {
       isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
@@ -56,7 +56,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
       isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
     }
 
-    if (isBanned) {
+    if (isBanned && !sender.hasPermission("bm.command.ban.override")) {
       Message message = Message.get("ban.error.exists");
       message.set("player", playerName);
 
@@ -118,6 +118,26 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           actor = plugin.getPlayerStorage().getOnline((Player) sender);
         } else {
           actor = plugin.getPlayerStorage().getConsole();
+        }
+
+        if (isBanned) {
+          PlayerBanData ban;
+
+          if (isUUID) {
+            ban = plugin.getPlayerBanStorage().getBan(UUID.fromString(playerName));
+          } else {
+            ban = plugin.getPlayerBanStorage().getBan(playerName);
+          }
+
+          if (ban != null) {
+            try {
+              plugin.getPlayerBanStorage().unban(ban, actor);
+            } catch (SQLException e) {
+              sender.sendMessage(Message.get("sender.error.exception").toString());
+              e.printStackTrace();
+              return;
+            }
+          }
         }
 
         final PlayerBanData ban = new PlayerBanData(player, actor, reason);

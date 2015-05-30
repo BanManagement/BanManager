@@ -98,7 +98,9 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           ip = IPUtils.toLong(ipStr);
         }
 
-        if (plugin.getIpBanStorage().isBanned(ip)) {
+        final boolean isBanned = plugin.getIpBanStorage().isBanned(ip);
+
+        if (isBanned && !sender.hasPermission("bm.command.tempbanip.override")) {
           Message message = Message.get("banip.error.exists");
           message.set("ip", ipStr);
 
@@ -112,6 +114,20 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           actor = plugin.getPlayerStorage().getOnline((Player) sender);
         } else {
           actor = plugin.getPlayerStorage().getConsole();
+        }
+
+        if (isBanned) {
+          IpBanData ban = plugin.getIpBanStorage().getBan(ip);
+
+          if (ban != null) {
+            try {
+              plugin.getIpBanStorage().unban(ban, actor);
+            } catch (SQLException e) {
+              sender.sendMessage(Message.get("sender.error.exception").toString());
+              e.printStackTrace();
+              return;
+            }
+          }
         }
 
         final IpBanData ban = new IpBanData(ip, actor, reason, expires);

@@ -183,9 +183,11 @@ permissions:
     children:
       bm.command.ban: true
       bm.command.ban.offline: true
+      bm.command.ban.override: true
       bm.command.unban: true
       bm.command.tempban: true
       bm.command.tempban.offline: true
+      bm.command.tempban.override: true
       bm.command.exempt: true
       bm.command.bminfo: true
       bm.command.bminfo.others: true
@@ -200,10 +202,12 @@ permissions:
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
       bm.command.banip: true
+      bm.command.banip.override: true
       bm.command.baniprange: true
       bm.command.tempbaniprange: true
       bm.command.unbaniprange: true
       bm.command.tempbanip: true
+      bm.command.tempbanip.override: true
       bm.command.unbanip: true
       bm.command.import: true
       bm.command.kick: true
@@ -211,8 +215,10 @@ permissions:
       bm.command.update: true
       bm.command.mute: true
       bm.command.mute.offline: true
+      bm.command.mute.override: true
       bm.command.tempmute: true
       bm.command.tempmute.offline: true
+      bm.command.tempmute.override: true
       bm.command.unmute: true
       bm.command.warn: true
       bm.command.dwarn: true
@@ -270,11 +276,17 @@ permissions:
   bm.command.ban.offline:
     description: Allows you to ban an offline user
     default: op
+  bm.command.ban.override:
+    description: Allows you to ovveride a ban
+    default: op
   bm.command.tempban:
     description: Allows you to tempban a user
     default: op
   bm.command.tempban.offline:
     description: Allows you to tempban an offline user
+    default: op
+  bm.command.tempban.override:
+    description: Allows you to ovveride a temp ban
     default: op
   bm.command.bminfo:
     description: Allows you to see information on players
@@ -315,8 +327,14 @@ permissions:
   bm.command.banip:
     description: Allows you to ban an ip
     default: op
+  bm.command.banip.override:
+    description: Allows you to ovveride a ban
+    default: op
   bm.command.tempbanip:
     description: Allows you to temban an ip
+    default: op
+  bm.command.tempbanip.override:
+    description: Allows you to ovveride a ban
     default: op
   bm.command.unbanip:
     description: Allows you to unban an ip
@@ -342,8 +360,14 @@ permissions:
   bm.command.mute:
     description: Allows you to mute a player
     default: op
+  bm.command.mute.override:
+    description: Allows you to ovveride a mute
+    default: op
   bm.command.tempmute:
     description: Allows you to temp mute a player
+    default: op
+  bm.command.tempmute.override:
+    description: Allows you to ovveride a mute
     default: op
   bm.command.unmute:
     description: Allows you to unmute a player

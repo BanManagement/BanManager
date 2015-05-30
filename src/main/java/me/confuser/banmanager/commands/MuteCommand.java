@@ -48,7 +48,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    boolean isMuted = false;
+    final boolean isMuted;
 
     if (isUUID) {
       isMuted = plugin.getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
@@ -56,7 +56,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
       isMuted = plugin.getPlayerMuteStorage().isMuted(playerName);
     }
 
-    if (isMuted) {
+    if (isMuted && !sender.hasPermission("bm.command.mute.override")) {
       Message message = Message.get("mute.error.exists");
       message.set("player", playerName);
 
@@ -118,6 +118,26 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           actor = plugin.getPlayerStorage().getOnline((Player) sender);
         } else {
           actor = plugin.getPlayerStorage().getConsole();
+        }
+
+        if (isMuted) {
+          PlayerMuteData mute;
+
+          if (isUUID) {
+            mute = plugin.getPlayerMuteStorage().getMute(UUID.fromString(playerName));
+          } else {
+            mute = plugin.getPlayerMuteStorage().getMute(playerName);
+          }
+
+          if (mute != null) {
+            try {
+              plugin.getPlayerMuteStorage().unmute(mute, actor);
+            } catch (SQLException e) {
+              sender.sendMessage(Message.get("sender.error.exception").toString());
+              e.printStackTrace();
+              return;
+            }
+          }
         }
 
         PlayerMuteData mute = new PlayerMuteData(player, actor, reason);
