@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,6 +118,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   public PlayerData getOnline(Player player) {
     return getOnline(player.getUniqueId());
+  }
+
+  public Collection<PlayerData> getOnline() {
+    return online.values();
   }
 
   @Override

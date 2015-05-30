@@ -230,9 +230,11 @@ messages:
   notes:
     header: '&6[player] has the following notes:'
     note: '&6[[player]] &e[message]'
+    playerNote: '&a[[player]] &6[[actor]] &e[message]'
     notify: '[player] has a new note attached by [actor]: [message]'
     error:
       noNotes: '&c[player] has no notes'
+      noOnlineNotes: '&cNo online players have notes'
 
   banlist:
     header: '&6There are [bans] [type] bans:'
