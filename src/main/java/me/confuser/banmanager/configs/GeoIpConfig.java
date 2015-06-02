@@ -1,6 +1,7 @@
 package me.confuser.banmanager.configs;
 
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.model.CountryResponse;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.configs.Config;
@@ -8,6 +9,7 @@ import me.confuser.bukkitutil.configs.Config;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 
 public class GeoIpConfig extends Config<BanManager> {
@@ -18,6 +20,9 @@ public class GeoIpConfig extends Config<BanManager> {
   private DatabaseReader cityDatabase;
   @Getter
   private DatabaseReader countryDatabase;
+  private HashSet<String> countries;
+  @Getter
+  private String type;
 
   public GeoIpConfig() {
     super("geoip.yml");
@@ -79,11 +84,26 @@ public class GeoIpConfig extends Config<BanManager> {
       }
     }
 
-    if (enabled && countryFile.exists() && cityFile.exists()) {
+    if (!enabled) return;
+
+    if (countryFile.exists() && cityFile.exists()) {
       conf.set("download.lastUpdated", System.currentTimeMillis());
     }
 
     plugin.getLogger().info("Successfully loaded GeoIP databases");
+
+    countries = new HashSet<>(conf.getStringList("countries.list"));
+    type = conf.getString("countries.type");
+
+    plugin.getLogger().info("Loaded " + countries.size() + " countries on the " + type);
+  }
+
+  public boolean isCountryAllowed(CountryResponse countryResponse) {
+    if (type.equals("blacklist")) {
+      return !countries.contains(countryResponse.getCountry().getIsoCode());
+    } else {
+      return countries.contains(countryResponse.getCountry().getIsoCode());
+    }
   }
 
   @Override

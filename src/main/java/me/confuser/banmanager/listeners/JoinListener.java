@@ -1,6 +1,8 @@
 package me.confuser.banmanager.listeners;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.CommandUtils;
@@ -16,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -229,6 +232,22 @@ public class JoinListener extends Listeners<BanManager> {
   public void onPlayerLogin(final PlayerLoginEvent event) {
     if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
       return;
+    }
+
+    if (plugin.getGeoIpConfig().isEnabled() && !event.getPlayer().hasPermission("bm.exempt.country")) {
+      try {
+        CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(event.getAddress());
+
+        if (!plugin.getGeoIpConfig().isCountryAllowed(countryResponse)) {
+          Message message = Message.get("deniedCountry")
+                                   .set("country", countryResponse.getCountry().getName())
+                                   .set("countryIso", countryResponse.getCountry().getIsoCode());
+          event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message.toString());
+          return;
+        }
+
+      } catch (IOException | GeoIp2Exception e) {
+      }
     }
 
     if (plugin.getConfiguration().getMaxOnlinePerIp() > 0) {
