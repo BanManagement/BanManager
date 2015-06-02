@@ -1,6 +1,9 @@
 package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityResponse;
+import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
@@ -13,6 +16,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,6 +179,32 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                             .set("lastSeen", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
                                     .format(new java.util.Date(player.getLastSeen() * 1000L)))
                             .toString());
+      }
+
+      if (plugin.getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
+        Message message = Message.get("info.geoip");
+        String country = "";
+        String countryIso = "";
+        String city = "";
+
+        try {
+          InetAddress ip = IPUtils.toInetAddress(player.getIp());
+
+          CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(ip);
+          country = countryResponse.getCountry().getName();
+          countryIso = countryResponse.getCountry().getIsoCode();
+
+          CityResponse cityResponse = plugin.getGeoIpConfig().getCityDatabase().city(ip);
+          city = cityResponse.getCity().getName();
+
+        } catch (IOException | GeoIp2Exception e) {
+        }
+
+        message.set("country", country)
+               .set("countryIso", countryIso)
+               .set("city", city);
+
+        messages.add(message.toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.alts")) {

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class IPUtils {
 
@@ -30,6 +31,10 @@ public class IPUtils {
 
   public static String toString(long ip) {
     return ((ip >> 24) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + (ip & 0xFF);
+  }
+
+  public static InetAddress toInetAddress(long ip) throws UnknownHostException {
+    return InetAddress.getByName(toString(ip));
   }
 
   public static long[] getRangeFromCidrNotation(String ipStr) {

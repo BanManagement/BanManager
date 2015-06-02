@@ -1,0 +1,5 @@
+enabled: false
+download:
+  city: 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz'
+  country: 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz'
+  lastUpdated: 0

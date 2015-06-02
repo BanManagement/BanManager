@@ -84,6 +84,8 @@ public class BanManager extends BukkitPlugin {
   private ExemptionsConfig exemptionsConfig;
   @Getter
   private ReasonsConfig reasonsConfig;
+  @Getter
+  private GeoIpConfig geoIpConfig;
 
   @Getter
   private BanSync banSync;
@@ -340,6 +342,9 @@ public class BanManager extends BukkitPlugin {
 
     reasonsConfig = new ReasonsConfig();
     reasonsConfig.load();
+
+    geoIpConfig = new GeoIpConfig();
+    geoIpConfig.load();
   }
 
   public boolean setupConnections() throws SQLException {

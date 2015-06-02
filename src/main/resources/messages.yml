@@ -74,6 +74,7 @@ messages:
       times'
       ip: 'This ip has been banned [bans] times'
     connection: 'Their last connection was with [ip] on [lastSeen]'
+    geoip: 'Country: [country] City: [city]'
     ban:
       permanent: 'Currently banned for [reason] by [actor] at [created]'
       temporary: 'Currently banned for [reason] by [actor] at [created] which expires in [expires]'
