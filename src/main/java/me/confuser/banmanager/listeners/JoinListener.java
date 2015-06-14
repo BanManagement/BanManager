@@ -147,7 +147,8 @@ public class JoinListener extends Listeners<BanManager> {
       e.printStackTrace();
     }
 
-    if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
+    // Temporarily removed to see if fixes actor_id null issue
+    //    if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
 
     plugin.getPlayerStorage().addOnline(player);
   }
