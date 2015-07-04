@@ -124,6 +124,8 @@ public class ExportCommand extends BukkitCommand<BanManager> {
       jsonWriter.endObject();
     }
 
+    itr.closeQuietly();
+
     jsonWriter.endArray();
     jsonWriter.close();
   }
@@ -169,6 +171,8 @@ public class ExportCommand extends BukkitCommand<BanManager> {
 
       jsonWriter.endObject();
     }
+
+    itr.closeQuietly();
 
     jsonWriter.endArray();
     jsonWriter.close();

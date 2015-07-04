@@ -49,11 +49,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
         @Override
         public void run() {
-          try {
-            setupAutoComplete();
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
+          setupAutoComplete();
         }
       });
     }
@@ -77,15 +73,22 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
   }
 
-  public void setupAutoComplete() throws SQLException {
+  public void setupAutoComplete() {
     autoCompleteTree = new ConcurrentRadixTree<>(new SmartArrayBasedNodeFactory());
-    CloseableIterator<PlayerData> itr = this.queryBuilder().selectColumns("name").iterator();
+    CloseableIterator<PlayerData> itr = null;
 
-    while (itr.hasNext()) {
-      autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
+    try {
+      itr = this.queryBuilder().selectColumns("name").iterator();
+
+      while (itr.hasNext()) {
+        autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 
   public void addOnline(PlayerData player) {
@@ -223,16 +226,24 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       where.eq("ip", ip);
 
       query.setWhere(where);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return players;
+    }
 
-      CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
+
+    CloseableIterator<PlayerData> itr = null;
+    try {
+      itr = query.limit(300L).iterator();
 
       while (itr.hasNext()) {
         players.add(itr.next());
       }
 
-      itr.close();
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
     return players;

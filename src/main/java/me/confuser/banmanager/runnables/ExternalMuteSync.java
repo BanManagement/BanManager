@@ -28,63 +28,70 @@ public class ExternalMuteSync implements Runnable {
 
   @Override
   public void run() {
+    if (isRunning) return;
+
     isRunning = true;
     // New/updated mutes check
-    try {
-      newMutes();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newMutes();
 
     // New unmutes
-    try {
-      newUnmutes();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newUnmutes();
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("externalPlayerMutes", lastChecked);
     isRunning = false;
   }
 
-  private void newMutes() throws SQLException {
+  private void newMutes() {
 
-    CloseableIterator<ExternalPlayerMuteData> itr = muteStorage.findMutes(lastChecked);
+    CloseableIterator<ExternalPlayerMuteData> itr = null;
+    try {
+      itr = muteStorage.findMutes(lastChecked);
 
-    while (itr.hasNext()) {
-      ExternalPlayerMuteData mute = itr.next();
+      while (itr.hasNext()) {
+        ExternalPlayerMuteData mute = itr.next();
 
-      final PlayerMuteData localMute = mute.toLocal();
+        final PlayerMuteData localMute = mute.toLocal();
 
-      if (localMuteStorage.retrieveMute(mute.getUUID()) != null) {
-        // External mute overrides local
-        localMuteStorage
-                .unmute(localMute, mute.getActor());
-      } else if (localMuteStorage.isMuted(mute.getUUID())) {
-        localMuteStorage.removeMute(mute.getUUID());
+        if (localMuteStorage.retrieveMute(mute.getUUID()) != null) {
+          // External mute overrides local
+          localMuteStorage
+                  .unmute(localMute, mute.getActor());
+        } else if (localMuteStorage.isMuted(mute.getUUID())) {
+          localMuteStorage.removeMute(mute.getUUID());
+        }
+
+        localMuteStorage.mute(localMute, false);
+
       }
-
-      localMuteStorage.mute(localMute, false);
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 
-  private void newUnmutes() throws SQLException {
+  private void newUnmutes()  {
 
-    CloseableIterator<ExternalPlayerMuteRecordData> itr = recordStorage.findUnmutes(lastChecked);
+    CloseableIterator<ExternalPlayerMuteRecordData> itr = null;
+    try {
+      itr = recordStorage.findUnmutes(lastChecked);
 
-    while (itr.hasNext()) {
-      ExternalPlayerMuteRecordData record = itr.next();
+      while (itr.hasNext()) {
+        ExternalPlayerMuteRecordData record = itr.next();
 
-      if (!localMuteStorage.isMuted(record.getUUID())) {
-        continue;
+        if (!localMuteStorage.isMuted(record.getUUID())) {
+          continue;
+        }
+
+        localMuteStorage.unmute(localMuteStorage.getMute(record.getUUID()), record.getActor());
+
       }
-
-      localMuteStorage.unmute(localMuteStorage.getMute(record.getUUID()), record.getActor());
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
   }
 }

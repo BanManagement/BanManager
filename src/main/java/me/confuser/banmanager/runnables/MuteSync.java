@@ -25,61 +25,65 @@ public class MuteSync implements Runnable {
   public void run() {
     isRunning = true;
     // New/updated mutes check
-    try {
-      newMutes();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newMutes();
 
     // New unbans
-    try {
-      newUnmutes();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newUnmutes();
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("playerMutes", lastChecked);
     isRunning = false;
   }
 
-  private void newMutes() throws SQLException {
+  private void newMutes() {
 
-    CloseableIterator<PlayerMuteData> itr = muteStorage.findMutes(lastChecked);
+    CloseableIterator<PlayerMuteData> itr = null;
+    try {
+      itr = muteStorage.findMutes(lastChecked);
 
-    while (itr.hasNext()) {
-      final PlayerMuteData mute = itr.next();
+      while (itr.hasNext()) {
+        final PlayerMuteData mute = itr.next();
 
-      if (muteStorage.isMuted(mute.getPlayer().getUUID()) && mute.getUpdated() < lastChecked) {
-        continue;
+        if (muteStorage.isMuted(mute.getPlayer().getUUID()) && mute.getUpdated() < lastChecked) {
+          continue;
+        }
+
+        muteStorage.addMute(mute);
+
       }
-
-      muteStorage.addMute(mute);
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 
-  private void newUnmutes() throws SQLException {
+  private void newUnmutes() {
 
-    CloseableIterator<PlayerMuteRecord> itr = plugin.getPlayerMuteRecordStorage().findUnmutes(lastChecked);
+    CloseableIterator<PlayerMuteRecord> itr = null;
+    try {
+      itr = plugin.getPlayerMuteRecordStorage().findUnmutes(lastChecked);
 
-    while (itr.hasNext()) {
-      final PlayerMuteRecord mute = itr.next();
+      while (itr.hasNext()) {
+        final PlayerMuteRecord mute = itr.next();
 
-      if (!muteStorage.isMuted(mute.getPlayer().getUUID())) {
-        continue;
+        if (!muteStorage.isMuted(mute.getPlayer().getUUID())) {
+          continue;
+        }
+
+        if (!mute.equalsMute(muteStorage.getMute(mute.getPlayer().getUUID()))) {
+          continue;
+        }
+
+        muteStorage.removeMute(mute.getPlayer().getUUID());
+
       }
-
-      if (!mute.equalsMute(muteStorage.getMute(mute.getPlayer().getUUID()))) {
-        continue;
-      }
-
-      muteStorage.removeMute(mute.getPlayer().getUUID());
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 }

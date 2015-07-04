@@ -46,7 +46,7 @@ public class ExpiresSync implements Runnable {
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
-      bans.closeQuietly();
+      if (bans != null) bans.closeQuietly();
     }
 
     CloseableIterator<PlayerMuteData> mutes = null;
@@ -63,7 +63,7 @@ public class ExpiresSync implements Runnable {
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
-      mutes.closeQuietly();
+      if (mutes != null) mutes.closeQuietly();
     }
 
     CloseableIterator<IpBanData> ipBans = null;
@@ -81,13 +81,13 @@ public class ExpiresSync implements Runnable {
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
-      ipBans.closeQuietly();
+      if (ipBans != null) ipBans.closeQuietly();
     }
 
     CloseableIterator<IpRangeBanData> ipRangeBans = null;
     try {
       ipRangeBans = ipRangeBanStorage.queryBuilder().where().ne("expires", 0).and()
-                           .le("expires", now).iterator();
+                                     .le("expires", now).iterator();
 
       while (ipRangeBans.hasNext()) {
         IpRangeBanData ban = ipRangeBans.next();
@@ -99,7 +99,7 @@ public class ExpiresSync implements Runnable {
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
-      ipRangeBans.closeQuietly();
+      if (ipRangeBans != null) ipRangeBans.closeQuietly();
     }
 
     isRunning = false;

@@ -23,58 +23,63 @@ public class IpRangeSync implements Runnable {
 
   @Override
   public void run() {
+    if (isRunning) return;
+
     isRunning = true;
     // New/updated bans check
-    try {
-      newBans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newBans();
 
     // New unbans
-    try {
-      newUnbans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newUnbans();
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("ipRangeBans", lastChecked);
     isRunning = false;
   }
 
-  private void newBans() throws SQLException {
+  private void newBans() {
 
-    CloseableIterator<IpRangeBanData> itr = banStorage.findBans(lastChecked);
+    CloseableIterator<IpRangeBanData> itr = null;
+    try {
+      itr = banStorage.findBans(lastChecked);
 
-    while (itr.hasNext()) {
-      final IpRangeBanData ban = itr.next();
+      while (itr.hasNext()) {
+        final IpRangeBanData ban = itr.next();
 
-      if (banStorage.isBanned(ban) && ban.getUpdated() < lastChecked) {
-        continue;
+        if (banStorage.isBanned(ban) && ban.getUpdated() < lastChecked) {
+          continue;
+        }
+
+        banStorage.addBan(ban);
       }
-
-      banStorage.addBan(ban);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
-
-    itr.close();
   }
 
-  private void newUnbans() throws SQLException {
+  private void newUnbans() {
 
-    CloseableIterator<IpRangeBanRecord> itr = plugin.getIpRangeBanRecordStorage().findUnbans(lastChecked);
+    CloseableIterator<IpRangeBanRecord> itr = null;
+    try {
+      itr = plugin.getIpRangeBanRecordStorage().findUnbans(lastChecked);
 
-    while (itr.hasNext()) {
-      final IpRangeBanRecord ban = itr.next();
+      while (itr.hasNext()) {
+        final IpRangeBanRecord ban = itr.next();
 
-      if (!banStorage.isBanned(ban.getRange())) {
-        continue;
+        if (!banStorage.isBanned(ban.getRange())) {
+          continue;
+        }
+
+        banStorage.removeBan(ban.getRange());
+
       }
-
-      banStorage.removeBan(ban.getRange());
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 }

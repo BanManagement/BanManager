@@ -25,83 +25,87 @@ public class BanSync implements Runnable {
 
   @Override
   public void run() {
+    if (isRunning) return;
+
     isRunning = true;
     // New/updated bans check
-    try {
-      newBans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newBans();
 
     // New unbans
-    try {
-      newUnbans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newUnbans();
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("playerBans", lastChecked);
     isRunning = false;
   }
 
-  private void newBans() throws SQLException {
+  private void newBans() {
 
-    CloseableIterator<PlayerBanData> itr = banStorage.findBans(lastChecked);
+    CloseableIterator<PlayerBanData> itr = null;
+    try {
+      itr = banStorage.findBans(lastChecked);
 
-    while (itr.hasNext()) {
-      final PlayerBanData ban = itr.next();
+      while (itr.hasNext()) {
+        final PlayerBanData ban = itr.next();
 
-      if (banStorage.isBanned(ban.getPlayer().getUUID()) && ban.getUpdated() < lastChecked) {
-        continue;
-      }
-
-      banStorage.addBan(ban);
-
-      if (!plugin.getPlayerStorage().isOnline(ban.getPlayer().getUUID())) {
-        continue;
-      }
-
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-        @Override
-        public void run() {
-          Player bukkitPlayer = plugin.getServer().getPlayer(ban.getPlayer().getUUID());
-
-          Message kickMessage = Message.get("ban.player.kick")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", ban.getPlayer().getName())
-                                       .set("reason", ban.getReason())
-                                       .set("actor", ban.getActor().getName());
-
-          bukkitPlayer.kickPlayer(kickMessage.toString());
+        if (banStorage.isBanned(ban.getPlayer().getUUID()) && ban.getUpdated() < lastChecked) {
+          continue;
         }
-      });
 
+        banStorage.addBan(ban);
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            Player bukkitPlayer = plugin.getServer().getPlayer(ban.getPlayer().getUUID());
+
+            if (bukkitPlayer == null) return;
+
+            Message kickMessage = Message.get("ban.player.kick")
+                                         .set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("player", ban.getPlayer().getName())
+                                         .set("reason", ban.getReason())
+                                         .set("actor", ban.getActor().getName());
+
+            bukkitPlayer.kickPlayer(kickMessage.toString());
+          }
+        });
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 
-  private void newUnbans() throws SQLException {
+  private void newUnbans() {
 
-    CloseableIterator<PlayerBanRecord> itr = plugin.getPlayerBanRecordStorage().findUnbans(lastChecked);
+    CloseableIterator<PlayerBanRecord> itr = null;
+    try {
+      itr = plugin.getPlayerBanRecordStorage().findUnbans(lastChecked);
 
-    while (itr.hasNext()) {
-      final PlayerBanRecord ban = itr.next();
+      while (itr.hasNext()) {
+        final PlayerBanRecord ban = itr.next();
 
-      if (!banStorage.isBanned(ban.getPlayer().getUUID())) {
-        continue;
+        if (!banStorage.isBanned(ban.getPlayer().getUUID())) {
+          continue;
+        }
+
+        if (!ban.equalsBan(banStorage.getBan(ban.getPlayer().getUUID()))) {
+          continue;
+        }
+
+        banStorage.removeBan(ban.getPlayer().getUUID());
+
       }
-
-      if (!ban.equalsBan(banStorage.getBan(ban.getPlayer().getUUID()))) {
-        continue;
-      }
-
-      banStorage.removeBan(ban.getPlayer().getUUID());
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 }

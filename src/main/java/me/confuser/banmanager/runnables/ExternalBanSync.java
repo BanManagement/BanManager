@@ -31,20 +31,14 @@ public class ExternalBanSync implements Runnable {
 
   @Override
   public void run() {
+    if (isRunning) return;
+
     isRunning = true;
     // New/updated bans check
-    try {
-      newBans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newBans();
 
     // New unbans
-    try {
-      newUnbans();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    newUnbans();
 
     lastChecked = System.currentTimeMillis() / 1000L;
     plugin.getSchedulesConfig().setLastChecked("externalPlayerBans", lastChecked);
@@ -52,75 +46,85 @@ public class ExternalBanSync implements Runnable {
   }
 
 
-  private void newBans() throws SQLException {
+  private void newBans() {
 
-    CloseableIterator<ExternalPlayerBanData> itr = banStorage.findBans(lastChecked);
+    CloseableIterator<ExternalPlayerBanData> itr = null;
+    try {
+      itr = banStorage.findBans(lastChecked);
 
-    while (itr.hasNext()) {
-      ExternalPlayerBanData ban = itr.next();
+      while (itr.hasNext()) {
+        ExternalPlayerBanData ban = itr.next();
 
-      final PlayerBanData localBan = ban.toLocal();
+        final PlayerBanData localBan = ban.toLocal();
 
-      if (localBanStorage.retrieveBan(ban.getUUID()) != null) {
-        // External ban overrides local
-        localBanStorage
-                .unban(localBan, ban.getActor());
-      } else if (localBanStorage.isBanned(ban.getUUID())) {
-        localBanStorage.removeBan(ban.getUUID());
-      }
-
-      localBanStorage.ban(localBan, false);
-
-      if (!plugin.getPlayerStorage().isOnline(localBan.getPlayer().getUUID())) {
-        continue;
-      }
-
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-        @Override
-        public void run() {
-          // TODO move into a listener
-          Player bukkitPlayer = plugin.getServer().getPlayer(localBan.getPlayer().getUUID());
-
-          Message kickMessage;
-
-          if (localBan.getExpires() == 0) {
-            kickMessage = Message.get("ban.player.kick");
-          } else {
-            kickMessage = Message.get("tempban.player.kick");
-            kickMessage.set("expires", DateUtils.getDifferenceFormat(localBan.getExpires()));
-          }
-
-          kickMessage
-                  .set("displayName", bukkitPlayer.getDisplayName())
-                  .set("player", localBan.getPlayer().getName())
-                  .set("reason", localBan.getReason())
-                  .set("actor", localBan.getActor().getName());
-
-          bukkitPlayer.kickPlayer(kickMessage.toString());
+        if (localBanStorage.retrieveBan(ban.getUUID()) != null) {
+          // External ban overrides local
+          localBanStorage
+                  .unban(localBan, ban.getActor());
+        } else if (localBanStorage.isBanned(ban.getUUID())) {
+          localBanStorage.removeBan(ban.getUUID());
         }
-      });
 
+        localBanStorage.ban(localBan, false);
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            // TODO move into a listener
+            Player bukkitPlayer = plugin.getServer().getPlayer(localBan.getPlayer().getUUID());
+
+            if (bukkitPlayer == null) return;
+
+            Message kickMessage;
+
+            if (localBan.getExpires() == 0) {
+              kickMessage = Message.get("ban.player.kick");
+            } else {
+              kickMessage = Message.get("tempban.player.kick");
+              kickMessage.set("expires", DateUtils.getDifferenceFormat(localBan.getExpires()));
+            }
+
+            kickMessage
+                    .set("displayName", bukkitPlayer.getDisplayName())
+                    .set("player", localBan.getPlayer().getName())
+                    .set("reason", localBan.getReason())
+                    .set("actor", localBan.getActor().getName());
+
+            bukkitPlayer.kickPlayer(kickMessage.toString());
+          }
+        });
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 
-  private void newUnbans() throws SQLException {
+  private void newUnbans() {
 
-    CloseableIterator<ExternalPlayerBanRecordData> itr = recordStorage.findUnbans(lastChecked);
+    CloseableIterator<ExternalPlayerBanRecordData> itr = null;
+    try {
+      itr = recordStorage.findUnbans(lastChecked);
 
-    while (itr.hasNext()) {
-      ExternalPlayerBanRecordData record = itr.next();
+      while (itr.hasNext()) {
+        ExternalPlayerBanRecordData record = itr.next();
 
-      if (!localBanStorage.isBanned(record.getUUID())) {
-        continue;
+        if (!localBanStorage.isBanned(record.getUUID())) {
+          continue;
+        }
+
+        localBanStorage.unban(localBanStorage.getBan(record.getUUID()), record.getActor());
+
       }
-
-      localBanStorage.unban(localBanStorage.getBan(record.getUUID()), record.getActor());
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
 
-    itr.close();
   }
 }
