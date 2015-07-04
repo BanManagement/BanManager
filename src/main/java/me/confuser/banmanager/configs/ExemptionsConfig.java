@@ -20,7 +20,7 @@ public class ExemptionsConfig extends Config<BanManager> {
       add("warn");
     }
   };
-  private HashMap<UUID, PlayerExemptionsData> players = new HashMap<>();
+  private HashMap<UUID, PlayerExemptionsData> players;
 
   public ExemptionsConfig() {
     super("exemptions.yml");
@@ -28,6 +28,7 @@ public class ExemptionsConfig extends Config<BanManager> {
 
   @Override
   public void afterLoad() {
+    players =  new HashMap<>();
     Set<String> keys = conf.getKeys(false);
 
     if (keys == null || keys.size() == 0) return;
