@@ -132,7 +132,13 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }
@@ -158,7 +164,7 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         }
 
         final PlayerBanData ban = new PlayerBanData(player, actor, reason, expires);
-        boolean created = false;
+        boolean created;
 
         try {
           created = plugin.getPlayerBanStorage().ban(ban, isSilent);
@@ -172,23 +178,23 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        if (plugin.getPlayerStorage().isOnline(player.getUUID())) {
-          plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
-            @Override
-            public void run() {
-              Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+          @Override
+          public void run() {
+            Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 
-              Message kickMessage = Message.get("tempban.player.kick").set("displayName", bukkitPlayer.getDisplayName())
-                                           .set("player", player.getName()).set("reason", ban.getReason())
-                                           .set("actor", actor.getName())
-                                           .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+            if (bukkitPlayer == null) return;
 
-              bukkitPlayer.kickPlayer(kickMessage.toString());
-            }
+            Message kickMessage = Message.get("tempban.player.kick").set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("player", player.getName()).set("reason", ban.getReason())
+                                         .set("actor", actor.getName())
+                                         .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 
-          });
-        }
+            bukkitPlayer.kickPlayer(kickMessage.toString());
+          }
+
+        });
 
       }
 

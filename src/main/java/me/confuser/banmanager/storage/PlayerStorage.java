@@ -23,12 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   private BanManager plugin = BanManager.getPlugin();
-  private ConcurrentHashMap<UUID, PlayerData> online = new ConcurrentHashMap<>();
   @Getter
   private RadixTree<VoidValue> autoCompleteTree;
 
@@ -91,42 +89,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   }
 
-  public void addOnline(PlayerData player) {
-    online.put(player.getUUID(), player);
-  }
-
-  public void addOnline(Player player) {
-    PlayerData playerData = new PlayerData(player);
-
-    try {
-      createOrUpdate(playerData);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-
-    addOnline(playerData);
-  }
-
-  public PlayerData removeOnline(UUID uuid) {
-    return online.remove(uuid);
-  }
-
-  public boolean isOnline(UUID uuid) {
-    return online.get(uuid) != null;
-  }
-
-  public PlayerData getOnline(UUID uuid) {
-    return online.get(uuid);
-  }
-
-  public PlayerData getOnline(Player player) {
-    return getOnline(player.getUniqueId());
-  }
-
-  public Collection<PlayerData> getOnline() {
-    return online.values();
-  }
-
   @Override
   public CreateOrUpdateStatus createOrUpdate(PlayerData data) throws SQLException {
     CreateOrUpdateStatus status = super.createOrUpdate(data);
@@ -170,12 +132,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   }
 
   public PlayerData retrieve(String name, boolean mojangLookup) {
-    // Check if online first
-    for (PlayerData player : online.values()) {
-      if (player.getName().equalsIgnoreCase(name)) {
-        return player;
-      }
-    }
 
     try {
       List<PlayerData> results = queryForEq("name", name);
@@ -247,5 +203,15 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     return players;
+  }
+
+  public List<byte[]> getOnlineIds(Collection<? extends Player> onlinePlayers) {
+    ArrayList<byte[]> ids = new ArrayList<>(onlinePlayers.size());
+
+    for (Player player : onlinePlayers) {
+      ids.add(UUIDUtils.toBytes(player.getUniqueId()));
+    }
+
+    return ids;
   }
 }

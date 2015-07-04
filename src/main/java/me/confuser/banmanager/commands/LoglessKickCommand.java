@@ -3,12 +3,15 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.sql.SQLException;
 
 public class LoglessKickCommand extends BukkitCommand<BanManager> {
 
@@ -33,7 +36,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
     }
 
     String playerName = args[0];
-    Player player = plugin.getServer().getPlayer(playerName);
+    final Player player = plugin.getServer().getPlayer(playerName);
 
     if (player == null) {
       Message message = Message.get("sender.error.offline")
@@ -46,39 +49,58 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
 
-    PlayerData actor;
+    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-    if (sender instanceof Player) {
-      actor = plugin.getPlayerStorage().getOnline((Player) sender);
-    } else {
-      actor = plugin.getPlayerStorage().getConsole();
-    }
+      @Override
+      public void run() {
+        final PlayerData actor;
 
-    Message kickMessage;
+        if (sender instanceof Player) {
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
+        } else {
+          actor = plugin.getPlayerStorage().getConsole();
+        }
 
-    if (reason.isEmpty()) {
-      kickMessage = Message.get("kick.player.noReason");
-    } else {
-      kickMessage = Message.get("kick.player.reason").set("reason", reason);
-    }
+        final Message kickMessage;
 
-    kickMessage
-            .set("displayName", player.getDisplayName())
-            .set("player", player.getName())
-            .set("actor", actor.getName());
+        if (reason.isEmpty()) {
+          kickMessage = Message.get("kick.player.noReason");
+        } else {
+          kickMessage = Message.get("kick.player.reason").set("reason", reason);
+        }
 
-    player.kickPlayer(kickMessage.toString());
+        kickMessage
+                .set("displayName", player.getDisplayName())
+                .set("player", player.getName())
+                .set("actor", actor.getName());
 
-    Message message = Message.get("kick.notify");
-    message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
-    if (!sender.hasPermission("bm.notify.kick")) {
-      message.sendTo(sender);
-    }
+          @Override
+          public void run() {
+            player.kickPlayer(kickMessage.toString());
 
-    CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+            Message message = Message.get("kick.notify");
+            message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+
+            if (!sender.hasPermission("bm.notify.kick")) {
+              message.sendTo(sender);
+            }
+
+            CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+          }
+        });
+
+      }
+    });
 
     return true;
   }

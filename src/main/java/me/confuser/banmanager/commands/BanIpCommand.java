@@ -7,6 +7,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -94,7 +95,13 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }

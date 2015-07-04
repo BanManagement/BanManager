@@ -10,9 +10,11 @@ import me.confuser.banmanager.configs.CleanUp;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.events.PlayerWarnEvent;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
@@ -38,8 +40,8 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     return create(data) == 1;
   }
 
-  public CloseableIterator<PlayerWarnData> getUnreadWarnings(PlayerData player) throws SQLException {
-    return queryBuilder().where().eq("player_id", player).and().eq("read", false).iterator();
+  public CloseableIterator<PlayerWarnData> getUnreadWarnings(UUID uniqueId) throws SQLException {
+    return queryBuilder().where().eq("player_id", UUIDUtils.toBytes(uniqueId)).and().eq("read", false).iterator();
   }
 
   public CloseableIterator<PlayerWarnData> getWarnings(PlayerData player) throws SQLException {

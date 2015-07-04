@@ -7,6 +7,7 @@ import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
           CloseableIterator<PlayerNoteData> notesItr = null;
 
           try {
-            notesItr = plugin.getPlayerNoteStorage().getNotes(player);
+            notesItr = plugin.getPlayerNoteStorage().getNotes(player.getUUID());
             ArrayList<Message> notes = new ArrayList<>();
 
             while (notesItr.hasNext()) {
@@ -75,7 +76,7 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
           } catch (SQLException e) {
             e.printStackTrace();
           } finally {
-            notesItr.closeQuietly();
+            if (notesItr != null) notesItr.closeQuietly();
           }
         }
 
@@ -85,16 +86,20 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         @Override
         public void run() {
-          CloseableIterator<PlayerNoteData> notesItr = null;
-          Collection<PlayerData> onlinePlayers = plugin.getPlayerStorage().getOnline();
+          Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
 
           if (onlinePlayers.size() == 0) {
             Message.get("notes.error.noOnlineNotes").sendTo(sender);
             return;
           }
 
+          CloseableIterator<PlayerNoteData> notesItr = null;
+
           try {
-            notesItr = plugin.getPlayerNoteStorage().queryBuilder().where().in("player_id", onlinePlayers)
+            notesItr = plugin.getPlayerNoteStorage()
+                             .queryBuilder()
+                             .where()
+                             .in("player_id", plugin.getPlayerStorage().getOnlineIds(onlinePlayers))
                              .iterator();
             ArrayList<Message> notes = new ArrayList<>();
 
@@ -120,7 +125,7 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
           } catch (SQLException e) {
             e.printStackTrace();
           } finally {
-            notesItr.closeQuietly();
+            if (notesItr != null) notesItr.closeQuietly();
           }
         }
 

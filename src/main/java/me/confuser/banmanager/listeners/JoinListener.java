@@ -147,10 +147,6 @@ public class JoinListener extends Listeners<BanManager> {
       e.printStackTrace();
     }
 
-    // Temporarily removed to see if fixes actor_id null issue
-    //    if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
-
-    plugin.getPlayerStorage().addOnline(player);
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -163,16 +159,10 @@ public class JoinListener extends Listeners<BanManager> {
           return;
         }
 
-        PlayerData onlinePlayer = plugin.getPlayerStorage().getOnline(event.getPlayer());
-
-        if (onlinePlayer == null) {
-          return;
-        }
-
         CloseableIterator<PlayerNoteData> notesItr = null;
 
         try {
-          notesItr = plugin.getPlayerNoteStorage().getNotes(onlinePlayer);
+          notesItr = plugin.getPlayerNoteStorage().getNotes(event.getPlayer().getUniqueId());
           ArrayList<String> notes = new ArrayList<String>();
 
           while (notesItr.hasNext()) {
@@ -186,7 +176,7 @@ public class JoinListener extends Listeners<BanManager> {
 
           if (notes.size() != 0) {
             String header = Message.get("notes.header")
-                                   .set("player", onlinePlayer.getName())
+                                   .set("player", event.getPlayer().getName())
                                    .toString();
 
             CommandUtils.broadcast(header, "bm.notify.notes.join");
@@ -199,12 +189,12 @@ public class JoinListener extends Listeners<BanManager> {
         } catch (SQLException e) {
           e.printStackTrace();
         } finally {
-          notesItr.closeQuietly();
+          if (notesItr != null) notesItr.closeQuietly();
         }
 
         CloseableIterator<PlayerWarnData> warnings = null;
         try {
-          warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(onlinePlayer);
+          warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(event.getPlayer().getUniqueId());
 
           while (warnings.hasNext()) {
             PlayerWarnData warning = warnings.next();
@@ -223,7 +213,7 @@ public class JoinListener extends Listeners<BanManager> {
         } catch (SQLException e) {
           e.printStackTrace();
         } finally {
-          warnings.closeQuietly();
+          if (warnings != null) warnings.closeQuietly();
         }
       }
     }, 20L);

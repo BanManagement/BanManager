@@ -15,7 +15,6 @@ import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UpdateUtils;
 import me.confuser.bukkitutil.BukkitPlugin;
-import org.bukkit.entity.Player;
 import org.mcstats.MetricsLite;
 
 import java.io.IOException;
@@ -153,10 +152,6 @@ public class BanManager extends BukkitPlugin {
       metrics.start();
     } catch (IOException e) {
       // Failed to submit the stats :-(
-    }
-
-    for (Player player : getServer().getOnlinePlayers()) {
-      plugin.getPlayerStorage().addOnline(player);
     }
   }
 
@@ -431,7 +426,6 @@ public class BanManager extends BukkitPlugin {
   @Override
   public void setupListeners() {
     new JoinListener().register();
-    new LeaveListener().register();
     new ChatListener().register();
     new CommandListener().register();
 

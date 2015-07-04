@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -74,12 +75,18 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
         PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        boolean unbanned = false;
+        boolean unbanned;
 
         try {
           unbanned = plugin.getIpBanStorage().unban(ban, actor);

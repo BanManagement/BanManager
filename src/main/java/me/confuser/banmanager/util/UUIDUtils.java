@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import me.confuser.banmanager.BanManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -73,6 +74,10 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     byteBuffer.putLong(uuid.getMostSignificantBits());
     byteBuffer.putLong(uuid.getLeastSignificantBits());
     return byteBuffer.array();
+  }
+
+  public static byte[] toBytes(Player player) {
+    return toBytes(player.getUniqueId());
   }
 
   public static UUID fromBytes(byte[] array) {

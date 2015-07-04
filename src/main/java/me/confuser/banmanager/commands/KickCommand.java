@@ -4,9 +4,9 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerKickData;
 import me.confuser.banmanager.util.CommandUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
     }
 
     final String playerName = args[0];
-    Player player = plugin.getServer().getPlayer(playerName);
+    final Player player = plugin.getServer().getPlayer(playerName);
 
     if (player == null) {
       Message message = Message.get("sender.error.offline")
@@ -51,24 +51,43 @@ public class KickCommand extends BukkitCommand<BanManager> {
 
     final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
 
-    final PlayerData actor;
+    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-    if (sender instanceof Player) {
-      actor = plugin.getPlayerStorage().getOnline((Player) sender);
-    } else {
-      actor = plugin.getPlayerStorage().getConsole();
-    }
+      @Override
+      public void run() {
+        final PlayerData actor;
 
-    if (plugin.getConfiguration().isKickLoggingEnabled()) {
-      plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        if (sender instanceof Player) {
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
+        } else {
+          actor = plugin.getPlayerStorage().getConsole();
+        }
 
-        @Override
-        public void run() {
+        final Message kickMessage;
+
+        if (reason.isEmpty()) {
+          kickMessage = Message.get("kick.player.noReason");
+        } else {
+          kickMessage = Message.get("kick.player.reason").set("reason", reason);
+        }
+
+        kickMessage
+                .set("displayName", player.getDisplayName())
+                .set("player", player.getName())
+                .set("actor", actor.getName());
+
+        if (plugin.getConfiguration().isKickLoggingEnabled()) {
           PlayerData player = plugin.getPlayerStorage().retrieve(playerName, false);
 
           PlayerKickData data = new PlayerKickData(player, actor, reason);
 
-          boolean created = false;
+          boolean created;
 
           try {
             created = plugin.getPlayerKickStorage().addKick(data);
@@ -83,32 +102,25 @@ public class KickCommand extends BukkitCommand<BanManager> {
           }
         }
 
-      });
-    }
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
-    Message kickMessage;
+          @Override
+          public void run() {
+            player.kickPlayer(kickMessage.toString());
 
-    if (reason.isEmpty()) {
-      kickMessage = Message.get("kick.player.noReason");
-    } else {
-      kickMessage = Message.get("kick.player.reason").set("reason", reason);
-    }
+            Message message = Message.get("kick.notify");
+            message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
 
-    kickMessage
-            .set("displayName", player.getDisplayName())
-            .set("player", player.getName())
-            .set("actor", actor.getName());
+            if (!sender.hasPermission("bm.notify.kick")) {
+              message.sendTo(sender);
+            }
 
-    player.kickPlayer(kickMessage.toString());
+            CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+          }
+        });
 
-    Message message = Message.get("kick.notify");
-    message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
-
-    if (!sender.hasPermission("bm.notify.kick")) {
-      message.sendTo(sender);
-    }
-
-    CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+      }
+    });
 
     return true;
   }

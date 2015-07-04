@@ -81,7 +81,13 @@ public class TempBanAllCommand extends BukkitCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }

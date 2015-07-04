@@ -11,9 +11,11 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
 
@@ -39,8 +41,8 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
     return create(data) == 1;
   }
 
-  public CloseableIterator<PlayerNoteData> getNotes(PlayerData player) throws SQLException {
-    return queryBuilder().where().eq("player_id", player).iterator();
+  public CloseableIterator<PlayerNoteData> getNotes(UUID uniqueId) throws SQLException {
+    return queryBuilder().where().eq("player_id", UUIDUtils.toBytes(uniqueId)).iterator();
   }
 
   public int deleteAll(PlayerData player) throws SQLException {

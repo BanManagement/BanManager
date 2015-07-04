@@ -111,16 +111,22 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        boolean isOnline = plugin.getPlayerStorage().isOnline(player.getUUID());
+        boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
 
         final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
 
-        boolean created = false;
+        boolean created;
 
         try {
           created = plugin.getPlayerWarnStorage().addWarning(warning, isSilent);

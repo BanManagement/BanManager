@@ -5,6 +5,7 @@ import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
@@ -73,13 +74,19 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
         final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason);
-        boolean created = false;
+        boolean created;
 
         try {
           created = plugin.getIpRangeBanStorage().ban(ban, isSilent);

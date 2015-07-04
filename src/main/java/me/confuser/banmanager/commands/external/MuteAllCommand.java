@@ -2,7 +2,6 @@ package me.confuser.banmanager.commands.external;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.external.ExternalPlayerBanData;
 import me.confuser.banmanager.data.external.ExternalPlayerMuteData;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
@@ -15,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class MuteAllCommand  extends BukkitCommand<BanManager> {
+public class MuteAllCommand extends BukkitCommand<BanManager> {
 
   public MuteAllCommand() {
     super("muteall");
@@ -64,7 +63,13 @@ public class MuteAllCommand  extends BukkitCommand<BanManager> {
         final PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }

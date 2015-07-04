@@ -115,7 +115,13 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         PlayerData actor;
 
         if (sender instanceof Player) {
-          actor = plugin.getPlayerStorage().getOnline((Player) sender);
+          try {
+            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
         } else {
           actor = plugin.getPlayerStorage().getConsole();
         }
@@ -155,17 +161,17 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        if (plugin.getPlayerStorage().isOnline(player.getUUID())) {
-          Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+        Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 
-          Message muteMessage = Message.get("mute.player.disallowed")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", player.getName())
-                                       .set("reason", mute.getReason())
-                                       .set("actor", actor.getName());
+        if (bukkitPlayer == null) return;
 
-          bukkitPlayer.sendMessage(muteMessage.toString());
-        }
+        Message muteMessage = Message.get("mute.player.disallowed")
+                                     .set("displayName", bukkitPlayer.getDisplayName())
+                                     .set("player", player.getName())
+                                     .set("reason", mute.getReason())
+                                     .set("actor", actor.getName());
+
+        bukkitPlayer.sendMessage(muteMessage.toString());
 
       }
 
