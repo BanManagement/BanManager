@@ -36,7 +36,7 @@ public class InfoCommandParser {
   private String time;
 
 
-  public InfoCommandParser(String[] args) {
+  public InfoCommandParser(String[] args) throws IllegalArgumentException {
     List<String> parsedArgs = Args.parse(this, args, false);
     this.args = parsedArgs.toArray(new String[parsedArgs.size()]);
   }

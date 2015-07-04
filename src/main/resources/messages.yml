@@ -70,6 +70,8 @@ messages:
       finished: '&aIP ban inport finished'
 
   info:
+    error:
+      incorrectFlagUsage: '&cA flag has been incorrectly used'
     stats:
       player: '[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
       times'

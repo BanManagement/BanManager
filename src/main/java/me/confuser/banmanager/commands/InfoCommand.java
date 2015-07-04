@@ -31,7 +31,15 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    final InfoCommandParser parser = new InfoCommandParser(args);
+    final InfoCommandParser parser;
+
+    try {
+      parser = new InfoCommandParser(args);
+    } catch (IllegalArgumentException e) {
+      sender.sendMessage(Message.getString("info.error.incorrectFlagUsage"));
+      return true;
+    }
+
     args = parser.getArgs();
 
     if (args.length > 1) {
