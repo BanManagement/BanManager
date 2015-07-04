@@ -87,6 +87,8 @@ timeLimits:
 #    Moderator: 1h
   playerBans:
 #    Moderator: 1d
+  playerWarnings:
+#    Moderator: 30d
   ipBans:
 #    Moderator: 1d
 
@@ -107,7 +109,7 @@ warningActions:
 # This allows running commands before and after a punishment
 hooks:
   enabled: false
-  # Can use ban, tempban, mute, tempmute, warn, ipban, tempipban, iprangeban, tempiprangeban, note
+  # Can use ban, tempban, mute, tempmute, warn, tempwarn, ipban, tempipban, iprangeban, tempiprangeban, note
   events:
 #   ban
 #     pre:

@@ -21,6 +21,7 @@ public class HooksConfig {
       add("tempiprangeban");
       add("note");
       add("warn");
+      add("tempwarn");
     }
   };
   private BanManager plugin = BanManager.getPlugin();

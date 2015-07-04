@@ -213,6 +213,11 @@ messages:
     error:
       cooldown: '&cThis player was warned too recently, try again later'
 
+  tempwarn:
+    player:
+      warned: '&cYou have been warned for [expires] by [actor] for [reason]'
+    notify: '[player] has been warned for [expires] by [actor] for [reason]'
+
   dwarn:
     notify: 'The most recent warning for [player] has been deleted'
     error:

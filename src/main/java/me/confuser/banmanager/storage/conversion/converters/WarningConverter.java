@@ -45,7 +45,7 @@ public class WarningConverter extends Converter {
           }
         }
 
-        PlayerWarnData warn = new PlayerWarnData(player, actor, reason, true, created);
+        PlayerWarnData warn = new PlayerWarnData(player, actor, reason, true, 0, created);
 
         // Disallow duplicates
         if (plugin.getPlayerWarnStorage().queryForMatchingArgs(warn).size() != 0) continue;

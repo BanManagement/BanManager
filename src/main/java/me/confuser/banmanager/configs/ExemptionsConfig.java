@@ -18,6 +18,7 @@ public class ExemptionsConfig extends Config<BanManager> {
       add("mute");
       add("tempmute");
       add("warn");
+      add("tempwarn");
     }
   };
   private HashMap<UUID, PlayerExemptionsData> players;

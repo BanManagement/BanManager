@@ -292,7 +292,13 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onWarn(final PlayerWarnedEvent event) {
-    final Hook hook = config.getHook("warn");
+    final Hook hook;
+
+    if (event.getWarning().getExpires() == 0) {
+      hook = config.getHook("warn");
+    } else {
+      hook = config.getHook("tempwarn");
+    }
 
     if (hook == null) return;
 

@@ -3,10 +3,7 @@ package me.confuser.banmanager.runnables;
 import com.j256.ormlite.dao.CloseableIterator;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -23,6 +20,7 @@ public class ExpiresSync implements Runnable {
   private IpBanRecordStorage ipBanRecordStorage = plugin.getIpBanRecordStorage();
   private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
+  private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
   @Getter
   private boolean isRunning = false;
 
@@ -64,6 +62,22 @@ public class ExpiresSync implements Runnable {
       e.printStackTrace();
     } finally {
       if (mutes != null) mutes.closeQuietly();
+    }
+
+    CloseableIterator<PlayerWarnData> warnings = null;
+    try {
+      warnings = warnStorage.queryBuilder().where().ne("expires", 0).and()
+                       .le("expires", now).iterator();
+
+      while (warnings.hasNext()) {
+        PlayerWarnData warning = warnings.next();
+
+        warnStorage.delete(warning);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (warnings != null) warnings.closeQuietly();
     }
 
     CloseableIterator<IpBanData> ipBans = null;

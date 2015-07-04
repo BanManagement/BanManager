@@ -298,6 +298,7 @@ public class BanManager extends BukkitPlugin {
     new LoglessKickCommand().register();
 
     new WarnCommand().register();
+    new TempWarnCommand().register();
     new DeleteLastWarningCommand().register();
 
     new AddNoteCommand().register();

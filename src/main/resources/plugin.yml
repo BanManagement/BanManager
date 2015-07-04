@@ -123,6 +123,11 @@ commands:
     usage: "/warn <player> <reason>"
     aliases: [bmwarn]
     permission: bm.command.warn
+  tempwarn:
+    description: "Temporarily warn a player"
+    usage: "/tempwarn <player> <timeDiff> <reason>"
+    aliases: [bmtempwarn]
+    permission: bm.command.tempwarn
   alts:
     description: "Find alts"
     usage: "/alts <player || ip>"
@@ -226,6 +231,7 @@ permissions:
       bm.command.tempmute.override: true
       bm.command.unmute: true
       bm.command.warn: true
+      bm.command.tempwarn: true
       bm.command.dwarn: true
       bm.command.clear: true
       bm.command.sync: true
@@ -385,6 +391,9 @@ permissions:
     default: op
   bm.command.warn:
     description: Allows you to warn a player
+    default: op
+  bm.command.tempwarn:
+    description: Allows you to temporarily warn a player
     default: op
   bm.command.clear:
     description: Allows you to clear a player's records
