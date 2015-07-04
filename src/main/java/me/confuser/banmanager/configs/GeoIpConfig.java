@@ -86,9 +86,7 @@ public class GeoIpConfig extends Config<BanManager> {
 
     if (!enabled) return;
 
-    if (countryFile.exists() && cityFile.exists()) {
-      conf.set("download.lastUpdated", System.currentTimeMillis());
-    }
+    conf.set("download.lastUpdated", System.currentTimeMillis());
 
     plugin.getLogger().info("Successfully loaded GeoIP databases");
 
