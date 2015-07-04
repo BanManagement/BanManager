@@ -240,6 +240,9 @@ messages:
       noNotes: '&c[player] has no notes'
       noOnlineNotes: '&cNo online players have notes'
 
+  adnoteall:
+    notify: '[player] will have a new attached by [actor]: [message]'
+
   banlist:
     header: '&6There are [bans] [type] bans:'
 

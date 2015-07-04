@@ -34,4 +34,17 @@ public class PlayerNoteData {
     this.message = message;
     this.actor = actor;
   }
+
+  public PlayerNoteData(PlayerData player, PlayerData actor, String message, long created) {
+    this(player, actor, message);
+
+    this.created = created;
+  }
+
+  public boolean equalsNote(PlayerNoteData note) {
+    return note.getMessage().equals(this.message)
+            && note.getCreated() == this.created
+            && note.getPlayer().getUUID().equals(this.getPlayer().getUUID())
+            && note.getActor().getUUID().equals(this.actor.getUUID());
+  }
 }

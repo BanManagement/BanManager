@@ -34,6 +34,10 @@ public class ExternalDatabaseConfig extends DatabaseConfig {
     DatabaseTableConfig<ExternalIpBanRecordData> ipUnbansTable = new DatabaseTableConfig<>(ExternalIpBanRecordData.class, conf
             .getString("tables.ipUnbans"), null);
     addTable("ipUnbans", ipUnbansTable);
+
+    DatabaseTableConfig<ExternalPlayerNoteData> playerNotesTable = new DatabaseTableConfig<>(ExternalPlayerNoteData.class, conf
+            .getString("tables.playerNotes"), null);
+    addTable("playerNotes", playerNotesTable);
   }
 
 }

@@ -67,6 +67,8 @@ public class BanManager extends BukkitPlugin {
   private ExternalPlayerMuteStorage externalPlayerMuteStorage;
   @Getter
   private ExternalPlayerMuteRecordStorage externalPlayerMuteRecordStorage;
+  @Getter
+  private ExternalPlayerNoteStorage externalPlayerNoteStorage;
 
   @Getter
   private ExternalIpBanStorage externalIpBanStorage;
@@ -103,6 +105,8 @@ public class BanManager extends BukkitPlugin {
   private ExternalMuteSync externalMuteSync;
   @Getter
   private ExternalIpSync externalIpSync;
+  @Getter
+  private ExternalNoteSync externalNoteSync;
 
   @Override
   public void onEnable() {
@@ -317,6 +321,8 @@ public class BanManager extends BukkitPlugin {
     new BanIpAllCommand().register();
     new TempBanIpAllCommand().register();
     new UnbanIpAllCommand().register();
+
+    new AddNoteAllCommand().register();
   }
 
   @Override
@@ -419,6 +425,7 @@ public class BanManager extends BukkitPlugin {
     externalPlayerBanRecordStorage = new ExternalPlayerBanRecordStorage(externalConn);
     externalPlayerMuteStorage = new ExternalPlayerMuteStorage(externalConn);
     externalPlayerMuteRecordStorage = new ExternalPlayerMuteRecordStorage(externalConn);
+    externalPlayerNoteStorage = new ExternalPlayerNoteStorage(externalConn);
     externalIpBanStorage = new ExternalIpBanStorage(externalConn);
     externalIpBanRecordStorage = new ExternalIpBanRecordStorage(externalConn);
   }
@@ -455,10 +462,12 @@ public class BanManager extends BukkitPlugin {
       externalBanSync = new ExternalBanSync();
       externalMuteSync = new ExternalMuteSync();
       externalIpSync = new ExternalIpSync();
+      externalNoteSync = new ExternalNoteSync();
 
       setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerBans"), externalBanSync);
       setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerMutes"), externalMuteSync);
       setupAsyncRunnable(schedulesConfig.getSchedule("externalIpBans"), externalIpSync);
+      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerNotes"), externalNoteSync);
     }
 
     /*

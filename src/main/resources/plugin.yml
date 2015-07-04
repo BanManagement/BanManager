@@ -145,6 +145,11 @@ commands:
     description: "Attach a private note to a player"
     usage: "/addnote <player> <message>"
     permission: bm.command.addnote
+  addnoteall:
+    description: "Add a note for a player across multiple servers"
+    usage: "/addnoteall <player> <message>"
+    aliases: [bmaddnotell]
+    permission: bm.command.addnoteall
   notes:
     description: "View private notes attached to a player"
     usage: "/notes <player>"

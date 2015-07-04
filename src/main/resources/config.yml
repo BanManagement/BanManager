@@ -38,6 +38,7 @@ databases:
       playerUnbans: bm_player_unban_all
       playerMutes: bm_player_mute_all
       playerUnmutes: bm_player_unmute_all
+      playerNotes: bm_player_note_all
       ipBans: bm_ip_ban_all
       ipUnbans: bm_ip_unban_all
 
