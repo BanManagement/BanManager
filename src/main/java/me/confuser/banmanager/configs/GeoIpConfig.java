@@ -43,6 +43,7 @@ public class GeoIpConfig extends Config<BanManager> {
     boolean outdated = (System.currentTimeMillis() - lastUpdated) > 2592000000L; // older than 30 days?
 
     if (!cityFile.exists() || outdated) {
+      plugin.getLogger().info("Downloading city database");
       try {
         downloadDatabase(cityDownloadUrl, cityFile);
       } catch (IOException e) {
@@ -54,6 +55,7 @@ public class GeoIpConfig extends Config<BanManager> {
     }
 
     if (!countryFile.exists() || outdated) {
+      plugin.getLogger().info("Downloading country database");
       try {
         downloadDatabase(countryDownloadUrl, countryFile);
       } catch (IOException e) {
