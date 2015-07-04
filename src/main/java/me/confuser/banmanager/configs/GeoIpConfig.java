@@ -67,9 +67,11 @@ public class GeoIpConfig extends Config<BanManager> {
     }
 
     if (cityFile.exists()) {
+      plugin.getLogger().info("Loading city database");
       try {
         cityDatabase = new DatabaseReader.Builder(cityFile).build();
       } catch (IOException e) {
+        plugin.getLogger().severe("Failed loading city database");
         enabled = false;
         e.printStackTrace();
         return;
@@ -77,9 +79,11 @@ public class GeoIpConfig extends Config<BanManager> {
     }
 
     if (countryFile.exists()) {
+      plugin.getLogger().info("Loading country database");
       try {
         countryDatabase = new DatabaseReader.Builder(countryFile).build();
       } catch (IOException e) {
+        plugin.getLogger().severe("Failed loading city database");
         enabled = false;
         e.printStackTrace();
         return;
