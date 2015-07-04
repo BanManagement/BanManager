@@ -4,8 +4,7 @@ import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class HooksConfig {
 
@@ -46,10 +45,45 @@ public class HooksConfig {
         continue;
       }
 
-      Hook hook = new Hook(eventsConf.getStringList(event + ".pre"), eventsConf.getStringList(event + ".post"));
+      List<ActionCommand> preActionCommands = getActionCommands(event, eventsConf.getMapList(event + ".pre"));
+      List<ActionCommand> postActionCommands = getActionCommands(event, eventsConf.getMapList(event + ".post"));
+
+      Hook hook = new Hook(preActionCommands, postActionCommands);
 
       hooks.put(event, hook);
     }
+
+  }
+
+  private List<ActionCommand> getActionCommands(String event, List<Map<?, ?>> mapList) {
+    List<ActionCommand> actionCommands = new ArrayList<>();
+
+    if (mapList != null && mapList.size() != 0) {
+
+      for (Map<?, ?> map : mapList) {
+        if (map.get("cmd") == null) {
+          plugin.getLogger().severe("Missing cmd from " + event + " hook");
+          continue;
+        }
+
+        long delay = 0;
+
+        if (map.get("delay") != null) {
+          try {
+            delay = Long.valueOf((Integer) map.get("delay"));
+          } catch (NumberFormatException e) {
+            plugin.getLogger().severe("Invalid delay for " + map.get("cmd"));
+            continue;
+          }
+
+          delay = delay * 20L; // Convert from seconds to ticks
+        }
+
+        actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
+      }
+    }
+
+    return actionCommands;
   }
 
   public Hook getHook(String event) {

@@ -111,9 +111,12 @@ hooks:
   events:
 #   ban
 #     pre:
-#     - kill [player]
+#     - cmd: kick [player] [reason]
+# delays are in seconds
+#       delay: 10
+#     - cmd: banip [player] [reason]
 #     post:
-#     - broadcast [player] banned
+#     - cmd: broadcast [player] banned
 
 # Use Mojang UUID's?
 onlineMode: true

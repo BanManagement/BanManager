@@ -1,6 +1,7 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.configs.Hook;
 import me.confuser.banmanager.configs.HooksConfig;
 import me.confuser.banmanager.events.*;
@@ -27,21 +28,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPre().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPre()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPre()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getBan().getPlayer().getName())
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getBan().getPlayer().getName())
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -58,21 +59,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getBan().getPlayer().getName())
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getBan().getPlayer().getName())
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -89,21 +90,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPre().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPre()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPre()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getMute().getPlayer().getName())
-                    .replace("[actor]", event.getMute().getActor().getName())
-                    .replace("[reason]", event.getMute().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getMute().getPlayer().getName())
+                                        .replace("[actor]", event.getMute().getActor().getName())
+                                        .replace("[reason]", event.getMute().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -120,21 +121,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getMute().getPlayer().getName())
-                    .replace("[actor]", event.getMute().getActor().getName())
-                    .replace("[reason]", event.getMute().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getMute().getPlayer().getName())
+                                        .replace("[actor]", event.getMute().getActor().getName())
+                                        .replace("[reason]", event.getMute().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -151,21 +152,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPre().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPre()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPre()) {
-            String hookCommnad = command
-                    .replace("[ip]", IPUtils.toString(event.getBan().getIp()))
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[ip]", IPUtils.toString(event.getBan().getIp()))
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -182,21 +183,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[player]", IPUtils.toString(event.getBan().getIp()))
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[ip]", IPUtils.toString(event.getBan().getIp()))
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -213,22 +214,22 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPre().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPre()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPre()) {
-            String hookCommnad = command
-                    .replace("[from]", IPUtils.toString(event.getBan().getFromIp()))
-                    .replace("[to]", IPUtils.toString(event.getBan().getToIp()))
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[from]", IPUtils.toString(event.getBan().getFromIp()))
+                                        .replace("[to]", IPUtils.toString(event.getBan().getToIp()))
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -245,22 +246,22 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[from]", IPUtils.toString(event.getBan().getFromIp()))
-                    .replace("[to]", IPUtils.toString(event.getBan().getToIp()))
-                    .replace("[actor]", event.getBan().getActor().getName())
-                    .replace("[reason]", event.getBan().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[from]", IPUtils.toString(event.getBan().getFromIp()))
+                                        .replace("[to]", IPUtils.toString(event.getBan().getToIp()))
+                                        .replace("[actor]", event.getBan().getActor().getName())
+                                        .replace("[reason]", event.getBan().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -271,21 +272,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPre().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPre()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPre()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getWarning().getPlayer().getName())
-                    .replace("[actor]", event.getWarning().getActor().getName())
-                    .replace("[reason]", event.getWarning().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getWarning().getPlayer().getName())
+                                        .replace("[actor]", event.getWarning().getActor().getName())
+                                        .replace("[reason]", event.getWarning().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -296,21 +297,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getWarning().getPlayer().getName())
-                    .replace("[actor]", event.getWarning().getActor().getName())
-                    .replace("[reason]", event.getWarning().getReason());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getWarning().getPlayer().getName())
+                                        .replace("[actor]", event.getWarning().getActor().getName())
+                                        .replace("[reason]", event.getWarning().getReason());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 
@@ -321,21 +322,21 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+      for (final ActionCommand command : hook.getPost()) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
-        @Override
-        public void run() {
-          for (String command : hook.getPost()) {
-            String hookCommnad = command
-                    .replace("[player]", event.getNote().getPlayer().getName())
-                    .replace("[actor]", event.getNote().getActor().getName())
-                    .replace("[message]", event.getNote().getMessage());
+          @Override
+          public void run() {
+            String hookCommnad = command.getCommand()
+                                        .replace("[player]", event.getNote().getPlayer().getName())
+                                        .replace("[actor]", event.getNote().getActor().getName())
+                                        .replace("[message]", event.getNote().getMessage());
 
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommnad);
           }
-        }
 
-      });
+        }, command.getDelay());
+      }
     }
   }
 }
