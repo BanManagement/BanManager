@@ -11,6 +11,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
+import me.confuser.banmanager.events.PlayerBannedEvent;
 import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -109,6 +110,8 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
+
+    Bukkit.getServer().getPluginManager().callEvent(new PlayerBannedEvent(ban, event.isSilent()));
 
     return true;
   }

@@ -10,6 +10,7 @@ import me.confuser.banmanager.configs.CleanUp;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.events.PlayerWarnEvent;
+import me.confuser.banmanager.events.PlayerWarnedEvent;
 import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
@@ -37,7 +38,11 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
       return false;
     }
 
-    return create(data) == 1;
+    boolean created = create(data) == 1;
+
+    if (created) Bukkit.getServer().getPluginManager().callEvent(new PlayerWarnedEvent(data, event.isSilent()));
+
+    return created;
   }
 
   public CloseableIterator<PlayerWarnData> getUnreadWarnings(UUID uniqueId) throws SQLException {

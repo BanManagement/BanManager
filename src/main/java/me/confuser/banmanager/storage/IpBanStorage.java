@@ -11,6 +11,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpBanEvent;
+import me.confuser.banmanager.events.IpBannedEvent;
 import me.confuser.banmanager.events.IpUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
@@ -97,6 +98,8 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
     create(ban);
     bans.put(ban.getIp(), ban);
+
+    Bukkit.getServer().getPluginManager().callEvent(new IpBannedEvent(ban, event.isSilent()));
 
     return true;
   }

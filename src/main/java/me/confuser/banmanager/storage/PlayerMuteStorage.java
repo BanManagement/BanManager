@@ -11,6 +11,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.events.PlayerMuteEvent;
+import me.confuser.banmanager.events.PlayerMutedEvent;
 import me.confuser.banmanager.events.PlayerUnmuteEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -101,6 +102,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
     create(mute);
     mutes.put(mute.getPlayer().getUUID(), mute);
+
+    Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, event.isSilent()));
 
     return true;
   }

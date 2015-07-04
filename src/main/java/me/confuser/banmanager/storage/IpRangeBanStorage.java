@@ -13,6 +13,7 @@ import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.IpRangeBanRecord;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpRangeBanEvent;
+import me.confuser.banmanager.events.IpRangeBannedEvent;
 import me.confuser.banmanager.events.IpRangeUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
@@ -137,6 +138,8 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     bans.put(range, ban);
     ranges.add(range);
+
+    Bukkit.getServer().getPluginManager().callEvent(new IpRangeBannedEvent(ban, event.isSilent()));
 
     return true;
   }
