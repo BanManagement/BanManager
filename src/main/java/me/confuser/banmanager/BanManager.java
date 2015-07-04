@@ -428,6 +428,7 @@ public class BanManager extends BukkitPlugin {
     new JoinListener().register();
     new ChatListener().register();
     new CommandListener().register();
+    new HookListener().register();
 
     if (configuration.isDisplayNotificationsEnabled()) {
       new BanListener().register();

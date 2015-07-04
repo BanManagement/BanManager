@@ -101,6 +101,17 @@ warningActions:
 #     - ban [player] [reason]
 #     - mute [player] [reason]
 
+# This allows running commands before and after a punishment
+hooks:
+  enabled: false
+  # Can use ban, tempban, mute, tempmute, warn, ipban, tempipban, iprangeban, tempiprangeban, note
+  events:
+#   ban
+#     pre:
+#     - kill [player]
+#     post:
+#     - broadcast [player] banned
+
 # Use Mojang UUID's?
 onlineMode: true
 
