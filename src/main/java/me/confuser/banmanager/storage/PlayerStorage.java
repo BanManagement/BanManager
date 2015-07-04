@@ -93,6 +93,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   public CreateOrUpdateStatus createOrUpdate(PlayerData data) throws SQLException {
     CreateOrUpdateStatus status = super.createOrUpdate(data);
 
+    if (status.isCreated() && plugin.getConfiguration().isOfflineAutoComplete()) {
+      autoCompleteTree.put(data.getName(), VoidValue.SINGLETON);
+    }
+
     // Check for duplicates
     List<PlayerData> results = queryForEq("name", data.getName());
     if (results.size() == 1) return status;
