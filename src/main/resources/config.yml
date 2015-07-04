@@ -99,8 +99,10 @@ warningActions:
   enabled: false
   actions:
 #    '10':
-#     - ban [player] [reason]
-#     - mute [player] [reason]
+#     - cmd: ban [player] [reason]
+# delays are in seconds
+#       delay: 10
+#     - cmd: mute [player] [reason]
 
 # This allows running commands before and after a punishment
 hooks:

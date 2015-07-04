@@ -1,6 +1,7 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandParser;
@@ -163,7 +164,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         CommandUtils.broadcast(message.toString(), "bm.notify.warn");
 
-        final List<String> actionCommands;
+        final List<ActionCommand> actionCommands;
 
         try {
           actionCommands = plugin.getConfiguration().getWarningActions()
@@ -177,23 +178,22 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+        for (final ActionCommand action : actionCommands) {
 
-          @Override
-          public void run() {
-            for (String command : actionCommands) {
-              String actionCommand = command
-                      .replace("[player]", player.getName())
-                      .replace("[actor]", actor.getName())
-                      .replace("[reason]", warning.getReason());
+          plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+              String actionCommand = action.getCommand()
+                                           .replace("[player]", player.getName())
+                                           .replace("[actor]", actor.getName())
+                                           .replace("[reason]", warning.getReason());
 
               plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
             }
-          }
-
-        });
+          }, action.getDelay());
+        }
       }
-
     });
 
     return true;
