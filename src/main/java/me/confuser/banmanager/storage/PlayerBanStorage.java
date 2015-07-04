@@ -165,18 +165,24 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
       playerQuery.setWhere(where);
 
       query.leftJoin(playerQuery);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return players;
+    }
 
-      CloseableIterator<PlayerBanData> itr = query.iterator();
+    CloseableIterator<PlayerBanData> itr = null;
+    try {
+      itr = query.iterator();
 
       while (itr.hasNext()) {
         players.add(itr.next().getPlayer());
       }
-
-      itr.close();
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
     }
-
+    
     return players;
   }
 }
