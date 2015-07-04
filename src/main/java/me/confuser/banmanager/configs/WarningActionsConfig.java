@@ -19,6 +19,9 @@ public class WarningActionsConfig {
   public WarningActionsConfig(ConfigurationSection config) {
     isEnabled = config.getBoolean("enabled", false);
     actions = new HashMap<>();
+
+    if (!isEnabled) return;
+    
     ConfigurationSection actionsConf = config.getConfigurationSection("actions");
 
     if (actionsConf == null) return;
