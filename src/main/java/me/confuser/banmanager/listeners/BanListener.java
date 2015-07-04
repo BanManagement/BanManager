@@ -5,9 +5,7 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.events.IpBanEvent;
-import me.confuser.banmanager.events.IpRangeBanEvent;
-import me.confuser.banmanager.events.PlayerBanEvent;
+import me.confuser.banmanager.events.*;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
@@ -22,7 +20,7 @@ import java.util.List;
 public class BanListener extends Listeners<BanManager> {
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void notifyOnBan(PlayerBanEvent event) {
+  public void notifyOnBan(PlayerBannedEvent event) {
     PlayerBanData ban = event.getBan();
 
     String broadcastPermission;
@@ -57,7 +55,7 @@ public class BanListener extends Listeners<BanManager> {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void notifyOnIpBan(IpBanEvent event) {
+  public void notifyOnIpBan(IpBannedEvent event) {
     IpBanData ban = event.getBan();
 
     String broadcastPermission;
@@ -104,7 +102,7 @@ public class BanListener extends Listeners<BanManager> {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void notifyOnIpRangeBan(IpRangeBanEvent event) {
+  public void notifyOnIpRangeBan(IpRangeBannedEvent event) {
     IpRangeBanData ban = event.getBan();
 
     String broadcastPermission;

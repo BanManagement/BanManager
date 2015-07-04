@@ -2,7 +2,7 @@ package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerMuteData;
-import me.confuser.banmanager.events.PlayerMuteEvent;
+import me.confuser.banmanager.events.PlayerMutedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.Message;
@@ -14,7 +14,7 @@ import org.bukkit.event.EventPriority;
 public class MuteListener extends Listeners<BanManager> {
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void notifyOnBan(PlayerMuteEvent event) {
+  public void notifyOnBan(PlayerMutedEvent event) {
     PlayerMuteData mute = event.getMute();
 
     String broadcastPermission;
