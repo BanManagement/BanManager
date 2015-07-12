@@ -21,7 +21,7 @@ messages:
     month: 'month'
     months: 'months'
     day: 'day'
-    days: 'days'
+    days: 'days'k
     hour: 'hour'
     hours: 'hours'
     minute: 'minute'
@@ -97,7 +97,7 @@ messages:
   kick:
     player:
       noReason: '&6You have been kicked'
-      reason: '&6You have been kicked for [reason]'
+      reason: '&6You have been kicked for &4[reason]'
     notify: '&6[player] has been kicked by [actor] for &4[reason]'
 
   ban:
@@ -132,7 +132,7 @@ messages:
   mute:
     player:
       blocked: '&cYou may not use the [command] command whilst muted!'
-      disallowed: '&6You have been permanently muted for &4[reason]&6 by [actor]'
+      disallowed: '&6You have been permanently muted for &4[reason] &6by [actor]'
     notify: '&6[player] has been permanently muted by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
@@ -142,7 +142,7 @@ messages:
 
   tempmute:
     player:
-      disallowed: '&6You have been temporarily muted for &4[reason]&6 by [actor] which expires in [expires]'
+      disallowed: '&6You have been temporarily muted for &4[reason] &6by [actor] which expires in [expires]'
     notify: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
