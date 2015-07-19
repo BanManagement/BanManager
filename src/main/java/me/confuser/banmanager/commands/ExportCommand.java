@@ -11,9 +11,8 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -93,8 +92,7 @@ public class ExportCommand extends BukkitCommand<BanManager> {
       throw new IOException("File already exists");
     }
 
-    FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
-    JsonWriter jsonWriter = new JsonWriter(fileWriter);
+    JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
@@ -139,8 +137,7 @@ public class ExportCommand extends BukkitCommand<BanManager> {
       throw new IOException("File already exists");
     }
 
-    FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
-    JsonWriter jsonWriter = new JsonWriter(fileWriter);
+    JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 

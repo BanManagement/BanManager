@@ -13,8 +13,10 @@ import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -76,7 +78,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
     plugin.getLogger().info(Message.getString("import.player.started"));
 
     try {
-      JsonReader reader = new JsonReader(new FileReader("banned-players.json"));
+      JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream("banned-players.json"), Charset.forName("UTF-8").newDecoder()));
       reader.beginArray();
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -193,7 +195,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
     plugin.getLogger().info(Message.getString("import.ip.started"));
 
     try {
-      JsonReader reader = new JsonReader(new FileReader("banned-ips.json"));
+      JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream("banned-ips.json"), Charset.forName("UTF-8").newDecoder()));
       reader.beginArray();
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
