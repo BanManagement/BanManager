@@ -37,6 +37,6 @@ public class ReasonsConfig extends Config<BanManager> {
   }
 
   public String getReason(String key) {
-    return reasons.get("key");
+    return reasons.get(key);
   }
 }
