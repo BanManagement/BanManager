@@ -25,7 +25,7 @@ public class ReasonsConfig extends Config<BanManager> {
     for (String reasonKey : keys) {
       String reason = conf.getString(reasonKey);
 
-      if (CharMatcher.WHITESPACE.matchesAnyOf(reason)) continue;
+      if (CharMatcher.WHITESPACE.matchesAnyOf(reasonKey)) continue;
 
       reasons.put(reasonKey, reason);
     }
