@@ -160,7 +160,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       // Lets store for caching
       PlayerData data = new PlayerData(player.getUuid(), player.getName());
 
-      create(data);
+      super.createOrUpdate(data);
 
       return data;
     } catch (Exception e) {
