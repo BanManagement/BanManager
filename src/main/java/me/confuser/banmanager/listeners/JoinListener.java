@@ -91,7 +91,12 @@ public class JoinListener extends Listeners<BanManager> {
       return;
     }
 
-    PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
+    if (plugin.getConfig().getConfigurationSection("onlineMode").getBoolean().equals("true")){
+    	PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
+    }
+    else{
+    	PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getName()); 	
+    }
 
     if (data != null && data.hasExpired()) {
       try {
