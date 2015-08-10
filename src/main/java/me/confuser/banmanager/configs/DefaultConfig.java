@@ -92,31 +92,30 @@ public class DefaultConfig extends Config<BanManager> {
         plugin.getLogger().info("The following commands are blocked whilst muted:");
         for (String cmd : conf.getStringList("mutedCommandBlacklist")) {
           mutedBlacklistCommands.add(cmd);
-          // TODO Use a stringbuilder
-          String info = cmd;
+          StringBuilder infoBuilder = new StringBuilder(cmd);
 
           // Check for aliases
           PluginCommand command = plugin.getServer().getPluginCommand(cmd);
           if (command == null) {
-            plugin.getLogger().info(info);
+            plugin.getLogger().info(cmd);
             continue;
           }
 
-          info += " - ";
+          infoBuilder.append(" - ");
 
           if (!mutedBlacklistCommands.contains(command.getName())) {
             mutedBlacklistCommands.add(command.getName());
-            info += command.getName() + " ";
+            infoBuilder.append(command.getName()).append(' ');
           }
 
           for (String aliasCmd : command.getAliases()) {
-            info += aliasCmd + " ";
+            infoBuilder.append(aliasCmd).append(' ');
             mutedBlacklistCommands.add(aliasCmd);
             // Block the annoying /plugin:cmd too
             mutedBlacklistCommands.add(command.getPlugin().getDescription().getName().toLowerCase() + ":" + aliasCmd);
           }
 
-          plugin.getLogger().info(info);
+          plugin.getLogger().info(infoBuilder.toString());
         }
       }
 

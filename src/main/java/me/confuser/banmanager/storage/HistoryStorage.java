@@ -74,32 +74,32 @@ public class HistoryStorage {
     // TODO refactor
     if (parser.isBans()) {
       unions.append(banSql);
-      unions.append(" AND created >= " + since);
+      unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
     }
 
     if (parser.isMutes()) {
       unions.append(muteSql);
-      unions.append(" AND created >= " + since);
+      unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
     }
     if (parser.isKicks()) {
       unions.append(kickSql);
-      unions.append(" AND created >= " + since);
+      unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
     }
     if (parser.isNotes()) {
       unions.append(noteSql);
-      unions.append(" AND created >= " + since);
+      unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
     }
     if (parser.isWarnings()) {
       unions.append(warningSql);
-      unions.append(" AND created >= " + since);
+      unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
     }
