@@ -44,7 +44,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    if (parsedArgs[0].toLowerCase().equals(sender.getName().toLowerCase())) {
+    if (parsedArgs[0].equalsIgnoreCase(sender.getName())) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }

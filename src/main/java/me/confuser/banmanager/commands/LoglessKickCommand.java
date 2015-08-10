@@ -30,7 +30,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    if (args[0].toLowerCase().equals(sender.getName().toLowerCase())) {
+    if (args[0].equalsIgnoreCase(sender.getName())) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
