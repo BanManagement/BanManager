@@ -46,7 +46,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     while (itr.hasNext()) {
       PlayerBanData ban = itr.next();
 
-      bans.put(ban.getPlayer().getUUID(), ban);
+      try {
+        bans.put(ban.getPlayer().getUUID(), ban);
+      } catch (Exception e) {
+        plugin.getLogger().severe("Failed to retrieve ban id " + ban.getId() + " due to missing player data");
+      }
     }
 
     itr.close();

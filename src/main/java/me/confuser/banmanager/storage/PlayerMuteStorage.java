@@ -40,7 +40,11 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     while (itr.hasNext()) {
       PlayerMuteData mute = itr.next();
 
-      mutes.put(mute.getPlayer().getUUID(), mute);
+      try {
+        mutes.put(mute.getPlayer().getUUID(), mute);
+      } catch (Exception e) {
+        plugin.getLogger().severe("Failed to retrieve mute id " + mute.getId() + " due to missing player data");
+      }
     }
 
     itr.close();
