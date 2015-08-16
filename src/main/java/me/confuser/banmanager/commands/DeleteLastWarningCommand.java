@@ -41,7 +41,7 @@ public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanMana
         if (isUUID) {
           try {
             player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
+          } catch (Exception e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
             return;

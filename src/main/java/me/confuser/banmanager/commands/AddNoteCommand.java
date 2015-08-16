@@ -50,7 +50,7 @@ public class AddNoteCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (isUUID) {
           try {
             player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
+          } catch (Exception e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
             return;

@@ -40,7 +40,12 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
     boolean isBanned;
 
     if (isUUID) {
-      isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
+      try {
+        isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
+      } catch (IllegalArgumentException e) {
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        return true;
+      }
     } else {
       isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
     }

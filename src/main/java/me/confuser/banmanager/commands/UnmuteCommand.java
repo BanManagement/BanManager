@@ -40,7 +40,12 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
     boolean isMuted;
 
     if (isUUID) {
-      isMuted = plugin.getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
+      try {
+        isMuted = plugin.getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
+      } catch (IllegalArgumentException e) {
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        return true;
+      }
     } else {
       isMuted = plugin.getPlayerMuteStorage().isMuted(playerName);
     }

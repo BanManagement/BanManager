@@ -55,7 +55,12 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     Player onlinePlayer;
 
     if (isUUID) {
-      onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+      try {
+        onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
+      } catch (IllegalArgumentException e) {
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        return true;
+      }
     } else {
       onlinePlayer = plugin.getServer().getPlayer(playerName);
     }
