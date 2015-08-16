@@ -111,7 +111,7 @@ hooks:
   enabled: false
   # Can use ban, tempban, mute, tempmute, warn, tempwarn, ipban, tempipban, iprangeban, tempiprangeban, note
   events:
-#   ban
+#   ban:
 #     pre:
 #     - cmd: kick [player] [reason]
 # delays are in seconds
