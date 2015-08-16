@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
 
@@ -39,7 +41,7 @@ public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       @Override
       public void run() {
-        ArrayList<HashMap<String, Object>> results = null;
+        List<Map<String, Object>> results;
         String messageType = "bmactivity.row.all";
 
         if (args.length == 2) {
@@ -64,7 +66,7 @@ public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
         String dateTimeFormat = Message.getString("bmactivity.row.dateTimeFormat");
         FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
-        for (HashMap<String, Object> result : results) {
+        for (Map<String, Object> result : results) {
           Message message = Message.get(messageType)
                                    .set("player", (String) result.get("player"))
                                    .set("type", (String) result.get("type"))

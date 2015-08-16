@@ -12,12 +12,12 @@ import me.confuser.banmanager.data.PlayerData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ActivityStorage {
 
   private BanManager plugin = BanManager.getPlugin();
-  private JdbcPooledConnectionSource localConn;
-
   // Queries
   final String sinceSql = "SELECT  type, name, actor, created FROM" +
           "  ( SELECT 'Ban' type, p.name AS name, actor.name AS actor, created" +
@@ -140,7 +140,6 @@ public class ActivityStorage {
 
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Unban', 'Warning', 'Mute', 'Unmute', 'Note')";
-
   private final String sincePlayerSql = "SELECT  type, name, created FROM" +
           "  ( SELECT 'Ban' type, p.name AS name, created" +
           "    FROM " + plugin.getPlayerBanStorage().getTableConfig().getTableName() +
@@ -234,66 +233,17 @@ public class ActivityStorage {
 
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Unban', 'Warning', 'Mute', 'Unmute', 'Note')";
+  private JdbcPooledConnectionSource localConn;
 
   public ActivityStorage(JdbcPooledConnectionSource localConn) {
     this.localConn = localConn;
   }
 
-  public ArrayList<HashMap<String, Object>> getSince(long since) {
-    DatabaseConnection connection;
-
-    try {
-      connection = localConn.getReadOnlyConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-
-      return null;
-    }
-
-    final DatabaseResults result;
-
-    try {
-      CompiledStatement statement = connection
-              .compileStatement(sinceSql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS);
-
-      for (int i = 0; i < 14; i++) {
-        statement.setObject(i, since, SqlType.LONG);
-      }
-
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      e.printStackTrace();
-
-      return null;
-    }
-
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("type", result.getString(0));
-            put("player", result.getString(1));
-            put("actor", result.getString(2));
-            put("created", result.getLong(3));
-          }
-        });
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      result.closeQuietly();
-    }
-
-    connection.closeQuietly();
-
-    return results;
+  public List<Map<String, Object>> getSince(long since) {
+    return getSince(since, null);
   }
 
-  public ArrayList<HashMap<String, Object>> getSince(long since, PlayerData actor) {
+  public List<Map<String, Object>> getSince(long since, PlayerData actor) {
     DatabaseConnection connection;
 
     try {
@@ -305,46 +255,45 @@ public class ActivityStorage {
     }
 
     final DatabaseResults result;
-
+    boolean hasActor = actor != null;
     try {
       CompiledStatement statement = connection
-              .compileStatement(sincePlayerSql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS);
-
-      for (int i = 0; i < 28; i++) {
+              .compileStatement(hasActor ? sincePlayerSql : sinceSql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS);
+      for (int i = 0; i < 14; i++) {
         statement.setObject(i, since, SqlType.LONG);
-        i++;
-        statement.setObject(i, actor.getId(), SqlType.BYTE_ARRAY);
+        if (hasActor) {
+          statement.setObject(i, actor.getId(), SqlType.BYTE_ARRAY);
+        }
       }
-
       result = statement.runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
-
       return null;
     }
 
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
+    List<Map<String, Object>> results = new ArrayList<>();
 
     try {
       while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("type", result.getString(0));
-            put("player", result.getString(1));
-            put("created", result.getLong(2));
-          }
-        });
+        Map<String, Object> map = new HashMap<>(hasActor ? 3 : 4);
+        if (hasActor) {
+          map.put("type", result.getString(0));
+          map.put("player", result.getString(1));
+          map.put("created", result.getLong(2));
+        } else {
+          map.put("type", result.getString(0));
+          map.put("player", result.getString(1));
+          map.put("actor", result.getString(2));
+          map.put("created", result.getLong(3));
+        }
+        results.add(map);
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       result.closeQuietly();
     }
-
     connection.closeQuietly();
-
     return results;
   }
 }
