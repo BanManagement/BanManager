@@ -191,28 +191,25 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       if (plugin.getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
         Message message = Message.get("info.geoip");
-        String country = "";
-        String countryIso = "";
-        String city = "";
 
         try {
           InetAddress ip = IPUtils.toInetAddress(player.getIp());
 
           CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(ip);
-          country = countryResponse.getCountry().getName();
-          countryIso = countryResponse.getCountry().getIsoCode();
+          String country = countryResponse.getCountry().getName();
+          String countryIso = countryResponse.getCountry().getIsoCode();
 
           CityResponse cityResponse = plugin.getGeoIpConfig().getCityDatabase().city(ip);
-          city = cityResponse.getCity().getName();
+          String city = cityResponse.getCity().getName();
 
-        } catch (IOException | GeoIp2Exception e) {
+          message.set("country", country)
+                 .set("countryIso", countryIso)
+                 .set("city", city);
+
+          messages.add(message.toString());
+        } catch (Exception e) {
         }
 
-        message.set("country", country)
-               .set("countryIso", countryIso)
-               .set("city", city);
-
-        messages.add(message.toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.alts")) {
