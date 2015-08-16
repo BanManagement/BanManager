@@ -12,6 +12,7 @@ import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.InfoCommandParser;
 import me.confuser.bukkitutil.Message;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,11 +20,12 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
+
+  private static final FastDateFormat LAST_SEEN_COMMAND_FORMAT = FastDateFormat.getInstance("dd-MM-yyyy HH:mm:ss");
 
   public InfoCommand() {
     super("bminfo");
@@ -150,7 +152,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       }
 
       String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
-      SimpleDateFormat dateFormatter = new SimpleDateFormat(dateTimeFormat);
+      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
       for (HashMap<String, Object> result : results) {
         Message message = Message.get("info.history.row")
@@ -158,7 +160,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                                  .set("reason", (String) result.get("reason"))
                                  .set("type", (String) result.get("type"))
                                  .set("created", dateFormatter
-                                         .format(new java.util.Date((long) result.get("created") * 1000L)))
+                                         .format((long) result.get("created") * 1000L))
                                  .set("actor", (String) result.get("actor"));
 
         messages.add(message.toString());
@@ -183,10 +185,10 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       if (sender.hasPermission("bm.command.bminfo.connection")) {
         messages.add(Message.get("info.connection")
-                            .set("ip", IPUtils.toString(player.getIp()))
-                            .set("lastSeen", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
-                                    .format(new java.util.Date(player.getLastSeen() * 1000L)))
-                            .toString());
+                .set("ip", IPUtils.toString(player.getIp()))
+                .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
+                        .format(player.getLastSeen() * 1000L))
+                .toString());
       }
 
       if (plugin.getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
@@ -205,9 +207,8 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
           message.set("country", country)
                  .set("countryIso", countryIso)
                  .set("city", city);
-
-          messages.add(message.toString());
-        } catch (Exception e) {
+          city = cityResponse.getCity().getName();
+        } catch (IOException | GeoIp2Exception ignored) {
         }
 
       }
@@ -218,7 +219,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         StringBuilder duplicates = new StringBuilder();
 
         for (PlayerData duplicatePlayer : plugin.getPlayerStorage().getDuplicates(player.getIp())) {
-          duplicates.append(duplicatePlayer.getName() + ", ");
+          duplicates.append(duplicatePlayer.getName()).append(", ");
         }
 
         if (duplicates.length() >= 2) duplicates.setLength(duplicates.length() - 2);
@@ -253,8 +254,8 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                 .set("player", player.getName())
                 .set("reason", ban.getReason())
                 .set("actor", ban.getActor().getName())
-                .set("created", new SimpleDateFormat(dateTimeFormat)
-                        .format(new java.util.Date(ban.getCreated() * 1000L)))
+                .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                        .format(ban.getCreated() * 1000L))
                 .toString());
       }
 
@@ -276,8 +277,8 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                 .set("player", player.getName())
                 .set("reason", mute.getReason())
                 .set("actor", mute.getActor().getName())
-                .set("created", new SimpleDateFormat(dateTimeFormat)
-                        .format(new java.util.Date(mute.getCreated() * 1000L)))
+                .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                        .format(mute.getCreated() * 1000L))
                 .toString());
       }
 

@@ -4,10 +4,10 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.Message;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -62,14 +62,14 @@ public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
         }
 
         String dateTimeFormat = Message.getString("bmactivity.row.dateTimeFormat");
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(dateTimeFormat);
+        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
         for (HashMap<String, Object> result : results) {
           Message message = Message.get(messageType)
                                    .set("player", (String) result.get("player"))
                                    .set("type", (String) result.get("type"))
                                    .set("created", dateFormatter
-                                           .format(new java.util.Date((long) result.get("created") * 1000L)));
+                                           .format((long) result.get("created") * 1000L));
 
           if (result.get("actor") != null) message.set("actor", (String) result.get("actor"));
 

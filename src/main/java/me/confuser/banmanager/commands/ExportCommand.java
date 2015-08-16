@@ -8,15 +8,16 @@ import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ExportCommand extends BukkitCommand<BanManager> {
+
+  private static final FastDateFormat BANNED_JSON_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss");
 
   private boolean inProgress = false;
 
@@ -40,12 +41,12 @@ public class ExportCommand extends BukkitCommand<BanManager> {
       @Override
       public void run() {
         Message finishedMessage = null;
-        String fileName = null;
+        String fileName;
 
         if (args[0].startsWith("play")) {
           sender.sendMessage(Message.getString("export.player.started"));
           finishedMessage = Message.get("export.player.finished");
-          fileName = "banned-players-" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".json";
+          fileName = "banned-players-" + BANNED_JSON_TIME_FORMAT.format(System.currentTimeMillis()) + ".json";
 
           finishedMessage.set("file", fileName);
 
@@ -60,7 +61,7 @@ public class ExportCommand extends BukkitCommand<BanManager> {
           sender.sendMessage(Message.getString("export.ip.started"));
           finishedMessage = Message.get("export.player.finished");
 
-          fileName = "banned-ips-" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".json";
+          fileName = "banned-ips-" + BANNED_JSON_TIME_FORMAT.format(System.currentTimeMillis()) + ".json";
 
           finishedMessage.set("file", fileName);
 
@@ -71,17 +72,18 @@ public class ExportCommand extends BukkitCommand<BanManager> {
             e.printStackTrace();
             return;
           }
+        } else {
+          return;
         }
 
-        if (sender != null) {
-          finishedMessage.sendTo(sender);
-        }
+        finishedMessage.sendTo(sender);
       }
-
     });
 
     return true;
   }
+
+  private static final FastDateFormat EXPORT_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss Z");
 
   private void exportIps(String fileName) throws IOException {
     File file = new File(plugin.getDataFolder(), fileName);
@@ -94,8 +96,6 @@ public class ExportCommand extends BukkitCommand<BanManager> {
 
     JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-
     jsonWriter.beginArray();
     jsonWriter.setIndent("  ");
 
@@ -107,14 +107,14 @@ public class ExportCommand extends BukkitCommand<BanManager> {
       jsonWriter.beginObject();
 
       jsonWriter.name("ip").value(IPUtils.toString(next.getIp()));
-      jsonWriter.name("created").value(dateFormat.format(new Date(next.getCreated() * 1000L)));
+      jsonWriter.name("created").value(EXPORT_FORMAT.format(next.getCreated() * 1000L));
       jsonWriter.name("source").value(next.getActor().getName());
       jsonWriter.name("expires");
 
       if (next.getExpires() == 0) {
         jsonWriter.value("forever");
       } else {
-        jsonWriter.value(dateFormat.format(new Date(next.getExpires() * 1000L)));
+        jsonWriter.value(EXPORT_FORMAT.format(next.getExpires() * 1000L));
       }
 
       jsonWriter.name("reason").value(next.getReason());
@@ -138,10 +138,6 @@ public class ExportCommand extends BukkitCommand<BanManager> {
     }
 
     JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
-
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-
-
     jsonWriter.beginArray();
     jsonWriter.setIndent("  ");
 
@@ -154,14 +150,14 @@ public class ExportCommand extends BukkitCommand<BanManager> {
 
       jsonWriter.name("uuid").value(next.getPlayer().getUUID().toString());
       jsonWriter.name("name").value(next.getPlayer().getName());
-      jsonWriter.name("created").value(dateFormat.format(new Date(next.getCreated() * 1000L)));
+      jsonWriter.name("created").value(EXPORT_FORMAT.format(next.getCreated() * 1000L));
       jsonWriter.name("source").value(next.getActor().getName());
       jsonWriter.name("expires");
 
       if (next.getExpires() == 0) {
         jsonWriter.value("forever");
       } else {
-        jsonWriter.value(dateFormat.format(new Date(next.getExpires() * 1000L)));
+        jsonWriter.value(EXPORT_FORMAT.format(next.getExpires() * 1000L));
       }
 
       jsonWriter.name("reason").value(next.getReason());
