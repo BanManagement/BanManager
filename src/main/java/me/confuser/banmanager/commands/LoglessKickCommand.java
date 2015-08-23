@@ -2,11 +2,11 @@ package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +20,16 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
   }
 
   @Override
-  public boolean onCommand(final CommandSender sender, Command command, String commandName, final String[] args) {
+  public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    CommandParser parser = new CommandParser(args);
+    args = parser.getArgs();
+    final boolean isSilent = parser.isSilent();
+
+    if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (args.length < 1) {
       return false;
     }
@@ -91,11 +100,11 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
             Message message = Message.get("kick.notify");
             message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
 
-            if (!sender.hasPermission("bm.notify.kick")) {
+            if (isSilent || !sender.hasPermission("bm.notify.kick")) {
               message.sendTo(sender);
             }
 
-            CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+            if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.kick");
           }
         });
 
