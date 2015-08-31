@@ -65,6 +65,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
     }
 
     final long[] ranges = range;
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -115,7 +116,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
         boolean unbanned;
 
         try {
-          unbanned = plugin.getIpRangeBanStorage().unban(ban, actor);
+          unbanned = plugin.getIpRangeBanStorage().unban(ban, actor, reason);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
@@ -130,7 +131,8 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
         message
                 .set("from", IPUtils.toString(ban.getFromIp()))
                 .set("to", IPUtils.toString(ban.getToIp()))
-                .set("actor", actor.getName());
+                .set("actor", actor.getName())
+                .set("reason", reason);
 
         if (!sender.hasPermission("bm.notify.unbaniprange")) {
           message.sendTo(sender);

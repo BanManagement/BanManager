@@ -7,9 +7,12 @@ public class PlayerUnbanEvent extends CustomCancellableEvent {
 
       @Getter
       private PlayerBanData ban;
+      @Getter
+      private String reason;
 
-      public PlayerUnbanEvent(PlayerBanData ban) {
+      public PlayerUnbanEvent(PlayerBanData ban, String reason) {
             this.ban = ban;
+            this.reason = reason;
       }
 
 }

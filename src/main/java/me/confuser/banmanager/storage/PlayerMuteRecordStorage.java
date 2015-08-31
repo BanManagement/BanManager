@@ -24,11 +24,18 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
+    } else {
+      // Attempt to add new columns
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
-  public void addRecord(PlayerMuteData mute, PlayerData actor) throws SQLException {
-    create(new PlayerMuteRecord(mute, actor));
+  public void addRecord(PlayerMuteData mute, PlayerData actor, String reason) throws SQLException {
+    create(new PlayerMuteRecord(mute, actor, reason));
   }
 
   public CloseableIterator<PlayerMuteRecord> findUnmutes(long fromTime) throws SQLException {

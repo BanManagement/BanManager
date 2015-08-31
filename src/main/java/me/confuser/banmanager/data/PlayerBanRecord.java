@@ -11,39 +11,51 @@ public class PlayerBanRecord {
   @DatabaseField(generatedId = true)
   @Getter
   private int id;
+
   @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData player;
+
   @DatabaseField(canBeNull = false)
   @Getter
   private String reason;
-  @Getter
+
   @DatabaseField(canBeNull = false)
+  @Getter
   private long expired;
+
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData actor;
+
   @Getter
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData pastActor;
+
   @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
   @Getter
   private long pastCreated;
+
   @DatabaseField(index = true, canBeNull = false, columnDefinition = "INT(10) NOT NULL")
   @Getter
   private long created = System.currentTimeMillis() / 1000L;
+
+  @DatabaseField(canBeNull = false)
+  @Getter
+  private String createdReason;
 
   PlayerBanRecord() {
 
   }
 
-  public PlayerBanRecord(PlayerBanData ban, PlayerData actor) {
+  public PlayerBanRecord(PlayerBanData ban, PlayerData actor, String reason) {
     player = ban.getPlayer();
-    reason = ban.getReason();
     expired = ban.getExpires();
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
+    createdReason = reason;
 
+    this.reason = ban.getReason();
     this.actor = actor;
   }
 

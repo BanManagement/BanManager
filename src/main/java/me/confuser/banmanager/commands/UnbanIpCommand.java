@@ -43,6 +43,8 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
@@ -89,7 +91,7 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
         boolean unbanned;
 
         try {
-          unbanned = plugin.getIpBanStorage().unban(ban, actor);
+          unbanned = plugin.getIpBanStorage().unban(ban, actor, reason);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
@@ -103,7 +105,8 @@ public class UnbanIpCommand extends BukkitCommand<BanManager> {
         Message message = Message.get("unbanip.notify");
         message
                 .set("ip", ipStr)
-                .set("actor", actor.getName());
+                .set("actor", actor.getName())
+                .set("reason", reason);
 
         if (!sender.hasPermission("bm.notify.unbanip")) {
           message.sendTo(sender);

@@ -23,11 +23,18 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
+    } else {
+      // Attempt to add new columns
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
-  public void addRecord(IpRangeBanData ban, PlayerData actor) throws SQLException {
-    create(new IpRangeBanRecord(ban, actor));
+  public void addRecord(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
+    create(new IpRangeBanRecord(ban, actor, reason));
   }
 
   public CloseableIterator<IpRangeBanRecord> findUnbans(long fromTime) throws SQLException {

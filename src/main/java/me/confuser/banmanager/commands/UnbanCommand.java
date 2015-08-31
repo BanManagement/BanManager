@@ -58,6 +58,8 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
       return true;
     }
 
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
@@ -99,7 +101,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
         boolean unbanned;
 
         try {
-          unbanned = plugin.getPlayerBanStorage().unban(ban, actor);
+          unbanned = plugin.getPlayerBanStorage().unban(ban, actor, reason);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
@@ -113,7 +115,8 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
         Message message = Message.get("unban.notify");
         message
                 .set("player", ban.getPlayer().getName())
-                .set("actor", actor.getName());
+                .set("actor", actor.getName())
+                .set("reason", reason);
 
         if (!sender.hasPermission("bm.notify.unban")) {
           message.sendTo(sender);

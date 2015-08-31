@@ -36,7 +36,7 @@ public class ExpiresSync implements Runnable {
 
       while (bans.hasNext()) {
         PlayerBanData ban = bans.next();
-        banRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+        banRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
         banStorage.removeBan(ban);
         banStorage.delete(ban);
@@ -53,7 +53,7 @@ public class ExpiresSync implements Runnable {
 
       while (mutes.hasNext()) {
         PlayerMuteData mute = mutes.next();
-        muteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole());
+        muteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole(), "");
 
         muteStorage.removeMute(mute);
         muteStorage.delete(mute);
@@ -87,7 +87,7 @@ public class ExpiresSync implements Runnable {
 
       while (ipBans.hasNext()) {
         IpBanData ban = ipBans.next();
-        ipBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+        ipBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
         ipBanStorage.removeBan(ban);
         ipBanStorage.delete(ban);
@@ -105,7 +105,7 @@ public class ExpiresSync implements Runnable {
 
       while (ipRangeBans.hasNext()) {
         IpRangeBanData ban = ipRangeBans.next();
-        ipRangeBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole());
+        ipRangeBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
         ipRangeBanStorage.removeBan(ban);
         ipRangeBanStorage.delete(ban);

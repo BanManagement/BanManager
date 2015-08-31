@@ -25,11 +25,18 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
       return;
+    } else {
+      // Attempt to add new columns
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
-  public void addRecord(PlayerBanData ban, PlayerData actor) throws SQLException {
-    create(new PlayerBanRecord(ban, actor));
+  public void addRecord(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {
+    create(new PlayerBanRecord(ban, actor, reason));
   }
 
   public CloseableIterator<PlayerBanRecord> findUnbans(long fromTime) throws SQLException {

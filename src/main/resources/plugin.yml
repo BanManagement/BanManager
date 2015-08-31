@@ -26,12 +26,12 @@ commands:
     permission: bm.command.tempbanall
   unban:
     description: "unban a player"
-    usage: "/unban <player>"
+    usage: "/unban <player> [reason]"
     aliases: [bmunban, pardon]
     permission: bm.command.unban
   unbanall:
     description: "unban a player across multiple servers"
-    usage: "/unbanall <player>"
+    usage: "/unbanall <player> [reason]"
     aliases: [bmunbanall]
     permission: bm.command.unbanall
   bminfo:
@@ -61,12 +61,12 @@ commands:
     permission: bm.command.tempbanipall
   unbanip:
     description: "unban's an ip"
-    usage: "/unbanip <ip>"
+    usage: "/unbanip <ip> [reason]"
     aliases: [bmunbanip, pardonip]
     permission: bm.command.unbanip
   unbanipall:
     description: "unban's an ip across multiple servers"
-    usage: "/unbanipall <ip>"
+    usage: "/unbanipall <ip> [reason]"
     aliases: [bmunbanipall]
     permission: bm.command.unbanipall
   bmimport:
@@ -101,12 +101,12 @@ commands:
     permission: bm.command.tempmuteall
   unmute:
     description: "unmute a player"
-    usage: "/unmute <player>"
+    usage: "/unmute <player> [reason]"
     aliases: [bmunmute]
     permission: bm.command.unmute
   unmuteall:
     description: "unmute a player across multiple servers"
-    usage: "/unmuteall <player>"
+    usage: "/unmuteall <player> [reason]"
     aliases: [bmunmuteall]
     permission: bm.command.unmuteall
   nlkick:
@@ -177,7 +177,7 @@ commands:
     permission: bm.command.tempbaniprange
   unbaniprange:
     description: "Unban an entire ip range"
-    usage: "/unbaniprange <cidr || wildcard || player>"
+    usage: "/unbaniprange <cidr || wildcard || player> [reason]"
     permission: bm.command.unbaniprange
   bmactivity:
     description: "View recent activity"

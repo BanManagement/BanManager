@@ -58,6 +58,8 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
       return true;
     }
 
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
@@ -100,7 +102,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         boolean unmuted;
 
         try {
-          unmuted = plugin.getPlayerMuteStorage().unmute(mute, actor);
+          unmuted = plugin.getPlayerMuteStorage().unmute(mute, actor, reason);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
@@ -114,7 +116,8 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         Message message = Message.get("unmute.notify");
         message
                 .set("player", mute.getPlayer().getName())
-                .set("actor", actor.getName());
+                .set("actor", actor.getName())
+                .set("reason", reason);
 
         if (!sender.hasPermission("bm.notify.unmute")) {
           message.sendTo(sender);
