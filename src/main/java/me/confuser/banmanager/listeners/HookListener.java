@@ -12,11 +12,10 @@ import org.bukkit.event.EventPriority;
 
 public class HookListener extends Listeners<BanManager> {
 
-  private HooksConfig config = plugin.getConfiguration().getHooksConfig();
-
   // TODO refactor to reduce duplicate code
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final PlayerBanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -48,6 +47,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final PlayerBannedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -79,6 +79,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onMute(final PlayerMuteEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getMute().getExpires() == 0) {
@@ -110,6 +111,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onMute(final PlayerMutedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getMute().getExpires() == 0) {
@@ -141,6 +143,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpBanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -172,6 +175,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpBannedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -203,6 +207,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -235,6 +240,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBannedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getBan().getExpires() == 0) {
@@ -267,6 +273,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onWarn(final PlayerWarnEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook = config.getHook("warn");
 
     if (hook == null) return;
@@ -292,6 +299,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onWarn(final PlayerWarnedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook;
 
     if (event.getWarning().getExpires() == 0) {
@@ -323,6 +331,7 @@ public class HookListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onNote(final PlayerNoteCreatedEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook = config.getHook("note");
 
     if (hook == null) return;
