@@ -19,6 +19,7 @@ public class DeleteCommand extends BukkitCommand<BanManager> {
       add("kicks");
       add("muterecords");
       add("notes");
+      add("reports");
       add("warnings");
     }
   };
@@ -66,6 +67,10 @@ public class DeleteCommand extends BukkitCommand<BanManager> {
               rows = plugin.getPlayerBanRecordStorage().deleteIds(ids);
               break;
 
+            case "kicks":
+              rows = plugin.getPlayerKickStorage().deleteIds(ids);
+              break;
+
             case "muterecords":
               rows = plugin.getPlayerMuteRecordStorage().deleteIds(ids);
               break;
@@ -74,8 +79,8 @@ public class DeleteCommand extends BukkitCommand<BanManager> {
               rows = plugin.getPlayerNoteStorage().deleteIds(ids);
               break;
 
-            case "kicks":
-              rows = plugin.getPlayerKickStorage().deleteIds(ids);
+            case "reports":
+              rows = plugin.getPlayerReportStorage().deleteIds(ids);
               break;
 
             case "warnings":

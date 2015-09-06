@@ -56,6 +56,10 @@ public class LocalDatabaseConfig extends DatabaseConfig {
     DatabaseTableConfig<IpRangeBanRecord> ipRangeBanRecordsTable = new DatabaseTableConfig<>(IpRangeBanRecord.class, conf
             .getString("tables.ipRangeBanRecords"), null);
     addTable("ipRangeBanRecords", ipRangeBanRecordsTable);
+
+    DatabaseTableConfig<PlayerReportData> playerReportsTable = new DatabaseTableConfig<>(PlayerReportData.class, conf
+            .getString("tables.playerReports"), null);
+    addTable("playerReports", playerReportsTable);
   }
 
 }

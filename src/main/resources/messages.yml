@@ -245,6 +245,9 @@ messages:
       noNotes: '&c[player] has no notes'
       noOnlineNotes: '&cNo online players have notes'
 
+  report:
+    notify: '&6[player] has been reported by [actor] for &4[reason]'
+
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
 

@@ -18,6 +18,7 @@ databases:
       playerKicks: bm_player_kicks
       playerNotes: bm_player_notes
       playerWarnings: bm_player_warnings
+      playerReports: bm_player_reports
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
       ipRangeBans: bm_ip_range_bans
