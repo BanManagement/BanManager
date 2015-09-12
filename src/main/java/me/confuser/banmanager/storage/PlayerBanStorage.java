@@ -123,7 +123,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     return unban(ban, actor, "");
   }
   public boolean unban(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {
-    PlayerUnbanEvent event = new PlayerUnbanEvent(ban, reason);
+    PlayerUnbanEvent event = new PlayerUnbanEvent(ban, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {
