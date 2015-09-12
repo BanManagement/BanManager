@@ -50,6 +50,22 @@ public class HookListener extends Listeners<BanManager> {
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onUnban(final PlayerUnbanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    final Hook hook = config.getHook("unban");
+
+    if (hook == null) return;
+
+    if (hook.getPost().size() != 0) {
+      executeCommands(hook.getPre(), ImmutableMap.of(
+              "player", event.getBan().getPlayer().getName()
+              , "actor", event.getActor().getName()
+              , "reason", event.getReason()
+      ));
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onMute(final PlayerMuteEvent event) {
     HooksConfig config = plugin.getConfiguration().getHooksConfig();
     final Hook hook = event.getMute().getExpires() == 0 ? config.getHook("mute") : config.getHook("tempmute");
@@ -77,6 +93,22 @@ public class HookListener extends Listeners<BanManager> {
               "player", event.getMute().getPlayer().getName()
               , "actor", event.getMute().getActor().getName()
               , "reason", event.getMute().getReason()
+      ));
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onUnmute(final PlayerUnmuteEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    final Hook hook = config.getHook("unmute");
+
+    if (hook == null) return;
+
+    if (hook.getPost().size() != 0) {
+      executeCommands(hook.getPre(), ImmutableMap.of(
+              "player", event.getMute().getPlayer().getName()
+              , "actor", event.getActor().getName()
+              , "reason", event.getReason()
       ));
     }
   }
@@ -114,9 +146,26 @@ public class HookListener extends Listeners<BanManager> {
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onUnban(final IpUnbanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    final Hook hook = config.getHook("unbanip");
+
+    if (hook == null) return;
+
+    if (hook.getPost().size() != 0) {
+      executeCommands(hook.getPre(), ImmutableMap.of(
+              "ip", IPUtils.toString(event.getBan().getIp())
+              , "actor", event.getActor().getName()
+              , "reason", event.getReason()
+      ));
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBanEvent event) {
     HooksConfig config = plugin.getConfiguration().getHooksConfig();
-    final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config.getHook("temprangeipban");
+    final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config
+            .getHook("temprangeipban");
 
     if (hook == null) return;
 
@@ -133,7 +182,8 @@ public class HookListener extends Listeners<BanManager> {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBannedEvent event) {
     HooksConfig config = plugin.getConfiguration().getHooksConfig();
-    final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config.getHook("temprangeipban");
+    final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config
+            .getHook("temprangeipban");
 
     if (hook == null) return;
 
@@ -143,6 +193,23 @@ public class HookListener extends Listeners<BanManager> {
               , "to", IPUtils.toString(event.getBan().getToIp())
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+      ));
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onUnban(final IpRangeUnbanEvent event) {
+    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    final Hook hook = config.getHook("unbaniprange");
+
+    if (hook == null) return;
+
+    if (hook.getPost().size() != 0) {
+      executeCommands(hook.getPre(), ImmutableMap.of(
+              "from", IPUtils.toString(event.getBan().getFromIp())
+              , "to", IPUtils.toString(event.getBan().getToIp())
+              , "actor", event.getActor().getName()
+              , "reason", event.getReason()
       ));
     }
   }
