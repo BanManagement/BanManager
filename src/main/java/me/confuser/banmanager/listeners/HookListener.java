@@ -57,7 +57,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPre(), ImmutableMap.of(
+      executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getBan().getPlayer().getName()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
@@ -105,7 +105,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPre(), ImmutableMap.of(
+      executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getMute().getPlayer().getName()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
@@ -153,7 +153,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPre(), ImmutableMap.of(
+      executeCommands(hook.getPost(), ImmutableMap.of(
               "ip", IPUtils.toString(event.getBan().getIp())
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
@@ -205,7 +205,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook == null) return;
 
     if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPre(), ImmutableMap.of(
+      executeCommands(hook.getPost(), ImmutableMap.of(
               "from", IPUtils.toString(event.getBan().getFromIp())
               , "to", IPUtils.toString(event.getBan().getToIp())
               , "actor", event.getActor().getName()
