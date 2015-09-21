@@ -7,7 +7,7 @@ databases:
     port: 3306
     name: local_bans
     user: root
-    password: ''
+    password: 'leave_blank_if_no_pass'
     maxConnections: 10
     tables:
       players: bm_players
@@ -50,7 +50,7 @@ databases:
     port: 3306
     name: local_bans
     user: root
-    password: ''
+    password: 'leave_blank_if_no_pass'
     maxConnections: 10
     tables:
       bansTable: bm_bans
