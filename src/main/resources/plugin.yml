@@ -1,8 +1,9 @@
 main: me.confuser.banmanager.BanManager
 name: BanManager
 version: ${project.version}
-authors: [ confuser ]
+authors: [confuser]
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
+description: Database based ban management system
 commands: 
   ban: 
     description: "ban a player"
@@ -193,7 +194,66 @@ commands:
     aliases: [bmreport]
     permission: bm.command.report
 permissions:
-  bm.*:
+  bm.command.*:
+    description: Gives access to all BanManager commands
+    children:
+      bm.command.ban: true
+      bm.command.ban.offline: true
+      bm.command.ban.override: true
+      bm.command.unban: true
+      bm.command.tempban: true
+      bm.command.tempban.offline: true
+      bm.command.tempban.override: true
+      bm.command.exempt: true
+      bm.command.bminfo: true
+      bm.command.bminfo.others: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
+      bm.command.banip: true
+      bm.command.banip.override: true
+      bm.command.baniprange: true
+      bm.command.tempbaniprange: true
+      bm.command.unbaniprange: true
+      bm.command.tempbanip: true
+      bm.command.tempbanip.override: true
+      bm.command.unbanip: true
+      bm.command.import: true
+      bm.command.kick: true
+      bm.command.nlkick: true
+      bm.command.update: true
+      bm.command.mute: true
+      bm.command.mute.offline: true
+      bm.command.mute.override: true
+      bm.command.tempmute: true
+      bm.command.tempmute.offline: true
+      bm.command.tempmute.override: true
+      bm.command.unmute: true
+      bm.command.warn: true
+      bm.command.tempwarn: true
+      bm.command.dwarn: true
+      bm.command.clear: true
+      bm.command.sync: true
+      bm.command.addnote: true
+      bm.command.notes: true
+      bm.command.export: true
+      bm.command.banlist: true
+      bm.command.banlist.players: true
+      bm.command.banlist.ips: true
+      bm.command.banlist.ipranges: true
+      bm.command.bmactivity: true
+      bm.command.delete: true
+      bm.command.report: true
+      bm.command.report.offline: true
+      bm.command.report.override: true
+    bm.*:
     description: Gives access to all BanManager commands
     children:
       bm.command.ban: true
