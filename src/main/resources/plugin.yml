@@ -1,9 +1,9 @@
 main: me.confuser.banmanager.BanManager
 name: BanManager
 version: ${project.version}
-authors: [confuser]
+authors: [ confuser ]
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
-description: Database based ban management system
+description: ${project.description}
 commands: 
   ban: 
     description: "ban a player"
