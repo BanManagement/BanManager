@@ -34,8 +34,10 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
           mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
         }
       } else {
+        Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+        String lower = lookup.toLowerCase();
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-          if (player.getName().toLowerCase().startsWith(lookup.toLowerCase())) {
+          if ((senderPlayer == null || senderPlayer.canSee(player)) && player.getName().toLowerCase().startsWith(lower)) {
           }
         }
       }
@@ -45,8 +47,10 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
         mostLike.add(charSequence.toString());
       }
     } else {
+      Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+      String lower = args[0].toLowerCase();
       for (Player player : plugin.getServer().getOnlinePlayers()) {
-        if (player.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+        if ((senderPlayer == null || senderPlayer.canSee(player)) && player.getName().toLowerCase().startsWith(lower)) {
           mostLike.add(player.getName());
         }
       }
