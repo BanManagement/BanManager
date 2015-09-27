@@ -29,16 +29,16 @@ public class UnmuteAllCommand extends BukkitCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    boolean isBanned = false;
+    boolean isMuted = false;
 
     if (isUUID) {
-      isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));
+      isMuted = plugin.getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
     } else {
-      isBanned = plugin.getPlayerBanStorage().isBanned(playerName);
+      isMuted = plugin.getPlayerMuteStorage().isMuted(playerName);
     }
 
-    if (!isBanned) {
-      Message message = Message.get("notBanned");
+    if (!isMuted) {
+      Message message = Message.get("unmute.error.noExists");
       message.set("player", playerName);
 
       sender.sendMessage(message.toString());
