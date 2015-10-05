@@ -98,7 +98,9 @@ messages:
     player:
       noReason: '&6You have been kicked'
       reason: '&6You have been kicked for &4[reason]'
-    notify: '&6[player] has been kicked by [actor] for &4[reason]'
+    notify:
+      noReason: '&6[player] has been kicked by [actor]'
+      reason: '&6[player] has been kicked by [actor] for &4[reason]'
 
   ban:
     player:

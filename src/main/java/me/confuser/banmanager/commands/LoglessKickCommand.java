@@ -97,7 +97,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
           public void run() {
             player.kickPlayer(kickMessage.toString());
 
-            Message message = Message.get("kick.notify");
+            Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
             message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
 
             if (isSilent || !sender.hasPermission("bm.notify.kick")) {
