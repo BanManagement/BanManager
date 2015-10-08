@@ -122,10 +122,6 @@
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>gravity-repo</id>
-            <url>http://repo.gravitydevelopment.net</url>
-        </repository>
-        <repository>
             <id>Central</id>
             <url>http://repo1.maven.org/maven2</url>
         </repository>
