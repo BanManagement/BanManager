@@ -11,6 +11,7 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -164,13 +165,16 @@ public class JoinListener extends Listeners<BanManager> {
         try {
           notesItr = plugin.getPlayerNoteStorage().getNotes(event.getPlayer().getUniqueId());
           ArrayList<String> notes = new ArrayList<String>();
+          String dateTimeFormat = Message.getString("notes.dateTimeFormat");
+          FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
           while (notesItr.hasNext()) {
             PlayerNoteData note = notesItr.next();
 
             Message noteMessage = Message.get("notes.note")
                                          .set("player", note.getActor().getName())
-                                         .set("message", note.getMessage());
+                                         .set("message", note.getMessage())
+                                         .set("created", dateFormatter.format(note.getCreated() * 1000L));
             notes.add(noteMessage.toString());
           }
 

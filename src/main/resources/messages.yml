@@ -240,8 +240,9 @@ messages:
 
   notes:
     header: '&6[player] has the following notes:'
-    note: '&6[[player]] &e[message]'
-    playerNote: '&a[[player]] &6[[actor]] &e[message]'
+    note: '&6[[player]] &e[message] - &e[created]'
+    playerNote: '&a[[player]] &6[[actor]] &e[message] - &e[created]'
+    dateTimeFormat: 'dd-MM-yyyy'
     notify: '[player] has a new note attached by [actor]: [message]'
     error:
       noNotes: '&c[player] has no notes'

@@ -5,6 +5,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.bukkitutil.Message;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,13 +50,16 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
           try {
             notesItr = plugin.getPlayerNoteStorage().getNotes(player.getUUID());
             ArrayList<Message> notes = new ArrayList<>();
+            String dateTimeFormat = Message.getString("notes.dateTimeFormat");
+            FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
             while (notesItr.hasNext()) {
               PlayerNoteData note = notesItr.next();
 
               Message noteMessage = Message.get("notes.note")
                                            .set("player", note.getActor().getName())
-                                           .set("message", note.getMessage());
+                                           .set("message", note.getMessage())
+                                           .set("created", dateFormatter.format(note.getCreated() * 1000L));
               notes.add(noteMessage);
             }
 
@@ -102,6 +106,8 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
                              .in("player_id", plugin.getPlayerStorage().getOnlineIds(onlinePlayers))
                              .iterator();
             ArrayList<Message> notes = new ArrayList<>();
+            String dateTimeFormat = Message.getString("notes.dateTimeFormat");
+            FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
             while (notesItr.hasNext()) {
               PlayerNoteData note = notesItr.next();
@@ -109,7 +115,8 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
               Message noteMessage = Message.get("notes.playerNote")
                                            .set("player", note.getPlayer().getName())
                                            .set("actor", note.getActor().getName())
-                                           .set("message", note.getMessage());
+                                           .set("message", note.getMessage())
+                                           .set("created", dateFormatter.format(note.getCreated() * 1000L));
               notes.add(noteMessage);
             }
 
