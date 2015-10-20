@@ -289,7 +289,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason));
+    return mute(new PlayerMuteData(player, actor, reason, false));
   }
 
   /**
@@ -304,8 +304,25 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason), silent);
+    return mute(new PlayerMuteData(player, actor, reason, false), silent);
   }
+
+  /**
+   * Permanently mute a player.
+   * You must handle kicking the player if they are online.
+   *
+   * @param player - Player to mute
+   * @param actor  - Who the mute is by
+   * @param reason - Why they are mutened
+   * @param silent
+   * @param isSoft
+   *
+   * @throws SQLException
+   */
+  public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent, boolean isSoft) throws SQLException {
+    return mute(new PlayerMuteData(player, actor, reason, isSoft), silent);
+  }
+
 
   /**
    * Temporarily mute a player
@@ -319,7 +336,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason, expires));
+    return mute(new PlayerMuteData(player, actor, reason, false, expires));
   }
 
   /**
@@ -336,8 +353,26 @@ public class BmAPI {
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent) throws
           SQLException {
-    return mute(new PlayerMuteData(player, actor, reason, expires), silent);
+    return mute(new PlayerMuteData(player, actor, reason, false, expires), silent);
   }
+
+  /**
+   * Temporarily mute a player
+   * You must handle kicking the player if they are online.
+   *
+   * @param player  - Player to mute
+   * @param actor   - Who the mute is by
+   * @param reason  - Why they are mutened
+   * @param expires - Unix Timestamp stating the time of when the mute ends
+   * @param silent
+   *
+   * @throws SQLException
+   */
+  public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent, boolean isSoft) throws
+    SQLException {
+    return mute(new PlayerMuteData(player, actor, reason, isSoft, expires), silent);
+  }
+
 
   /**
    * @param mute

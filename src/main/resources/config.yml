@@ -67,6 +67,10 @@ databases:
 mutedCommandBlacklist:
 - msg
 
+# Aliases will be found and blocked automatically, e.g. msg will block tell
+softMutedCommandBlacklist:
+- msg
+
 # Displays a warning to those with bm.notify.duplicateips permission if joining players have the same ip as a banned player
 duplicateIpCheck: true
 

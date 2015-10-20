@@ -31,6 +31,8 @@ public class ChatListener extends Listeners<BanManager> {
 
     event.setCancelled(true);
 
+    if (mute.isSoft()) return;
+
     Message message;
 
     if (mute.getExpires() == 0) {

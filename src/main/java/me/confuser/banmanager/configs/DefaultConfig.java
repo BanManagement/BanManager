@@ -8,6 +8,7 @@ import org.bukkit.command.PluginCommand;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class DefaultConfig extends Config<BanManager> {
 
@@ -19,6 +20,8 @@ public class DefaultConfig extends Config<BanManager> {
   private TimeLimitsConfig timeLimits;
   @Getter
   private HashSet<String> mutedBlacklistCommands;
+  @Getter
+  private HashSet<String> softMutedBlacklistCommands;
   @Getter
   private boolean duplicateIpCheckEnabled = true;
   @Getter
@@ -90,36 +93,43 @@ public class DefaultConfig extends Config<BanManager> {
       @Override
       public void run() {
         plugin.getLogger().info("The following commands are blocked whilst muted:");
-        for (String cmd : conf.getStringList("mutedCommandBlacklist")) {
-          mutedBlacklistCommands.add(cmd);
-          StringBuilder infoBuilder = new StringBuilder(cmd);
+        handleBlockedCommands(conf.getStringList("mutedCommandBlacklist"), mutedBlacklistCommands);
 
-          // Check for aliases
-          PluginCommand command = plugin.getServer().getPluginCommand(cmd);
-          if (command == null) {
-            plugin.getLogger().info(cmd);
-            continue;
-          }
-
-          infoBuilder.append(" - ");
-
-          if (!mutedBlacklistCommands.contains(command.getName())) {
-            mutedBlacklistCommands.add(command.getName());
-            infoBuilder.append(command.getName()).append(' ');
-          }
-
-          for (String aliasCmd : command.getAliases()) {
-            infoBuilder.append(aliasCmd).append(' ');
-            mutedBlacklistCommands.add(aliasCmd);
-            // Block the annoying /plugin:cmd too
-            mutedBlacklistCommands.add(command.getPlugin().getDescription().getName().toLowerCase() + ":" + aliasCmd);
-          }
-
-          plugin.getLogger().info(infoBuilder.toString());
-        }
+        plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+        handleBlockedCommands(conf.getStringList("softMutedCommandBlacklist"), softMutedBlacklistCommands);
       }
 
     });
+  }
+
+  private void handleBlockedCommands(List<String> blocked, HashSet<String> set) {
+    for (String cmd : blocked) {
+      set.add(cmd);
+      StringBuilder infoBuilder = new StringBuilder(cmd);
+
+      // Check for aliases
+      PluginCommand command = plugin.getServer().getPluginCommand(cmd);
+      if (command == null) {
+        plugin.getLogger().info(cmd);
+        continue;
+      }
+
+      infoBuilder.append(" - ");
+
+      if (!set.contains(command.getName())) {
+        set.add(command.getName());
+        infoBuilder.append(command.getName()).append(' ');
+      }
+
+      for (String aliasCmd : command.getAliases()) {
+        infoBuilder.append(aliasCmd).append(' ');
+        set.add(aliasCmd);
+        // Block the annoying /plugin:cmd too
+        set.add(command.getPlugin().getDescription().getName().toLowerCase() + ":" + aliasCmd);
+      }
+
+      plugin.getLogger().info(infoBuilder.toString());
+    }
   }
 
   public ConvertDatabaseConfig getConversionDb() {
@@ -133,6 +143,10 @@ public class DefaultConfig extends Config<BanManager> {
 
   public boolean isBlockedCommand(String cmd) {
     return mutedBlacklistCommands.contains(cmd);
+  }
+
+  public boolean isSoftBlockedCommand(String cmd) {
+    return softMutedBlacklistCommands.contains(cmd);
   }
 
 }

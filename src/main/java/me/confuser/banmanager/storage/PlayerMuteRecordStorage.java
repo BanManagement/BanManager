@@ -27,7 +27,9 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
     } else {
       // Attempt to add new columns
       try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255), "
+        + " ADD COLUMN `soft` TINYINT(1)," +
+          " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }

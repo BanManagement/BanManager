@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.external.ExternalPlayerMuteData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.SoftCommandParser;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
@@ -16,9 +17,6 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.util.UUID;
 
-/**
- * Created by James on 26/01/2015.
- */
 public class TempMuteAllCommand extends BukkitCommand<BanManager> {
 
   public TempMuteAllCommand() {
@@ -27,6 +25,16 @@ public class TempMuteAllCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    SoftCommandParser parser = new SoftCommandParser(args);
+    args = parser.getArgs();
+
+    final boolean isSoft = parser.isSoft();
+
+    if (isSoft && !sender.hasPermission(command.getPermission() + ".soft")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (args.length < 3) {
       return false;
     }
@@ -95,7 +103,7 @@ public class TempMuteAllCommand extends BukkitCommand<BanManager> {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        final ExternalPlayerMuteData mute = new ExternalPlayerMuteData(player, actor, reason, expires);
+        final ExternalPlayerMuteData mute = new ExternalPlayerMuteData(player, actor, reason, isSoft, expires);
         int created;
 
         try {

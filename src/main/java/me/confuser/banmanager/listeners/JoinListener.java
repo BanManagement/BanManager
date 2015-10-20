@@ -358,6 +358,7 @@ public class JoinListener extends Listeners<BanManager> {
         PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
                 , plugin.getPlayerStorage().getConsole()
                 , mute.getReason()
+                , mute.isSoft()
                 , mute.getExpires());
 
         plugin.getPlayerMuteStorage().mute(newMute, false);

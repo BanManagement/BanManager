@@ -21,11 +21,16 @@ public class CommandListener extends Listeners<BanManager> {
     // Get rid of the first /
     String cmd = args[0].replace("/", "").toLowerCase();
 
-    if (!plugin.getConfiguration().isBlockedCommand(cmd)) {
+    boolean isSoft = plugin.getPlayerMuteStorage().getMute(event.getPlayer().getUniqueId()).isSoft();
+    boolean deepCheck = isSoft ? !plugin.getConfiguration().isSoftBlockedCommand(cmd) : !plugin.getConfiguration().isBlockedCommand(cmd);
+
+    if (deepCheck) {
       // Check if arguments blocked
       boolean shouldCancel = false;
       for (int i = 1; i < args.length; i++) {
-        if (plugin.getConfiguration().isBlockedCommand(cmd + " " + StringUtils.join(args, " ", 1, i + 1))) {
+        String check = cmd + " " + StringUtils.join(args, " ", 1, i + 1);
+
+        if ((isSoft && plugin.getConfiguration().isSoftBlockedCommand(check)) || plugin.getConfiguration().isBlockedCommand(check)) {
           shouldCancel = true;
           break;
         }
@@ -35,6 +40,7 @@ public class CommandListener extends Listeners<BanManager> {
     }
 
     event.setCancelled(true);
-    event.getPlayer().sendMessage(Message.get("mute.player.blocked").set("command", cmd).toString());
+
+    if (!isSoft) event.getPlayer().sendMessage(Message.get("mute.player.blocked").set("command", cmd).toString());
   }
 }

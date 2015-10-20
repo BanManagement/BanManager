@@ -45,6 +45,10 @@ public class ExternalPlayerMuteData {
   @Getter
   private long expires = 0;
 
+  @DatabaseField(index = true)
+  @Getter
+  private boolean soft = false;
+
   private UUID uuid;
   private UUID actorUUID;
 
@@ -54,23 +58,24 @@ public class ExternalPlayerMuteData {
 
   }
 
-  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason) {
+  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft) {
     this.uuidBytes = player.getId();
     this.name = player.getName();
     this.reason = reason;
     this.actorUuidBytes = actor.getId();
     this.actorName = actor.getName();
+    this.soft = soft;
   }
 
-  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires) {
-    this(player, actor, reason);
+  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft, long expires) {
+    this(player, actor, reason, soft);
 
     this.expires = expires;
   }
 
   // Only use for imports!
-  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason, long expires, long created) {
-    this(player, actor, reason, expires);
+  public ExternalPlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft, long expires, long created) {
+    this(player, actor, reason, soft, expires);
 
     this.created = created;
   }
@@ -104,6 +109,6 @@ public class ExternalPlayerMuteData {
   }
 
   public PlayerMuteData toLocal() throws SQLException {
-    return new PlayerMuteData(getPlayer(), getActor(), reason, expires, created);
+    return new PlayerMuteData(getPlayer(), getActor(), reason, soft, expires, created);
   }
 }

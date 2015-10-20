@@ -8,6 +8,7 @@ import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.SoftCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,11 +25,18 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    SoftCommandParser parser = new SoftCommandParser(args);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
+    final boolean isSoft = parser.isSoft();
+
+    if (isSoft && !sender.hasPermission(command.getPermission() + ".soft")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
       return true;
     }
@@ -85,7 +93,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         return true;
       }
     } else if (!sender.hasPermission("bm.exempt.override.tempmute")
-            && onlinePlayer.hasPermission("bm.exempt.tempmute")) {
+      && onlinePlayer.hasPermission("bm.exempt.tempmute")) {
       Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
       return true;
     }
@@ -127,7 +135,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString
-                  ());
+            ());
           return;
         }
 
@@ -170,7 +178,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, expires);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, isSoft, expires);
         boolean created;
 
         try {
@@ -187,14 +195,14 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 
-        if (bukkitPlayer == null) return;
+        if (isSoft || bukkitPlayer == null) return;
 
         Message muteMessage = Message.get("tempmute.player.disallowed")
-                                     .set("displayName", bukkitPlayer.getDisplayName())
-                                     .set("player", player.getName())
-                                     .set("reason", mute.getReason())
-                                     .set("actor", actor.getName())
-                                     .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+          .set("displayName", bukkitPlayer.getDisplayName())
+          .set("player", player.getName())
+          .set("reason", mute.getReason())
+          .set("actor", actor.getName())
+          .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
         bukkitPlayer.sendMessage(muteMessage.toString());
 

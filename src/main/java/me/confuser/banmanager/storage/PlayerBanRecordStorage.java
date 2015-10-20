@@ -53,6 +53,8 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
 
     query.setWhere(where);
 
+
+
     return query.iterator();
 
   }
