@@ -91,24 +91,7 @@ public class BanManager extends BukkitPlugin {
   private GeoIpConfig geoIpConfig;
 
   @Getter
-  private BanSync banSync;
-  @Getter
-  private MuteSync muteSync;
-  @Getter
-  private IpSync ipSync;
-  @Getter
-  private IpRangeSync ipRangeSync;
-  @Getter
-  private ExpiresSync expiresSync;
-
-  @Getter
-  private ExternalBanSync externalBanSync;
-  @Getter
-  private ExternalMuteSync externalMuteSync;
-  @Getter
-  private ExternalIpSync externalIpSync;
-  @Getter
-  private ExternalNoteSync externalNoteSync;
+  private Runner syncRunner;
 
   @Override
   public void onEnable() {
@@ -448,34 +431,20 @@ public class BanManager extends BukkitPlugin {
       new BanListener().register();
       new MuteListener().register();
       new NoteListener().register();
+      new ReportListener().register();
     }
   }
 
   @Override
   public void setupRunnables() {
-    banSync = new BanSync();
-    muteSync = new MuteSync();
-    ipSync = new IpSync();
-    ipRangeSync = new IpRangeSync();
-    expiresSync = new ExpiresSync();
-
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerBans"), banSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerMutes"), muteSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("ipBans"), ipSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("ipRangeBans"), ipRangeSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("expiresCheck"), expiresSync);
-
-    if (externalConn != null) {
-      externalBanSync = new ExternalBanSync();
-      externalMuteSync = new ExternalMuteSync();
-      externalIpSync = new ExternalIpSync();
-      externalNoteSync = new ExternalNoteSync();
-
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerBans"), externalBanSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerMutes"), externalMuteSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalIpBans"), externalIpSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerNotes"), externalNoteSync);
+    if (externalConn == null) {
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync());
+    } else {
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
+        new ExternalBanSync(), new ExternalMuteSync(), new ExternalIpSync(), new ExternalNoteSync());
     }
+
+    setupAsyncRunnable(10L, syncRunner);
 
     /*
      * This task should be ran last with a 1L offset as it gets modified

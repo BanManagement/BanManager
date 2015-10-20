@@ -9,30 +9,18 @@ import me.confuser.banmanager.storage.PlayerMuteStorage;
 
 import java.sql.SQLException;
 
-public class MuteSync implements Runnable {
+public class MuteSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private PlayerMuteStorage muteStorage = plugin.getPlayerMuteStorage();
-  private long lastChecked = 0;
-  @Getter
-  private boolean isRunning = false;
 
   public MuteSync() {
-    lastChecked = plugin.getSchedulesConfig().getLastChecked("playerMutes");
+    super("playerMutes");
   }
 
   @Override
   public void run() {
-    isRunning = true;
-    // New/updated mutes check
     newMutes();
-
-    // New unbans
     newUnmutes();
-
-    lastChecked = System.currentTimeMillis() / 1000L;
-    plugin.getSchedulesConfig().setLastChecked("playerMutes", lastChecked);
-    isRunning = false;
   }
 
   private void newMutes() {

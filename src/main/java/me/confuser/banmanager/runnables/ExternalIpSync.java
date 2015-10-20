@@ -15,34 +15,20 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
-public class ExternalIpSync implements Runnable {
+public class ExternalIpSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private ExternalIpBanStorage banStorage = plugin.getExternalIpBanStorage();
   private IpBanStorage localBanStorage = plugin.getIpBanStorage();
   private ExternalIpBanRecordStorage recordStorage = plugin.getExternalIpBanRecordStorage();
-  private long lastChecked = 0;
-  @Getter
-  private boolean isRunning = false;
 
   public ExternalIpSync() {
-    lastChecked = plugin.getSchedulesConfig().getLastChecked("externalIpBans");
+    super("externalIpBans");
   }
 
   @Override
   public void run() {
-    if (isRunning) return;
-
-    isRunning = true;
-    // New/updated bans check
     newBans();
-
-    // New unbans
     newUnbans();
-
-    lastChecked = System.currentTimeMillis() / 1000L;
-    plugin.getSchedulesConfig().setLastChecked("externalIpBans", lastChecked);
-    isRunning = false;
   }
 
 

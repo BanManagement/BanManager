@@ -9,9 +9,8 @@ import me.confuser.banmanager.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class ExpiresSync implements Runnable {
+public class ExpiresSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private PlayerBanStorage banStorage = plugin.getPlayerBanStorage();
   private PlayerBanRecordStorage banRecordStorage = plugin.getPlayerBanRecordStorage();
   private PlayerMuteStorage muteStorage = plugin.getPlayerMuteStorage();
@@ -21,12 +20,13 @@ public class ExpiresSync implements Runnable {
   private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
-  @Getter
-  private boolean isRunning = false;
+
+  public ExpiresSync() {
+    super("expiresCheck");
+  }
 
   @Override
   public void run() {
-    isRunning = true;
     long now = (System.currentTimeMillis() / 1000L) + DateUtils.getTimeDiff();
 
     CloseableIterator<PlayerBanData> bans = null;
@@ -115,7 +115,5 @@ public class ExpiresSync implements Runnable {
     } finally {
       if (ipRangeBans != null) ipRangeBans.closeQuietly();
     }
-
-    isRunning = false;
   }
 }

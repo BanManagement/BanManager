@@ -9,32 +9,18 @@ import me.confuser.banmanager.storage.IpBanStorage;
 
 import java.sql.SQLException;
 
-public class IpSync implements Runnable {
+public class IpSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private IpBanStorage banStorage = plugin.getIpBanStorage();
-  private long lastChecked = 0;
-  @Getter
-  private boolean isRunning = false;
 
   public IpSync() {
-    lastChecked = plugin.getSchedulesConfig().getLastChecked("ipBans");
+    super("ipBans");
   }
 
   @Override
   public void run() {
-    if (isRunning) return;
-
-    isRunning = true;
-    // New/updated bans check
     newBans();
-
-    // New unbans
     newUnbans();
-
-    lastChecked = System.currentTimeMillis() / 1000L;
-    plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
-    isRunning = false;
   }
 
   private void newBans() {

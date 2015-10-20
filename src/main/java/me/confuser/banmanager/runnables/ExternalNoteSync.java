@@ -19,32 +19,19 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
-public class ExternalNoteSync implements Runnable {
+public class ExternalNoteSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private ExternalPlayerNoteStorage noteStorage = plugin.getExternalPlayerNoteStorage();
   private PlayerNoteStorage localNoteStorage = plugin.getPlayerNoteStorage();
-  private long lastChecked = 0;
-  @Getter
-  private boolean isRunning = false;
 
   public ExternalNoteSync() {
-    lastChecked = plugin.getSchedulesConfig().getLastChecked("externalPlayerNotes");
+    super("externalPlayerNotes");
   }
 
   @Override
   public void run() {
-    if (isRunning) return;
-
-    isRunning = true;
-    // New/updated bans check
     newNotes();
-
-    lastChecked = System.currentTimeMillis() / 1000L;
-    plugin.getSchedulesConfig().setLastChecked("externalPlayerNotes", lastChecked);
-    isRunning = false;
   }
-
 
   private void newNotes() {
 
