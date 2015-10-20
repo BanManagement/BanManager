@@ -10,7 +10,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.InfoCommandParser;
+import me.confuser.banmanager.util.parsers.InfoCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;

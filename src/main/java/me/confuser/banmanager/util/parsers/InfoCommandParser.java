@@ -1,4 +1,4 @@
-package me.confuser.banmanager.util;
+package me.confuser.banmanager.util.parsers;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;

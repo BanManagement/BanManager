@@ -8,7 +8,7 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.InfoCommandParser;
+import me.confuser.banmanager.util.parsers.InfoCommandParser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
