@@ -167,7 +167,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           message.sendTo(sender);
         }
 
-        CommandUtils.broadcast(message.toString(), "bm.notify.warn");
+        if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.warn");
 
         final List<ActionCommand> actionCommands;
 
