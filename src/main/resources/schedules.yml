@@ -19,6 +19,7 @@ lastChecked:
   playerMutes: 0
   ipBans: 0
   ipRangeBans: 0
+  expiresCheck: 0
   externalPlayerBans: 0
   externalPlayerMutes: 0
   externalPlayerNotes: 0

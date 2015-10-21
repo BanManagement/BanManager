@@ -19,7 +19,11 @@ public class SchedulesConfig extends Config<BanManager> {
   }
 
   public long getLastChecked(String lastChecked) {
-    return this.lastChecked.get(lastChecked);
+    Long checked = this.lastChecked.get(lastChecked);
+
+    if (checked == null) return 0;
+
+    return checked;
   }
 
   public void setLastChecked(String key, long value) {
