@@ -144,15 +144,20 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public Map<String, UUID> call() throws Exception {
-    BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
-    Map<String, UUID> uuidMap = new HashMap<>();
 
+    Map<String, UUID> uuidMap = new HashMap<>();
     if (!BanManager.getPlugin().getConfiguration().isOnlineMode()) {
-        for (String s : names)
-            uuidMap.put(s, createUUID(s));
-        return uuidMap;
+      BanManager.plugin.getLogger().info("Generating offline UUIDs for " + StringUtils.join(names, ','));
+
+      for (String s : names) {
+        uuidMap.put(s, createUUID(s));
+      }
+
+      return uuidMap;
     }
-    
+
+    BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
+
     int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
     for (int i = 0; i < requests; i++) {
       HttpURLConnection connection = createConnection(PROFILE_URL, "POST");
