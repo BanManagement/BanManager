@@ -87,6 +87,8 @@ public class DefaultConfig extends Config<BanManager> {
     hooksConfig = new HooksConfig(conf.getConfigurationSection("hooks"));
 
     mutedBlacklistCommands = new HashSet<>();
+    softMutedBlacklistCommands = new HashSet<>();
+
     // Run this after startup to ensure all aliases are found
     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
