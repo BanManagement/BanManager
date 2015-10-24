@@ -6,7 +6,6 @@ import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import me.confuser.banmanager.util.parsers.SoftCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    SoftCommandParser parser = new SoftCommandParser(args);
+    CommandParser parser = new CommandParser(args);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -179,10 +178,10 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (isSoft || bukkitPlayer == null) return;
 
         Message muteMessage = Message.get("mute.player.disallowed")
-          .set("displayName", bukkitPlayer.getDisplayName())
-          .set("player", player.getName())
-          .set("reason", mute.getReason())
-          .set("actor", actor.getName());
+                                     .set("displayName", bukkitPlayer.getDisplayName())
+                                     .set("player", player.getName())
+                                     .set("reason", mute.getReason())
+                                     .set("actor", actor.getName());
 
         bukkitPlayer.sendMessage(muteMessage.toString());
 

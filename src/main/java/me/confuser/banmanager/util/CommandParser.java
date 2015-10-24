@@ -9,11 +9,15 @@ import java.util.List;
 public class CommandParser {
 
   @Getter
-  private final String[] args;
+  protected String[] args;
 
   @Argument(alias = "s")
   @Getter
   private boolean silent = false;
+
+  @Argument(alias = "st")
+  @Getter
+  private boolean soft = false;
 
 
   public CommandParser(String[] args) {

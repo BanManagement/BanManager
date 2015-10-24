@@ -3,8 +3,8 @@ package me.confuser.banmanager.commands.external;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.external.ExternalPlayerMuteData;
+import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.UUIDUtils;
-import me.confuser.banmanager.util.parsers.SoftCommandParser;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +23,7 @@ public class MuteAllCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    SoftCommandParser parser = new SoftCommandParser(args);
+    CommandParser parser = new CommandParser(args);
     args = parser.getArgs();
 
     final boolean isSoft = parser.isSoft();
