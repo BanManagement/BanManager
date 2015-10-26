@@ -2,6 +2,8 @@ package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
@@ -11,6 +13,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.events.PlayerWarnEvent;
 import me.confuser.banmanager.events.PlayerWarnedEvent;
+import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
@@ -91,5 +94,26 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
             "INTERVAL " + cleanup.getDays() + " DAY)) AND `read` = " + (read ? "1" : "0"));
+  }
+
+
+  public CloseableIterator<PlayerWarnData> findWarnings(long fromTime) throws SQLException {
+    if (fromTime == 0) {
+      return iterator();
+    }
+
+    long checkTime = fromTime + DateUtils.getTimeDiff();
+
+    QueryBuilder<PlayerWarnData, Integer> query = queryBuilder();
+    Where<PlayerWarnData, Integer> where = query.where();
+    where
+            .ge("created", checkTime)
+            .or()
+            .ge("updated", checkTime);
+
+    query.setWhere(where);
+
+    return query.iterator();
+
   }
 }

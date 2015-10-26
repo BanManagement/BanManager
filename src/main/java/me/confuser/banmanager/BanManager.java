@@ -438,9 +438,9 @@ public class BanManager extends BukkitPlugin {
   @Override
   public void setupRunnables() {
     if (externalConn == null) {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync());
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync());
     } else {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync(),
         new ExternalBanSync(), new ExternalMuteSync(), new ExternalIpSync(), new ExternalNoteSync());
     }
 
