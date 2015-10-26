@@ -7,6 +7,7 @@ import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -66,6 +67,15 @@ public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanMana
           Message.get("dwarn.error.noWarnings").set("player", player.getName()).sendTo(sender);
         } else {
           Message.get("dwarn.notify").set("player", player.getName()).set("actor", sender.getName()).sendTo(sender);
+
+          Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+
+          if (bukkitPlayer == null) return;
+
+          Message.get("dwarn.player.notify")
+                 .set("player", player.getName())
+                 .set("actor", sender.getName())
+                 .sendTo(bukkitPlayer);
         }
       }
 

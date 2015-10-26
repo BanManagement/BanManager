@@ -221,6 +221,8 @@ messages:
     notify: '&6[player] has been warned for [expires] by [actor] for &4[reason]'
 
   dwarn:
+    player:
+      notify: '&6Your most recent warning has been deleted by &4[actor]'
     notify: '&cThe most recent warning for [player] has been deleted'
     error:
       noWarnings: '&c[player] has no warnings to delete'
