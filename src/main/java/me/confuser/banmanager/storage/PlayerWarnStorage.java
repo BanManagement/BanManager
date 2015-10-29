@@ -106,10 +106,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
     QueryBuilder<PlayerWarnData, Integer> query = queryBuilder();
     Where<PlayerWarnData, Integer> where = query.where();
-    where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+    where.ge("created", checkTime);
 
     query.setWhere(where);
 
