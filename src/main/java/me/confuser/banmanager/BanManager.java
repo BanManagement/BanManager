@@ -379,7 +379,7 @@ public class BanManager extends BukkitPlugin {
      * We should not use this. Auto reconnect does this for us. Waste of
      * packets and CPU.
      */
-//    connection.setCheckConnectionsEveryMillis(0);
+    connection.setCheckConnectionsEveryMillis(0);
     connection.setDatabaseType(new MySQLDatabase());
     connection.initialize();
 
