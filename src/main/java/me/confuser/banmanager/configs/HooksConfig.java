@@ -35,6 +35,11 @@ public class HooksConfig {
   private HashMap<String, Hook> hooks;
 
   public HooksConfig(ConfigurationSection config) {
+    if (config == null) {
+      isEnabled = false;
+      return;
+    }
+
     isEnabled = config.getBoolean("enabled", false);
     hooks = new HashMap<>();
 
