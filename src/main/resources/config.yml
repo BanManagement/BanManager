@@ -126,10 +126,6 @@ hooks:
 #     post:
 #     - cmd: broadcast [player] banned
 
-# Use Mojang UUID's?
-# If you are behind Bungeecord in online mode, but Spigot/Craftbukkit is in offline mode, keep onlineMode true
-onlineMode: true
-
 # Set to false to disable update checks
 checkForUpdates: true
 
