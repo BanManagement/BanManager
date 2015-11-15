@@ -21,7 +21,7 @@ public abstract class AutoCompleteNameTabCommand<T> extends BukkitCommand<BanMan
   public List<String> onTabComplete(CommandSender sender, Command command, String commandName, String[] args) {
     ArrayList<String> mostLike = new ArrayList<>();
 
-    if (!sender.hasPermission(command.getPermission())) return mostLike;
+    if (command.getPermission() == null || !sender.hasPermission(command.getPermission())) return mostLike;
     if (args.length != 1) return mostLike;
 
     if (CommandUtils.isValidNameDelimiter(args[0])) {
