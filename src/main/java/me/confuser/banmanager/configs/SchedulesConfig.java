@@ -33,7 +33,7 @@ public class SchedulesConfig extends Config<BanManager> {
   @Override
   public void afterLoad() {
     for (String key : conf.getConfigurationSection("scheduler").getKeys(false)) {
-      schedules.put(key, (conf.getInt(("scheduler." + key), 0) * 20));
+      schedules.put(key, conf.getInt(("scheduler." + key), 0));
     }
 
     for (String key : conf.getConfigurationSection("lastChecked").getKeys(false)) {

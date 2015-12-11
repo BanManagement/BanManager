@@ -450,7 +450,7 @@ public class BanManager extends BukkitPlugin {
      * This task should be ran last with a 1L offset as it gets modified
      * above.
      */
-    setupAsyncRunnable(schedulesConfig.getSchedule("saveLastChecked") + 1L, new SaveLastChecked());
+    setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked());
 
     // Purge
     getServer().getScheduler().runTaskAsynchronously(plugin, new Purge());
