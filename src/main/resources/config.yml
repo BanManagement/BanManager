@@ -85,6 +85,9 @@ logKicks: false
 # Broadcasts events to those with bm.notify.X permissions, including command success
 displayNotifications: true
 
+# Broadcasts when new punishments are synced
+broadcastOnSync: false
+
 # Simply give the permission bm.timelimit.playerMutes.X or bm.timelimit.playerBans.X to apply the time limits
 # replace X with the group defined here, can be anything you like.
 timeLimits:

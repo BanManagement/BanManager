@@ -50,6 +50,8 @@ public class DefaultConfig extends Config<BanManager> {
   private int maxOnlinePerIp = 0;
   @Getter
   private HooksConfig hooksConfig;
+  @Getter
+  private boolean broadcastOnSync = false;
 
   public DefaultConfig() {
     super("config.yml");
@@ -85,6 +87,8 @@ public class DefaultConfig extends Config<BanManager> {
     maxOnlinePerIp = conf.getInt("maxOnlinePerIp", 0);
 
     hooksConfig = new HooksConfig(conf.getConfigurationSection("hooks"));
+
+    broadcastOnSync = conf.getBoolean("broadcastOnSync", false);
 
     mutedBlacklistCommands = new HashSet<>();
     softMutedBlacklistCommands = new HashSet<>();

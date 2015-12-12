@@ -114,6 +114,10 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     ranges.add(range);
     bans.put(range, ban);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new IpRangeBannedEvent(ban, false));
+    }
   }
 
   public void removeBan(IpRangeBanData ban) {

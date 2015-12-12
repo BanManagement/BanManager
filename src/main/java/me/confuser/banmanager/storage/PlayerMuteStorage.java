@@ -37,8 +37,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       // Attempt to add new columns
       try {
         String update = "ALTER TABLE " + tableConfig
-          .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
-          " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
+                .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -103,6 +103,10 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, false));
+    }
   }
 
   public boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {
@@ -132,6 +136,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
     return unmute(mute, actor, "");
   }
+
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason) throws SQLException {
     PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);

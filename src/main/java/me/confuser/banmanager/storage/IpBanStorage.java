@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -78,6 +79,10 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
   public void addBan(IpBanData ban) {
     bans.put(ban.getIp(), ban);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new IpBannedEvent(ban, false));
+    }
   }
 
   public void removeBan(IpBanData ban) {

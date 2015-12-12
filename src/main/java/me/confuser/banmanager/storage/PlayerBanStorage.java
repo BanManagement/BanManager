@@ -84,6 +84,10 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
   public void addBan(PlayerBanData ban) {
     bans.put(ban.getPlayer().getUUID(), ban);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new PlayerBannedEvent(ban, false));
+    }
   }
 
   public void removeBan(PlayerBanData ban) {
