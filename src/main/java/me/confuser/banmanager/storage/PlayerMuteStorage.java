@@ -41,7 +41,6 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
           " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
-        e.printStackTrace();
       }
     }
 
