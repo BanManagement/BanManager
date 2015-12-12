@@ -94,6 +94,7 @@ public class AddNoteAllCommand extends BukkitCommand<BanManager> {
                .set("actor", note.getActorName())
                .set("message", note.getMessage())
                .set("player", player.getName())
+               .set("playerId", player.getUUID().toString())
                .sendTo(sender);
       }
 

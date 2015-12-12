@@ -152,6 +152,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           Message warningMessage = Message.get("warn.player.warned")
                                           .set("displayName", bukkitPlayer.getDisplayName())
                                           .set("player", player.getName())
+                                          .set("playerId", player.getUUID().toString())
                                           .set("reason", warning.getReason())
                                           .set("actor", actor.getName());
 
@@ -160,6 +161,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         Message message = Message.get("warn.notify")
                                  .set("player", player.getName())
+                                 .set("playerId", player.getUUID().toString())
                                  .set("actor", actor.getName())
                                  .set("reason", warning.getReason());
 
@@ -191,6 +193,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
             public void run() {
               String actionCommand = action.getCommand()
                                            .replace("[player]", player.getName())
+                                           .replace("[playerId]", player.getUUID().toString())
                                            .replace("[actor]", actor.getName())
                                            .replace("[reason]", warning.getReason());
 

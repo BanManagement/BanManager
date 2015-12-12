@@ -90,6 +90,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
         kickMessage
                 .set("displayName", player.getDisplayName())
                 .set("player", player.getName())
+                .set("playerId", player.getUniqueId().toString())
                 .set("actor", actor.getName());
 
         if (plugin.getConfiguration().isKickLoggingEnabled()) {

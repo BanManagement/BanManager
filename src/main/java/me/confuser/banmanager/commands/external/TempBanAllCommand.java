@@ -112,6 +112,7 @@ public class TempBanAllCommand extends BukkitCommand<BanManager> {
                .set("reason", ban.getReason())
                .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()))
                .set("player", player.getName())
+               .set("playerId", player.getUUID().toString())
                .sendTo(sender);
       }
 

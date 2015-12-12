@@ -199,6 +199,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         Message muteMessage = Message.get("tempmute.player.disallowed")
                                      .set("displayName", bukkitPlayer.getDisplayName())
                                      .set("player", player.getName())
+                                     .set("playerId", player.getUUID().toString())
                                      .set("reason", mute.getReason())
                                      .set("actor", actor.getName())
                                      .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));

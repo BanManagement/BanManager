@@ -27,6 +27,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPre().size() != 0) {
       executeCommands(hook.getPre(), ImmutableMap.of(
               "player", event.getBan().getPlayer().getName()
+              , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
       ));
@@ -43,6 +44,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getBan().getPlayer().getName()
+              , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
       ));
@@ -59,6 +61,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getBan().getPlayer().getName()
+              , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
       ));
@@ -75,6 +78,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPre().size() != 0) {
       executeCommands(hook.getPre(), ImmutableMap.of(
               "player", event.getMute().getPlayer().getName()
+              , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getMute().getActor().getName()
               , "reason", event.getMute().getReason()
       ));
@@ -91,6 +95,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getMute().getPlayer().getName()
+              , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getMute().getActor().getName()
               , "reason", event.getMute().getReason()
       ));
@@ -107,6 +112,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getMute().getPlayer().getName()
+              , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
       ));
@@ -224,6 +230,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPre().size() != 0) {
       executeCommands(hook.getPre(), ImmutableMap.of(
               "player", event.getWarning().getPlayer().getName()
+              , "playerId", event.getWarning().getPlayer().getUUID().toString()
               , "actor", event.getWarning().getActor().getName()
               , "reason", event.getWarning().getReason()
       ));
@@ -240,6 +247,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getWarning().getPlayer().getName()
+              , "playerId", event.getWarning().getPlayer().getUUID().toString()
               , "actor", event.getWarning().getActor().getName()
               , "reason", event.getWarning().getReason()
       ));
@@ -256,6 +264,7 @@ public class HookListener extends Listeners<BanManager> {
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
               "player", event.getNote().getPlayer().getName()
+              , "playerId", event.getNote().getPlayer().getUUID().toString()
               , "actor", event.getNote().getActor().getName()
               , "message", event.getNote().getMessage()
       ));

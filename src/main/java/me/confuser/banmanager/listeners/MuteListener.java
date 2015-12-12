@@ -29,7 +29,9 @@ public class MuteListener extends Listeners<BanManager> {
       message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
     }
 
-    message.set("player", mute.getPlayer().getName()).set("actor", mute.getActor().getName())
+    message.set("player", mute.getPlayer().getName())
+           .set("playerId", mute.getPlayer().getUUID().toString())
+           .set("actor", mute.getActor().getName())
            .set("reason", mute.getReason());
 
     if (!event.isSilent()) {

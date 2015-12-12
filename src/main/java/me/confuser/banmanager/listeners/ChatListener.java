@@ -48,6 +48,7 @@ public class ChatListener extends Listeners<BanManager> {
 
     message.set("displayName", event.getPlayer().getDisplayName())
            .set("player", event.getPlayer().getName())
+           .set("playerId", event.getPlayer().getUniqueId().toString())
            .set("reason", mute.getReason())
            .set("actor", mute.getActor().getName());
 

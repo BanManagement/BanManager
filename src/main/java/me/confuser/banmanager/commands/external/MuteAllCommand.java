@@ -104,6 +104,7 @@ public class MuteAllCommand extends BukkitCommand<BanManager> {
                .set("actor", ban.getActorName())
                .set("reason", ban.getReason())
                .set("player", player.getName())
+               .set("playerId", player.getUUID().toString())
                .sendTo(sender);
       }
 

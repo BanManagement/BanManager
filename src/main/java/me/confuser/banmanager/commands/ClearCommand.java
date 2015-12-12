@@ -128,7 +128,11 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
             return;
           }
 
-          Message.get("bmclear.notify").set("type", type).set("player", player.getName()).sendTo(sender);
+          Message.get("bmclear.notify")
+                 .set("type", type)
+                 .set("player", player.getName())
+                 .set("playerId", player.getUUID().toString())
+                 .sendTo(sender);
         }
       }
     });

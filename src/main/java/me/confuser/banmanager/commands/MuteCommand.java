@@ -180,6 +180,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         Message muteMessage = Message.get("mute.player.disallowed")
                                      .set("displayName", bukkitPlayer.getDisplayName())
                                      .set("player", player.getName())
+                                     .set("playerId", player.getUUID().toString())
                                      .set("reason", mute.getReason())
                                      .set("actor", actor.getName());
 

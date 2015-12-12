@@ -35,7 +35,9 @@ public class BanListener extends Listeners<BanManager> {
       message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
     }
 
-    message.set("player", ban.getPlayer().getName()).set("actor", ban.getActor().getName())
+    message.set("player", ban.getPlayer().getName())
+           .set("playerId", ban.getPlayer().getUUID().toString())
+           .set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 
     if (!event.isSilent()) {

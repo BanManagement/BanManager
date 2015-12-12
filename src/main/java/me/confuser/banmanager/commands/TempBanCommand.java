@@ -191,8 +191,11 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
             if (bukkitPlayer == null) return;
 
-            Message kickMessage = Message.get("tempban.player.kick").set("displayName", bukkitPlayer.getDisplayName())
-                                         .set("player", player.getName()).set("reason", ban.getReason())
+            Message kickMessage = Message.get("tempban.player.kick")
+                                         .set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("player", player.getName())
+                                         .set("playerId", player.getUUID().toString())
+                                         .set("reason", ban.getReason())
                                          .set("actor", actor.getName())
                                          .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 

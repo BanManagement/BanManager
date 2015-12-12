@@ -116,6 +116,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         Message message = Message.get("unmute.notify");
         message
                 .set("player", mute.getPlayer().getName())
+                .set("playerId", mute.getPlayer().getUUID().toString())
                 .set("actor", actor.getName())
                 .set("reason", reason);
 

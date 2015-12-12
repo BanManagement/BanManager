@@ -176,6 +176,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         messages.add(Message.get("info.stats.player")
                             .set("player", player.getName())
+                            .set("playerId", player.getUUID().toString())
                             .set("bans", Long.toString(banTotal))
                             .set("mutes", Long.toString(muteTotal))
                             .set("warns", Long.toString(warnTotal))

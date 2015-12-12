@@ -115,6 +115,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
         Message message = Message.get("unban.notify");
         message
                 .set("player", ban.getPlayer().getName())
+                .set("playerId", ban.getPlayer().getUUID().toString())
                 .set("actor", actor.getName())
                 .set("reason", reason);
 

@@ -21,6 +21,7 @@ public class ReportListener extends Listeners<BanManager> {
     Message message = Message.get("report.notify");
 
     message.set("player", report.getPlayer().getName())
+           .set("playerId", report.getPlayer().getUUID().toString())
            .set("actor", report.getActor().getName())
            .set("reason", report.getReason());
 

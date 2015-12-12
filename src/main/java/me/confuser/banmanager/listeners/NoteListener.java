@@ -19,6 +19,7 @@ public class NoteListener extends Listeners<BanManager> {
     Message message = Message.get("notes.notify");
 
     message.set("player", note.getPlayer().getName())
+           .set("playerId", note.getPlayer().getUUID().toString())
            .set("actor", note.getActor().getName())
            .set("message", note.getMessage());
 

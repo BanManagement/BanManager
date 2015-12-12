@@ -170,6 +170,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           Message warningMessage = Message.get("tempwarn.player.warned")
                                           .set("displayName", bukkitPlayer.getDisplayName())
                                           .set("player", player.getName())
+                                          .set("playerId", player.getUUID().toString())
                                           .set("reason", warning.getReason())
                                           .set("actor", actor.getName())
                                           .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
@@ -179,6 +180,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         Message message = Message.get("tempwarn.notify")
                                  .set("player", player.getName())
+                                 .set("playerId", player.getUUID().toString())
                                  .set("actor", actor.getName())
                                  .set("reason", warning.getReason())
                                  .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
@@ -211,6 +213,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
             public void run() {
               String actionCommand = action.getCommand()
                                            .replace("[player]", player.getName())
+                                           .replace("[playerId]", player.getUUID().toString())
                                            .replace("[actor]", actor.getName())
                                            .replace("[reason]", warning.getReason())
                                            .replace("[expires]", parsedArgs[1]);

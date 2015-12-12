@@ -74,6 +74,7 @@ public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanMana
 
           Message.get("dwarn.player.notify")
                  .set("player", player.getName())
+                 .set("playerId", player.getUUID().toString())
                  .set("actor", sender.getName())
                  .sendTo(bukkitPlayer);
         }

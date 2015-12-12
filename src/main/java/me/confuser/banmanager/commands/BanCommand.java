@@ -177,6 +177,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
             Message kickMessage = Message.get("ban.player.kick")
                                          .set("displayName", bukkitPlayer.getDisplayName())
                                          .set("player", player.getName())
+                                         .set("playerId", player.getUUID().toString())
                                          .set("reason", ban.getReason())
                                          .set("actor", actor.getName());
 
