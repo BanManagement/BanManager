@@ -29,6 +29,39 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
+    if (plugin.getConfiguration().isCheckOnJoin()) {
+      // Check for new bans/mutes
+      if (!plugin.getIpBanStorage().isBanned(event.getAddress())) {
+        try {
+          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toLong(event.getAddress()));
+
+          if (ban != null) plugin.getIpBanStorage().addBan(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
+        try {
+          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(event.getUniqueId());
+
+          if (ban != null) plugin.getPlayerBanStorage().addBan(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (!plugin.getPlayerMuteStorage().isMuted(event.getUniqueId())) {
+        try {
+          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(event.getUniqueId());
+
+          if (mute != null) plugin.getPlayerMuteStorage().addMute(mute);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
     if (plugin.getIpRangeBanStorage().isBanned(event.getAddress())) {
       IpRangeBanData data = plugin.getIpRangeBanStorage().getBan(event.getAddress());
 

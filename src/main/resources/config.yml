@@ -154,3 +154,7 @@ cleanUp:
 
 # Maximum amount of players allowed from a single ip, set to 0 to disable
 maxOnlinePerIp: 0
+
+# Whether to check the database to see if the player is banned on join or not
+# Recommended to be disabled, the schedule sync tasks should suffice
+checkOnJoin: false
