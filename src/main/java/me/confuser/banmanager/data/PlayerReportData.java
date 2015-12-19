@@ -12,7 +12,7 @@ public class PlayerReportData {
   @Getter
   private int id;
 
-  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass =
+  @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass =
           ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData player;
@@ -22,7 +22,7 @@ public class PlayerReportData {
   private String reason;
 
   @Getter
-  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData actor;
 
   // Should always be database time

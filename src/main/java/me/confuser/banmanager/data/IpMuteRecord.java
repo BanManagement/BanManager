@@ -12,7 +12,7 @@ public class IpMuteRecord {
   @Getter
   private int id;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
+  @DatabaseField(index = true, canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
   @Getter
   private long ip;
 
