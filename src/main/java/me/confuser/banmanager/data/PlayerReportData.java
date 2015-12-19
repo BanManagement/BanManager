@@ -12,7 +12,8 @@ public class PlayerReportData {
   @Getter
   private int id;
 
-  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass =
+          ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
   private PlayerData player;
 
