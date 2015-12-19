@@ -287,6 +287,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         messages.add(Message.get("info.website.player")
                             .set("player", player.getName())
                             .set("uuid", player.getUUID().toString())
+                            .set("playerId", player.getUUID().toString())
                             .toString());
       }
     }
