@@ -1,7 +1,9 @@
 package me.confuser.banmanager;
 
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
+import com.j256.ormlite.support.ConnectionSource;
+import com.jolbox.bonecp.BoneCPDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
 import me.confuser.banmanager.commands.external.*;
@@ -25,9 +27,9 @@ public class BanManager extends BukkitPlugin {
   @Getter
   public static BanManager plugin;
 
-  private JdbcPooledConnectionSource localConn;
-  private JdbcPooledConnectionSource externalConn;
-  private JdbcPooledConnectionSource conversionConn;
+  private ConnectionSource localConn;
+  private ConnectionSource externalConn;
+  private ConnectionSource conversionConn;
 
   @Getter
   private PlayerBanStorage playerBanStorage;
@@ -366,33 +368,28 @@ public class BanManager extends BukkitPlugin {
     return true;
   }
 
-  private JdbcPooledConnectionSource setupConnection(DatabaseConfig dbConfig) throws SQLException {
-    JdbcPooledConnectionSource connection = new JdbcPooledConnectionSource(dbConfig.getJDBCUrl());
+  private ConnectionSource setupConnection(DatabaseConfig dbConfig) throws SQLException {
+    BoneCPDataSource ds = new BoneCPDataSource();
 
     if (!dbConfig.getUser().isEmpty()) {
-      connection.setUsername(dbConfig.getUser());
+      ds.setUsername(dbConfig.getUser());
     }
     if (!dbConfig.getPassword().isEmpty()) {
-      connection.setPassword(dbConfig.getPassword());
+      ds.setPassword(dbConfig.getPassword());
     }
 
-    connection.setMaxConnectionsFree(dbConfig.getMaxConnections());
-    /*
-     * There is a memory leak in ormlite-jbcd that means we should not use
-     * this. AutoReconnect handles this for us.
-     */
-    connection.setTestBeforeGet(false);
-    /* Keep the connection open for 15 minutes */
-    connection.setMaxConnectionAgeMillis(900000);
-    /*
-     * We should not use this. Auto reconnect does this for us. Waste of
-     * packets and CPU.
-     */
-    connection.setCheckConnectionsEveryMillis(0);
-    connection.setDatabaseType(new MySQLDatabase());
-    connection.initialize();
+    ds.setJdbcUrl(dbConfig.getJDBCUrl());
 
-    return connection;
+    ds.setMinConnectionsPerPartition(2);
+    ds.setMaxConnectionsPerPartition(dbConfig.getMaxConnections());
+    ds.setPartitionCount(1);
+
+    /* Keep the connection open for 5 minutes */
+    ds.setMaxConnectionAgeInSeconds(300);
+
+    ds.setLogStatementsEnabled(configuration.isDebugEnabled());
+
+    return new DataSourceConnectionSource(ds, new MySQLDatabase());
   }
 
   @SuppressWarnings("unchecked")
@@ -452,7 +449,7 @@ public class BanManager extends BukkitPlugin {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync());
     } else {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync(),
-        new ExternalBanSync(), new ExternalMuteSync(), new ExternalIpSync(), new ExternalNoteSync());
+              new ExternalBanSync(), new ExternalMuteSync(), new ExternalIpSync(), new ExternalNoteSync());
     }
 
     setupAsyncRunnable(10L, syncRunner);

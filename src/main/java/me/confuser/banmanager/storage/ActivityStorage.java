@@ -4,6 +4,7 @@ import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
@@ -233,9 +234,9 @@ public class ActivityStorage {
 
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Unban', 'Warning', 'Mute', 'Unmute', 'Note')";
-  private JdbcPooledConnectionSource localConn;
+  private ConnectionSource localConn;
 
-  public ActivityStorage(JdbcPooledConnectionSource localConn) {
+  public ActivityStorage(ConnectionSource localConn) {
     this.localConn = localConn;
   }
 

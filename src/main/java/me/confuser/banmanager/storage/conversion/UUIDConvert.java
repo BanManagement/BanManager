@@ -1,6 +1,7 @@
 package me.confuser.banmanager.storage.conversion;
 
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.storage.conversion.converters.*;
@@ -13,9 +14,9 @@ import java.sql.SQLException;
 public class UUIDConvert {
 
   private BanManager plugin = BanManager.getPlugin();
-  private JdbcPooledConnectionSource conversionConn;
+  private ConnectionSource conversionConn;
 
-  public UUIDConvert(JdbcPooledConnectionSource conversionConn) {
+  public UUIDConvert(ConnectionSource conversionConn) {
     this.conversionConn = conversionConn;
 
     executeConverter(new PlayerIpConverter());

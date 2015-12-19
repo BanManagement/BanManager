@@ -4,6 +4,7 @@ import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class HistoryStorage {
 
   private BanManager plugin = BanManager.getPlugin();
-  private JdbcPooledConnectionSource localConn;
+  private ConnectionSource localConn;
 
   // Queries
   final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, created, reason" +
@@ -51,7 +52,7 @@ public class HistoryStorage {
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Warning', 'Mute', 'Kick', 'Note')";
 
-  public HistoryStorage(JdbcPooledConnectionSource localConn) {
+  public HistoryStorage(ConnectionSource localConn) {
     this.localConn = localConn;
   }
 
