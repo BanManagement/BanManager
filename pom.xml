@@ -54,8 +54,8 @@
                                     <shadedPattern>me.confuser.banmanager.internal.ormlite</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.jolbox.bonecp</pattern>
-                                    <shadedPattern>me.confuser.banmanager.internal.bonecp</shadedPattern>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.slf4j</pattern>
@@ -133,14 +133,6 @@
             <id>Central</id>
             <url>http://repo1.maven.org/maven2</url>
         </repository>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>bonecp-repo</id>
-            <name>BoneCP Repository</name>
-            <url>http://jolbox.com/bonecp/downloads/maven</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -169,15 +161,14 @@
             <version>4.48</version>
         </dependency>
         <dependency>
-            <groupId>com.jolbox</groupId>
-            <artifactId>bonecp</artifactId>
-            <version>0.8.0.RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>

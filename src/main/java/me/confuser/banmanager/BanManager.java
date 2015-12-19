@@ -3,7 +3,7 @@ package me.confuser.banmanager;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
-import com.jolbox.bonecp.BoneCPDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
 import me.confuser.banmanager.commands.external.*;
@@ -371,7 +371,7 @@ public class BanManager extends BukkitPlugin {
   }
 
   private ConnectionSource setupConnection(DatabaseConfig dbConfig) throws SQLException {
-    BoneCPDataSource ds = new BoneCPDataSource();
+    HikariDataSource ds = new HikariDataSource();
 
     if (!dbConfig.getUser().isEmpty()) {
       ds.setUsername(dbConfig.getUser());
@@ -382,14 +382,9 @@ public class BanManager extends BukkitPlugin {
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
 
-    ds.setMinConnectionsPerPartition(2);
-    ds.setMaxConnectionsPerPartition(dbConfig.getMaxConnections());
-    ds.setPartitionCount(1);
-
+    ds.setMaximumPoolSize(dbConfig.getMaxConnections());
     /* Keep the connection open for 5 minutes */
-    ds.setMaxConnectionAgeInSeconds(300);
-
-    ds.setLogStatementsEnabled(configuration.isDebugEnabled());
+//    ds.setMaxLifetime(300000);
 
     return new DataSourceConnectionSource(ds, new MySQLDatabase());
   }
