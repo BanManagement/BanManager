@@ -9,6 +9,7 @@ import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,11 +27,16 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    final WarnCommandParser parser = new WarnCommandParser(args);
     final String[] parsedArgs = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
+    if (parser.getPoints() != 1 && !sender.hasPermission(command.getPermission() + ".points")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
       return true;
     }
@@ -148,7 +154,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
 
-        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline, expires);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, parser.getPoints(), isOnline, expires);
 
         boolean created;
 
@@ -173,7 +179,8 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                           .set("playerId", player.getUUID().toString())
                                           .set("reason", warning.getReason())
                                           .set("actor", actor.getName())
-                                          .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
+                                          .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                                          .set("points", parser.getPoints());
 
           bukkitPlayer.sendMessage(warningMessage.toString());
         }
@@ -183,7 +190,8 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                  .set("playerId", player.getUUID().toString())
                                  .set("actor", actor.getName())
                                  .set("reason", warning.getReason())
-                                 .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
+                                 .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                                 .set("points", parser.getPoints());
 
         if (!sender.hasPermission("bm.notify.tempwarn")) {
           message.sendTo(sender);
@@ -195,7 +203,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         try {
           actionCommands = plugin.getConfiguration().getWarningActions()
-                                 .getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
+                                 .getCommand((int) plugin.getPlayerWarnStorage().getPointsCount(player));
         } catch (SQLException e) {
           e.printStackTrace();
           return;
@@ -216,7 +224,8 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                            .replace("[playerId]", player.getUUID().toString())
                                            .replace("[actor]", actor.getName())
                                            .replace("[reason]", warning.getReason())
-                                           .replace("[expires]", parsedArgs[1]);
+                                           .replace("[expires]", parsedArgs[1])
+                                           .replace("[points]", Integer.toString(parser.getPoints()));
 
               plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
             }

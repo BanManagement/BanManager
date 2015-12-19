@@ -39,31 +39,36 @@ public class PlayerWarnData {
   @Setter
   private boolean read = true;
 
+  @DatabaseField(index = true)
+  @Getter
+  private int points = 1;
+
   PlayerWarnData() {
 
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason) {
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points) {
     this.player = player;
     this.reason = reason;
     this.actor = actor;
+    this.points = points;
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, boolean read) {
-    this(player, actor, reason);
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points, boolean read) {
+    this(player, actor, reason, points);
 
     this.read = read;
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, boolean read, long expires) {
-    this(player, actor, reason, read);
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points, boolean read, long expires) {
+    this(player, actor, reason, points, read);
 
     this.expires = expires;
   }
 
   // Imports only!
   public PlayerWarnData(PlayerData player, PlayerData actor, String reason, boolean read, long expires, long created) {
-    this(player, actor, reason, read, expires);
+    this(player, actor, reason, 1, read, expires);
 
     this.created = created;
   }

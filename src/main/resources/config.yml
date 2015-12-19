@@ -108,7 +108,7 @@ reportCooldown: 10
 # Set to 0 to disable
 warningCooldown: 10
 
-# Commands to execute when a player reaches a certain number of warnings
+# Commands to execute when a player reaches a certain number of warning points
 warningActions:
   enabled: false
   actions:

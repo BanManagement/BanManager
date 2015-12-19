@@ -608,7 +608,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static void warn(PlayerData player, PlayerData actor, String reason, boolean read) throws SQLException {
-    warn(new PlayerWarnData(player, actor, reason, read));
+    warn(new PlayerWarnData(player, actor, reason, 1, read));
   }
 
   /**
@@ -625,7 +625,7 @@ public class BmAPI {
    */
   public static void warn(PlayerData player, PlayerData actor, String reason, boolean read, boolean silent) throws
           SQLException {
-    warn(new PlayerWarnData(player, actor, reason, read), silent);
+    warn(new PlayerWarnData(player, actor, reason, 1, read), silent);
   }
 
   /**

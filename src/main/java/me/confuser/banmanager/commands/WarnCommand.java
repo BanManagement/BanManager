@@ -4,9 +4,9 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
-import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,11 +24,16 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    final WarnCommandParser parser = new WarnCommandParser(args);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
+    if (parser.getPoints() != 1 && !sender.hasPermission(command.getPermission() + ".points")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
       return true;
     }
@@ -130,7 +135,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
 
-        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, parser.getPoints(), isOnline);
 
         boolean created;
 
@@ -154,7 +159,8 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                           .set("player", player.getName())
                                           .set("playerId", player.getUUID().toString())
                                           .set("reason", warning.getReason())
-                                          .set("actor", actor.getName());
+                                          .set("actor", actor.getName())
+                                          .set("points", parser.getPoints());
 
           bukkitPlayer.sendMessage(warningMessage.toString());
         }
@@ -163,7 +169,8 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                  .set("player", player.getName())
                                  .set("playerId", player.getUUID().toString())
                                  .set("actor", actor.getName())
-                                 .set("reason", warning.getReason());
+                                 .set("reason", warning.getReason())
+                                 .set("points", parser.getPoints());
 
         if (!sender.hasPermission("bm.notify.warn")) {
           message.sendTo(sender);
@@ -175,7 +182,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         try {
           actionCommands = plugin.getConfiguration().getWarningActions()
-                                 .getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
+                                 .getCommand((int) plugin.getPlayerWarnStorage().getPointsCount(player));
         } catch (SQLException e) {
           e.printStackTrace();
           return;
@@ -195,7 +202,8 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                            .replace("[player]", player.getName())
                                            .replace("[playerId]", player.getUUID().toString())
                                            .replace("[actor]", actor.getName())
-                                           .replace("[reason]", warning.getReason());
+                                           .replace("[reason]", warning.getReason())
+                                           .replace("[points]", Integer.toString(parser.getPoints()));
 
               plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
             }
