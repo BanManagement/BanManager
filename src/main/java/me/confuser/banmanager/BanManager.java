@@ -26,7 +26,7 @@ public class BanManager extends BukkitPlugin {
 
   @Getter
   public static BanManager plugin;
-
+  @Getter
   private ConnectionSource localConn;
   private ConnectionSource externalConn;
   private ConnectionSource conversionConn;

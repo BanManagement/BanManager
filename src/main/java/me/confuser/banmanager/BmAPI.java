@@ -1,6 +1,7 @@
 package me.confuser.banmanager;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -667,7 +668,7 @@ public class BmAPI {
   }
 
   /**
-   * @param message - The message config node
+   * @param key - The message config node
    *
    * @return String
    */
@@ -675,4 +676,7 @@ public class BmAPI {
     return Message.get(key);
   }
 
+  public static ConnectionSource getLocalConnection() {
+    return plugin.getLocalConn();
+  }
 }
