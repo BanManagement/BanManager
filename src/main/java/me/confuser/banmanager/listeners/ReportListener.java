@@ -1,16 +1,19 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerNoteData;
+import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
-import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
+import me.confuser.banmanager.data.PlayerReportLocationData;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.CommandUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+
+import java.sql.SQLException;
 
 public class ReportListener extends Listeners<BanManager> {
 
@@ -39,4 +42,31 @@ public class ReportListener extends Listeners<BanManager> {
     }
   }
 
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void storeLocation(PlayerReportedEvent event) {
+    PlayerReportData report = event.getReport();
+
+    Player player = plugin.getServer().getPlayer(report.getPlayer().getUUID());
+    Player actor = plugin.getServer().getPlayer(report.getActor().getUUID());
+
+    try {
+      createLocation(report, player);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      createLocation(report, actor);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void createLocation(PlayerReportData report, Player player) throws SQLException {
+    if (player == null) return;
+
+    PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player));
+    plugin.getPlayerReportLocationStorage()
+          .create(new PlayerReportLocationData(report, playerData, player.getLocation()));
+  }
 }

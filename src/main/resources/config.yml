@@ -17,8 +17,9 @@ databases:
       playerMuteRecords: bm_player_mute_records
       playerKicks: bm_player_kicks
       playerNotes: bm_player_notes
-      playerWarnings: bm_player_warnings
       playerReports: bm_player_reports
+      playerReportLocations: bm_player_report_locations
+      playerWarnings: bm_player_warnings
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
       ipMutes: bm_ip_mutes

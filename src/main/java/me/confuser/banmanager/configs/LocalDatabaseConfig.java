@@ -21,6 +21,7 @@ public class LocalDatabaseConfig extends DatabaseConfig {
     put("playerNotes", PlayerNoteData.class);
 
     put("playerReports", PlayerReportData.class);
+    put("playerReportLocations", PlayerReportLocationData.class);
 
     put("playerWarnings", PlayerWarnData.class);
 
