@@ -252,6 +252,8 @@ messages:
 
   report:
     notify: '&6[player] has been reported by [actor] for &4[reason]'
+    error:
+      cooldown: '&cThis player was reported too recently, try again later'
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'

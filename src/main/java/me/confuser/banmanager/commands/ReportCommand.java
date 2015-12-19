@@ -97,6 +97,17 @@ public class ReportCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        try {
+          if (plugin.getPlayerReportStorage().isRecentlyWarned(player)) {
+            Message.get("report.error.cooldown").sendTo(sender);
+            return;
+          }
+        } catch (SQLException e) {
+          sender.sendMessage(Message.get("sender.error.exception").toString());
+          e.printStackTrace();
+          return;
+        }
+
         final PlayerData actor;
 
         if (sender instanceof Player) {

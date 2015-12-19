@@ -33,6 +33,8 @@ public class DefaultConfig extends Config<BanManager> {
   @Getter
   private long warningCooldown;
   @Getter
+  private long reportCooldown;
+  @Getter
   private WarningActionsConfig warningActions;
   @Getter
   private boolean displayNotificationsEnabled = true;
@@ -72,6 +74,7 @@ public class DefaultConfig extends Config<BanManager> {
       bypassPlayerIps.add(IPUtils.toLong(ip));
     }
 
+    reportCooldown = conf.getLong("reportCooldown", 0);
     warningCooldown = conf.getLong("warningCooldown", 0);
     warningActions = new WarningActionsConfig(conf.getConfigurationSection("warningActions"));
     kickLoggingEnabled = conf.getBoolean("logKicks", false);

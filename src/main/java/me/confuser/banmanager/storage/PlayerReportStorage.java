@@ -61,4 +61,16 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     return builder.delete();
   }
+
+  public boolean isRecentlyWarned(PlayerData player) throws SQLException {
+    if (plugin.getConfiguration().getReportCooldown() == 0) {
+      return false;
+    }
+
+    return queryBuilder().where()
+                         .eq("player_id", player).and()
+                         .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfiguration()
+                                                                                     .getReportCooldown())
+                         .countOf() > 0;
+  }
 }
