@@ -85,6 +85,11 @@ commands:
     usage: "/mute <player> <reason>"
     aliases: [bmmute]
     permission: bm.command.mute
+  muteip:
+    description: "mutes an ip"
+    usage: "/muteip <ip || player> <reason>"
+    aliases: [bmmuteip]
+    permission: bm.command.muteip
   muteall:
     description: "mutes a player across multiple servers"
     usage: "/muteall <player> <reason>"
@@ -95,6 +100,11 @@ commands:
     usage: "/tempmute <player> <timeDiff> <reason>"
     aliases: [bmtempmute]
     permission: bm.command.tempmute
+  tempmuteip:
+    description: "temp mutes an ip"
+    usage: "/tempmute <ip || player> <timeDiff> <reason>"
+    aliases: [bmtempmuteip]
+    permission: bm.command.tempmuteip
   tempmuteall:
     description: "temp mutes a player across multiple servers"
     usage: "/tempmuteall <player> <timeDiff> <reason>"
@@ -105,6 +115,11 @@ commands:
     usage: "/unmute <player> [reason]"
     aliases: [bmunmute]
     permission: bm.command.unmute
+  unmuteip:
+    description: "unmute an ip"
+    usage: "/unmuteip <ip || player> [reason]"
+    aliases: [bmunmuteip]
+    permission: bm.command.unmuteip
   unmuteall:
     description: "unmute a player across multiple servers"
     usage: "/unmuteall <player> [reason]"

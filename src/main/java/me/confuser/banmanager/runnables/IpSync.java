@@ -5,13 +5,17 @@ import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
+import me.confuser.banmanager.data.IpMuteData;
+import me.confuser.banmanager.data.IpMuteRecord;
 import me.confuser.banmanager.storage.IpBanStorage;
+import me.confuser.banmanager.storage.IpMuteStorage;
 
 import java.sql.SQLException;
 
 public class IpSync extends BmRunnable {
 
   private IpBanStorage banStorage = plugin.getIpBanStorage();
+  private IpMuteStorage muteStorage = plugin.getIpMuteStorage();
 
   public IpSync() {
     super("ipBans");
@@ -21,6 +25,8 @@ public class IpSync extends BmRunnable {
   public void run() {
     newBans();
     newUnbans();
+    newMutes();
+    newUnmutes();
   }
 
   private void newBans() {
@@ -60,6 +66,53 @@ public class IpSync extends BmRunnable {
         }
 
         banStorage.removeBan(ban.getIp());
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+  }
+
+  private void newMutes() {
+
+    CloseableIterator<IpMuteData> itr = null;
+    try {
+      itr = muteStorage.findMutes(lastChecked);
+
+      while (itr.hasNext()) {
+        final IpMuteData mute = itr.next();
+
+        if (muteStorage.isMuted(mute.getIp()) && mute.getUpdated() < lastChecked) {
+          continue;
+        }
+
+        muteStorage.addMute(mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+  }
+
+  private void newUnmutes() {
+
+    CloseableIterator<IpMuteRecord> itr = null;
+    try {
+      itr = plugin.getIpMuteRecordStorage().findUnmutes(lastChecked);
+
+      while (itr.hasNext()) {
+        final IpMuteRecord mute = itr.next();
+
+        if (!muteStorage.isMuted(mute.getIp())) {
+          continue;
+        }
+
+        muteStorage.removeMute(mute.getIp());
 
       }
     } catch (SQLException e) {

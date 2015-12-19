@@ -21,6 +21,8 @@ databases:
       playerReports: bm_player_reports
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
+      ipMutes: bm_ip_mutes
+      ipMuteRecords: bm_ip_mute_records
       ipRangeBans: bm_ip_range_bans
       ipRangeBanRecords: bm_ip_range_ban_records
 
@@ -99,6 +101,8 @@ timeLimits:
 #    Moderator: 30d
   ipBans:
 #    Moderator: 1d
+  ipMutes:
+#    Moderator: 1d
 
 # To prevent duplicate reports you can set a cooldown to limit the amount in seconds before a player can be reported again
 # Set to 0 to disable
@@ -148,6 +152,7 @@ cleanUp:
   kicks: 30
   banRecords: 0
   ipBanRecords: 0
+  ipMuteRecords: 0
   muteRecords: 0
   readWarnings: 0
   unreadWarnings: 0

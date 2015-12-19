@@ -45,6 +45,14 @@ public class LocalDatabaseConfig extends DatabaseConfig {
             .getString("tables.ipBanRecords"), null);
     addTable("ipBanRecords", ipBanRecordsTable);
 
+    DatabaseTableConfig<IpMuteData> ipMutesTable = new DatabaseTableConfig<>(IpMuteData.class, conf
+            .getString("tables.ipMutes"), null);
+    addTable("ipMutes", ipMutesTable);
+
+    DatabaseTableConfig<IpMuteRecord> ipMuteRecordsTable = new DatabaseTableConfig<>(IpMuteRecord.class, conf
+            .getString("tables.ipMuteRecords"), null);
+    addTable("ipMuteRecords", ipMuteRecordsTable);
+
     DatabaseTableConfig<PlayerNoteData> playerNotesTable = new DatabaseTableConfig<>(PlayerNoteData.class, conf
             .getString("tables.playerNotes"), null);
     addTable("playerNotes", playerNotesTable);

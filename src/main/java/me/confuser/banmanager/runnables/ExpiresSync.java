@@ -1,8 +1,6 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import lombok.Getter;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
@@ -17,6 +15,8 @@ public class ExpiresSync extends BmRunnable {
   private PlayerMuteRecordStorage muteRecordStorage = plugin.getPlayerMuteRecordStorage();
   private IpBanStorage ipBanStorage = plugin.getIpBanStorage();
   private IpBanRecordStorage ipBanRecordStorage = plugin.getIpBanRecordStorage();
+  private IpMuteStorage ipMuteStorage = plugin.getIpMuteStorage();
+  private IpMuteRecordStorage ipMuteRecordStorage = plugin.getIpMuteRecordStorage();
   private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
@@ -67,7 +67,7 @@ public class ExpiresSync extends BmRunnable {
     CloseableIterator<PlayerWarnData> warnings = null;
     try {
       warnings = warnStorage.queryBuilder().where().ne("expires", 0).and()
-                       .le("expires", now).iterator();
+                            .le("expires", now).iterator();
 
       while (warnings.hasNext()) {
         PlayerWarnData warning = warnings.next();
@@ -96,6 +96,23 @@ public class ExpiresSync extends BmRunnable {
       e.printStackTrace();
     } finally {
       if (ipBans != null) ipBans.closeQuietly();
+    }
+
+    CloseableIterator<IpMuteData> ipMutes = null;
+    try {
+      ipMutes = ipMuteStorage.queryBuilder().where().ne("expires", 0).and().le("expires", now).iterator();
+
+      while (ipMutes.hasNext()) {
+        IpMuteData mute = ipMutes.next();
+        ipMuteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole(), "");
+
+        ipMuteStorage.removeMute(mute);
+        ipMuteStorage.delete(mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (ipMutes != null) ipMutes.closeQuietly();
     }
 
     CloseableIterator<IpRangeBanData> ipRangeBans = null;

@@ -57,6 +57,10 @@ public class BanManager extends BukkitPlugin {
   @Getter
   private IpBanRecordStorage ipBanRecordStorage;
   @Getter
+  private IpMuteStorage ipMuteStorage;
+  @Getter
+  private IpMuteRecordStorage ipMuteRecordStorage;
+  @Getter
   private IpRangeBanStorage ipRangeBanStorage;
   @Getter
   private IpRangeBanRecordStorage ipRangeBanRecordStorage;
@@ -269,6 +273,11 @@ public class BanManager extends BukkitPlugin {
     new TempIpRangeBanCommand().register();
     new UnbanIpRangeCommand().register();
 
+    // IP Mutes
+    new MuteIpCommand().register();
+    new TempIpMuteCommand().register();
+    new UnmuteIpCommand().register();
+
     // Misc
     new ExportCommand().register();
     new ImportCommand().register();
@@ -401,6 +410,8 @@ public class BanManager extends BukkitPlugin {
 
     ipBanStorage = new IpBanStorage(localConn);
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
+    ipMuteStorage = new IpMuteStorage(localConn);
+    ipMuteRecordStorage = new IpMuteRecordStorage(localConn);
     ipRangeBanStorage = new IpRangeBanStorage(localConn);
     ipRangeBanRecordStorage = new IpRangeBanRecordStorage(localConn);
 

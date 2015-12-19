@@ -139,6 +139,13 @@ messages:
     error:
       exists: '&c[player] is already muted'
 
+  muteip:
+    ip:
+      disallowed: '&6You have been banned from this server for &4[reason]'
+    notify: '&6[ip] ([players]) have been permanently muted by [actor] for &4[reason]'
+    error:
+      exists: '&c[ip] is already muted'
+
   muteall:
     notify: '&6[player] will be permanently muted by [actor] for &4[reason]'
 
@@ -149,6 +156,13 @@ messages:
     error:
       exists: '&c[player] is already muted'
 
+  tempmuteip:
+    ip:
+      disallowed: '&6You have been temporarily muted for &4[reason] &6by [actor] which expires in [expires]'
+    notify: '&6[ip] ([players]) have been temporarily muted for [expires] by [actor] for &4[reason]'
+    error:
+      exists: '&c[ip] is already muted'
+
   tempmuteall:
     notify: '&6[player] will be temporarily muted for [expires] by [actor] for &4[reason]'
 
@@ -157,6 +171,12 @@ messages:
     error:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'
+
+  unmute:
+    notify: '&6[ip] has been unmuted by [actor]'
+    error:
+      noExists: '&c[ip] is not muted'
+      notOwn: '&c[ip] was not muted by you, unable to unmute'
 
   unmuteall:
     notify: '&6[player] will be unmuted by [actor]'
