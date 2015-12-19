@@ -1,5 +1,6 @@
 package me.confuser.banmanager.util;
 
+import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.bukkitutil.Message;
@@ -117,5 +118,21 @@ public class CommandUtils {
     }
 
     return actor;
+  }
+
+  public static Long getIp(String ipStr) {
+    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    Long ip = null;
+
+    if (isName) {
+      PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+      if (player == null) return ip;
+
+      ip = player.getIp();
+    } else {
+      ip = IPUtils.toLong(ipStr);
+    }
+
+    return ip;
   }
 }

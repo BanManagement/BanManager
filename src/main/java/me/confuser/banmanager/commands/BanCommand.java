@@ -105,19 +105,9 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isBanned) {
           PlayerBanData ban;

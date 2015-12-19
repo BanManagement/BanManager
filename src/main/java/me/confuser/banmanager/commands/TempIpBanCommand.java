@@ -81,18 +81,11 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       @Override
       public void run() {
-        final long ip;
+        final Long ip = CommandUtils.getIp(ipStr);
 
-        if (isName) {
-          PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
-          if (player == null) {
-            sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-            return;
-          }
-
-          ip = player.getIp();
-        } else {
-          ip = IPUtils.toLong(ipStr);
+        if (ip == null) {
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+          return;
         }
 
         final boolean isBanned = plugin.getIpBanStorage().isBanned(ip);
@@ -105,19 +98,9 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isBanned) {
           IpBanData ban = plugin.getIpBanStorage().getBan(ip);
