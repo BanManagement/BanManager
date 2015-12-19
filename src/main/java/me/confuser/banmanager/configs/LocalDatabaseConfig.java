@@ -1,73 +1,41 @@
 package me.confuser.banmanager.configs;
 
-import com.j256.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.data.*;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashMap;
+
 public class LocalDatabaseConfig extends DatabaseConfig {
 
+  private static HashMap<String, Class> types = new HashMap<String, Class>() {{
+    put("players", PlayerData.class);
+
+    put("playerBans", PlayerBanData.class);
+    put("playerBanRecords", PlayerBanRecord.class);
+
+    put("playerMutes", PlayerMuteData.class);
+    put("playerMuteRecords", PlayerMuteRecord.class);
+
+    put("playerKicks", PlayerKickData.class);
+
+    put("playerNotes", PlayerNoteData.class);
+
+    put("playerReports", PlayerReportData.class);
+
+    put("playerWarnings", PlayerWarnData.class);
+
+    put("ipBans", IpBanData.class);
+    put("ipBanRecords", IpBanRecord.class);
+
+    put("ipMutes", IpMuteData.class);
+    put("ipMuteRecords", IpMuteRecord.class);
+
+    put("ipRangeBans", IpRangeBanData.class);
+    put("ipRangeBanRecords", IpRangeBanRecord.class);
+  }};
+
   public LocalDatabaseConfig(ConfigurationSection conf) {
-    super(conf);
-
-    DatabaseTableConfig<PlayerData> playerTable = new DatabaseTableConfig<>(PlayerData.class, conf
-            .getString("tables.players"), null);
-    addTable("players", playerTable);
-
-    DatabaseTableConfig<PlayerBanData> playerBansTable = new DatabaseTableConfig<>(PlayerBanData.class, conf
-            .getString("tables.playerBans"), null);
-    addTable("playerBans", playerBansTable);
-
-    DatabaseTableConfig<PlayerBanRecord> playerBanRecordsTable = new DatabaseTableConfig<>(PlayerBanRecord.class, conf
-            .getString("tables.playerBanRecords"), null);
-    addTable("playerBanRecords", playerBanRecordsTable);
-
-    DatabaseTableConfig<PlayerMuteData> playerMutesTable = new DatabaseTableConfig<>(PlayerMuteData.class, conf
-            .getString("tables.playerMutes"), null);
-    addTable("playerMutes", playerMutesTable);
-
-    DatabaseTableConfig<PlayerMuteRecord> playerMuteRecordsTable = new DatabaseTableConfig<>(PlayerMuteRecord.class, conf
-            .getString("tables.playerMuteRecords"), null);
-    addTable("playerMuteRecords", playerMuteRecordsTable);
-
-    DatabaseTableConfig<PlayerKickData> playerKicksTable = new DatabaseTableConfig<>(PlayerKickData.class, conf
-            .getString("tables.playerKicks"), null);
-    addTable("playerKicks", playerKicksTable);
-
-    DatabaseTableConfig<PlayerWarnData> playerWarningsTable = new DatabaseTableConfig<>(PlayerWarnData.class, conf
-            .getString("tables.playerWarnings"), null);
-    addTable("playerWarnings", playerWarningsTable);
-
-    DatabaseTableConfig<IpBanData> ipBansTable = new DatabaseTableConfig<>(IpBanData.class, conf
-            .getString("tables.ipBans"), null);
-    addTable("ipBans", ipBansTable);
-
-    DatabaseTableConfig<IpBanRecord> ipBanRecordsTable = new DatabaseTableConfig<>(IpBanRecord.class, conf
-            .getString("tables.ipBanRecords"), null);
-    addTable("ipBanRecords", ipBanRecordsTable);
-
-    DatabaseTableConfig<IpMuteData> ipMutesTable = new DatabaseTableConfig<>(IpMuteData.class, conf
-            .getString("tables.ipMutes"), null);
-    addTable("ipMutes", ipMutesTable);
-
-    DatabaseTableConfig<IpMuteRecord> ipMuteRecordsTable = new DatabaseTableConfig<>(IpMuteRecord.class, conf
-            .getString("tables.ipMuteRecords"), null);
-    addTable("ipMuteRecords", ipMuteRecordsTable);
-
-    DatabaseTableConfig<PlayerNoteData> playerNotesTable = new DatabaseTableConfig<>(PlayerNoteData.class, conf
-            .getString("tables.playerNotes"), null);
-    addTable("playerNotes", playerNotesTable);
-
-    DatabaseTableConfig<IpRangeBanData> ipRangeBansTable = new DatabaseTableConfig<>(IpRangeBanData.class, conf
-            .getString("tables.ipRangeBans"), null);
-    addTable("ipRangeBans", ipRangeBansTable);
-
-    DatabaseTableConfig<IpRangeBanRecord> ipRangeBanRecordsTable = new DatabaseTableConfig<>(IpRangeBanRecord.class, conf
-            .getString("tables.ipRangeBanRecords"), null);
-    addTable("ipRangeBanRecords", ipRangeBanRecordsTable);
-
-    DatabaseTableConfig<PlayerReportData> playerReportsTable = new DatabaseTableConfig<>(PlayerReportData.class, conf
-            .getString("tables.playerReports"), null);
-    addTable("playerReports", playerReportsTable);
+    super(conf, types);
   }
 
 }

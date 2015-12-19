@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class DatabaseConfig {
 
@@ -34,6 +35,15 @@ public abstract class DatabaseConfig {
     maxConnections = conf.getInt("maxConnections", 10);
 
     if (maxConnections > 30) maxConnections = 30;
+  }
+
+  public DatabaseConfig(ConfigurationSection conf, HashMap<String, Class> types) {
+    this(conf);
+
+    for (Map.Entry<String, Class> entry : types.entrySet()) {
+      addTable(entry.getKey(), new DatabaseTableConfig<>(entry.getValue(), conf
+              .getString("tables." + entry.getKey()), null));
+    }
   }
 
   public String getJDBCUrl() {
