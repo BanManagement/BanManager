@@ -1,16 +1,22 @@
 package me.confuser.banmanager.util;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class CommandUtils {
+  private static BanManager plugin = BanManager.getPlugin();
 
   public static void dispatchCommand(CommandSender sender, String command) {
     Bukkit.dispatchCommand(sender, command);
@@ -72,5 +78,44 @@ public class CommandUtils {
     if (replace == null) return reason;
 
     return reason.replace("#" + key, replace);
+  }
+
+  public static boolean isUUID(String player) {
+    return player.length() > 16;
+  }
+
+  public static PlayerData getPlayer(CommandSender sender, String playerName) {
+    boolean isUUID = isUUID(playerName);
+    PlayerData player = null;
+
+    if (isUUID) {
+      try {
+        player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+      }
+    } else {
+      player = plugin.getPlayerStorage().retrieve(playerName, true);
+    }
+
+    return player;
+  }
+
+  public static PlayerData getActor(CommandSender sender) {
+    PlayerData actor = null;
+
+    if (sender instanceof Player) {
+      try {
+        actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+      }
+    } else {
+      actor = plugin.getPlayerStorage().getConsole();
+    }
+
+    return actor;
   }
 }

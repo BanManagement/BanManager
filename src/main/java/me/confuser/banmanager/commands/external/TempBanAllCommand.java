@@ -4,6 +4,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.external.ExternalPlayerBanData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
@@ -59,38 +60,16 @@ public class TempBanAllCommand extends BukkitCommand<BanManager> {
 
       @Override
       public void run() {
-        final PlayerData player;
-
-        if (isUUID) {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
-        }
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         final ExternalPlayerBanData ban = new ExternalPlayerBanData(player, actor, reason, expires);
         int created;

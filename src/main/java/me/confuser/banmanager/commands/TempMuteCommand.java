@@ -118,23 +118,10 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       @Override
       public void run() {
-        PlayerData player;
-
-        if (isUUID) {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
-        }
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
 
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString
-                  ());
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
           return;
         }
 
@@ -143,19 +130,9 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isMuted) {
           PlayerMuteData mute;
