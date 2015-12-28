@@ -192,7 +192,7 @@ messages:
   baniprange:
     error:
       invalid: '&cInvalid range, please use cidr notation 192.168.0.1/16 or wildcard 192.168.*.*'
-      minMax: '&cRange must be lowest to higest'
+      minMax: '&cRange must be lowest to highest'
       exists: '&cA ban containing those ranges already exists'
     ip:
       disallowed: '&6You have been banned from this server for &4[reason]'
