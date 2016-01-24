@@ -65,19 +65,9 @@ public class KickCommand extends BukkitCommand<BanManager> {
 
       @Override
       public void run() {
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         final Message kickMessage;
 
@@ -92,26 +82,6 @@ public class KickCommand extends BukkitCommand<BanManager> {
                 .set("player", player.getName())
                 .set("playerId", player.getUniqueId().toString())
                 .set("actor", actor.getName());
-
-        if (plugin.getConfiguration().isKickLoggingEnabled()) {
-          PlayerData player = plugin.getPlayerStorage().retrieve(playerName, false);
-
-          PlayerKickData data = new PlayerKickData(player, actor, reason);
-
-          boolean created;
-
-          try {
-            created = plugin.getPlayerKickStorage().addKick(data);
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-
-          if (!created) {
-            return;
-          }
-        }
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
@@ -129,6 +99,28 @@ public class KickCommand extends BukkitCommand<BanManager> {
             if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.kick");
           }
         });
+
+        if (plugin.getConfiguration().isKickLoggingEnabled()) {
+          PlayerData player = plugin.getPlayerStorage().retrieve(playerName, false);
+
+          if (player == null) return;
+
+          PlayerKickData data = new PlayerKickData(player, actor, reason);
+
+          boolean created;
+
+          try {
+            created = plugin.getPlayerKickStorage().addKick(data);
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
+
+          if (!created) {
+            return;
+          }
+        }
 
       }
     });
