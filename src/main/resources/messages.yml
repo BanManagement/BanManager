@@ -293,3 +293,7 @@ messages:
     error:
       invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks, notes or warnings'
       invalidId: '&c[id] is not a valid number'
+
+  denyalts:
+    player:
+      disallowed: '&cThe IP address you are joining from is linked to a banned player'

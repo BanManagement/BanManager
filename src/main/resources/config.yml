@@ -148,6 +148,9 @@ offlineAutoComplete: true
 # This is disabled by default as this could block siblings or those on shared networks
 punishAlts: false
 
+# Automatically deny players from joining that have the same ip address as a banned player
+denyAlts: false
+
 # Keep records for number of days, use 0 to never delete
 cleanUp:
   kicks: 30

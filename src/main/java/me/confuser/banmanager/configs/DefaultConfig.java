@@ -47,6 +47,8 @@ public class DefaultConfig extends Config<BanManager> {
   @Getter
   private boolean punishAlts = false;
   @Getter
+  private boolean denyAlts = false;
+  @Getter
   private HashMap<String, CleanUp> cleanUps;
   @Getter
   private int maxOnlinePerIp = 0;
@@ -83,6 +85,7 @@ public class DefaultConfig extends Config<BanManager> {
     debugEnabled = conf.getBoolean("debug", false);
     displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
     punishAlts = conf.getBoolean("punishAlts", false);
+    denyAlts = conf.getBoolean("denyAlts", false);
 
     cleanUps = new HashMap<>(6);
     for (String type : conf.getConfigurationSection("cleanUp").getKeys(false)) {

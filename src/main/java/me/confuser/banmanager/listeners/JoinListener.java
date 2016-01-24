@@ -308,6 +308,14 @@ public class JoinListener extends Listeners<BanManager> {
           return;
         }
 
+        if (plugin.getConfiguration().isDenyAlts()) {
+          try {
+            denyAlts(duplicates, uuid);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
         if (plugin.getConfiguration().isPunishAlts()) {
           try {
             punishAlts(duplicates, uuid);
@@ -337,6 +345,34 @@ public class JoinListener extends Listeners<BanManager> {
         CommandUtils.broadcast(message.toString(), "bm.notify.duplicateips");
       }
     }, 20L);
+  }
+
+  private void denyAlts(List<PlayerData> duplicates, final UUID uuid) throws SQLException {
+    if (plugin.getPlayerBanStorage().isBanned(uuid)) return;
+
+    for (final PlayerData player : duplicates) {
+      if (player.getUUID().equals(uuid)) continue;
+
+      final PlayerBanData ban = plugin.getPlayerBanStorage().getBan(player.getUUID());
+
+      if (ban == null) continue;
+      if (ban.hasExpired()) continue;
+
+      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+        @Override
+        public void run() {
+          Player bukkitPlayer = plugin.getServer().getPlayer(uuid);
+
+          Message kickMessage = Message.get("denyalts.player.disallowed")
+                                       .set("player", player.getName())
+                                       .set("reason", ban.getReason())
+                                       .set("actor", ban.getActor().getName());
+
+          bukkitPlayer.kickPlayer(kickMessage.toString());
+        }
+      });
+    }
   }
 
   private void punishAlts(List<PlayerData> duplicates, UUID uuid) throws SQLException {
