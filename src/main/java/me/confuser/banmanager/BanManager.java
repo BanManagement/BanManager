@@ -11,7 +11,6 @@ import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
-import me.confuser.banmanager.storage.conversion.UUIDConvert;
 import me.confuser.banmanager.storage.external.*;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
@@ -29,7 +28,6 @@ public class BanManager extends BukkitPlugin {
   @Getter
   private ConnectionSource localConn;
   private ConnectionSource externalConn;
-  private ConnectionSource conversionConn;
 
   @Getter
   private PlayerBanStorage playerBanStorage;
@@ -136,10 +134,6 @@ public class BanManager extends BukkitPlugin {
       e.printStackTrace();
     }
 
-    if (conversionConn != null) {
-      setupConversion();
-    }
-
     setupListeners();
     setupCommands();
     setupRunnables();
@@ -164,87 +158,10 @@ public class BanManager extends BukkitPlugin {
       externalConn.closeQuietly();
     }
 
-    if (conversionConn != null) {
-      conversionConn.closeQuietly();
-    }
   }
 
   private void disableDatabaseLogging() {
     System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
-  }
-
-  private void setupConversion() {
-    getLogger().info("Running pre-conversion launch checks");
-    ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
-
-    if (configuration.getLocalDb().getHost().equals(conversionDb.getHost()) && configuration.getLocalDb().getName()
-                                                                                            .equals(conversionDb
-                                                                                                    .getName())) {
-      if (!conversionChecks()) {
-        return;
-      }
-    }
-
-    // Begin the converting
-    getLogger().info("Conversion will begin shortly. You have 30 seconds to kill the process to abort.");
-    try {
-      Thread.sleep(30000L);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    getLogger().info("Launching conversion process");
-    new UUIDConvert(conversionConn);
-  }
-
-  private boolean conversionChecks() {
-    ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
-
-    if (playerStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("playerIpsTable"))) {
-      getLogger().severe("players table equals playerIpsTable, aborting");
-      return false;
-    }
-
-    if (playerBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansTable"))) {
-      getLogger().severe("playerBans table equals bansTable, aborting");
-      return false;
-    }
-
-    if (playerBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansRecordTable"))) {
-      getLogger().severe("playerBanRecords table equals bansRecordTable, aborting");
-      return false;
-    }
-
-    if (playerMuteStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesTable"))) {
-      getLogger().severe("playerMutes table equals mutesTable, aborting");
-      return false;
-    }
-
-    if (playerMuteRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesRecordTable"))) {
-      getLogger().severe("playerMuteRecords table equals mutesRecordTable, aborting");
-      return false;
-    }
-
-    if (playerKickStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("kicksTable"))) {
-      getLogger().severe("playerKicks table equals kicksTable, aborting");
-      return false;
-    }
-
-    if (playerWarnStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("warningsTable"))) {
-      getLogger().severe("playerWarnings table equals warningsTable, aborting");
-      return false;
-    }
-
-    if (ipBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansTable"))) {
-      getLogger().severe("ipBans table equals ipBansTable, aborting");
-      return false;
-    }
-
-    if (ipBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansRecordTable"))) {
-      getLogger().severe("ipBanRecords table equals ipBansRecordTable, aborting");
-      return false;
-    }
-
-    return true;
   }
 
   @Override
@@ -359,10 +276,6 @@ public class BanManager extends BukkitPlugin {
 
     localConn = setupConnection(configuration.getLocalDb());
 
-    if (configuration.getConversionDb().isEnabled()) {
-      conversionConn = setupConnection(configuration.getConversionDb());
-    }
-
     if (configuration.getExternalDb().isEnabled()) {
       externalConn = setupConnection(configuration.getExternalDb());
     }
@@ -383,8 +296,6 @@ public class BanManager extends BukkitPlugin {
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
 
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
-    /* Keep the connection open for 5 minutes */
-//    ds.setMaxLifetime(300000);
 
     return new DataSourceConnectionSource(ds, new MySQLDatabase());
   }
