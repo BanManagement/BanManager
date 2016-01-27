@@ -294,8 +294,10 @@ public class BanManager extends BukkitPlugin {
     }
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
-
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
+    ds.addDataSourceProperty("prepStmtCacheSize", "250");
+    ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    ds.addDataSourceProperty("cachePrepStmts", "true");
 
     return new DataSourceConnectionSource(ds, new MySQLDatabase());
   }
