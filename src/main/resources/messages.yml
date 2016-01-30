@@ -135,7 +135,7 @@ messages:
     player:
       blocked: '&cYou may not use the [command] command whilst muted!'
       disallowed: '&6You have been permanently muted for &4[reason] &6by [actor]'
-      broadcast: '&4[Muted]&r[message]'
+      broadcast: '&4[Muted]&r [message]'
     notify: '&6[player] has been permanently muted by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
