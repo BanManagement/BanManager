@@ -3,6 +3,7 @@ package me.confuser.banmanager.listeners;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpMuteData;
 import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.Message;
@@ -38,6 +39,16 @@ public class ChatListener extends Listeners<BanManager> {
     }
 
     event.setCancelled(true);
+
+    Message broadcast = Message.get("mute.player.broadcast")
+                               .set("message", event.getMessage())
+                               .set("displayName", event.getPlayer().getDisplayName())
+                               .set("player", event.getPlayer().getName())
+                               .set("playerId", event.getPlayer().getUniqueId().toString())
+                               .set("reason", mute.getReason())
+                               .set("actor", mute.getActor().getName());
+
+    CommandUtils.broadcast(broadcast.toString(), "bm.notify.muted");
 
     Message message;
 
@@ -82,6 +93,16 @@ public class ChatListener extends Listeners<BanManager> {
 
     event.setCancelled(true);
 
+    Message broadcast = Message.get("mute.player.broadcast")
+                               .set("message", event.getMessage())
+                               .set("displayName", event.getPlayer().getDisplayName())
+                               .set("player", event.getPlayer().getName())
+                               .set("playerId", event.getPlayer().getUniqueId().toString())
+                               .set("reason", mute.getReason())
+                               .set("actor", mute.getActor().getName());
+
+    CommandUtils.broadcast(broadcast.toString(), "bm.notify.mutedip");
+
     Message message;
 
     if (mute.getExpires() == 0) {
@@ -96,7 +117,7 @@ public class ChatListener extends Listeners<BanManager> {
            .set("playerId", event.getPlayer().getUniqueId().toString())
            .set("reason", mute.getReason())
            .set("actor", mute.getActor().getName())
-          .set("ip", IPUtils.toString(mute.getIp()));
+           .set("ip", IPUtils.toString(mute.getIp()));
 
     event.getPlayer().sendMessage(message.toString());
   }
