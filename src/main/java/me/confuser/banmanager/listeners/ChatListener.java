@@ -93,7 +93,7 @@ public class ChatListener extends Listeners<BanManager> {
 
     event.setCancelled(true);
 
-    Message broadcast = Message.get("mute.player.broadcast")
+    Message broadcast = Message.get("muteip.ip.broadcast")
                                .set("message", event.getMessage())
                                .set("displayName", event.getPlayer().getDisplayName())
                                .set("player", event.getPlayer().getName())
