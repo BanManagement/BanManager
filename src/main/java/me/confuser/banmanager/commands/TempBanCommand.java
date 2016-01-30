@@ -8,6 +8,7 @@ import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -104,7 +105,7 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final String reason = CommandUtils.getReason(2, args);
+    final Reason reason = CommandUtils.getReason(2, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -146,7 +147,7 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        final PlayerBanData ban = new PlayerBanData(player, actor, reason, expires);
+        final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage(), expires);
         boolean created;
 
         try {
@@ -160,6 +161,8 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 

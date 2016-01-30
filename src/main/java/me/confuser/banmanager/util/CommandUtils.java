@@ -3,6 +3,8 @@ package me.confuser.banmanager.util;
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerNoteData;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -11,12 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandUtils {
+
   private static BanManager plugin = BanManager.getPlugin();
 
   public static void dispatchCommand(CommandSender sender, String command) {
@@ -68,17 +68,43 @@ public class CommandUtils {
     }
   }
 
-  public static String getReason(int start, String[] args) {
+  public static Reason getReason(int start, String[] args) {
     String reason = StringUtils.join(args, " ", start, args.length);
+    List<String> notes = new ArrayList<>();
 
-    if (!args[start].startsWith("#")) return reason;
+    String[] matches = StringUtils.substringsBetween(reason, "(", ")");
 
-    String key = args[start].replace("#", "");
-    String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
+    if (matches != null) notes = Arrays.asList(matches);
 
-    if (replace == null) return reason;
+    if (args[start].startsWith("#")) {
 
-    return reason.replace("#" + key, replace);
+      String key = args[start].replace("#", "");
+      String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
+
+      if (replace != null) reason = reason.replace("#" + key, replace);
+    }
+
+    for (String note : notes) {
+      reason = reason.replace("(" + note + ")", "");
+    }
+
+    reason = reason.trim();
+
+    return new Reason(reason, notes);
+  }
+
+  public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
+    if (plugin.getConfiguration().isCreateNoteReasons())
+    if (reason.getNotes().size() == 0) return;
+
+    for (String note : reason.getNotes()) {
+      try {
+        plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
   public static boolean isUUID(String player) {

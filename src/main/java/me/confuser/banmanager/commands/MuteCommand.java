@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -94,7 +95,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = CommandUtils.getReason(1, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -146,7 +147,7 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, isSoft);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSoft);
         boolean created;
 
         try {
@@ -160,6 +161,8 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 

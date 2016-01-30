@@ -3,9 +3,11 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -87,7 +89,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = CommandUtils.getReason(1, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -129,7 +131,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        final PlayerBanData ban = new PlayerBanData(player, actor, reason);
+        final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage());
         boolean created;
 
         try {
@@ -143,6 +145,8 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 

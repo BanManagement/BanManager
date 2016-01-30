@@ -8,6 +8,7 @@ import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -112,7 +113,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final String reason = CommandUtils.getReason(2, args);
+    final Reason reason = CommandUtils.getReason(2, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -154,7 +155,7 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason, isSoft, expires);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSoft, expires);
         boolean created;
 
         try {
@@ -168,6 +169,8 @@ public class TempMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
 

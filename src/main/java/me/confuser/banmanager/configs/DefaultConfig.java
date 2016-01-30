@@ -58,6 +58,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean broadcastOnSync = false;
   @Getter
   private boolean checkOnJoin = false;
+  @Getter
+  private boolean createNoteReasons = false;
 
   public DefaultConfig() {
     super("config.yml");
@@ -98,6 +100,7 @@ public class DefaultConfig extends Config<BanManager> {
 
     broadcastOnSync = conf.getBoolean("broadcastOnSync", false);
     checkOnJoin = conf.getBoolean("checkOnJoin", false);
+    createNoteReasons = conf.getBoolean("createNoteReasons", false);
 
     mutedBlacklistCommands = new HashSet<>();
     softMutedBlacklistCommands = new HashSet<>();

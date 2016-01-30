@@ -8,6 +8,7 @@ import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -62,7 +63,7 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
       }
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = CommandUtils.getReason(1, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -103,8 +104,8 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        final IpBanData ban = new IpBanData(ip, actor, reason);
-        boolean created = false;
+        final IpBanData ban = new IpBanData(ip, actor, reason.getMessage());
+        boolean created;
 
         try {
           created = plugin.getIpBanStorage().ban(ban, isSilent);

@@ -68,7 +68,7 @@ public class MuteIpCommand extends AutoCompleteNameTabCommand<BanManager> {
       }
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final String reason = CommandUtils.getReason(1, args).getMessage();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
@@ -55,7 +56,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = CommandUtils.getReason(1, args);
 
     Player onlinePlayer;
 
@@ -113,7 +114,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
 
-        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, parser.getPoints(), isOnline);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser.getPoints(), isOnline);
 
         boolean created;
 
@@ -128,6 +129,8 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         if (isOnline) {
           Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());

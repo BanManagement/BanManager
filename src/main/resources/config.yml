@@ -147,3 +147,7 @@ maxOnlinePerIp: 0
 # Whether to check the database to see if the player is banned on join or not
 # Recommended to be disabled, the schedule sync tasks should suffice
 checkOnJoin: false
+
+# Enables creation of notes based on text in between ( )
+# E.g. /ban confuser testing (too good) will ban for 'testing' and create a note 'too good'
+createNoteReasons: false

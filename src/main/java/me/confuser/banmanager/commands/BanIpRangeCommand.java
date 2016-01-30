@@ -4,8 +4,10 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
@@ -65,7 +67,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    final String reason = StringUtils.join(args, " ", 1, args.length);
+    final Reason reason = CommandUtils.getReason(1, args);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -85,7 +87,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason);
+        final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason.getMessage());
         boolean created;
 
         try {

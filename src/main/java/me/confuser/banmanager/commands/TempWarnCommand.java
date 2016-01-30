@@ -5,10 +5,9 @@ import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
-import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
@@ -97,7 +96,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final String reason = CommandUtils.getReason(2, parsedArgs);
+    final Reason reason = CommandUtils.getReason(2, parsedArgs);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -132,7 +131,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
 
-        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, parser.getPoints(), isOnline, expires);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser.getPoints(), isOnline, expires);
 
         boolean created;
 
@@ -147,6 +146,8 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
         if (!created) {
           return;
         }
+
+        CommandUtils.handlePrivateNotes(player, actor, reason);
 
         if (isOnline) {
           Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());

@@ -65,7 +65,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
     }
 
     final long[] ranges = range;
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
