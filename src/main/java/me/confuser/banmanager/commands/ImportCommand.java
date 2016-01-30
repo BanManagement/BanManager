@@ -6,6 +6,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.storage.conversion.SimpleWarnings;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
@@ -20,11 +21,19 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class ImportCommand extends BukkitCommand<BanManager> {
 
   private boolean importInProgress = false;
+  private static HashSet<String> validConverters = new HashSet<String>(){{
+    add("player");
+    add("players");
+    add("ip");
+    add("ips");
+    add("simplewarnings");
+  }};
 
   public ImportCommand() {
     super("bmimport");
@@ -36,9 +45,8 @@ public class ImportCommand extends BukkitCommand<BanManager> {
       return false;
     }
 
-    if (!args[0].equals("player") && !args[0].equals("ip") && !args[0].equals("players") && !args[0].equals("ips")) {
-      return false;
-    }
+    if (!validConverters.contains(args[0].toLowerCase())) return false;
+
     if (importInProgress) {
       sender.sendMessage(Message.getString("import.error.inProgress"));
       return true;
@@ -60,6 +68,8 @@ public class ImportCommand extends BukkitCommand<BanManager> {
           finishedMessage = Message.getString("import.player.finished");
 
           importIps();
+        } else if (args[0].startsWith("simplew")) {
+          new SimpleWarnings();
         }
 
         if (sender != null) {
