@@ -20,6 +20,8 @@ messages:
     years: 'years'
     month: 'month'
     months: 'months'
+    week: 'week'
+    weeks: 'weeks'
     day: 'day'
     days: 'days'
     hour: 'hour'
