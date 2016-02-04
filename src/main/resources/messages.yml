@@ -176,7 +176,7 @@ messages:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'
 
-  unmute:
+  unmuteip:
     notify: '&6[ip] has been unmuted by [actor]'
     error:
       noExists: '&c[ip] is not muted'
