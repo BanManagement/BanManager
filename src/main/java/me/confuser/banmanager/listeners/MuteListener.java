@@ -65,7 +65,7 @@ public class MuteListener extends Listeners<BanManager> {
 
     if (mute.getExpires() == 0) {
       broadcastPermission = "bm.notify.muteip";
-      message = Message.get("mute.notify");
+      message = Message.get("muteip.notify");
     } else {
       broadcastPermission = "bm.notify.tempmuteip";
       message = Message.get("tempmuteip.notify");
