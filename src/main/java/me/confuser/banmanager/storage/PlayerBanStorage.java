@@ -2,6 +2,7 @@ package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
@@ -123,10 +125,12 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     return true;
   }
+
   public boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
     return unban(ban, actor, "");
   }
-  public boolean unban(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {
+
+  public boolean unban(final PlayerBanData ban, final PlayerData actor, final String reason) throws SQLException {
     PlayerUnbanEvent event = new PlayerUnbanEvent(ban, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
@@ -134,12 +138,18 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
       return false;
     }
 
-    delete(ban);
-    bans.remove(ban.getPlayer().getUUID());
+    return TransactionManager.callInTransaction(connectionSource,
+            new Callable<Boolean>() {
 
-    plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+              public Boolean call() throws Exception {
+                delete(ban);
+                bans.remove(ban.getPlayer().getUUID());
 
-    return true;
+                plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+
+                return true;
+              }
+            });
   }
 
   public CloseableIterator<PlayerBanData> findBans(long fromTime) throws SQLException {
@@ -195,7 +205,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     } finally {
       if (itr != null) itr.closeQuietly();
     }
-    
+
     return players;
   }
 }
