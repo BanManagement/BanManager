@@ -76,9 +76,10 @@ public class CommandUtils {
 
     if (matches != null) notes = Arrays.asList(matches);
 
-    if (args[start].startsWith("#")) {
+    for (int i = start; i < args.length; i++) {
+      if (!args[i].startsWith("#")) continue;
 
-      String key = args[start].replace("#", "");
+      String key = args[i].replace("#", "");
       String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
 
       if (replace != null) reason = reason.replace("#" + key, replace);
@@ -95,7 +96,7 @@ public class CommandUtils {
 
   public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
     if (plugin.getConfiguration().isCreateNoteReasons())
-    if (reason.getNotes().size() == 0) return;
+      if (reason.getNotes().size() == 0) return;
 
     for (String note : reason.getNotes()) {
       try {
