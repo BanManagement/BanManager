@@ -212,6 +212,7 @@ permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
     children:
+      bm.command.alts: true
       bm.command.ban: true
       bm.command.ban.offline: true
       bm.command.ban.override: true
