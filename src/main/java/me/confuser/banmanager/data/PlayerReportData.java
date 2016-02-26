@@ -25,6 +25,10 @@ public class PlayerReportData {
   @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData actor;
 
+  @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false)
+  @Getter
+  private ReportState state;
+
   // Should always be database time
   @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
   @Getter
@@ -38,10 +42,11 @@ public class PlayerReportData {
 
   }
 
-  public PlayerReportData(PlayerData player, PlayerData actor, String reason) {
+  public PlayerReportData(PlayerData player, PlayerData actor, String reason, ReportState state) {
     this.player = player;
     this.reason = reason;
     this.actor = actor;
+    this.state = state;
   }
 
 }
