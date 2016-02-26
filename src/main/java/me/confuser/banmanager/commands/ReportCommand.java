@@ -1,6 +1,7 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.TeleportSubCommand;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.CommandParser;
@@ -22,6 +23,7 @@ public class ReportCommand extends MultiCommandHandler<BanManager> {
 
   @Override
   public void registerCommands() {
+    registerSubCommand(new TeleportSubCommand());
   }
 
   @Override
