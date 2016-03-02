@@ -123,7 +123,7 @@
         </repository>
         <repository>
             <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/public</url>
+            <url>http://repo.mcstats.org/content/repositories/snapshots</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -173,7 +173,7 @@
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics-lite</artifactId>
-            <version>R6</version>
+            <version>R8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
