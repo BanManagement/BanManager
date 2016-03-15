@@ -128,7 +128,7 @@ checkForUpdates: true
 # Set to false to disable offline name completion
 offlineAutoComplete: true
 
-# Automatically apply punishments to alts
+# Automatically apply punishments to alts on join
 # This is disabled by default as this could block siblings or those on shared networks
 punishAlts: false
 
