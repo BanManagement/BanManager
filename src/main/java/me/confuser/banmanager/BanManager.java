@@ -295,7 +295,9 @@ public class BanManager extends BukkitPlugin {
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
-    ds.setLeakDetectionThreshold(2000);
+
+    if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
+
     ds.addDataSourceProperty("prepStmtCacheSize", "250");
     ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
     ds.addDataSourceProperty("cachePrepStmts", "true");
