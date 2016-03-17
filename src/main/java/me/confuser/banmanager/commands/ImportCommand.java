@@ -65,7 +65,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
           importPlayers();
         } else if (args[0].startsWith("ip")) {
           sender.sendMessage(Message.getString("import.ip.started"));
-          finishedMessage = Message.getString("import.player.finished");
+          finishedMessage = Message.getString("import.ip.finished");
 
           importIps();
         } else if (args[0].startsWith("simplew")) {
