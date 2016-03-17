@@ -69,7 +69,7 @@ messages:
       finished: '&aPlayer ban import finished'
     ip:
       started: '&aIP ban import started'
-      finished: '&aIP ban inport finished'
+      finished: '&aIP ban import finished'
 
   info:
     error:
