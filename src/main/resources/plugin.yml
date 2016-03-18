@@ -269,7 +269,7 @@ permissions:
       bm.command.report: true
       bm.command.report.offline: true
       bm.command.report.override: true
-    bm.*:
+  bm.*:
     description: Gives access to all BanManager commands
     children:
       bm.command.ban: true
@@ -351,6 +351,8 @@ permissions:
       bm.notify.tempbaniprange: true
       bm.notify.unbaniprange: true
       bm.notify.report: true
+      bm.notify.muted: true
+      bm.notify.mutedip: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
