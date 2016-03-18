@@ -366,6 +366,20 @@ permissions:
       bm.exempt.tempmute: true
       bm.exempt.warn: true
       bm.exempt.report: true
+  bm.command.bminfo.*:
+    description: Gives access to all BanManager information
+    children:
+      bm.command.bminfo.others: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
   bm.command.unban:
     description: Allows you to unban a player
     default: op
