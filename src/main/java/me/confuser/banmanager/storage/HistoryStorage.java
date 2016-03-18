@@ -21,15 +21,15 @@ public class HistoryStorage {
   private ConnectionSource localConn;
 
   // Queries
-  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, created, reason" +
+  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, pastCreated as created, reason" +
           "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
-                                   .getTableName() + " actor ON actor_id = actor.id" +
+                                   .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, created, reason" +
+  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, pastCreated as created, reason" +
           "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
-                                   .getTableName() + " actor ON actor_id = actor.id" +
+                                   .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
   final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason" +
           "    FROM " + plugin.getPlayerKickStorage().getTableConfig().getTableName() + " t" +
