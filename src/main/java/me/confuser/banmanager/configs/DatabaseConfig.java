@@ -23,6 +23,8 @@ public abstract class DatabaseConfig {
   private final boolean isEnabled;
   @Getter
   private int maxConnections;
+  @Getter
+  private int leakDetection;
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
   public DatabaseConfig(ConfigurationSection conf) {
@@ -33,6 +35,7 @@ public abstract class DatabaseConfig {
     password = conf.getString("password");
     isEnabled = conf.getBoolean("enabled");
     maxConnections = conf.getInt("maxConnections", 10);
+    leakDetection = conf.getInt("leakDetection", 0);
 
     if (maxConnections > 30) maxConnections = 30;
   }

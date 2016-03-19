@@ -9,6 +9,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    # Used to detect slow running queries/unclosed resources
+    leakDetection: 3000
     tables:
       players: bm_players
       playerBans: bm_player_bans
@@ -37,6 +39,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    # Used to detect slow running queries/unclosed resources
+    leakDetection: 3000
     tables:
       playerBans: bm_player_ban_all
       playerUnbans: bm_player_unban_all
@@ -124,7 +128,7 @@ checkForUpdates: true
 # Set to false to disable offline name completion
 offlineAutoComplete: true
 
-# Automatically apply punishments to alts
+# Automatically apply punishments to alts on join
 # This is disabled by default as this could block siblings or those on shared networks
 punishAlts: false
 
