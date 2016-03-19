@@ -3,6 +3,7 @@ package me.confuser.banmanager.data;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 
 @DatabaseTable
@@ -27,7 +28,13 @@ public class PlayerReportData {
 
   @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false)
   @Getter
+  @Setter
   private ReportState state;
+
+  @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @Getter
+  @Setter
+  private PlayerData assignee;
 
   // Should always be database time
   @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")

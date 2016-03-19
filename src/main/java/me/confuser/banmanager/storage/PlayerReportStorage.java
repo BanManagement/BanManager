@@ -28,6 +28,16 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
+    } else {
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " ADD COLUMN `state_id` INT(11)," +
+                " ADD COLUMN `asignee_id` BINARY(16)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_asingee_id_idx` (`asignee_id`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
