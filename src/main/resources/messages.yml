@@ -76,7 +76,7 @@ messages:
       incorrectFlagUsage: '&cA flag has been incorrectly used'
     stats:
       player: '&6[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
-      times'
+      times ([warnPoints] Points)'
       ip: '&6This ip has been banned [bans] times'
     connection: '&6Their last connection was with [ip] on [lastSeen]'
     geoip: 'Country: [country] City: [city]'
