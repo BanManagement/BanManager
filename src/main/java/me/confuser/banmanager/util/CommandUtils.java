@@ -71,8 +71,11 @@ public class CommandUtils {
   public static Reason getReason(int start, String[] args) {
     String reason = StringUtils.join(args, " ", start, args.length);
     List<String> notes = new ArrayList<>();
-
-    String[] matches = StringUtils.substringsBetween(reason, "(", ")");
+    
+    String[] matches = null;
+    if (plugin.getConfiguration().isCreateNoteReasons) { 
+		matches = StringUtils.substringsBetween(reason, "(", ")");
+    }
 
     if (matches != null) notes = Arrays.asList(matches);
 
