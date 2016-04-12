@@ -3,13 +3,16 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.data.ReportState;
 import me.confuser.banmanager.events.PlayerReportEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -57,8 +60,26 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     return true;
   }
 
-  public CloseableIterator<PlayerReportData> getReports(UUID uniqueId) throws SQLException {
-    return queryBuilder().where().eq("player_id", UUIDUtils.toBytes(uniqueId)).iterator();
+  public ReportList getReports(long page, ReportState state, UUID uniqueId) throws SQLException {
+    QueryBuilder<PlayerReportData, Integer> query = queryBuilder();
+    Where<PlayerReportData, Integer> where = query.where();
+
+    if (state != null) where.and().eq("state_id", state.getId());
+    if (uniqueId != null) where.eq("actor_id", UUIDUtils.toBytes(uniqueId));
+
+    long pageSize = 5L;
+    long count = where.countOf();
+    long maxPage = count == 0 ? 1 : (int) Math.ceil(count / pageSize);
+
+    if (maxPage == 0) maxPage = 1;
+
+    long offset = (page - 1) * pageSize;
+
+    return new ReportList(query.offset(offset).limit(pageSize).query(), count, maxPage);
+  }
+
+  public ReportList getReports(long page, ReportState state) throws SQLException {
+    return getReports(page, state, null);
   }
 
   public int deleteAll(PlayerData player) throws SQLException {
