@@ -155,3 +155,7 @@ checkOnJoin: false
 # Enables creation of notes based on text in between ( )
 # E.g. /ban confuser testing (too good) will ban for 'testing' and create a note 'too good'
 createNoteReasons: false
+
+# Enables displaying the exact expire time instead of the down rounded value
+# E.g. /tempban confuser 10d testing -> '1 week 3 days' instead of '1 week'
+showExactTime: false
