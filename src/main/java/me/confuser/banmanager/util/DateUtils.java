@@ -44,12 +44,10 @@ public class DateUtils {
       long duration = time / current;
 
       if (duration > 0) {
-        if (plugin.getConfiguration().isShowExactTime()) {
-          if (firstappend) {
-            firstappend = false;
-          } else {
-            diff.append(" ");
-          }
+        if (firstappend) {
+          firstappend = false;
+        } else {
+          diff.append(" ");
         }
         diff.append(duration).append(" ");
 
@@ -58,11 +56,7 @@ public class DateUtils {
 
         diff.append(Message.get("time." + key));
         
-        if (plugin.getConfiguration().isShowExactTime()) {
-          time -= duration * current;
-        } else {
-          break;
-        }
+        time -= duration * current;
       }
     }
 
