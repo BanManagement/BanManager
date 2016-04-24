@@ -8,6 +8,7 @@ import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -61,7 +62,7 @@ public class CommandUtils {
   public static void broadcast(String message, String permission) {
     Set<Permissible> permissibles = Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.user");
     for (Permissible permissible : permissibles) {
-      if (((permissible instanceof CommandSender)) && (permissible.hasPermission(permission))) {
+      if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible.hasPermission(permission)) {
         CommandSender user = (CommandSender) permissible;
         user.sendMessage(message);
       }
