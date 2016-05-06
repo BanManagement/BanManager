@@ -172,6 +172,7 @@ messages:
 
   unmute:
     notify: '&6[player] has been unmuted by [actor]'
+    player: '&6You have been unmuted by [actor]'
     error:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'

@@ -64,7 +64,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
 
       @Override
       public void run() {
-        PlayerMuteData mute;
+        final PlayerMuteData mute;
 
         if (isUUID) {
           mute = plugin.getPlayerMuteStorage().getMute(UUID.fromString(playerName));
@@ -78,19 +78,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
           return;
         }
 
-        PlayerData actor;
-
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        final PlayerData actor = CommandUtils.getActor(sender);
 
         //TODO refactor if async perm check is problem
         if (!actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.mute")
@@ -125,6 +113,26 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         }
 
         CommandUtils.broadcast(message.toString(), "bm.notify.unmute");
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            Player bukkitPlayer = plugin.getServer().getPlayer(mute.getPlayer().getUUID());
+
+            if (bukkitPlayer == null) return;
+            if (bukkitPlayer.hasPermission("bm.notify.unmute")) return;
+
+            Message.get("unmute.player")
+                    .set("displayName", bukkitPlayer.getDisplayName())
+                    .set("player", mute.getPlayer().getName())
+                    .set("playerId", mute.getPlayer().getUUID().toString())
+                    .set("reason", mute.getReason())
+                    .set("actor", actor.getName())
+                    .sendTo(bukkitPlayer);
+
+          }
+        });
       }
 
     });
