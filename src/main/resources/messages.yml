@@ -301,3 +301,6 @@ messages:
   denyalts:
     player:
       disallowed: '&cThe IP address you are joining from is linked to a banned player'
+
+  reasons:
+    row: '[hashtag] = [reason]'

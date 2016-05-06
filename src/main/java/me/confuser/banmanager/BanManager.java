@@ -227,6 +227,8 @@ public class BanManager extends BukkitPlugin {
 
     new SyncCommand().register();
 
+    new ReasonsCommand().register();
+
     if (externalConn == null) return;
 
     new BanAllCommand().register();

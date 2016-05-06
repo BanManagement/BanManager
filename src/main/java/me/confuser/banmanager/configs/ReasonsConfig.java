@@ -1,6 +1,7 @@
 package me.confuser.banmanager.configs;
 
 import com.google.common.base.CharMatcher;
+import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.configs.Config;
 
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class ReasonsConfig extends Config<BanManager> {
+  @Getter
   private HashMap<String, String> reasons;
 
   public ReasonsConfig() {
