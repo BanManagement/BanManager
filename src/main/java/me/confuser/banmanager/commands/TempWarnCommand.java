@@ -176,7 +176,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           message.sendTo(sender);
         }
 
-        CommandUtils.broadcast(message.toString(), "bm.notify.tempwarn");
+        if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.tempwarn");
 
         final List<ActionCommand> actionCommands;
 
