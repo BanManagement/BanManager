@@ -236,6 +236,10 @@ messages:
   warn:
     player:
       warned: '&6You have been warned by [actor] for &4[reason]'
+      disallowed:
+        header: '&cYou may not speak until you have accepted your most recent warning. Please type the following:'
+        reason: '&6[reason]'
+        removed: '&aThank you for your understanding, you may now speak again'
     notify: '&6[player] has been warned by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was warned too recently, try again later'

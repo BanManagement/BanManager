@@ -3,6 +3,7 @@ package me.confuser.banmanager.listeners;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpMuteData;
 import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
@@ -12,16 +13,33 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class ChatListener extends Listeners<BanManager> {
 
   @EventHandler
   public void onPlayerChat(AsyncPlayerChatEvent event) {
-    if (!plugin.getPlayerMuteStorage().isMuted(event.getPlayer().getUniqueId())) {
+    UUID uuid = event.getPlayer().getUniqueId();
+
+    if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {
+      if (plugin.getPlayerWarnStorage().isMuted(uuid)) {
+        PlayerWarnData warning = plugin.getPlayerWarnStorage().getMute(uuid);
+
+        if (warning.getReason().equals(event.getMessage())) {
+          plugin.getPlayerWarnStorage().removeMute(uuid);
+          Message.get("warn.player.disallowed.removed").sendTo(event.getPlayer());
+        } else {
+          Message.get("warn.player.disallowed.header").sendTo(event.getPlayer());
+          Message.get("warn.player.disallowed.reason").set("reason", warning.getReason()).sendTo(event.getPlayer());
+        }
+
+        event.setCancelled(true);
+      }
+
       return;
     }
 
-    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(event.getPlayer().getUniqueId());
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(uuid);
 
     if (mute.hasExpired()) {
       try {
@@ -44,7 +62,7 @@ public class ChatListener extends Listeners<BanManager> {
                                .set("message", event.getMessage())
                                .set("displayName", event.getPlayer().getDisplayName())
                                .set("player", event.getPlayer().getName())
-                               .set("playerId", event.getPlayer().getUniqueId().toString())
+                               .set("playerId", uuid.toString())
                                .set("reason", mute.getReason())
                                .set("actor", mute.getActor().getName());
 
@@ -61,7 +79,7 @@ public class ChatListener extends Listeners<BanManager> {
 
     message.set("displayName", event.getPlayer().getDisplayName())
            .set("player", event.getPlayer().getName())
-           .set("playerId", event.getPlayer().getUniqueId().toString())
+           .set("playerId", uuid.toString())
            .set("reason", mute.getReason())
            .set("actor", mute.getActor().getName());
 

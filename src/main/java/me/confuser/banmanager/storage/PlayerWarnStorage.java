@@ -19,10 +19,12 @@ import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
   private BanManager plugin = BanManager.getPlugin();
+  private ConcurrentHashMap<UUID, PlayerWarnData> muteWarnings = new ConcurrentHashMap<>();
 
   public PlayerWarnStorage(ConnectionSource connection) throws SQLException {
     super(connection, (DatabaseTableConfig<PlayerWarnData>) BanManager.getPlugin().getConfiguration()
@@ -50,6 +52,18 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     }
   }
 
+  public boolean isMuted(UUID uuid) {
+    return getMute(uuid) != null;
+  }
+
+  public PlayerWarnData getMute(UUID uuid) {
+    return muteWarnings.get(uuid);
+  }
+
+  public PlayerWarnData removeMute(UUID uuid) {
+    return muteWarnings.remove(uuid);
+  }
+
   public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
     PlayerWarnEvent event = new PlayerWarnEvent(data, silent);
     Bukkit.getServer().getPluginManager().callEvent(event);
@@ -57,6 +71,8 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     if (event.isCancelled()) {
       return false;
     }
+
+    if (plugin.getConfiguration().isWarningMutesEnabled()) muteWarnings.put(data.getPlayer().getUUID(), data);
 
     boolean created = create(data) == 1;
 

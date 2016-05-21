@@ -347,6 +347,7 @@ public class BanManager extends BukkitPlugin {
   @Override
   public void setupListeners() {
     new JoinListener().register();
+    new LeaveListener().register();
     new ChatListener().register();
     new CommandListener().register();
     new HookListener().register();

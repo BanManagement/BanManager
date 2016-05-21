@@ -107,6 +107,10 @@ warningActions:
 #       delay: 10
 #     - cmd: mute [player] [reason]
 
+# Forces players to type the reason of their most recent warning before being allowed to speak in chat again
+# Removed on server restart or on player leave
+warningMute: false
+
 # This allows running commands before and after a punishment
 hooks:
   enabled: false
