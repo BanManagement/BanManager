@@ -177,7 +177,8 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                                    .set("type", (String) result.get("type"))
                                    .set("created", dateFormatter
                                            .format((long) result.get("created") * 1000L))
-                                   .set("actor", (String) result.get("actor"));
+                                   .set("actor", (String) result.get("actor"))
+                                   .set("meta", (String) result.get("meta"));
 
           messages.add(message.toString());
         }
