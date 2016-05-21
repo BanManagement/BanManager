@@ -6,12 +6,12 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.commands.external.*;
+import me.confuser.banmanager.commands.global.*;
 import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
-import me.confuser.banmanager.storage.external.*;
+import me.confuser.banmanager.storage.global.*;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UpdateUtils;
@@ -27,7 +27,7 @@ public class BanManager extends BukkitPlugin {
   public static BanManager plugin;
   @Getter
   private ConnectionSource localConn;
-  private ConnectionSource externalConn;
+  private ConnectionSource globalConn;
 
   @Getter
   private PlayerBanStorage playerBanStorage;
@@ -70,20 +70,20 @@ public class BanManager extends BukkitPlugin {
   private IpRangeBanRecordStorage ipRangeBanRecordStorage;
 
   @Getter
-  private ExternalPlayerBanStorage externalPlayerBanStorage;
+  private GlobalPlayerBanStorage globalPlayerBanStorage;
   @Getter
-  private ExternalPlayerBanRecordStorage externalPlayerBanRecordStorage;
+  private GlobalPlayerBanRecordStorage globalPlayerBanRecordStorage;
   @Getter
-  private ExternalPlayerMuteStorage externalPlayerMuteStorage;
+  private GlobalPlayerMuteStorage globalPlayerMuteStorage;
   @Getter
-  private ExternalPlayerMuteRecordStorage externalPlayerMuteRecordStorage;
+  private GlobalPlayerMuteRecordStorage globalPlayerMuteRecordStorage;
   @Getter
-  private ExternalPlayerNoteStorage externalPlayerNoteStorage;
+  private GlobalPlayerNoteStorage globalPlayerNoteStorage;
 
   @Getter
-  private ExternalIpBanStorage externalIpBanStorage;
+  private GlobalIpBanStorage globalIpBanStorage;
   @Getter
-  private ExternalIpBanRecordStorage externalIpBanRecordStorage;
+  private GlobalIpBanRecordStorage globalIpBanRecordStorage;
 
   @Getter
   private DefaultConfig configuration;
@@ -161,8 +161,8 @@ public class BanManager extends BukkitPlugin {
       localConn.closeQuietly();
     }
 
-    if (externalConn != null) {
-      externalConn.closeQuietly();
+    if (globalConn != null) {
+      globalConn.closeQuietly();
     }
 
   }
@@ -236,7 +236,7 @@ public class BanManager extends BukkitPlugin {
 
     new ReasonsCommand().register();
 
-    if (externalConn == null) return;
+    if (globalConn == null) return;
 
     new BanAllCommand().register();
     new TempBanAllCommand().register();
@@ -285,8 +285,8 @@ public class BanManager extends BukkitPlugin {
 
     localConn = setupConnection(configuration.getLocalDb());
 
-    if (configuration.getExternalDb().isEnabled()) {
-      externalConn = setupConnection(configuration.getExternalDb());
+    if (configuration.getGlobalDb().isEnabled()) {
+      globalConn = setupConnection(configuration.getGlobalDb());
     }
 
     return true;
@@ -339,17 +339,17 @@ public class BanManager extends BukkitPlugin {
     activityStorage = new ActivityStorage(localConn);
     historyStorage = new HistoryStorage(localConn);
 
-    if (externalConn == null) {
+    if (globalConn == null) {
       return;
     }
 
-    externalPlayerBanStorage = new ExternalPlayerBanStorage(externalConn);
-    externalPlayerBanRecordStorage = new ExternalPlayerBanRecordStorage(externalConn);
-    externalPlayerMuteStorage = new ExternalPlayerMuteStorage(externalConn);
-    externalPlayerMuteRecordStorage = new ExternalPlayerMuteRecordStorage(externalConn);
-    externalPlayerNoteStorage = new ExternalPlayerNoteStorage(externalConn);
-    externalIpBanStorage = new ExternalIpBanStorage(externalConn);
-    externalIpBanRecordStorage = new ExternalIpBanRecordStorage(externalConn);
+    globalPlayerBanStorage = new GlobalPlayerBanStorage(globalConn);
+    globalPlayerBanRecordStorage = new GlobalPlayerBanRecordStorage(globalConn);
+    globalPlayerMuteStorage = new GlobalPlayerMuteStorage(globalConn);
+    globalPlayerMuteRecordStorage = new GlobalPlayerMuteRecordStorage(globalConn);
+    globalPlayerNoteStorage = new GlobalPlayerNoteStorage(globalConn);
+    globalIpBanStorage = new GlobalIpBanStorage(globalConn);
+    globalIpBanRecordStorage = new GlobalIpBanRecordStorage(globalConn);
   }
 
   @Override
@@ -370,11 +370,11 @@ public class BanManager extends BukkitPlugin {
 
   @Override
   public void setupRunnables() {
-    if (externalConn == null) {
+    if (globalConn == null) {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync());
     } else {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(), new WarningSync(),
-              new ExternalBanSync(), new ExternalMuteSync(), new ExternalIpSync(), new ExternalNoteSync());
+              new GlobalBanSync(), new GlobalMuteSync(), new GlobalIpSync(), new GlobalNoteSync());
     }
 
     setupAsyncRunnable(10L, syncRunner);

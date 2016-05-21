@@ -160,7 +160,7 @@ commands:
     permission: bm.command.dwarn
   bmsync:
     description: "Forces synchronisation from database"
-    usage: "/bmsync <local || external>"
+    usage: "/bmsync <local || global>"
     permission: bm.command.sync
   addnote:
     description: "Attach a private note to a player"

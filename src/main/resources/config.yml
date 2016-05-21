@@ -30,13 +30,13 @@ databases:
       ipRangeBans: bm_ip_range_bans
       ipRangeBanRecords: bm_ip_range_ban_records
 
-  # External is only required if you want to sync with other servers, but still have separate bans, mutes etc.
+  # Global is only required if you want to sync with other servers, but still have separate bans, mutes etc.
   # This will enable /*all commands, e.g. /banall, /muteall
-  external:
+  global:
     enabled: false
     host: 127.0.0.1
     port: 3306
-    name: external_bans
+    name: global_bans
     user: root
     password: ''
     maxConnections: 10
