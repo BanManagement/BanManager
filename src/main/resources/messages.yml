@@ -95,6 +95,9 @@ messages:
       row: '&7#[id] &a[&f[type]&a] &6[actor]&f [reason] - &e[created]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
       noResults: '&cNo results found'
+    ips:
+      row: '&e[ip] - &6[join] - [leave]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
 
   kick:
     player:

@@ -179,7 +179,10 @@ public class JoinListener extends Listeners<BanManager> {
       plugin.getPlayerStorage().createOrUpdate(player);
     } catch (SQLException e) {
       e.printStackTrace();
+      return;
     }
+
+    if (plugin.getConfiguration().isLogIpsEnabled()) plugin.getPlayerHistoryStorage().create(player);
 
   }
 

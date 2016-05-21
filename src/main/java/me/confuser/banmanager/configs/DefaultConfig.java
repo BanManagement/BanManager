@@ -62,6 +62,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean createNoteReasons = false;
   @Getter
   private boolean warningMutesEnabled = false;
+  @Getter
+  private boolean logIpsEnabled = true;
 
   public DefaultConfig() {
     super("config.yml");
@@ -104,6 +106,7 @@ public class DefaultConfig extends Config<BanManager> {
     checkOnJoin = conf.getBoolean("checkOnJoin", false);
     createNoteReasons = conf.getBoolean("createNoteReasons", false);
     warningMutesEnabled = conf.getBoolean("warningMute", true);
+    logIpsEnabled = conf.getBoolean("logIps", true);
 
     mutedBlacklistCommands = new HashSet<>();
     softMutedBlacklistCommands = new HashSet<>();

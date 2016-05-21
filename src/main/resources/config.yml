@@ -19,6 +19,7 @@ databases:
       playerMuteRecords: bm_player_mute_records
       playerKicks: bm_player_kicks
       playerNotes: bm_player_notes
+      playerHistory: bm_player_history
       playerReports: bm_player_reports
       playerReportLocations: bm_player_report_locations
       playerWarnings: bm_player_warnings
@@ -68,6 +69,10 @@ bypassDuplicateChecks:
 
 # Log /kick to the database?
 logKicks: false
+
+# Log join/leave history of players
+# If disabled, only the most recent ip address will be stored
+logIps: true
 
 # Broadcasts events to those with bm.notify.X permissions, including command success
 displayNotifications: true

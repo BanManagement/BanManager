@@ -50,6 +50,8 @@ public class BanManager extends BukkitPlugin {
   @Getter
   private HistoryStorage historyStorage;
   @Getter
+  private PlayerHistoryStorage playerHistoryStorage;
+  @Getter
   private PlayerReportStorage playerReportStorage;
   @Getter
   private PlayerReportLocationStorage playerReportLocationStorage;
@@ -151,6 +153,11 @@ public class BanManager extends BukkitPlugin {
     getServer().getScheduler().cancelTasks(plugin);
 
     if (localConn != null) {
+      // Save all player histories
+      if (configuration.isLogIpsEnabled()) {
+        playerHistoryStorage.save();
+      }
+
       localConn.closeQuietly();
     }
 
@@ -318,6 +325,7 @@ public class BanManager extends BukkitPlugin {
     playerWarnStorage = new PlayerWarnStorage(localConn);
     playerKickStorage = new PlayerKickStorage(localConn);
     playerNoteStorage = new PlayerNoteStorage(localConn);
+    playerHistoryStorage = new PlayerHistoryStorage(localConn);
     playerReportStorage = new PlayerReportStorage(localConn);
     playerReportLocationStorage = new PlayerReportLocationStorage(localConn);
 

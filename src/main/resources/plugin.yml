@@ -236,6 +236,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
       bm.command.banip: true
@@ -296,6 +297,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
       bm.command.banip: true
@@ -385,6 +387,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
   bm.command.unban:
@@ -437,6 +440,9 @@ permissions:
     default: op
   bm.command.bminfo.history.kicks:
     description: Allows you to see kicks
+    default: op
+  bm.command.bminfo.history.ips:
+    description: Allows you to see player join leave history
     default: op
   bm.command.bminfo.history.warnings:
     description: Allows you to see warnings
