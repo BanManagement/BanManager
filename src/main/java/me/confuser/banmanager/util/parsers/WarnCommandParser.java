@@ -20,7 +20,7 @@ public class WarnCommandParser {
 
   @Argument(alias = "p")
   @Getter
-  private Integer points = 1;
+  private Double points = 1D;
 
   @Getter
   private Reason reason;

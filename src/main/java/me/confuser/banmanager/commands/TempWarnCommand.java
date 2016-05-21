@@ -204,7 +204,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
                                            .replace("[actor]", actor.getName())
                                            .replace("[reason]", warning.getReason())
                                            .replace("[expires]", parsedArgs[1])
-                                           .replace("[points]", Integer.toString(parser.getPoints()));
+                                           .replace("[points]", Double.toString(parser.getPoints()));
 
               plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
             }

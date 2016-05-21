@@ -47,7 +47,12 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
                 " ADD KEY `" + tableConfig.getTableName() + "_points_idx` (`points`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
-
+      }
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " MODIFY COLUMN `points` DECIMAL(60,2) NOT NULL DEFAULT 1";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
       }
     }
   }
@@ -93,7 +98,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     return queryBuilder().where().eq("player_id", player).countOf();
   }
 
-  public long getPointsCount(PlayerData player) throws SQLException {
+  public double getPointsCount(PlayerData player) throws SQLException {
     return queryRawValue("SELECT SUM(points) FROM " + getTableInfo().getTableName() + " WHERE player_id = UNHEX('" +
             player.getUUID().toString().replace("-", "") + "')");
   }
