@@ -21,7 +21,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -58,7 +58,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
+    final String reason = args.length > 1 ? parser.getReason().getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

@@ -25,7 +25,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    final WarnCommandParser parser = new WarnCommandParser(args);
+    final WarnCommandParser parser = new WarnCommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -56,7 +56,7 @@ public class WarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    final Reason reason = CommandUtils.getReason(1, args);
+    final Reason reason = parser.getReason();
 
     Player onlinePlayer;
 

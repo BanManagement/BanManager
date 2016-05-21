@@ -26,7 +26,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    final WarnCommandParser parser = new WarnCommandParser(args);
+    final WarnCommandParser parser = new WarnCommandParser(args, 2);
     final String[] parsedArgs = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -96,7 +96,7 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final Reason reason = CommandUtils.getReason(2, parsedArgs);
+    final Reason reason = parser.getReason();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
