@@ -332,11 +332,11 @@ public class BanManager extends BukkitPlugin {
     playerKickStorage = new PlayerKickStorage(localConn);
     playerNoteStorage = new PlayerNoteStorage(localConn);
     playerHistoryStorage = new PlayerHistoryStorage(localConn);
-    playerReportStorage = new PlayerReportStorage(localConn);
-    playerReportLocationStorage = new PlayerReportLocationStorage(localConn);
     reportStateStorage = new ReportStateStorage(localConn);
+    playerReportLocationStorage = new PlayerReportLocationStorage(localConn);
     playerReportCommandStorage = new PlayerReportCommandStorage(localConn);
     playerReportCommentStorage = new PlayerReportCommentStorage(localConn);
+    playerReportStorage = new PlayerReportStorage(localConn);
 
     ipBanStorage = new IpBanStorage(localConn);
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
