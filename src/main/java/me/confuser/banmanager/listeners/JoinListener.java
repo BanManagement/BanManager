@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
@@ -255,6 +256,31 @@ public class JoinListener extends Listeners<BanManager> {
         } finally {
           if (warnings != null) warnings.closeQuietly();
         }
+
+        if (event.getPlayer().hasPermission("bm.notify.reports.open")) {
+          try {
+            ReportList openReports = plugin.getPlayerReportStorage().getReports(1, 1);
+
+            if (openReports == null || openReports.getList().size() != 0) {
+              CommandUtils.sendReportList(openReports, event.getPlayer(), 1);
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
+        if (event.getPlayer().hasPermission("bm.notify.reports.assigned")) {
+          try {
+            ReportList assignedReports = plugin.getPlayerReportStorage().getReports(1, 2, event.getPlayer().getUniqueId());
+
+            if (assignedReports == null || assignedReports.getList().size() != 0) {
+              CommandUtils.sendReportList(assignedReports, event.getPlayer(), 1);
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
       }
     }, 20L);
   }

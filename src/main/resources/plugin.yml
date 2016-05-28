@@ -336,6 +336,11 @@ permissions:
       bm.command.report: true
       bm.command.report.offline: true
       bm.command.report.override: true
+      bm.command.report.assign: true
+      bm.command.report.close: true
+      bm.command.report.list: true
+      bm.command.report.teleport: true
+      bm.command.report.unassign: true
       bm.command.reasons: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
@@ -362,6 +367,8 @@ permissions:
       bm.notify.report: true
       bm.notify.muted: true
       bm.notify.mutedip: true
+      bm.notify.reports.open: true
+      bm.notify.reports.assigned: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
@@ -560,6 +567,21 @@ permissions:
     default: op
   bm.command.report:
     description: Allows you to report a player
+    default: op
+  bm.command.report.assign:
+    description: Allows you to assign a report to a player
+    default: op
+  bm.command.report.close:
+    description: Allows you to close a report
+    default: op
+  bm.command.report.list:
+    description: Allows you to list reports
+    default: op
+  bm.command.report.tp:
+    description: Allows you to teleport to the location of the actor who created the report
+    default: op
+  bm.command.report.unassign:
+    description: Allows you to unassign a report
     default: op
   bm.command.delete:
     description: Allows you to delete records by id

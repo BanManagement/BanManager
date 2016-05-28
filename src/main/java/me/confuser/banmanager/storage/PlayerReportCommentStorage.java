@@ -5,23 +5,23 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerReportLocationData;
+import me.confuser.banmanager.data.PlayerReportCommentData;
 
 import java.sql.SQLException;
 
-public class PlayerReportLocationStorage extends BaseDaoImpl<PlayerReportLocationData, Integer> {
+public class PlayerReportCommentStorage extends BaseDaoImpl<PlayerReportCommentData, Integer> {
 
-  public PlayerReportLocationStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerReportLocationData>) BanManager.getPlugin().getConfiguration()
+  public PlayerReportCommentStorage(ConnectionSource connection) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerReportCommentData>) BanManager.getPlugin().getConfiguration()
                                                                                 .getLocalDb()
-                                                                                .getTable("playerReportLocations"));
+                                                                                .getTable("playerReportComments"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
     }
   }
 
-  public PlayerReportLocationData getByReportId(int id) throws SQLException {
+  public PlayerReportCommentData getByReportId(int id) throws SQLException {
     return queryBuilder().where().eq("report_id", id).queryForFirst();
   }
 

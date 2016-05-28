@@ -3,13 +3,17 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.data.ReportState;
 import me.confuser.banmanager.events.PlayerReportEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -28,6 +32,16 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
+    } else {
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " ADD COLUMN `state_id` INT(11) NOT NULL DEFAULT 1," +
+                " ADD COLUMN `assignee_id` BINARY(16)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_assignee_id_idx` (`assignee_id`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
@@ -47,8 +61,34 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     return true;
   }
 
-  public CloseableIterator<PlayerReportData> getReports(UUID uniqueId) throws SQLException {
-    return queryBuilder().where().eq("player_id", UUIDUtils.toBytes(uniqueId)).iterator();
+  public ReportList getReports(long page, Integer state, UUID uniqueId) throws SQLException {
+    QueryBuilder<PlayerReportData, Integer> query = queryBuilder();
+
+    if (state != null || uniqueId != null) {
+      Where<PlayerReportData, Integer> where = query.where();
+
+      if (state != null) where.eq("state_id", state);
+      if (uniqueId != null) where.and().eq("actor_id", UUIDUtils.toBytes(uniqueId));
+    }
+
+    query.setCountOf(true);
+    PreparedQuery<PlayerReportData> preparedQuery = query.prepare();
+
+    long pageSize = 5L;
+    long count = countOf(preparedQuery);
+    long maxPage = count == 0 ? 1 : (int) Math.ceil(count / pageSize);
+
+    if (maxPage == 0) maxPage = 1;
+
+    long offset = (page - 1) * pageSize;
+
+    query.setCountOf(false).offset(offset).limit(pageSize);
+
+    return new ReportList(query.query(), count, maxPage);
+  }
+
+  public ReportList getReports(long page, int state) throws SQLException {
+    return getReports(page, state, null);
   }
 
   public int deleteAll(PlayerData player) throws SQLException {

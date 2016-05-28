@@ -22,6 +22,9 @@ databases:
       playerHistory: bm_player_history
       playerReports: bm_player_reports
       playerReportLocations: bm_player_report_locations
+      playerReportStates: bm_player_report_states
+      playerReportCommands: bm_player_report_commands
+      playerReportComments: bm_player_report_comments
       playerWarnings: bm_player_warnings
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
