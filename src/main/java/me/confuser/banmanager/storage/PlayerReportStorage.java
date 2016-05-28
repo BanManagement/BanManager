@@ -63,10 +63,13 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
   public ReportList getReports(long page, Integer state, UUID uniqueId) throws SQLException {
     QueryBuilder<PlayerReportData, Integer> query = queryBuilder();
-    Where<PlayerReportData, Integer> where = query.where();
 
-    if (state != null) where.eq("state_id", state);
-    if (uniqueId != null) where.and().eq("actor_id", UUIDUtils.toBytes(uniqueId));
+    if (state != null || uniqueId != null) {
+      Where<PlayerReportData, Integer> where = query.where();
+
+      if (state != null) where.eq("state_id", state);
+      if (uniqueId != null) where.and().eq("actor_id", UUIDUtils.toBytes(uniqueId));
+    }
 
     query.setCountOf(true);
     PreparedQuery<PlayerReportData> preparedQuery = query.prepare();
