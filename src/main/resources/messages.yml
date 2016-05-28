@@ -76,7 +76,7 @@ messages:
       incorrectFlagUsage: '&cA flag has been incorrectly used'
     stats:
       player: '&6[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
-      times'
+      times ([warnPoints] Points)'
       ip: '&6This ip has been banned [bans] times'
     connection: '&6Their last connection was with [ip] on [lastSeen]'
     geoip: 'Country: [country] City: [city]'
@@ -92,9 +92,12 @@ messages:
       player: 'http://yourdomain.com/index.php?action=viewplayer&player=[player]&server=0'
       ip: 'http://yourdomain.com/index.php?action=viewip&ip=[ip]&server=0'
     history:
-      row: '&7#[id] &a[&f[type]&a] &6[actor]&f [reason] - &e[created]'
+      row: '&7#[id] &a[&f[type]&a] &6[actor]&f [meta] [reason] - &e[created]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
       noResults: '&cNo results found'
+    ips:
+      row: '&e[ip] - &6[join] - [leave]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
 
   kick:
     player:
@@ -172,6 +175,7 @@ messages:
 
   unmute:
     notify: '&6[player] has been unmuted by [actor]'
+    player: '&6You have been unmuted by [actor]'
     error:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'
@@ -235,6 +239,10 @@ messages:
   warn:
     player:
       warned: '&6You have been warned by [actor] for &4[reason]'
+      disallowed:
+        header: '&cYou may not speak until you have accepted your most recent warning. Please type the following:'
+        reason: '&6[reason]'
+        removed: '&aThank you for your understanding, you may now speak again'
     notify: '&6[player] has been warned by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was warned too recently, try again later'
@@ -301,3 +309,6 @@ messages:
   denyalts:
     player:
       disallowed: '&cThe IP address you are joining from is linked to a banned player'
+
+  reasons:
+    row: '[hashtag] = [reason]'

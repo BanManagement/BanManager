@@ -35,6 +35,9 @@ public class InfoCommandParser {
   @Getter
   private String time;
 
+  @Argument(alias = "i")
+  @Getter
+  private Integer ips;
 
   public InfoCommandParser(String[] args) throws IllegalArgumentException {
     List<String> parsedArgs = Args.parse(this, args, false);

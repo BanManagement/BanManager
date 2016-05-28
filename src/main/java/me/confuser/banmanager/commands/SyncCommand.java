@@ -9,7 +9,8 @@ import org.bukkit.command.CommandSender;
 
 public class SyncCommand extends BukkitCommand<BanManager> {
   private final String[] localSync = new String[]{ "playerBans", "playerMutes", "ipBans", "ipRangeBans", "expiresCheck" };
-  private final String[] externalSync = new String[]{ "externalPlayerBans", "externalPlayerMutes", "externalPlayerNotes", "externalIpBans" };
+  private final String[] globalSync = new String[]{ "globalPlayerBans", "globalPlayerMutes", "globalPlayerNotes",
+          "globalIpBans" };
 
   public SyncCommand() {
     super("bmsync");
@@ -21,7 +22,7 @@ public class SyncCommand extends BukkitCommand<BanManager> {
 
     final String type = args[0];
 
-    if (!type.equals("local") && !type.equals("external")) return false;
+    if (!type.equals("local") && !type.equals("global")) return false;
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -32,7 +33,7 @@ public class SyncCommand extends BukkitCommand<BanManager> {
         if (type.equals("local")) {
           handleLocalSync();
         } else {
-          handleExternalSync();
+          handleGlobalSync();
         }
 
         Message.get("sync.player.finished").set("type", type).sendTo(sender);
@@ -52,11 +53,11 @@ public class SyncCommand extends BukkitCommand<BanManager> {
     }
   }
 
-  private void handleExternalSync() {
-    if (plugin.getExternalPlayerBanStorage() == null) return;
+  private void handleGlobalSync() {
+    if (plugin.getGlobalPlayerBanStorage() == null) return;
 
-    for (int i = 0; i < externalSync.length; i++) {
-      BmRunnable runner = plugin.getSyncRunner().getRunner(externalSync[i]);
+    for (int i = 0; i < globalSync.length; i++) {
+      BmRunnable runner = plugin.getSyncRunner().getRunner(globalSync[i]);
 
       if (runner.isRunning()) continue;
 

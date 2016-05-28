@@ -41,26 +41,26 @@ public class PlayerWarnData {
 
   @DatabaseField(index = true)
   @Getter
-  private int points = 1;
+  private double points = 1;
 
   PlayerWarnData() {
 
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points) {
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, double points) {
     this.player = player;
     this.reason = reason;
     this.actor = actor;
     this.points = points;
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points, boolean read) {
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, double points, boolean read) {
     this(player, actor, reason, points);
 
     this.read = read;
   }
 
-  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, int points, boolean read, long expires) {
+  public PlayerWarnData(PlayerData player, PlayerData actor, String reason, double points, boolean read, long expires) {
     this(player, actor, reason, points, read);
 
     this.expires = expires;

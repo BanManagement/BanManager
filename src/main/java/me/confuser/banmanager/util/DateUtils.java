@@ -38,19 +38,25 @@ public class DateUtils {
     }
 
     StringBuilder diff = new StringBuilder();
+    boolean firstappend = true;
     for (int i = 0; i < times.size(); i++) {
       Long current = times.get(i);
       long duration = time / current;
 
       if (duration > 0) {
+        if (firstappend) {
+          firstappend = false;
+        } else {
+          diff.append(" ");
+        }
         diff.append(duration).append(" ");
 
         String key = timesString.get(i);
         if (duration > 1) key += "s";
 
         diff.append(Message.get("time." + key));
-
-        break;
+        
+        time -= duration * current;
       }
     }
 
