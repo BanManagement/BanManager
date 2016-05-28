@@ -2,11 +2,14 @@ package me.confuser.banmanager.util;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerNoteData;
+import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -171,5 +174,29 @@ public class CommandUtils {
     }
 
     return ip;
+  }
+
+  public static void sendReportList(ReportList reports, CommandSender sender, int page) {
+    String dateTimeFormat = Message.getString("report.list.row.dateTimeFormat");
+    FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
+
+    Message.get("report.list.row.header")
+           .set("page", page)
+           .set("maxPage", reports.getMaxPage())
+           .set("count", reports.getCount())
+           .sendTo(sender);
+
+    for (PlayerReportData report : reports.getList()) {
+      Message.get("report.list.row.all")
+             .set("state", report.getState().getName())
+             .set("player", report.getPlayer().getName())
+             .set("actor", report.getActor().getName())
+             .set("reason", report.getReason())
+             .set("created", dateFormatter
+                     .format(report.getCreated() * 1000L))
+             .set("updated", dateFormatter
+                     .format(report.getUpdated() * 1000L))
+             .sendTo(sender);
+    }
   }
 }

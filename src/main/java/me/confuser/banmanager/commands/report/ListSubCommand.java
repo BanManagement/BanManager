@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands.report;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.data.ReportState;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.SubCommand;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -24,7 +25,7 @@ public class ListSubCommand extends SubCommand<BanManager> {
       @Override
       public void run() {
         int page = 1;
-        ReportState state = null;
+        Integer state = null;
 
         if (args.length >= 1) {
           try {
@@ -37,15 +38,17 @@ public class ListSubCommand extends SubCommand<BanManager> {
 
         if (args.length == 2) {
           try {
-            state = plugin.getReportStateStorage().queryForEq("name", args[1]).get(0);
+            ReportState stateData = plugin.getReportStateStorage().queryForEq("name", args[1]).get(0);
+
+            if (stateData == null) {
+              Message.get("report.list.error.invalidState").set("state", args[1]).sendTo(sender);
+              return;
+            }
+
+            state = stateData.getId();
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
-            return;
-          }
-
-          if (state == null) {
-            Message.get("report.list.error.invalidState").set("state", args[1]).sendTo(sender);
             return;
           }
         }
@@ -70,27 +73,7 @@ public class ListSubCommand extends SubCommand<BanManager> {
           return;
         }
 
-        String dateTimeFormat = Message.getString("report.list.row.dateTimeFormat");
-        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
-
-        Message.get("report.list.row.header")
-                .set("page", page)
-                .set("maxPage", reports.getMaxPage())
-                .set("count", reports.getCount())
-                .sendTo(sender);
-
-        for (PlayerReportData report : reports.getList()) {
-          Message.get("report.list.row.all")
-                 .set("state", report.getState().getName())
-                 .set("player", report.getPlayer().getName())
-                 .set("actor", report.getActor().getName())
-                 .set("reason", report.getReason())
-                 .set("created", dateFormatter
-                         .format(report.getCreated() * 1000L))
-                 .set("updated", dateFormatter
-                         .format(report.getUpdated() * 1000L))
-                 .sendTo(sender);
-        }
+        CommandUtils.sendReportList(reports, sender, page);
       }
     });
 

@@ -3,6 +3,7 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -60,25 +61,30 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     return true;
   }
 
-  public ReportList getReports(long page, ReportState state, UUID uniqueId) throws SQLException {
+  public ReportList getReports(long page, Integer state, UUID uniqueId) throws SQLException {
     QueryBuilder<PlayerReportData, Integer> query = queryBuilder();
     Where<PlayerReportData, Integer> where = query.where();
 
-    if (state != null) where.and().eq("state_id", state.getId());
-    if (uniqueId != null) where.eq("actor_id", UUIDUtils.toBytes(uniqueId));
+    if (state != null) where.eq("state_id", state);
+    if (uniqueId != null) where.and().eq("actor_id", UUIDUtils.toBytes(uniqueId));
+
+    query.setCountOf(true);
+    PreparedQuery<PlayerReportData> preparedQuery = query.prepare();
 
     long pageSize = 5L;
-    long count = where.countOf();
+    long count = countOf(preparedQuery);
     long maxPage = count == 0 ? 1 : (int) Math.ceil(count / pageSize);
 
     if (maxPage == 0) maxPage = 1;
 
     long offset = (page - 1) * pageSize;
 
-    return new ReportList(query.offset(offset).limit(pageSize).query(), count, maxPage);
+    query.setCountOf(false).offset(offset).limit(pageSize);
+
+    return new ReportList(query.query(), count, maxPage);
   }
 
-  public ReportList getReports(long page, ReportState state) throws SQLException {
+  public ReportList getReports(long page, int state) throws SQLException {
     return getReports(page, state, null);
   }
 
