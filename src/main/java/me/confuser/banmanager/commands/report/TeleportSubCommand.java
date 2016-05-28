@@ -45,7 +45,7 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
         }
 
         if (data == null) {
-          player.sendMessage(Message.getString("report.tp.error.notFound"));
+          Message.get("report.tp.error.notFound").sendTo(player);
           return;
         }
 

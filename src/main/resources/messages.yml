@@ -291,6 +291,14 @@ messages:
         dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
         header: '&e-- Reports ([count]) -- Page ([page]/[maxPage])'
         all: '&7#[id] &e[[state]] &6- [created] - [player]'
+    tp:
+      error:
+        notFound: '&cReport not found'
+        worldNotFound: '&cWorld [world] could not be found'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+      notify:
+        report: '&6[actor] reported [player] for &4[reason]&6 at [created]'
+        location: '[world] - [x], [y], [z]'
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
