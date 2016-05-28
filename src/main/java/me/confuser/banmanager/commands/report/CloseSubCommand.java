@@ -47,7 +47,7 @@ public class CloseSubCommand extends SubCommand<BanManager> {
         }
 
         if (data == null) {
-          sender.sendMessage(Message.getString("report.error.notFound"));
+          sender.sendMessage(Message.getString("report.tp.error.notFound"));
           return;
         }
 
@@ -76,13 +76,13 @@ public class CloseSubCommand extends SubCommand<BanManager> {
           PlayerReportCommandData commandData = new PlayerReportCommandData(data, actor, args[1]
                   .substring(1), StringUtils.join(args, " ", 2, args.length));
 
+          final String command = StringUtils.join(args, " ", 1, args.length);
+
           // Run command as actor
           plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-              String command = StringUtils.join(args, " ", 1, args.length);
-
               Message.get("report.close.dispatch").set("command", command).sendTo(sender);
               plugin.getServer().dispatchCommand(sender, command.substring(1));
             }
@@ -99,12 +99,13 @@ public class CloseSubCommand extends SubCommand<BanManager> {
           String message = Message.get("report.close.notify.command")
                                   .set("actor", data.getActor().getName())
                                   .set("id", data.getId())
+                                  .set("command", command)
                                   .toString();
 
           CommandUtils.broadcast(message, "bm.notify.report.closed", sender);
         } else {
-          PlayerReportCommentData commentData = new PlayerReportCommentData(data, actor, CommandUtils
-                  .getReason(1, args).getMessage());
+          String comment = CommandUtils.getReason(1, args).getMessage();
+          PlayerReportCommentData commentData = new PlayerReportCommentData(data, actor, comment);
 
           try {
             plugin.getPlayerReportCommentStorage().create(commentData);
@@ -117,6 +118,7 @@ public class CloseSubCommand extends SubCommand<BanManager> {
           String message = Message.get("report.close.notify.comment")
                                   .set("actor", data.getActor().getName())
                                   .set("id", data.getId())
+                                  .set("comment", comment)
                                   .toString();
 
           CommandUtils.broadcast(message, "bm.notify.report.closed", sender);

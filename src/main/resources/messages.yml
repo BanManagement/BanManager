@@ -289,6 +289,14 @@ messages:
     assign:
       player: '&aReport [id] assigned to [player]'
       notify: '&aYou have been assigned report [id] by [actor]'
+    unassign:
+      player: '&aReport [id] unassigned'
+    close:
+      notify:
+        closed: '&aReport [id] closed by [actor]'
+        command: '&aReport [id] closed by [actor] with [command]'
+        comment: '&aReport [id] closed by [actor] with [comment]'
+      dispatch: 'Executing command [command]'
     list:
       row:
         dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'

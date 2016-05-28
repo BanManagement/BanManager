@@ -45,7 +45,7 @@ public class UnassignSubCommand extends SubCommand<BanManager> {
         }
 
         if (data == null) {
-          sender.sendMessage(Message.getString("report.error.notFound"));
+          sender.sendMessage(Message.getString("report.tp.error.notFound"));
           return;
         }
 
@@ -60,7 +60,9 @@ public class UnassignSubCommand extends SubCommand<BanManager> {
           return;
         }
 
-        Message.get("report.unassign.player").sendTo(sender);
+        Message.get("report.unassign.player")
+               .set("id", data.getId())
+               .sendTo(sender);
       }
     });
 
