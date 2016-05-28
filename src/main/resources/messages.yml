@@ -286,6 +286,9 @@ messages:
     notify: '&6[player] has been reported by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was reported too recently, try again later'
+    assign:
+      player: '&aReport [id] assigned to [player]'
+      notify: '&aYou have been assigned report [id] by [actor]'
     list:
       row:
         dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
@@ -295,6 +298,7 @@ messages:
       error:
         notFound: '&cReport not found'
         worldNotFound: '&cWorld [world] could not be found'
+        invalidId: '&c[id] is not a valid report id'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
       notify:
         report: '&6[actor] reported [player] for &4[reason]&6 at [created]'

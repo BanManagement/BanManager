@@ -84,7 +84,10 @@ public class AssignSubCommand extends SubCommand<BanManager> {
           return;
         }
 
-        Message.get("report.assign.player").sendTo(sender);
+        Message.get("report.assign.player")
+               .set("id", data.getId())
+               .set("player", player.getName())
+               .sendTo(sender);
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
@@ -95,6 +98,7 @@ public class AssignSubCommand extends SubCommand<BanManager> {
             if (bukkitPlayer == null) return;
 
             Message.get("report.assign.notify")
+                   .set("id", data.getId())
                    .set("displayName", bukkitPlayer.getDisplayName())
                    .set("player", player.getName())
                    .set("playerId", player.getUUID().toString())
