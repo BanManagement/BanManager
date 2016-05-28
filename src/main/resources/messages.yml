@@ -298,6 +298,7 @@ messages:
         comment: '&aReport [id] closed by [actor] with [comment]'
       dispatch: 'Executing command [command]'
     list:
+      noResults: '&cNo reports found'
       row:
         dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
         header: '&e-- Reports ([count]) -- Page ([page]/[maxPage])'
