@@ -69,6 +69,12 @@ public class CommandUtils {
     }
   }
 
+  public static void broadcast(String message, String permission, CommandSender sender) {
+    broadcast(message, permission);
+
+    if (!sender.hasPermission(permission)) sender.sendMessage(message);
+  }
+
   public static Reason getReason(int start, String[] args) {
     String reason = StringUtils.join(args, " ", start, args.length);
     List<String> notes = new ArrayList<>();
