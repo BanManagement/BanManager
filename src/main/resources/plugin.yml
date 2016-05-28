@@ -362,6 +362,8 @@ permissions:
       bm.notify.report: true
       bm.notify.muted: true
       bm.notify.mutedip: true
+      bm.notify.reports.open: true
+      bm.notify.reports.assigned: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
