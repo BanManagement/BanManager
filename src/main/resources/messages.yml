@@ -286,6 +286,11 @@ messages:
     notify: '&6[player] has been reported by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was reported too recently, try again later'
+    list:
+      row:
+        dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+        header: '&e-- Reports ([count]) -- Page ([page]/[maxPage])'
+        all: '&7#[id] &e[[state]] &6- [created] - [player]'
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'

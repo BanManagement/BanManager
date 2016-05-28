@@ -188,6 +188,7 @@ public class CommandUtils {
 
     for (PlayerReportData report : reports.getList()) {
       Message.get("report.list.row.all")
+             .set("id", report.getId())
              .set("state", report.getState().getName())
              .set("player", report.getPlayer().getName())
              .set("actor", report.getActor().getName())
