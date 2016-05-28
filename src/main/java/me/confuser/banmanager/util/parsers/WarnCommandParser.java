@@ -25,13 +25,16 @@ public class WarnCommandParser {
   @Getter
   private Reason reason;
 
+  // @TODO Reduce duplication with CommandParser
   public WarnCommandParser(String[] args, int start) {
     reason = CommandUtils.getReason(start, args);
     String[] newArgs = reason.getMessage().split(" ");
 
-    // @TODO inefficient
-    for (int i = start - 1; i >= 0; i--) {
-      newArgs = (String[]) ArrayUtils.add(newArgs, 0, args[i]);
+    if (args.length > start) {
+      // @TODO inefficient
+      for (int i = start - 1; i >= 0; i--) {
+        newArgs = (String[]) ArrayUtils.add(newArgs, 0, args[i]);
+      }
     }
 
     List<String> parsedArgs = Args.parse(this, newArgs, false);
