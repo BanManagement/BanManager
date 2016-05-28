@@ -18,6 +18,13 @@ public class LeaveListener extends Listeners<BanManager> {
 
     if (plugin.getConfiguration().isLogIpsEnabled()) {
       final PlayerHistoryData data = plugin.getPlayerHistoryStorage().remove(event.getPlayer().getUniqueId());
+
+      if (data == null) {
+        plugin.getLogger().warning("Could not find " + event.getPlayer().getName() + " session history, perhaps they " +
+                "disconnected too quickly?");
+        return;
+      }
+
       data.setLeave(System.currentTimeMillis() / 1000L);
 
       plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
