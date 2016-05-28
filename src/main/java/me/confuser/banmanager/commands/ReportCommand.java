@@ -19,6 +19,8 @@ public class ReportCommand extends MultiCommandHandler<BanManager> {
 
   public ReportCommand() {
     super("report");
+
+    registerCommands();
   }
 
   @Override
