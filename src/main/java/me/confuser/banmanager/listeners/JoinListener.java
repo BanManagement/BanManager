@@ -205,7 +205,7 @@ public class JoinListener extends Listeners<BanManager> {
           String dateTimeFormat = Message.getString("notes.dateTimeFormat");
           FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
-          while (notesItr.hasNext()) {
+          while (notesItr != null && notesItr.hasNext()) {
             PlayerNoteData note = notesItr.next();
 
             Message noteMessage = Message.get("notes.note")
