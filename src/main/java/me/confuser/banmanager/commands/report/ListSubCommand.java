@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ListSubCommand extends SubCommand<BanManager> {
 
@@ -38,14 +39,14 @@ public class ListSubCommand extends SubCommand<BanManager> {
 
         if (args.length == 2) {
           try {
-            ReportState stateData = plugin.getReportStateStorage().queryForEq("name", args[1]).get(0);
+            List<ReportState> states = plugin.getReportStateStorage().queryForEq("name", args[1]);
 
-            if (stateData == null) {
+            if (states.size() == 0) {
               Message.get("report.list.error.invalidState").set("state", args[1]).sendTo(sender);
               return;
             }
 
-            state = stateData.getId();
+            state = states.get(0).getId();
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
