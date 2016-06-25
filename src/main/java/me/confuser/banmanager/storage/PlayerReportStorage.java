@@ -68,7 +68,8 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
       Where<PlayerReportData, Integer> where = query.where();
 
       if (state != null) where.eq("state_id", state);
-      if (uniqueId != null) where.and().eq("actor_id", UUIDUtils.toBytes(uniqueId));
+      if (state != null && uniqueId != null) where.and();
+      if (uniqueId != null) where.eq("actor_id", UUIDUtils.toBytes(uniqueId));
     }
 
     query.setCountOf(true);
