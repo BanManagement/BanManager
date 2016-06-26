@@ -92,7 +92,10 @@ public class GeoIpConfig extends Config<BanManager> {
 
     if (!enabled) return;
 
-    conf.set("download.lastUpdated", System.currentTimeMillis());
+    if (outdated) {
+      conf.set("download.lastUpdated", System.currentTimeMillis());
+      save();
+    }
 
     plugin.getLogger().info("Successfully loaded GeoIP databases");
 
@@ -116,7 +119,7 @@ public class GeoIpConfig extends Config<BanManager> {
 
   private void downloadDatabase(String downloadUrl, File location) throws IOException {
     if (location.exists()) {
-      file.delete();
+      location.delete();
     }
 
     URL url = new URL(downloadUrl);

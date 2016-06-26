@@ -21,33 +21,33 @@ public class HistoryStorage {
   private ConnectionSource localConn;
 
   // Queries
-  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, pastCreated as created, reason" +
+  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, pastCreated as created, reason" +
+  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason" +
+  final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerKickStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason" +
+  final String warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason, points AS meta" +
           "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason" +
+  final String noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason, '' AS meta" +
           "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
 
-  private final String playerSql = "SELECT id, type, actor, created, reason FROM" +
+  private final String playerSql = "SELECT id, type, actor, created, reason, meta FROM" +
           "  ( {QUERIES}" +
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Warning', 'Mute', 'Kick', 'Note')";
@@ -137,6 +137,7 @@ public class HistoryStorage {
             put("actor", result.getString(2));
             put("created", result.getLong(3));
             put("reason", result.getString(4));
+            put("meta", result.getString(5));
           }
         });
       }
@@ -227,6 +228,7 @@ public class HistoryStorage {
             put("actor", result.getString(2));
             put("created", result.getLong(3));
             put("reason", result.getString(4));
+            put("meta", result.getString(5));
           }
         });
       }

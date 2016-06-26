@@ -19,10 +19,12 @@ import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
   private BanManager plugin = BanManager.getPlugin();
+  private ConcurrentHashMap<UUID, PlayerWarnData> muteWarnings = new ConcurrentHashMap<>();
 
   public PlayerWarnStorage(ConnectionSource connection) throws SQLException {
     super(connection, (DatabaseTableConfig<PlayerWarnData>) BanManager.getPlugin().getConfiguration()
@@ -45,9 +47,26 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
                 " ADD KEY `" + tableConfig.getTableName() + "_points_idx` (`points`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
-
+      }
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " MODIFY COLUMN `points` DECIMAL(60,2) NOT NULL DEFAULT 1";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
       }
     }
+  }
+
+  public boolean isMuted(UUID uuid) {
+    return getMute(uuid) != null;
+  }
+
+  public PlayerWarnData getMute(UUID uuid) {
+    return muteWarnings.get(uuid);
+  }
+
+  public PlayerWarnData removeMute(UUID uuid) {
+    return muteWarnings.remove(uuid);
   }
 
   public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
@@ -57,6 +76,8 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     if (event.isCancelled()) {
       return false;
     }
+
+    if (plugin.getConfiguration().isWarningMutesEnabled()) muteWarnings.put(data.getPlayer().getUUID(), data);
 
     boolean created = create(data) == 1;
 
@@ -77,7 +98,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     return queryBuilder().where().eq("player_id", player).countOf();
   }
 
-  public long getPointsCount(PlayerData player) throws SQLException {
+  public double getPointsCount(PlayerData player) throws SQLException {
     return queryRawValue("SELECT SUM(points) FROM " + getTableInfo().getTableName() + " WHERE player_id = UNHEX('" +
             player.getUUID().toString().replace("-", "") + "')");
   }

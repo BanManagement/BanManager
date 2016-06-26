@@ -92,9 +92,12 @@ messages:
       player: 'http://yourdomain.com/index.php?action=viewplayer&player=[player]&server=0'
       ip: 'http://yourdomain.com/index.php?action=viewip&ip=[ip]&server=0'
     history:
-      row: '&7#[id] &a[&f[type]&a] &6[actor]&f [reason] - &e[created]'
+      row: '&7#[id] &a[&f[type]&a] &6[actor]&f [meta] [reason] - &e[created]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
       noResults: '&cNo results found'
+    ips:
+      row: '&e[ip] - &6[join] - [leave]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
 
   kick:
     player:
@@ -172,6 +175,7 @@ messages:
 
   unmute:
     notify: '&6[player] has been unmuted by [actor]'
+    player: '&6You have been unmuted by [actor]'
     error:
       noExists: '&c[player] is not muted'
       notOwn: '&c[player] was not muted by you, unable to unmute'
@@ -235,6 +239,10 @@ messages:
   warn:
     player:
       warned: '&6You have been warned by [actor] for &4[reason]'
+      disallowed:
+        header: '&cYou may not speak until you have accepted your most recent warning. Please type the following:'
+        reason: '&6[reason]'
+        removed: '&aThank you for your understanding, you may now speak again'
     notify: '&6[player] has been warned by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was warned too recently, try again later'
@@ -278,6 +286,32 @@ messages:
     notify: '&6[player] has been reported by [actor] for &4[reason]'
     error:
       cooldown: '&cThis player was reported too recently, try again later'
+    assign:
+      player: '&aReport [id] assigned to [player]'
+      notify: '&aYou have been assigned report [id] by [actor]'
+    unassign:
+      player: '&aReport [id] unassigned'
+    close:
+      notify:
+        closed: '&aReport [id] closed by [actor]'
+        command: '&aReport [id] closed by [actor] with [command]'
+        comment: '&aReport [id] closed by [actor] with [comment]'
+      dispatch: 'Executing command [command]'
+    list:
+      noResults: '&cNo reports found'
+      row:
+        dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+        header: '&e-- Reports ([count]) -- Page ([page]/[maxPage])'
+        all: '&7#[id] &e[[state]] &6- [created] - [player]'
+    tp:
+      error:
+        notFound: '&cReport not found'
+        worldNotFound: '&cWorld [world] could not be found'
+        invalidId: '&c[id] is not a valid report id'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+      notify:
+        report: '&6[actor] reported [player] for &4[reason]&6 at [created]'
+        location: '[world] - [x], [y], [z]'
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
@@ -301,3 +335,6 @@ messages:
   denyalts:
     player:
       disallowed: '&cThe IP address you are joining from is linked to a banned player'
+
+  reasons:
+    row: '[hashtag] = [reason]'

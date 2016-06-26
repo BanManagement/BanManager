@@ -19,8 +19,12 @@ databases:
       playerMuteRecords: bm_player_mute_records
       playerKicks: bm_player_kicks
       playerNotes: bm_player_notes
+      playerHistory: bm_player_history
       playerReports: bm_player_reports
       playerReportLocations: bm_player_report_locations
+      playerReportStates: bm_player_report_states
+      playerReportCommands: bm_player_report_commands
+      playerReportComments: bm_player_report_comments
       playerWarnings: bm_player_warnings
       ipBans: bm_ip_bans
       ipBanRecords: bm_ip_ban_records
@@ -29,13 +33,13 @@ databases:
       ipRangeBans: bm_ip_range_bans
       ipRangeBanRecords: bm_ip_range_ban_records
 
-  # External is only required if you want to sync with other servers, but still have separate bans, mutes etc.
+  # Global is only required if you want to sync with other servers, but still have separate bans, mutes etc.
   # This will enable /*all commands, e.g. /banall, /muteall
-  external:
+  global:
     enabled: false
     host: 127.0.0.1
     port: 3306
-    name: external_bans
+    name: global_bans
     user: root
     password: ''
     maxConnections: 10
@@ -68,6 +72,10 @@ bypassDuplicateChecks:
 
 # Log /kick to the database?
 logKicks: false
+
+# Log join/leave history of players
+# If disabled, only the most recent ip address will be stored
+logIps: true
 
 # Broadcasts events to those with bm.notify.X permissions, including command success
 displayNotifications: true
@@ -106,6 +114,10 @@ warningActions:
 # delays are in seconds
 #       delay: 10
 #     - cmd: mute [player] [reason]
+
+# Forces players to type the reason of their most recent warning before being allowed to speak in chat again
+# Removed on server restart or on player leave
+warningMute: false
 
 # This allows running commands before and after a punishment
 hooks:

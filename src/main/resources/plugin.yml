@@ -160,7 +160,7 @@ commands:
     permission: bm.command.dwarn
   bmsync:
     description: "Forces synchronisation from database"
-    usage: "/bmsync <local || external>"
+    usage: "/bmsync <local || global>"
     permission: bm.command.sync
   addnote:
     description: "Attach a private note to a player"
@@ -208,6 +208,11 @@ commands:
     usage: "/report <player> <reason>"
     aliases: [bmreport]
     permission: bm.command.report
+  reasons:
+    description: List all available predefined reasons
+    usage: "/reasons"
+    alias: [bmreasons]
+    permission: bm.command.reasons
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
@@ -231,6 +236,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
       bm.command.banip: true
@@ -269,6 +275,7 @@ permissions:
       bm.command.report: true
       bm.command.report.offline: true
       bm.command.report.override: true
+      bm.command.reasons: true
   bm.*:
     description: Gives access to all BanManager commands
     children:
@@ -290,6 +297,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
       bm.command.banip: true
@@ -328,6 +336,12 @@ permissions:
       bm.command.report: true
       bm.command.report.offline: true
       bm.command.report.override: true
+      bm.command.report.assign: true
+      bm.command.report.close: true
+      bm.command.report.list: true
+      bm.command.report.teleport: true
+      bm.command.report.unassign: true
+      bm.command.reasons: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -353,6 +367,8 @@ permissions:
       bm.notify.report: true
       bm.notify.muted: true
       bm.notify.mutedip: true
+      bm.notify.reports.open: true
+      bm.notify.reports.assigned: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
@@ -378,6 +394,7 @@ permissions:
       bm.command.bminfo.history.bans: true
       bm.command.bminfo.history.mutes: true
       bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
   bm.command.unban:
@@ -430,6 +447,9 @@ permissions:
     default: op
   bm.command.bminfo.history.kicks:
     description: Allows you to see kicks
+    default: op
+  bm.command.bminfo.history.ips:
+    description: Allows you to see player join leave history
     default: op
   bm.command.bminfo.history.warnings:
     description: Allows you to see warnings
@@ -548,6 +568,21 @@ permissions:
   bm.command.report:
     description: Allows you to report a player
     default: op
+  bm.command.report.assign:
+    description: Allows you to assign a report to a player
+    default: op
+  bm.command.report.close:
+    description: Allows you to close a report
+    default: op
+  bm.command.report.list:
+    description: Allows you to list reports
+    default: op
+  bm.command.report.tp:
+    description: Allows you to teleport to the location of the actor who created the report
+    default: op
+  bm.command.report.unassign:
+    description: Allows you to unassign a report
+    default: op
   bm.command.delete:
     description: Allows you to delete records by id
     default: op
@@ -568,4 +603,7 @@ permissions:
     default: op
   bm.command.delete.warnings:
     description: Allows you to clear a player's warnings by id
+    default: op
+  bm.command.reasons:
+    description: Allows you to list all available predefined reasons
     default: op

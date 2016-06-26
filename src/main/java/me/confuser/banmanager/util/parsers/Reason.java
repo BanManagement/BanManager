@@ -1,12 +1,14 @@
 package me.confuser.banmanager.util.parsers;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 public class Reason {
   @Getter
-  private final String message;
+  @Setter
+  private String message;
   @Getter
   private final List<String> notes;
 

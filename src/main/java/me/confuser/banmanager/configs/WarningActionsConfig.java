@@ -16,7 +16,7 @@ public class WarningActionsConfig {
   private BanManager plugin = BanManager.getPlugin();
   @Getter
   private boolean isEnabled = false;
-  private HashMap<Integer, List<ActionCommand>> actions;
+  private HashMap<Double, List<ActionCommand>> actions;
 
   public WarningActionsConfig(ConfigurationSection config) {
     isEnabled = config.getBoolean("enabled", false);
@@ -61,7 +61,7 @@ public class WarningActionsConfig {
           actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
         }
 
-        this.actions.put(NumberUtils.toInt(amount), actionCommands);
+        this.actions.put(NumberUtils.toDouble(amount), actionCommands);
       } else {
         List<String> actions = actionsConf.getStringList(amount);
         if (actions.size() == 0) continue;
@@ -74,12 +74,12 @@ public class WarningActionsConfig {
           actionCommands.add(new ActionCommand(action, 0));
         }
 
-        this.actions.put(NumberUtils.toInt(amount), actionCommands);
+        this.actions.put(NumberUtils.toDouble(amount), actionCommands);
       }
     }
   }
 
-  public List<ActionCommand> getCommand(int amount) {
+  public List<ActionCommand> getCommand(double amount) {
     return actions.get(amount);
   }
 

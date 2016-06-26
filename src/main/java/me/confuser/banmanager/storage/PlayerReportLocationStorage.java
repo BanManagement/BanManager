@@ -21,4 +21,8 @@ public class PlayerReportLocationStorage extends BaseDaoImpl<PlayerReportLocatio
     }
   }
 
+  public PlayerReportLocationData getByReportId(int id) throws SQLException {
+    return queryBuilder().where().eq("report_id", id).queryForFirst();
+  }
+
 }

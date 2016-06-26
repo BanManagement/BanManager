@@ -257,18 +257,25 @@ public class ActivityStorage {
 
     final DatabaseResults result;
     boolean hasActor = actor != null;
+
     try {
       CompiledStatement statement = connection
               .compileStatement(hasActor ? sincePlayerSql : sinceSql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS);
-      for (int i = 0; i < 14; i++) {
+
+      int maxItems = hasActor ? 28 : 14;
+
+      for (int i = 0; i < maxItems; i++) {
         statement.setObject(i, since, SqlType.LONG);
         if (hasActor) {
+          i++;
           statement.setObject(i, actor.getId(), SqlType.BYTE_ARRAY);
         }
       }
       result = statement.runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
+      connection.closeQuietly();
+
       return null;
     }
 

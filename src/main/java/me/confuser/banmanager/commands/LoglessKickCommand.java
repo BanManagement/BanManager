@@ -21,9 +21,16 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
-    args = parser.getArgs();
-    final boolean isSilent = parser.isSilent();
+    final boolean isSilent;
+    CommandParser parser = null;
+
+    if (args.length != 1) {
+      parser = new CommandParser(args, 1);
+      args = parser.getArgs();
+      isSilent = parser.isSilent();
+    } else {
+      isSilent = false;
+    }
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
@@ -48,17 +55,17 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
     final Player player = plugin.getServer().getPlayer(playerName);
 
     if (player == null) {
-      Message message = Message.get("sender.error.offline")
-                               .set("[player]", playerName);
+      Message.get("sender.error.offline")
+             .set("player", playerName)
+             .sendTo(sender);
 
-      sender.sendMessage(message.toString());
       return true;
     } else if (!sender.hasPermission("bm.exempt.override.kick") && player.hasPermission("bm.exempt.kick")) {
       Message.get("sender.error.exempt").set("player", player.getName()).sendTo(sender);
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
+    final String reason = args.length > 1 ? parser.getReason().getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

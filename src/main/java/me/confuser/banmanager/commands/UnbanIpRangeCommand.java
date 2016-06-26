@@ -127,7 +127,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message message = Message.get("upbaniprange.notify");
+        Message message = Message.get("unbaniprange.notify");
         message
                 .set("from", IPUtils.toString(ban.getFromIp()))
                 .set("to", IPUtils.toString(ban.getToIp()))

@@ -22,7 +22,7 @@ public class MuteIpCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -68,7 +68,7 @@ public class MuteIpCommand extends AutoCompleteNameTabCommand<BanManager> {
       }
     }
 
-    final String reason = CommandUtils.getReason(1, args).getMessage();
+    final String reason = parser.getReason().getMessage();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

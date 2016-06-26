@@ -132,6 +132,8 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     player = new PlayerData(uuid, name);
     create(player);
 
+    if (plugin.getConfiguration().isOfflineAutoComplete()) autoCompleteTree.put(name, VoidValue.SINGLETON);
+
     return player;
   }
 
