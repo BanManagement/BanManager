@@ -289,16 +289,16 @@ public class BanManager extends BukkitPlugin {
       return false;
     }
 
-    localConn = setupConnection(configuration.getLocalDb());
+    localConn = setupConnection(configuration.getLocalDb(), "bm-local");
 
     if (configuration.getGlobalDb().isEnabled()) {
-      globalConn = setupConnection(configuration.getGlobalDb());
+      globalConn = setupConnection(configuration.getGlobalDb(), "bm-global");
     }
 
     return true;
   }
 
-  private ConnectionSource setupConnection(DatabaseConfig dbConfig) throws SQLException {
+  private ConnectionSource setupConnection(DatabaseConfig dbConfig, String type) throws SQLException {
     HikariDataSource ds = new HikariDataSource();
 
     if (!dbConfig.getUser().isEmpty()) {
@@ -310,6 +310,7 @@ public class BanManager extends BukkitPlugin {
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
+    ds.setPoolName(type);
 
     if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
 
