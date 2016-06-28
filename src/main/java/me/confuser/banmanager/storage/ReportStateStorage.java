@@ -5,7 +5,6 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerReportLocationData;
 import me.confuser.banmanager.data.ReportState;
 
 import java.sql.SQLException;

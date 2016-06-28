@@ -1,8 +1,6 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import lombok.Getter;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
 import me.confuser.banmanager.data.IpMuteData;

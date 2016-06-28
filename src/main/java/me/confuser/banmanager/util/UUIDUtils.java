@@ -89,7 +89,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static UUIDProfile getUUIDOf(String name) throws Exception {
-    Map<String, UUID> players = new UUIDUtils(Arrays.asList(name)).call();
+    Map<String, UUID> players = new UUIDUtils(Collections.singletonList(name)).call();
 
     if (players.isEmpty()) {
       return null;
@@ -136,9 +136,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
     if (obj.size() == 0) return null;
 
-    UUIDProfile profile = new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
-
-    return profile;
+    return new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
   }
 
   public static UUID getUUID(Player player) {

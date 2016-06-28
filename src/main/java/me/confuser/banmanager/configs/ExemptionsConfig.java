@@ -60,8 +60,7 @@ public class ExemptionsConfig extends Config<BanManager> {
   public boolean isExempt(PlayerData player, String type) {
     PlayerExemptionsData exemptionsData = players.get(player.getUUID());
 
-    if (exemptionsData == null) return false;
+    return exemptionsData != null && exemptionsData.isExempt(type);
 
-    return exemptionsData.isExempt(type);
   }
 }

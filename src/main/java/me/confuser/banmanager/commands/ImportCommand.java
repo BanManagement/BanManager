@@ -189,9 +189,7 @@ public class ImportCommand extends BukkitCommand<BanManager> {
       reader.endArray();
 
       reader.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (SQLException e) {
+    } catch (IOException | SQLException e) {
       e.printStackTrace();
     }
 

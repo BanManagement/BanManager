@@ -63,17 +63,6 @@ public class GlobalIpBanData {
     this.expires = expires;
   }
 
-  // Only use for imports!
-  public GlobalIpBanData(long ip, PlayerData actor, String reason, long expires, long created) {
-    this(ip, actor, reason, expires);
-
-    this.created = created;
-  }
-
-  public boolean hasExpired() {
-    return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
-  }
-
   public UUID getActorUUID() {
     if (actorUUID == null) {
       actorUUID = UUIDUtils.fromBytes(actorUuidBytes);

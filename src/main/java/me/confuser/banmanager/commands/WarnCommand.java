@@ -5,7 +5,6 @@ import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;

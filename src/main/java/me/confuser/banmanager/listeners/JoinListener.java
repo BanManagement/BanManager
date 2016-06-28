@@ -202,7 +202,7 @@ public class JoinListener extends Listeners<BanManager> {
 
         try {
           notesItr = plugin.getPlayerNoteStorage().getNotes(id);
-          ArrayList<String> notes = new ArrayList<String>();
+          ArrayList<String> notes = new ArrayList<>();
           String dateTimeFormat = Message.getString("notes.dateTimeFormat");
           FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
@@ -339,11 +339,7 @@ public class JoinListener extends Listeners<BanManager> {
         }
 
         if (plugin.getConfiguration().isDenyAlts()) {
-          try {
-            denyAlts(duplicates, uuid);
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
+          denyAlts(duplicates, uuid);
         }
 
         if (plugin.getConfiguration().isPunishAlts()) {
@@ -377,7 +373,7 @@ public class JoinListener extends Listeners<BanManager> {
     }, 20L);
   }
 
-  private void denyAlts(List<PlayerData> duplicates, final UUID uuid) throws SQLException {
+  private void denyAlts(List<PlayerData> duplicates, final UUID uuid) {
     if (plugin.getPlayerBanStorage().isBanned(uuid)) return;
 
     for (final PlayerData player : duplicates) {

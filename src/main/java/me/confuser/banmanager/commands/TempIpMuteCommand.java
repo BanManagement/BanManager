@@ -136,10 +136,6 @@ public class TempIpMuteCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        if (!created) {
-          return;
-        }
-
         if (!created) return;
         if (isSoft) return;
 

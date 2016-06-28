@@ -117,7 +117,7 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         }
 
         final IpBanData ban = new IpBanData(ip, actor, reason, expires);
-        boolean created = false;
+        boolean created;
 
         try {
           created = plugin.getIpBanStorage().ban(ban, isSilent);

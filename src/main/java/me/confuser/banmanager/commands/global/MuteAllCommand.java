@@ -42,8 +42,6 @@ public class MuteAllCommand extends BukkitCommand<BanManager> {
 
     // Check if UUID vs name
     final String playerName = args[0];
-    final boolean isUUID = playerName.length() > 16;
-
     final String reason = StringUtils.join(args, " ", 1, args.length);
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {

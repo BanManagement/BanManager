@@ -46,8 +46,6 @@ public class TempMuteAllCommand extends BukkitCommand<BanManager> {
 
     // Check if UUID vs name
     final String playerName = args[0];
-    final boolean isUUID = playerName.length() > 16;
-
     long expiresCheck;
 
     try {

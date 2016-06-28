@@ -173,7 +173,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   }
 
   public List<PlayerData> getDuplicates(long ip) {
-    ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+    ArrayList<PlayerData> players = new ArrayList<>();
 
     if (plugin.getConfiguration().getBypassPlayerIps().contains(ip)) {
       return players;

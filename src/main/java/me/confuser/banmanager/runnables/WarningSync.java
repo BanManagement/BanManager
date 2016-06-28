@@ -1,10 +1,7 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerBanRecord;
 import me.confuser.banmanager.data.PlayerWarnData;
-import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.banmanager.storage.PlayerWarnStorage;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;

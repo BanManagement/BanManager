@@ -6,9 +6,7 @@ import lombok.Getter;
 import me.confuser.banmanager.util.parsers.Reason;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.util.StringUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CommandParser {

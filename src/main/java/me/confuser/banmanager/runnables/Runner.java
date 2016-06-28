@@ -3,15 +3,14 @@ package me.confuser.banmanager.runnables;
 import java.util.HashMap;
 
 public class Runner implements Runnable {
+
   private final HashMap<String, BmRunnable> runners;
   private final long lastExecuted = 0L;
 
   public Runner(BmRunnable... runners) {
     this.runners = new HashMap<>();
 
-    for (int i = 0; i < runners.length; i++) {
-      BmRunnable runner = runners[i];
-
+    for (BmRunnable runner : runners) {
       this.runners.put(runner.getName(), runner);
     }
   }

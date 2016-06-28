@@ -1,6 +1,5 @@
 package me.confuser.banmanager.data;
 
-import lombok.Setter;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
