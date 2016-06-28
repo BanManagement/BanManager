@@ -198,7 +198,7 @@ commands:
   bmactivity:
     description: "View recent activity"
     usage: "/bmactivity <timeDiff> [player]"
-    permission: bm.command.activity
+    permission: bm.command.bmactivity
   bmdelete:
     description: "Delete records"
     usage: "/bmdelete <type> <ids>"
