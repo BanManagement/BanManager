@@ -1,9 +1,7 @@
 package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
-
 import me.confuser.banmanager.BanManager;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
@@ -77,7 +75,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static byte[] toBytes(Player player) {
-    return toBytes(player.getUniqueId());
+    return toBytes(getUUID(player));
   }
 
   public static UUID fromBytes(byte[] array) {
@@ -143,6 +141,20 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     return profile;
   }
 
+  public static UUID getUUID(Player player) {
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
+
+    return createUUID(player.getName());
+  }
+
+  private static UUID createUUID(String s) {
+    try {
+      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s.toLowerCase()).getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      return null;
+    }
+  }
+
   public Map<String, UUID> call() throws Exception {
 
     Map<String, UUID> uuidMap = new HashMap<>();
@@ -177,13 +189,5 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
       }
     }
     return uuidMap;
-  }
-
-  private static UUID createUUID(String s) { 
-    try { 
-      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s.toLowerCase()).getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) { 
-      return null; 
-    } 
   }
 }
