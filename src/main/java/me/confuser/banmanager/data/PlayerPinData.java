@@ -33,7 +33,7 @@ public class PlayerPinData {
 
   }
 
-  public PlayerPinData(PlayerData player, Location location) throws NoSuchAlgorithmException {
+  public PlayerPinData(PlayerData player) throws NoSuchAlgorithmException {
     this.player = player;
     this.pin = SecureRandom.getInstance("SHA1PRNG").nextInt(900000) + 100000;
     this.expires = (System.currentTimeMillis() / 1000L) + 300; // Valid for 5 minutes

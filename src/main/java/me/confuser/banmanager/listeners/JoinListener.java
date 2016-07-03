@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,6 +155,10 @@ public class JoinListener extends Listeners<BanManager> {
     message.set("player", data.getPlayer().getName());
     message.set("reason", data.getReason());
     message.set("actor", data.getActor().getName());
+
+
+    PlayerPinData pin = plugin.getPlayerPinStorage().generate(data.getPlayer());
+    if (pin != null) message.set("pin", pin.getPin());
 
     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
     event.setKickMessage(message.toString());

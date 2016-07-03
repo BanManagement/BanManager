@@ -5,9 +5,11 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerPinData;
 import me.confuser.banmanager.data.PlayerReportLocationData;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 public class PlayerPinStorage extends BaseDaoImpl<PlayerPinData, Integer> {
@@ -20,6 +22,20 @@ public class PlayerPinStorage extends BaseDaoImpl<PlayerPinData, Integer> {
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
     }
+  }
+
+  public PlayerPinData generate(PlayerData player) {
+    PlayerPinData pin = null;
+    try {
+      pin = new PlayerPinData(player);
+      if (create(pin) != 1) {
+        pin = null;
+      }
+    } catch (NoSuchAlgorithmException | SQLException e) {
+      e.printStackTrace();
+    }
+
+    return pin;
   }
 
 }
