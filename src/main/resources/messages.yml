@@ -338,3 +338,7 @@ messages:
 
   reasons:
     row: '[hashtag] = [reason]'
+
+  pin:
+    notify: '&6Your pin expires in [expires]'
+    pin: '[pin]'

@@ -38,4 +38,19 @@ public class PlayerPinStorage extends BaseDaoImpl<PlayerPinData, Integer> {
     return pin;
   }
 
+  public PlayerPinData getValidPin(PlayerData player) {
+    PlayerPinData pin = null;
+
+    try {
+      pin = queryBuilder()
+              .where().eq("player_id", player.getId()).and().gt("expires", System.currentTimeMillis() / 1000L)
+              .queryForFirst();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    if (pin == null) pin = generate(player);
+
+    return pin;
+  }
 }
