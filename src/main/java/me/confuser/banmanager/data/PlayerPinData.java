@@ -21,7 +21,7 @@ public class PlayerPinData {
   @Getter
   private PlayerData player;
 
-  @DatabaseField(canBeNull = false)
+  @DatabaseField(index = true, canBeNull = false, columnDefinition = "INT(6) NOT NULL")
   @Getter
   private int pin;
 
