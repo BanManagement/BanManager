@@ -57,7 +57,8 @@ public abstract class DatabaseConfig {
     return tables.get(table);
   }
 
-  private void addTable(String key, DatabaseTableConfig<?> config) {
+  // Used by ReportsLogger
+  public void addTable(String key, DatabaseTableConfig<?> config) {
     tables.put(key, config);
   }
 }
