@@ -21,6 +21,13 @@ public class PlayerPinStorage extends BaseDaoImpl<PlayerPinData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
+    } else {
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " ADD KEY `" + tableConfig.getTableName() + "_player_pin_idx` (`player_id`, `pin`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
