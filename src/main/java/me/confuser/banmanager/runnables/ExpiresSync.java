@@ -20,6 +20,7 @@ public class ExpiresSync extends BmRunnable {
   private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
+  private PlayerPinStorage pinStorage = plugin.getPlayerPinStorage();
 
   public ExpiresSync() {
     super("expiresCheck");
@@ -78,6 +79,21 @@ public class ExpiresSync extends BmRunnable {
       e.printStackTrace();
     } finally {
       if (warnings != null) warnings.closeQuietly();
+    }
+
+    CloseableIterator<PlayerPinData> pins = null;
+    try {
+      pins = pinStorage.queryBuilder().where().le("expires", now).iterator();
+
+      while (pins.hasNext()) {
+        PlayerPinData pin = pins.next();
+
+        pinStorage.delete(pin);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (pins != null) pins.closeQuietly();
     }
 
     CloseableIterator<IpBanData> ipBans = null;
