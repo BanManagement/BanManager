@@ -25,7 +25,7 @@ public class PlayerPinData {
   @Getter
   private int pin;
 
-  @DatabaseField(canBeNull = false)
+  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
   @Getter
   private long expires;
 
