@@ -310,6 +310,7 @@ public class BanManager extends BukkitPlugin {
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
+    ds.setMinimumIdle(2);
     ds.setPoolName(type);
 
     if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
