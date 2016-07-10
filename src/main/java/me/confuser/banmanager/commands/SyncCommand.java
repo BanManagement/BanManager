@@ -8,8 +8,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 public class SyncCommand extends BukkitCommand<BanManager> {
-  private final String[] localSync = new String[]{ "playerBans", "playerMutes", "ipBans", "ipRangeBans", "expiresCheck" };
-  private final String[] globalSync = new String[]{ "globalPlayerBans", "globalPlayerMutes", "globalPlayerNotes",
+
+  private final String[] localSync = new String[] { "playerBans", "playerMutes", "ipBans", "ipRangeBans", "expiresCheck" };
+  private final String[] globalSync = new String[] { "globalPlayerBans", "globalPlayerMutes", "globalPlayerNotes",
           "globalIpBans" };
 
   public SyncCommand() {
@@ -44,8 +45,8 @@ public class SyncCommand extends BukkitCommand<BanManager> {
   }
 
   private void handleLocalSync() {
-    for (int i = 0; i < localSync.length; i++) {
-      BmRunnable runner = plugin.getSyncRunner().getRunner(localSync[i]);
+    for (String aLocalSync : localSync) {
+      BmRunnable runner = plugin.getSyncRunner().getRunner(aLocalSync);
 
       if (runner.isRunning()) continue;
 
@@ -56,8 +57,8 @@ public class SyncCommand extends BukkitCommand<BanManager> {
   private void handleGlobalSync() {
     if (plugin.getGlobalPlayerBanStorage() == null) return;
 
-    for (int i = 0; i < globalSync.length; i++) {
-      BmRunnable runner = plugin.getSyncRunner().getRunner(globalSync[i]);
+    for (String aGlobalSync : globalSync) {
+      BmRunnable runner = plugin.getSyncRunner().getRunner(aGlobalSync);
 
       if (runner.isRunning()) continue;
 

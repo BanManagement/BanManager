@@ -10,7 +10,6 @@ import com.j256.ormlite.table.TableUtils;
 import com.sk89q.guavabackport.collect.Range;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.IpRangeBanRecord;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpRangeBanEvent;
 import me.confuser.banmanager.events.IpRangeBannedEvent;
@@ -92,9 +91,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     query.setWhere(where);
 
-    IpRangeBanData ban = query.queryForFirst();
-
-    return ban;
+    return query.queryForFirst();
   }
 
   public IpRangeBanData getBan(long ip) {

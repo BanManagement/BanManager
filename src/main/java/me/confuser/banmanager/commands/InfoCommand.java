@@ -67,14 +67,13 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String[] finalArgs = args;
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
         if (isName) {
           try {
-            playerInfo(sender, search, parser, finalArgs);
+            playerInfo(sender, search, parser);
           } catch (SQLException e) {
             sender.sendMessage(Message.getString("sender.error.exception"));
             e.printStackTrace();
@@ -92,7 +91,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
     return true;
   }
 
-  public void playerInfo(CommandSender sender, String name, InfoCommandParser parser, String[] args) throws SQLException {
+  public void playerInfo(CommandSender sender, String name, InfoCommandParser parser) throws SQLException {
     PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
 
     if (player == null) {
@@ -228,7 +227,6 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
           message.set("country", country)
                  .set("countryIso", countryIso)
                  .set("city", city);
-          city = cityResponse.getCity().getName();
         } catch (IOException | GeoIp2Exception ignored) {
         }
 

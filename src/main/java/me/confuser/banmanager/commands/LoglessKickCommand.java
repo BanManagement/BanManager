@@ -96,7 +96,7 @@ public class LoglessKickCommand extends BukkitCommand<BanManager> {
         kickMessage
                 .set("displayName", player.getDisplayName())
                 .set("player", player.getName())
-                .set("playerId", player.getUniqueId().toString())
+                .set("playerId", UUIDUtils.getUUID(player).toString())
                 .set("actor", actor.getName());
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {

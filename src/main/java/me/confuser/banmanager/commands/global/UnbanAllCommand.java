@@ -29,7 +29,7 @@ public class UnbanAllCommand extends BukkitCommand<BanManager> {
     // Check if UUID vs name
     final String playerName = args[0];
     final boolean isUUID = playerName.length() > 16;
-    boolean isBanned = false;
+    boolean isBanned;
 
     if (isUUID) {
       isBanned = plugin.getPlayerBanStorage().isBanned(UUID.fromString(playerName));

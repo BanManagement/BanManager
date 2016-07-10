@@ -2,7 +2,6 @@ package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;

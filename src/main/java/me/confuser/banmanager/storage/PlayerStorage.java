@@ -215,7 +215,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     ArrayList<byte[]> ids = new ArrayList<>(onlinePlayers.size());
 
     for (Player player : onlinePlayers) {
-      ids.add(UUIDUtils.toBytes(player.getUniqueId()));
+      ids.add(UUIDUtils.toBytes(player));
     }
 
     return ids;

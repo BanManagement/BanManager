@@ -43,7 +43,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static PlayerData getPlayer(Player player) throws SQLException {
-    return getPlayer(player.getUniqueId());
+    return getPlayer(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -194,7 +194,7 @@ public class BmAPI {
    * @return
    */
   public static boolean isBanned(Player player) {
-    return isBanned(player.getUniqueId());
+    return isBanned(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -239,7 +239,7 @@ public class BmAPI {
    * @return
    */
   public static PlayerBanData getCurrentBan(Player player) {
-    return plugin.getPlayerBanStorage().getBan(player.getUniqueId());
+    return plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(player));
   }
 
 
@@ -406,7 +406,7 @@ public class BmAPI {
    * @return
    */
   public static boolean isMuted(Player player) {
-    return isMuted(player.getUniqueId());
+    return isMuted(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -451,7 +451,7 @@ public class BmAPI {
    * @return
    */
   public static PlayerMuteData getCurrentMute(Player player) {
-    return plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
+    return plugin.getPlayerMuteStorage().getMute(UUIDUtils.getUUID(player));
   }
 
 

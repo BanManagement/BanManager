@@ -27,7 +27,7 @@ public abstract class DatabaseConfig {
   private int leakDetection;
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
-  public DatabaseConfig(ConfigurationSection conf) {
+  private DatabaseConfig(ConfigurationSection conf) {
     host = conf.getString("host");
     port = conf.getInt("port", 3306);
     name = conf.getString("name");
@@ -40,7 +40,7 @@ public abstract class DatabaseConfig {
     if (maxConnections > 30) maxConnections = 30;
   }
 
-  public DatabaseConfig(ConfigurationSection conf, HashMap<String, Class> types) {
+  DatabaseConfig(ConfigurationSection conf, HashMap<String, Class> types) {
     this(conf);
 
     for (Map.Entry<String, Class> entry : types.entrySet()) {
@@ -57,6 +57,7 @@ public abstract class DatabaseConfig {
     return tables.get(table);
   }
 
+  // Used by ReportsLogger
   public void addTable(String key, DatabaseTableConfig<?> config) {
     tables.put(key, config);
   }

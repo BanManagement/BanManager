@@ -7,6 +7,7 @@ import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class ChatListener extends Listeners<BanManager> {
 
   @EventHandler
   public void onPlayerChat(AsyncPlayerChatEvent event) {
-    UUID uuid = event.getPlayer().getUniqueId();
+    UUID uuid = UUIDUtils.getUUID(event.getPlayer());
 
     if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {
       if (plugin.getPlayerWarnStorage().isMuted(uuid)) {
@@ -115,7 +116,7 @@ public class ChatListener extends Listeners<BanManager> {
                                .set("message", event.getMessage())
                                .set("displayName", event.getPlayer().getDisplayName())
                                .set("player", event.getPlayer().getName())
-                               .set("playerId", event.getPlayer().getUniqueId().toString())
+                               .set("playerId", UUIDUtils.getUUID(event.getPlayer()).toString())
                                .set("reason", mute.getReason())
                                .set("actor", mute.getActor().getName());
 
@@ -132,7 +133,7 @@ public class ChatListener extends Listeners<BanManager> {
 
     message.set("displayName", event.getPlayer().getDisplayName())
            .set("player", event.getPlayer().getName())
-           .set("playerId", event.getPlayer().getUniqueId().toString())
+           .set("playerId", UUIDUtils.getUUID(event.getPlayer()).toString())
            .set("reason", mute.getReason())
            .set("actor", mute.getActor().getName())
            .set("ip", IPUtils.toString(mute.getIp()));

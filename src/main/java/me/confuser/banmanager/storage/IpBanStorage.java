@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 

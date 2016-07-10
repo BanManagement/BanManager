@@ -191,10 +191,6 @@ public class DefaultConfig extends Config<BanManager> {
     }
   }
 
-  public ConvertDatabaseConfig getConversionDb() {
-    return new ConvertDatabaseConfig(conf.getConfigurationSection("databases.convert"));
-  }
-
   @Override
   public void onSave() {
 

@@ -28,7 +28,6 @@ public class UnbanIpAllCommand extends BukkitCommand<BanManager> {
     }
 
     // Check if UUID vs name
-    final String playerName = args[0];
     final String ipStr = args[0];
     final boolean isName = !InetAddresses.isInetAddress(ipStr);
 

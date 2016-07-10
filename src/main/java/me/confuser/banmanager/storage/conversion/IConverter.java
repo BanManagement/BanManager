@@ -2,13 +2,13 @@ package me.confuser.banmanager.storage.conversion;
 
 public interface IConverter {
 
-  public void importPlayerBans();
+  void importPlayerBans();
 
-  public void importPlayerMutes();
+  void importPlayerMutes();
 
-  public void importPlayerWarnings();
+  void importPlayerWarnings();
 
-  public void importIpBans();
+  void importIpBans();
 
-  public void importIpRangeBans();
+  void importIpRangeBans();
 }

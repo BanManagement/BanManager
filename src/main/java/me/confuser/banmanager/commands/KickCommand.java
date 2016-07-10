@@ -5,9 +5,9 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerKickData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -87,7 +87,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
         kickMessage
                 .set("displayName", player.getDisplayName())
                 .set("player", player.getName())
-                .set("playerId", player.getUniqueId().toString())
+                .set("playerId", UUIDUtils.getUUID(player).toString())
                 .set("actor", actor.getName());
 
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {

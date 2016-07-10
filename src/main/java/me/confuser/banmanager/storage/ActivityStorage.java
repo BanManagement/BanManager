@@ -1,7 +1,6 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.ConnectionSource;

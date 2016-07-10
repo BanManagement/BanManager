@@ -1,7 +1,6 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -13,7 +12,6 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
-import me.confuser.banmanager.data.ReportState;
 import me.confuser.banmanager.events.PlayerReportEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.UUIDUtils;

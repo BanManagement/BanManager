@@ -56,7 +56,7 @@ public class CommandUtils {
     if (str.contains("|")) {
       delimiter = "\\|";
     } else {
-      delimiter = "\\,";
+      delimiter = ",";
     }
 
     return str.split(delimiter);
