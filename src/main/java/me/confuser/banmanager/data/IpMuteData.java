@@ -57,6 +57,13 @@ public class IpMuteData {
     this.created = created;
   }
 
+  public IpMuteData(int id, long ip, PlayerData actor, String reason, boolean soft, long expires, long created, long updated) {
+    this(ip, actor, reason, soft, expires, created);
+
+    this.id = id;
+    this.updated = updated;
+  }
+
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
