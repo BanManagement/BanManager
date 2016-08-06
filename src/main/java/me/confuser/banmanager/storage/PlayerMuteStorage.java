@@ -96,12 +96,28 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       results = statement.runQuery(null);
 
       while (results.next()) {
-        PlayerData player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                results.getLong(3),
-                results.getLong(4));
-        PlayerData actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
-                results.getLong(7),
-                results.getLong(8));
+        PlayerData player;
+
+        try {
+          player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+                  results.getLong(3),
+                  results.getLong(4));
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing player for mute " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
+        PlayerData actor;
+
+        try {
+          actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
+                  results.getLong(7),
+                  results.getLong(8));
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing actor for mute " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
         PlayerMuteData mute = new PlayerMuteData(results.getInt(0), player, actor, results.getString(9), results.getBoolean(10), results.getLong(11),
                 results.getLong(12), results.getLong(13));
 
