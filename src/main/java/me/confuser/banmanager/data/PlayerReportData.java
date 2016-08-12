@@ -31,7 +31,7 @@ public class PlayerReportData {
   @Setter
   private ReportState state;
 
-  @DatabaseField(index = true, canBeNull = true, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
+  @DatabaseField(index = true, canBeNull = true, foreign = true, foreignAutoRefresh = true, uniqueIndex = false, persisterClass = ByteArray.class, columnDefinition = "BINARY(16)")
   @Getter
   @Setter
   private PlayerData assignee;

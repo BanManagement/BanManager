@@ -40,6 +40,11 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " MODIFY assignee_id BINARY(16) NULL";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
   }
 
