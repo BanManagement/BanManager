@@ -45,10 +45,7 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
   public int deleteAll(PlayerData player) throws SQLException {
     DeleteBuilder<PlayerNoteData, Integer> builder = deleteBuilder();
 
-    Where<PlayerNoteData, Integer> where = builder.where();
-    where.eq("player_id", player);
-
-    builder.setWhere(where);
+    builder.where().eq("player_id", player);
 
     return builder.delete();
   }

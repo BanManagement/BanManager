@@ -1,9 +1,11 @@
 package me.confuser.banmanager.listeners;
 
+import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.data.PlayerReportLocationData;
+import me.confuser.banmanager.events.PlayerReportDeletedEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -68,5 +70,27 @@ public class ReportListener extends Listeners<BanManager> {
     PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player));
     plugin.getPlayerReportLocationStorage()
           .create(new PlayerReportLocationData(report, playerData, player.getLocation()));
+  }
+
+  @EventHandler
+  public void deleteReferences(PlayerReportDeletedEvent event) {
+    int id = event.getReport().getId();
+
+
+    try {
+      DeleteBuilder location = plugin.getPlayerReportLocationStorage().deleteBuilder();
+      location.where().eq("report_id", id);
+      location.delete();
+
+      DeleteBuilder commands = plugin.getPlayerReportCommandStorage().deleteBuilder();
+      commands.where().eq("report_id", id);
+      commands.delete();
+
+      DeleteBuilder comments = plugin.getPlayerReportCommentStorage().deleteBuilder();
+      comments.where().eq("report_id", id);
+      comments.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -1,6 +1,7 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
@@ -35,5 +36,13 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
 
   public long getCount(PlayerData player) throws SQLException {
     return queryBuilder().where().eq("player_id", player).countOf();
+  }
+
+  public int deleteAll(PlayerData player) throws SQLException {
+    DeleteBuilder<PlayerKickData, Integer> builder = deleteBuilder();
+
+    builder.where().eq("player_id", player);
+
+    return builder.delete();
   }
 }

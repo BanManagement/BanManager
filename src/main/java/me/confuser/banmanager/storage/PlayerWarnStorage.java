@@ -2,6 +2,7 @@ package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -146,5 +147,13 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
     return query.iterator();
 
+  }
+
+  public int deleteAll(PlayerData player) throws SQLException {
+    DeleteBuilder<PlayerWarnData, Integer> builder = deleteBuilder();
+
+    builder.where().eq("player_id", player);
+
+    return builder.delete();
   }
 }
