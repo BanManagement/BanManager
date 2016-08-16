@@ -42,9 +42,9 @@ public class JoinListener extends Listeners<BanManager> {
         }
       }
 
-      if (!plugin.getPlayerBanStorage().isBanned(event.getUniqueId())) {
+      if (!plugin.getPlayerBanStorage().isBanned(UUIDUtils.getUUID(event))) {
         try {
-          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(event.getUniqueId());
+          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(UUIDUtils.getUUID(event));
 
           if (ban != null) plugin.getPlayerBanStorage().addBan(ban);
         } catch (SQLException e) {
@@ -52,9 +52,9 @@ public class JoinListener extends Listeners<BanManager> {
         }
       }
 
-      if (!plugin.getPlayerMuteStorage().isMuted(event.getUniqueId())) {
+      if (!plugin.getPlayerMuteStorage().isMuted(UUIDUtils.getUUID(event))) {
         try {
-          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(event.getUniqueId());
+          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(UUIDUtils.getUUID(event));
 
           if (mute != null) plugin.getPlayerMuteStorage().addMute(mute);
         } catch (SQLException e) {
@@ -126,7 +126,7 @@ public class JoinListener extends Listeners<BanManager> {
       return;
     }
 
-    PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
+    PlayerBanData data = plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(event));
 
     if (data != null && data.hasExpired()) {
       try {
@@ -174,7 +174,7 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(AsyncPlayerPreLoginEvent event) {
-    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+    PlayerData player = new PlayerData(UUIDUtils.getUUID(event), event.getName(), event.getAddress());
 
     try {
       plugin.getPlayerStorage().createOrUpdate(player);
