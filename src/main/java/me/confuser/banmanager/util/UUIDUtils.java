@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.confuser.banmanager.BanManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -143,6 +144,12 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
 
     return createUUID(player.getName());
+  }
+
+  public static UUID getUUID(AsyncPlayerPreLoginEvent event) {
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return event.getUniqueId();
+
+    return createUUID(event.getName());
   }
 
   private static UUID createUUID(String s) {

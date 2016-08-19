@@ -61,7 +61,7 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
             return;
           }
         } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
+          player = plugin.getPlayerStorage().retrieve(playerName, false);
         }
 
         if (player == null) {
@@ -93,35 +93,31 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         for (String type : types) {
           try {
-            DeleteBuilder builder = null;
             switch (type) {
               case "banrecords":
-                builder = plugin.getPlayerBanRecordStorage().deleteBuilder();
+                plugin.getPlayerBanRecordStorage().deleteAll(player);
                 break;
 
               case "kicks":
-                builder = plugin.getPlayerKickStorage().deleteBuilder();
+                plugin.getPlayerKickStorage().deleteAll(player);
                 break;
 
               case "muterecords":
-                builder = plugin.getPlayerMuteRecordStorage().deleteBuilder();
+                plugin.getPlayerMuteRecordStorage().deleteAll(player);
                 break;
 
               case "notes":
-                builder = plugin.getPlayerNoteStorage().deleteBuilder();
+                plugin.getPlayerNoteStorage().deleteAll(player);
                 break;
 
               case "reports":
-                builder = plugin.getPlayerReportStorage().deleteBuilder();
+                plugin.getPlayerReportStorage().deleteAll(player);
                 break;
 
               case "warnings":
-                builder = plugin.getPlayerWarnStorage().deleteBuilder();
+                plugin.getPlayerWarnStorage().deleteAll(player);
                 break;
             }
-
-            builder.where().eq("player_id", player);
-            builder.delete();
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();

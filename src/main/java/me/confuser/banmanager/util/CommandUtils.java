@@ -125,7 +125,7 @@ public class CommandUtils {
     return player.length() > 16;
   }
 
-  public static PlayerData getPlayer(CommandSender sender, String playerName) {
+  public static PlayerData getPlayer(CommandSender sender, String playerName, boolean mojangLookup) {
     boolean isUUID = isUUID(playerName);
     PlayerData player = null;
 
@@ -137,10 +137,14 @@ public class CommandUtils {
         e.printStackTrace();
       }
     } else {
-      player = plugin.getPlayerStorage().retrieve(playerName, true);
+      player = plugin.getPlayerStorage().retrieve(playerName, mojangLookup);
     }
 
     return player;
+  }
+
+  public static PlayerData getPlayer(CommandSender sender, String playerName) {
+    return getPlayer(sender, playerName, true);
   }
 
   public static PlayerData getActor(CommandSender sender) {

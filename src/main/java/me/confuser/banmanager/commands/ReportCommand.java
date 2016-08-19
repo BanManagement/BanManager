@@ -93,7 +93,7 @@ public class ReportCommand extends MultiCommandHandler<BanManager> {
 
       @Override
       public void run() {
-        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName, false);
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());

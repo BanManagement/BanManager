@@ -3,8 +3,12 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
@@ -15,6 +19,7 @@ import me.confuser.banmanager.events.IpMutedEvent;
 import me.confuser.banmanager.events.IpUnmutedEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
@@ -35,17 +40,68 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       TableUtils.createTable(connection, tableConfig);
     }
 
-    CloseableIterator<IpMuteData> itr = iterator();
-
-    while (itr.hasNext()) {
-      IpMuteData mute = itr.next();
-
-      mutes.put(mute.getIp(), mute);
-    }
-
-    itr.close();
+    loadAll();
 
     plugin.getLogger().info("Loaded " + mutes.size() + " ip mutes into memory");
+  }
+
+  private void loadAll() {
+    DatabaseConnection connection;
+
+    try {
+      connection = this.getConnectionSource().getReadOnlyConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
+      return;
+    }
+    StringBuilder sql = new StringBuilder();
+
+    sql.append("SELECT t.id, a.id, a.name, a.ip, a.lastSeen, t.ip, t.reason,");
+    sql.append(" t.soft, t.expires, t.created, t.updated");
+    sql.append(" FROM ");
+    sql.append(this.getTableInfo().getTableName());
+    sql.append(" t LEFT JOIN ");
+    sql.append(plugin.getPlayerStorage().getTableInfo().getTableName());
+    sql.append(" a ON actor_id = a.id");
+
+    CompiledStatement statement;
+
+    try {
+      statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
+              DatabaseConnection.DEFAULT_RESULT_FLAGS);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      connection.closeQuietly();
+
+      plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
+      return;
+    }
+
+    DatabaseResults results = null;
+
+    try {
+      results = statement.runQuery(null);
+
+      while (results.next()) {
+        PlayerData actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+                results.getLong(3),
+                results.getLong(4));
+        IpMuteData mute = new IpMuteData(results.getInt(0), results.getLong(5), actor, results.getString(6),
+                results.getBoolean(7),
+                results.getLong(8),
+                results.getLong(9),
+                results.getLong(10));
+
+        mutes.put(mute.getIp(), mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (results != null) results.closeQuietly();
+
+      connection.closeQuietly();
+    }
   }
 
   public ConcurrentHashMap<Long, IpMuteData> getMutes() {

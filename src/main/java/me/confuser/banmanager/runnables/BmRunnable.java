@@ -20,7 +20,7 @@ public abstract class BmRunnable implements Runnable {
   }
 
   public boolean shouldExecute() {
-    return (System.currentTimeMillis() / 1000L) - lastChecked > plugin.getSchedulesConfig().getSchedule(name);
+    return !isRunning && (System.currentTimeMillis() / 1000L) - lastChecked > plugin.getSchedulesConfig().getSchedule(name);
   }
 
   public void beforeRun() {

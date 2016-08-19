@@ -53,12 +53,21 @@ public class IpRangeBanData {
 
   public IpRangeBanData(long fromIp, long toIp, PlayerData actor, String reason, long expires) {
     this(fromIp, toIp, actor, reason);
+
     this.expires = expires;
   }
 
   public IpRangeBanData(long fromIp, long toIp, PlayerData actor, String reason, long expires, long created) {
     this(fromIp, toIp, actor, reason, expires);
+
     this.created = created;
+  }
+
+  public IpRangeBanData(int id, long fromIp, long toIp, PlayerData actor, String reason, long expires, long created, long updated) {
+    this(fromIp, toIp, actor, reason, expires, created);
+
+    this.id = id;
+    this.updated = updated;
   }
 
   public boolean hasExpired() {

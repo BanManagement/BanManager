@@ -12,12 +12,15 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.events.PlayerReportDeletedEvent;
 import me.confuser.banmanager.events.PlayerReportEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> {
@@ -37,6 +40,11 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
                 " ADD COLUMN `assignee_id` BINARY(16)," +
                 " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
                 " ADD KEY `" + tableConfig.getTableName() + "_assignee_id_idx` (`assignee_id`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " MODIFY assignee_id BINARY(16) NULL";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -91,14 +99,13 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
   }
 
   public int deleteAll(PlayerData player) throws SQLException {
-    DeleteBuilder<PlayerReportData, Integer> builder = deleteBuilder();
+    List<PlayerReportData> reports = queryForEq("player_id", player);
 
-    Where<PlayerReportData, Integer> where = builder.where();
-    where.eq("player_id", player);
+    for (PlayerReportData report : reports) {
+      deleteById(report.getId());
+    }
 
-    builder.setWhere(where);
-
-    return builder.delete();
+    return reports.size();
   }
 
   public boolean isRecentlyReported(PlayerData player) throws SQLException {
@@ -111,5 +118,29 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
                          .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfiguration()
                                                                                      .getReportCooldown())
                          .countOf() > 0;
+  }
+
+  public int deleteById(Integer id) throws SQLException {
+    PlayerReportData report = queryForId(id);
+
+    if (report == null) return 0;
+
+    Bukkit.getServer().getPluginManager().callEvent(new PlayerReportDeletedEvent(report));
+
+    super.deleteById(id);
+
+    return 1;
+  }
+
+  public int deleteIds(Collection<Integer> ids) throws SQLException {
+    if (ids == null || ids.isEmpty()) return 0;
+
+    int count = 0;
+
+    for (Integer id : ids) {
+      if (deleteById(id) != 0) count++;
+    }
+
+    return count;
   }
 }

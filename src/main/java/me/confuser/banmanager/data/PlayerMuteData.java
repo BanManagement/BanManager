@@ -61,6 +61,13 @@ public class PlayerMuteData {
     this.created = created;
   }
 
+  public PlayerMuteData(int id, PlayerData player, PlayerData actor, String reason, boolean soft, long expires, long created, long updated) {
+    this(player, actor, reason, soft, expires, created);
+
+    this.id = id;
+    this.updated = updated;
+  }
+
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
