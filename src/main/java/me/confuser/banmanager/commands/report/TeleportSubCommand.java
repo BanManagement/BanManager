@@ -93,6 +93,6 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.tp";
+    return "command.reports.tp";
   }
 }

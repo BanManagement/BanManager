@@ -341,11 +341,11 @@ permissions:
       bm.command.report: true
       bm.command.report.offline: true
       bm.command.report.override: true
-      bm.command.report.assign: true
-      bm.command.report.close: true
-      bm.command.report.list: true
-      bm.command.report.teleport: true
-      bm.command.report.unassign: true
+      bm.command.reports.assign: true
+      bm.command.reports.close: true
+      bm.command.reports.list: true
+      bm.command.reports.teleport: true
+      bm.command.reports.unassign: true
       bm.command.reasons: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
@@ -573,19 +573,19 @@ permissions:
   bm.command.report:
     description: Allows you to report a player
     default: op
-  bm.command.report.assign:
+  bm.command.reports.assign:
     description: Allows you to assign a report to a player
     default: op
-  bm.command.report.close:
+  bm.command.reports.close:
     description: Allows you to close a report
     default: op
-  bm.command.report.list:
+  bm.command.reports.list:
     description: Allows you to list reports
     default: op
-  bm.command.report.tp:
+  bm.command.reports.tp:
     description: Allows you to teleport to the location of the actor who created the report
     default: op
-  bm.command.report.unassign:
+  bm.command.reports.unassign:
     description: Allows you to unassign a report
     default: op
   bm.command.delete:

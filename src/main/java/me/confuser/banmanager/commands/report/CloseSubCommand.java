@@ -142,6 +142,6 @@ public class CloseSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.close";
+    return "command.reports.close";
   }
 }

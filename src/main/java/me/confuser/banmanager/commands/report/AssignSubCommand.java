@@ -126,6 +126,6 @@ public class AssignSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.assign";
+    return "command.reports.assign";
   }
 }

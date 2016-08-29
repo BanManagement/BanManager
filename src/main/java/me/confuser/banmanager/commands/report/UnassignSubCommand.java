@@ -79,6 +79,6 @@ public class UnassignSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.unassign";
+    return "command.reports.unassign";
   }
 }
