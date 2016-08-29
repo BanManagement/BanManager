@@ -26,7 +26,7 @@ public class ChatListener extends Listeners<BanManager> {
       if (plugin.getPlayerWarnStorage().isMuted(uuid)) {
         PlayerWarnData warning = plugin.getPlayerWarnStorage().getMute(uuid);
 
-        if (warning.getReason().equals(event.getMessage())) {
+        if (warning.getReason().toLowerCase().equals(event.getMessage().toLowerCase())) {
           plugin.getPlayerWarnStorage().removeMute(uuid);
           Message.get("warn.player.disallowed.removed").sendTo(event.getPlayer());
         } else {
