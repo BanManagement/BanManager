@@ -3,6 +3,8 @@ package me.confuser.banmanager.listeners;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
+import com.sk89q.guavabackport.cache.Cache;
+import com.sk89q.guavabackport.cache.CacheBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.*;
@@ -25,8 +27,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class JoinListener extends Listeners<BanManager> {
+
+  // Used for throttling attempted join messages
+  Cache<String, Long> joinCache = CacheBuilder.newBuilder()
+                                                .expireAfterWrite(1, TimeUnit.MINUTES)
+                                                .concurrencyLevel(2)
+                                                .maximumSize(100)
+                                                .build();
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
@@ -161,12 +171,18 @@ public class JoinListener extends Listeners<BanManager> {
   }
 
   private void handleJoinDeny(PlayerData player, String reason) {
+    if (joinCache.getIfPresent(player.getName()) != null) return;
+
+    joinCache.put(player.getName(), System.currentTimeMillis());
     Message message = Message.get("deniedNotify.player").set("player", player.getName()).set("reason", reason);
 
     CommandUtils.broadcast(message.toString(), "bm.notify.denied.player");
   }
 
   private void handleJoinDeny(String ip, String reason) {
+    if (joinCache.getIfPresent(ip) != null) return;
+
+    joinCache.put(ip, System.currentTimeMillis());
     Message message = Message.get("deniedNotify.ip").set("ip", ip).set("reason", reason);
 
     CommandUtils.broadcast(message.toString(), "bm.notify.denied.ip");
