@@ -208,6 +208,11 @@ commands:
     usage: "/report <player> <reason>"
     aliases: [bmreport]
     permission: bm.command.report
+  reports:
+    description: "report management"
+    usage: "/reports <sub command> <args>"
+    aliases: [bmreports]
+    permission: bm.command.reports
   reasons:
     description: List all available predefined reasons
     usage: "/reasons"

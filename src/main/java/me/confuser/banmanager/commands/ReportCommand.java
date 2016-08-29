@@ -1,13 +1,12 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.commands.report.*;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.MultiCommandHandler;
+import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,54 +14,35 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class ReportCommand extends MultiCommandHandler<BanManager> {
+public class ReportCommand extends BukkitCommand<BanManager> {
 
   public ReportCommand() {
     super("report");
-
-    registerCommands();
-  }
-
-  @Override
-  public void registerCommands() {
-    registerSubCommand(new AssignSubCommand());
-    registerSubCommand(new CloseSubCommand());
-    registerSubCommand(new ListSubCommand());
-    registerSubCommand(new TeleportSubCommand());
-    registerSubCommand(new UnassignSubCommand());
   }
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    if (args.length == 0 && sender instanceof Player) return getCommands().get("list").onCommand(sender, args);
-
-    return super.onCommand(sender, command, commandName, args);
-  }
-
-  @Override
-  public void commandNotFound(final CommandSender sender, Command command, String commandName, String[] args) {
-    // TODO Move into own class
     CommandParser parser = new CommandParser(args);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
-      return;
+      return true;
     }
 
     if (args.length < 2) {
-      return;
+      return false;
     }
 
     if (CommandUtils.isValidNameDelimiter(args[0])) {
       CommandUtils.handleMultipleNames(sender, commandName, args);
-      return;
+      return true;
     }
 
     if (args[0].equalsIgnoreCase(sender.getName())) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
-      return;
+      return true;
     }
 
     // Check if UUID vs name
@@ -80,11 +60,11 @@ public class ReportCommand extends MultiCommandHandler<BanManager> {
     if (onlinePlayer == null) {
       if (!sender.hasPermission("bm.command.report.offline")) {
         sender.sendMessage(Message.getString("sender.error.offlinePermission"));
-        return;
+        return true;
       }
     } else if (!sender.hasPermission("bm.exempt.override.report") && onlinePlayer.hasPermission("bm.exempt.report")) {
       Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
-      return;
+      return true;
     }
 
     final String reason = CommandUtils.getReason(1, args).getMessage();
@@ -133,7 +113,6 @@ public class ReportCommand extends MultiCommandHandler<BanManager> {
 
     });
 
+    return true;
   }
-
-
 }
