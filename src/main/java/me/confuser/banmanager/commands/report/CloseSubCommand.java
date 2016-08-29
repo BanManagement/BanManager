@@ -23,6 +23,11 @@ public class CloseSubCommand extends SubCommand<BanManager> {
   public boolean onCommand(final CommandSender sender, final String[] args) {
     if (args.length == 0) return false;
 
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, "reports close", args);
+      return true;
+    }
+
     final int id;
 
     try {
