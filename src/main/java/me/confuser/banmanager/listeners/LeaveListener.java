@@ -16,10 +16,6 @@ public class LeaveListener extends Listeners<BanManager> {
   public void onLeave(PlayerQuitEvent event) {
     UUID id = UUIDUtils.getUUID(event.getPlayer());
 
-    if (plugin.getConfiguration().isWarningMutesEnabled()) {
-      plugin.getPlayerWarnStorage().removeMute(id);
-    }
-
     if (plugin.getConfiguration().isLogIpsEnabled()) {
       final PlayerHistoryData data = plugin.getPlayerHistoryStorage().remove(id);
 

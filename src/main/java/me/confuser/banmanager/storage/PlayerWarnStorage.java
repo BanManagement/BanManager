@@ -8,6 +8,8 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import com.sk89q.guavabackport.cache.Cache;
+import com.sk89q.guavabackport.cache.CacheBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.CleanUp;
 import me.confuser.banmanager.data.PlayerData;
@@ -20,12 +22,16 @@ import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
   private BanManager plugin = BanManager.getPlugin();
-  private ConcurrentHashMap<UUID, PlayerWarnData> muteWarnings = new ConcurrentHashMap<>();
+  private Cache<UUID, PlayerWarnData> muteWarnings = CacheBuilder.newBuilder()
+                                                                 .expireAfterWrite(1, TimeUnit.DAYS)
+                                                                 .concurrencyLevel(2)
+                                                                 .maximumSize(200)
+                                                                 .build();
 
   public PlayerWarnStorage(ConnectionSource connection) throws SQLException {
     super(connection, (DatabaseTableConfig<PlayerWarnData>) BanManager.getPlugin().getConfiguration()
@@ -63,11 +69,15 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
   }
 
   public PlayerWarnData getMute(UUID uuid) {
-    return muteWarnings.get(uuid);
+    return muteWarnings.getIfPresent(uuid);
   }
 
   public PlayerWarnData removeMute(UUID uuid) {
-    return muteWarnings.remove(uuid);
+    PlayerWarnData warning = muteWarnings.getIfPresent(uuid);
+
+    muteWarnings.invalidate(uuid);
+
+    return warning;
   }
 
   public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
