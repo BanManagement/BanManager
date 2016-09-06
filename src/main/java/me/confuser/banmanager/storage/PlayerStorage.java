@@ -101,6 +101,12 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     List<PlayerData> results = queryForEq("name", data.getName());
     if (results.size() == 1) return status;
 
+    if (!plugin.getConfiguration().isOnlineMode()) {
+      plugin.getLogger()
+            .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
+      return status;
+    }
+
     // Duplicates found!
     for (PlayerData player : results) {
       if (player.getUUID().equals(data.getUUID())) continue;
