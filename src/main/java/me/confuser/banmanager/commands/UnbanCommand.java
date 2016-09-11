@@ -26,7 +26,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    UnbanCommandParser parser = new UnbanCommandParser(args, 2);
+    UnbanCommandParser parser = new UnbanCommandParser(args, 1);
     args = parser.getArgs();
 
     final boolean isDelete = parser.isDelete();
@@ -69,7 +69,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
+    final String reason = parser.getReason().getMessage();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

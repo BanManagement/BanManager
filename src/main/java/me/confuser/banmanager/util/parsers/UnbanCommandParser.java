@@ -24,6 +24,14 @@ public class UnbanCommandParser {
   // @TODO Reduce duplication with CommandParser
   public UnbanCommandParser(String[] args, int start) {
     reason = CommandUtils.getReason(start, args);
+
+    if (reason.getMessage().length() == 0) {
+      List<String> parsedArgs = Args.parse(this, args, false);
+      this.args = parsedArgs.toArray(new String[parsedArgs.size()]);
+
+      return;
+    }
+
     String[] newArgs = reason.getMessage().split(" ");
 
     if (args.length > start) {
