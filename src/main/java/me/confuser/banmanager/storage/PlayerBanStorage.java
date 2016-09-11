@@ -192,7 +192,12 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   public boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
     return unban(ban, actor, "");
   }
+
   public boolean unban(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {
+    return unban(ban, actor, reason, false);
+  }
+
+  public boolean unban(PlayerBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
     PlayerUnbanEvent event = new PlayerUnbanEvent(ban, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
@@ -203,7 +208,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     delete(ban);
     bans.remove(ban.getPlayer().getUUID());
 
-    plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+    if (!delete) plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
 
     return true;
   }
