@@ -1,7 +1,6 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -83,7 +82,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     long pageSize = 5L;
     long count = countOf(preparedQuery);
-    long maxPage = count == 0 ? 1 : (int) Math.ceil(count / pageSize);
+    long maxPage = count == 0 ? 1 : (int) Math.ceil((double) count / pageSize);
 
     if (maxPage == 0) maxPage = 1;
 

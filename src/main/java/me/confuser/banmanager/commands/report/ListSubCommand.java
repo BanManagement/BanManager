@@ -87,6 +87,6 @@ public class ListSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.list";
+    return "command.reports.list";
   }
 }

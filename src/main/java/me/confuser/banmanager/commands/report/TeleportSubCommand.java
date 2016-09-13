@@ -34,7 +34,7 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
 
       @Override
       public void run() {
-        PlayerReportLocationData data;
+        final PlayerReportLocationData data;
 
         try {
           data = plugin.getPlayerReportLocationStorage().getByReportId(id);
@@ -49,7 +49,7 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
           return;
         }
 
-        World world = plugin.getServer().getWorld(data.getWorld());
+        final World world = plugin.getServer().getWorld(data.getWorld());
 
         if (world == null) {
           Message.get("report.tp.error.worldNotFound").set("world", data.getWorld()).sendTo(player);
@@ -74,12 +74,18 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
                .set("z", data.getZ())
                .sendTo(player);
 
-        Location location = new Location(world, data.getX(), data.getY(), data.getZ(), data.getYaw(), data.getPitch());
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
-        // Teleport safety checks
-        if (player.isInsideVehicle()) player.leaveVehicle();
+          @Override
+          public void run() {
+            Location location = new Location(world, data.getX(), data.getY(), data.getZ(), data.getYaw(), data.getPitch());
 
-        player.teleport(location);
+            // Teleport safety checks
+            if (player.isInsideVehicle()) player.leaveVehicle();
+
+            player.teleport(location);
+          }
+        });
       }
     });
 
@@ -93,6 +99,6 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.tp";
+    return "command.reports.tp";
   }
 }

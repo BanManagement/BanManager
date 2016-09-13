@@ -2,6 +2,7 @@ package me.confuser.banmanager.commands.report;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.SubCommand;
 import org.bukkit.command.CommandSender;
@@ -17,6 +18,11 @@ public class UnassignSubCommand extends SubCommand<BanManager> {
   @Override
   public boolean onCommand(final CommandSender sender, final String[] args) {
     if (args.length != 1) return false;
+
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, "reports unassign", args);
+      return true;
+    }
 
     final int id;
 
@@ -73,6 +79,6 @@ public class UnassignSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.unassign";
+    return "command.reports.unassign";
   }
 }

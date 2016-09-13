@@ -3,6 +3,7 @@ package me.confuser.banmanager.commands.report;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.SubCommand;
@@ -27,7 +28,12 @@ public class AssignSubCommand extends SubCommand<BanManager> {
       return true;
     }
 
-    final int id;
+    if (CommandUtils.isValidNameDelimiter(args[0])) {
+      CommandUtils.handleMultipleNames(sender, "reports assign", args);
+      return true;
+    }
+
+    final Integer id;
 
     try {
       id = Integer.parseInt(args[0]);
@@ -120,6 +126,6 @@ public class AssignSubCommand extends SubCommand<BanManager> {
 
   @Override
   public String getPermission() {
-    return "command.report.assign";
+    return "command.reports.assign";
   }
 }

@@ -223,6 +223,7 @@ public class BanManager extends BukkitPlugin {
 
     // Reports
     new ReportCommand().register();
+    new ReportsCommand().register();
 
     // Kicks
     new KickCommand().register();

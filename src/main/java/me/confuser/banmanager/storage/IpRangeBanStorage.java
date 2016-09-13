@@ -87,9 +87,17 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
       results = statement.runQuery(null);
 
       while (results.next()) {
-        PlayerData actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                results.getLong(3),
-                results.getLong(4));
+        PlayerData actor;
+        try {
+          actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+                  results.getLong(3),
+                  results.getLong(4));
+
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing actor for ip ban " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
         IpRangeBanData ban = new IpRangeBanData(results.getInt(0), results.getLong(5), results.getLong(6),
                 actor,
                 results.getString(7),
@@ -202,9 +210,11 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     return true;
   }
+
   public boolean unban(IpRangeBanData ban, PlayerData actor) throws SQLException {
     return unban(ban, actor, "");
   }
+
   public boolean unban(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
     IpRangeUnbanEvent event = new IpRangeUnbanEvent(ban, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
