@@ -75,6 +75,12 @@ public class DateUtils {
         diff.append(Message.get("time." + key));
 
       }
+
+      // Hack to avoid async error
+      if ((field == Calendar.SECOND) && (duration == 59)) {
+        return formatDifference(time + 1);
+      }
+
     }
 
     return diff.length() == 0 ? Message.getString("time.now") : diff.toString();
