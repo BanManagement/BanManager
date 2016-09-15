@@ -8,6 +8,7 @@ import me.confuser.bukkitutil.Message;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,14 +17,14 @@ import java.util.regex.Pattern;
 
 public class DateUtils {
 
-  private static final List<Long> times = Arrays.asList(
-          TimeUnit.DAYS.toSeconds(365),
-          TimeUnit.DAYS.toSeconds(30),
-          TimeUnit.DAYS.toSeconds(7),
-          TimeUnit.DAYS.toSeconds(1),
-          TimeUnit.HOURS.toSeconds(1),
-          TimeUnit.MINUTES.toSeconds(1),
-          TimeUnit.SECONDS.toSeconds(1));
+  private static final List<Integer> times = Arrays.asList(
+          Calendar.YEAR,
+          Calendar.MONTH,
+          Calendar.WEEK_OF_MONTH,
+          Calendar.DAY_OF_MONTH,
+          Calendar.HOUR_OF_DAY,
+          Calendar.MINUTE,
+          Calendar.SECOND);
   private static final List<String> timesString = Arrays
           .asList("year", "month", "week", "day", "hour", "minute", "second");
   private static BanManager plugin = BanManager.getPlugin();
@@ -39,9 +40,26 @@ public class DateUtils {
 
     StringBuilder diff = new StringBuilder();
     boolean firstappend = true;
+
+    Calendar c = new GregorianCalendar();
+    long nowTime = System.currentTimeMillis();
+    long endTime = nowTime + time * 1000L;
+    Date actualTime = new Date(nowTime);
+    c.setTime(actualTime);
+
     for (int i = 0; i < times.size(); i++) {
-      Long current = times.get(i);
-      long duration = time / current;
+      int field = times.get(i);
+      int duration = 0;
+
+      while (c.getTime().getTime() <= endTime) {
+        c.add(field, 1);
+        if (c.getTime().getTime() > endTime) {
+          c.add(field, -1);
+          break;
+        } else {
+          duration++;
+        }
+      }
 
       if (duration > 0) {
         if (firstappend) {
@@ -55,8 +73,7 @@ public class DateUtils {
         if (duration > 1) key += "s";
 
         diff.append(Message.get("time." + key));
-        
-        time -= duration * current;
+
       }
     }
 
