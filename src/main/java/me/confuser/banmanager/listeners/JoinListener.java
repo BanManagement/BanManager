@@ -15,6 +15,7 @@ import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.apache.commons.lang.time.FastDateFormat;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,10 +34,10 @@ public class JoinListener extends Listeners<BanManager> {
 
   // Used for throttling attempted join messages
   Cache<String, Long> joinCache = CacheBuilder.newBuilder()
-                                                .expireAfterWrite(1, TimeUnit.MINUTES)
-                                                .concurrencyLevel(2)
-                                                .maximumSize(100)
-                                                .build();
+                                              .expireAfterWrite(1, TimeUnit.MINUTES)
+                                              .concurrencyLevel(2)
+                                              .maximumSize(100)
+                                              .build();
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
@@ -227,8 +228,9 @@ public class JoinListener extends Listeners<BanManager> {
 
             Message noteMessage = Message.get("notes.note")
                                          .set("player", note.getActor().getName())
-                                         .set("message", note.getMessage())
+                                         .set("message", note.getMessageColours())
                                          .set("created", dateFormatter.format(note.getCreated() * 1000L));
+
             notes.add(noteMessage.toString());
           }
 

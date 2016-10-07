@@ -9,6 +9,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.parsers.InfoCommandParser;
+import org.bukkit.ChatColor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -135,7 +136,13 @@ public class HistoryStorage {
             put("type", result.getString(1));
             put("actor", result.getString(2));
             put("created", result.getLong(3));
-            put("reason", result.getString(4));
+
+            if (result.getString(1).equals("Note")) {
+              put("reason", ChatColor.translateAlternateColorCodes('&', result.getString(4)));
+            } else {
+              put("reason", result.getString(4));
+            }
+
             put("meta", result.getString(5));
           }
         });

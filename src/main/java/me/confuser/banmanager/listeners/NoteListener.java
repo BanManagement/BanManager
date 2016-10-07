@@ -6,6 +6,7 @@ import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +22,7 @@ public class NoteListener extends Listeners<BanManager> {
     message.set("player", note.getPlayer().getName())
            .set("playerId", note.getPlayer().getUUID().toString())
            .set("actor", note.getActor().getName())
-           .set("message", note.getMessage());
+           .set("message", note.getMessageColours());
 
     CommandUtils.broadcast(message.toString(), "bm.notify.notes");
 

@@ -7,6 +7,7 @@ import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -65,7 +66,7 @@ public class AddNoteAllCommand extends BukkitCommand<BanManager> {
 
         Message.get("addnoteall.notify")
                .set("actor", note.getActorName())
-               .set("message", note.getMessage())
+               .set("message", note.getMessageColours())
                .set("player", player.getName())
                .set("playerId", player.getUUID().toString())
                .sendTo(sender);

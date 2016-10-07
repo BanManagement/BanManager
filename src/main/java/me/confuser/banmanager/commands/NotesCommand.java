@@ -6,6 +6,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.time.FastDateFormat;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -58,7 +59,7 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
 
               Message noteMessage = Message.get("notes.note")
                                            .set("player", note.getActor().getName())
-                                           .set("message", note.getMessage())
+                                           .set("message", note.getMessageColours())
                                            .set("created", dateFormatter.format(note.getCreated() * 1000L));
               notes.add(noteMessage);
             }
@@ -115,7 +116,7 @@ public class NotesCommand extends AutoCompleteNameTabCommand<BanManager> {
               Message noteMessage = Message.get("notes.playerNote")
                                            .set("player", note.getPlayer().getName())
                                            .set("actor", note.getActor().getName())
-                                           .set("message", note.getMessage())
+                                           .set("message", note.getMessageColours())
                                            .set("created", dateFormatter.format(note.getCreated() * 1000L));
               notes.add(noteMessage);
             }
