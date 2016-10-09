@@ -20,6 +20,7 @@ databases:
       playerKicks: bm_player_kicks
       playerNotes: bm_player_notes
       playerHistory: bm_player_history
+      playerPins: bm_player_pins
       playerReports: bm_player_reports
       playerReportLocations: bm_player_report_locations
       playerReportStates: bm_player_report_states
