@@ -62,6 +62,10 @@ public class PlayerBanData {
     this.updated = updated;
   }
 
+  public PlayerBanData(PlayerBanRecord record) {
+    this(record.getPlayer(), record.getPastActor(), record.getReason(), record.getExpired(), record.getPastCreated());
+  }
+
   public boolean hasExpired() {
             return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
       }

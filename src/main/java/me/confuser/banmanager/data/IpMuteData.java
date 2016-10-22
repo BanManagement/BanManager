@@ -64,6 +64,10 @@ public class IpMuteData {
     this.updated = updated;
   }
 
+  public IpMuteData(IpMuteRecord record) {
+    this(record.getIp(), record.getPastActor(), record.getReason(), record.isSoft(), record.getExpired(), record.getPastCreated());
+  }
+
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }

@@ -32,6 +32,7 @@ databases:
       ipMuteRecords: bm_ip_mute_records
       ipRangeBans: bm_ip_range_bans
       ipRangeBanRecords: bm_ip_range_ban_records
+      rollbacks: bm_rollbacks
 
   # Global is only required if you want to sync with other servers, but still have separate bans, mutes etc.
   # This will enable /*all commands, e.g. /banall, /muteall

@@ -218,6 +218,10 @@ commands:
     usage: "/reasons"
     alias: [bmreasons]
     permission: bm.command.reasons
+  bmrollback:
+    description: Rollback malicious actions
+    usage: "/bmrollback <player> <timeDiff> [types]"
+    permission: bm.command.bmrollback
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
@@ -281,6 +285,7 @@ permissions:
       bm.command.report.offline: true
       bm.command.report.override: true
       bm.command.reasons: true
+      bm.command.bmrollback: true
   bm.*:
     description: Gives access to all BanManager commands
     children:
@@ -347,6 +352,7 @@ permissions:
       bm.command.reports.teleport: true
       bm.command.reports.unassign: true
       bm.command.reasons: true
+      bm.command.bmrollback: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -611,4 +617,7 @@ permissions:
     default: op
   bm.command.reasons:
     description: Allows you to list all available predefined reasons
+    default: op
+  bm.command.bmrollback:
+    description: Allows you to rollback player actions
     default: op

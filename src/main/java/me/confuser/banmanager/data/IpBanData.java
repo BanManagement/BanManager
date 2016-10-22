@@ -62,6 +62,10 @@ public class IpBanData {
     this.updated = updated;
   }
 
+  public IpBanData(IpBanRecord record) {
+    this(record.getIp(), record.getPastActor(), record.getReason(), record.getExpired(), record.getPastCreated());
+  }
+
   public boolean hasExpired() {
         return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }

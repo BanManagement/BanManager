@@ -68,6 +68,10 @@ public class PlayerMuteData {
     this.updated = updated;
   }
 
+  public PlayerMuteData(PlayerMuteRecord record) {
+    this(record.getPlayer(), record.getPastActor(), record.getReason(), record.isSoft(), record.getExpired(), record.getPastCreated());
+  }
+
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }

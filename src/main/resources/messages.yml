@@ -264,6 +264,11 @@ messages:
     error:
       invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks, notes or warnings'
 
+  bmrollback:
+    notify: '&c[player] has had their [type] actions undone'
+    error:
+      invalid: '&cInvalid type, please choose between bans, banrecords, mutes, muterecords, kicks, notes or warnings'
+
   sync:
     player:
       started: '&aStarting force [type] synchronisation'
