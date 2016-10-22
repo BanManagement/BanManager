@@ -171,3 +171,13 @@ createNoteReasons: false
 # Disable for name case insensitive UUIDs instead of online UUIDs
 # If you are using bungeecord set to online mode, leave this as true
 onlineMode: true
+
+# Change if muted messages are still showing
+# Options:
+# lowest
+# low
+# normal
+# high
+# highest
+# monitor
+chatPriority: normal

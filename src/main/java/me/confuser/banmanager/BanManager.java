@@ -16,6 +16,11 @@ import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UpdateUtils;
 import me.confuser.bukkitutil.BukkitPlugin;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.EventExecutor;
 import org.mcstats.MetricsLite;
 
 import java.io.IOException;
@@ -368,9 +373,21 @@ public class BanManager extends BukkitPlugin {
   public void setupListeners() {
     new JoinListener().register();
     new LeaveListener().register();
-    new ChatListener().register();
     new CommandListener().register();
     new HookListener().register();
+
+    ChatListener chatListener = new ChatListener();
+
+    // Set custom priority
+    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, configuration
+            .getChatPriority(), new EventExecutor() {
+
+      @Override
+      public void execute(Listener listener, Event event) throws EventException {
+        ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
+        ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
+      }
+    }, plugin);
 
     if (configuration.isDisplayNotificationsEnabled()) {
       new BanListener().register();

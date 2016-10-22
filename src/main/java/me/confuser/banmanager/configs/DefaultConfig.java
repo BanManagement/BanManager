@@ -6,6 +6,7 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.bukkitutil.configs.Config;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventPriority;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,6 +66,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean warningMutesEnabled = false;
   @Getter
   private boolean logIpsEnabled = true;
+  @Getter
+  private EventPriority chatPriority;
 
   public DefaultConfig() {
     super("config.yml");
@@ -116,6 +119,13 @@ public class DefaultConfig extends Config<BanManager> {
 
     mutedBlacklistCommands = new HashSet<>();
     softMutedBlacklistCommands = new HashSet<>();
+
+    try {
+      chatPriority = EventPriority.valueOf(conf.getString("chatPriority", "NORMAL").toUpperCase());
+    } catch (Exception e) {
+      chatPriority = EventPriority.NORMAL;
+      plugin.getLogger().warning("Invalid chatPriority option, using normal priority");
+    }
 
     // Run this after startup to ensure all aliases are found
     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

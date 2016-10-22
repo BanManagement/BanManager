@@ -10,7 +10,6 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.sql.SQLException;
@@ -18,7 +17,6 @@ import java.util.UUID;
 
 public class ChatListener extends Listeners<BanManager> {
 
-  @EventHandler
   public void onPlayerChat(AsyncPlayerChatEvent event) {
     UUID uuid = UUIDUtils.getUUID(event.getPlayer());
 
@@ -87,7 +85,6 @@ public class ChatListener extends Listeners<BanManager> {
     event.getPlayer().sendMessage(message.toString());
   }
 
-  @EventHandler
   public void onIpChat(AsyncPlayerChatEvent event) {
     if (!plugin.getIpMuteStorage().isMuted(event.getPlayer().getAddress().getAddress())) {
       return;
