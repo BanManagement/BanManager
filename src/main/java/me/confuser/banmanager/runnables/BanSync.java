@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerBanRecord;
 import me.confuser.banmanager.storage.PlayerBanStorage;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 
@@ -42,7 +43,7 @@ public class BanSync extends BmRunnable {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(ban.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(ban.getPlayer().getUUID());
 
             if (bukkitPlayer == null) return;
 

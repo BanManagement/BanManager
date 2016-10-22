@@ -99,7 +99,7 @@ public class AssignSubCommand extends SubCommand<BanManager> {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(player.getUUID());
 
             if (bukkitPlayer == null) return;
 

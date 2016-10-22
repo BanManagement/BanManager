@@ -117,7 +117,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(mute.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(mute.getPlayer().getUUID());
 
             if (bukkitPlayer == null) return;
             if (bukkitPlayer.hasPermission("bm.notify.unmute")) return;

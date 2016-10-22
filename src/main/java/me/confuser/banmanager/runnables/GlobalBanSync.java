@@ -7,6 +7,7 @@ import me.confuser.banmanager.data.global.GlobalPlayerBanRecordData;
 import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerBanRecordStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerBanStorage;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public class GlobalBanSync extends BmRunnable {
           @Override
           public void run() {
             // TODO move into a listener
-            Player bukkitPlayer = plugin.getServer().getPlayer(localBan.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(localBan.getPlayer().getUUID());
 
             if (bukkitPlayer == null) return;
 

@@ -68,7 +68,7 @@ public class DeleteLastWarningCommand extends AutoCompleteNameTabCommand<BanMana
         } else {
           Message.get("dwarn.notify").set("player", player.getName()).set("actor", sender.getName()).sendTo(sender);
 
-          Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+          Player bukkitPlayer = CommandUtils.getPlayer(player.getUUID());
 
           if (bukkitPlayer == null) return;
 

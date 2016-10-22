@@ -3,6 +3,7 @@ package me.confuser.banmanager.runnables;
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.PlayerWarnData;
 import me.confuser.banmanager.storage.PlayerWarnStorage;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 
@@ -38,7 +39,7 @@ public class WarningSync extends BmRunnable {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(warn.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(warn.getPlayer().getUUID());
 
             if (bukkitPlayer == null) return;
 

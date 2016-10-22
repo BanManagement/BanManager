@@ -35,7 +35,7 @@ public class ReportListener extends Listeners<BanManager> {
     // Check if the sender is online and does not have the
     // broadcastPermission
     Player player;
-    if ((player = plugin.getServer().getPlayer(report.getActor().getUUID())) == null) {
+    if ((player = CommandUtils.getPlayer(report.getActor().getUUID())) == null) {
       return;
     }
 
@@ -48,8 +48,8 @@ public class ReportListener extends Listeners<BanManager> {
   public void storeLocation(PlayerReportedEvent event) {
     PlayerReportData report = event.getReport();
 
-    Player player = plugin.getServer().getPlayer(report.getPlayer().getUUID());
-    Player actor = plugin.getServer().getPlayer(report.getActor().getUUID());
+    Player player = CommandUtils.getPlayer(report.getPlayer().getUUID());
+    Player actor = CommandUtils.getPlayer(report.getActor().getUUID());
 
     try {
       createLocation(report, player);

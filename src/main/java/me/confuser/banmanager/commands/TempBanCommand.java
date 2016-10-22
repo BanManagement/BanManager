@@ -71,7 +71,7 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    Player onlinePlayer;
+    final Player onlinePlayer;
 
     if (isUUID) {
       onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
@@ -167,19 +167,17 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
-
-            if (bukkitPlayer == null) return;
+            if (onlinePlayer == null) return;
 
             Message kickMessage = Message.get("tempban.player.kick")
-                                         .set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("displayName", onlinePlayer.getDisplayName())
                                          .set("player", player.getName())
                                          .set("playerId", player.getUUID().toString())
                                          .set("reason", ban.getReason())
                                          .set("actor", actor.getName())
                                          .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 
-            bukkitPlayer.kickPlayer(kickMessage.toString());
+            onlinePlayer.kickPlayer(kickMessage.toString());
           }
 
         });

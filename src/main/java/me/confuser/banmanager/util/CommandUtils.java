@@ -65,7 +65,8 @@ public class CommandUtils {
   public static void broadcast(String message, String permission) {
     Set<Permissible> permissibles = Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.user");
     for (Permissible permissible : permissibles) {
-      if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible.hasPermission(permission)) {
+      if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible
+              .hasPermission(permission)) {
         CommandSender user = (CommandSender) permissible;
         user.sendMessage(message);
       }
@@ -81,10 +82,10 @@ public class CommandUtils {
   public static Reason getReason(int start, String[] args) {
     String reason = StringUtils.join(args, " ", start, args.length);
     List<String> notes = new ArrayList<>();
-    
+
     String[] matches = null;
-    if (plugin.getConfiguration().isCreateNoteReasons()) { 
-    	matches = StringUtils.substringsBetween(reason, "(", ")");
+    if (plugin.getConfiguration().isCreateNoteReasons()) {
+      matches = StringUtils.substringsBetween(reason, "(", ")");
     }
 
     if (matches != null) notes = Arrays.asList(matches);
@@ -141,6 +142,16 @@ public class CommandUtils {
     }
 
     return player;
+  }
+
+  public static Player getPlayer(UUID uuid) {
+    if (plugin.getConfiguration().isOnlineMode()) return plugin.getServer().getPlayer(uuid);
+
+    for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+      if (UUIDUtils.getUUID(onlinePlayer).equals(uuid)) return onlinePlayer;
+    }
+
+    return null;
   }
 
   public static PlayerData getPlayer(CommandSender sender, String playerName) {

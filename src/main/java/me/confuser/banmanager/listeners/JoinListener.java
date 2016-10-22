@@ -406,7 +406,7 @@ public class JoinListener extends Listeners<BanManager> {
 
         @Override
         public void run() {
-          Player bukkitPlayer = plugin.getServer().getPlayer(uuid);
+          Player bukkitPlayer = CommandUtils.getPlayer(uuid);
 
           Message kickMessage = Message.get("denyalts.player.disallowed")
                                        .set("player", player.getName())
@@ -444,7 +444,7 @@ public class JoinListener extends Listeners<BanManager> {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(newBan.getPlayer().getUUID());
 
             Message kickMessage = Message.get("ban.player.kick")
                                          .set("displayName", bukkitPlayer.getDisplayName())
