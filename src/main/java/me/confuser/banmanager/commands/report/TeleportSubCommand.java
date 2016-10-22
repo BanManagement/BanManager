@@ -60,6 +60,7 @@ public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
         FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
         Message.get("report.tp.notify.report")
+               .set("id", data.getReport().getId())
                .set("player", data.getReport().getPlayer().getName())
                .set("actor", data.getReport().getActor().getName())
                .set("reason", data.getReport().getReason())

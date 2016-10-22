@@ -310,7 +310,7 @@ messages:
         invalidId: '&c[id] is not a valid report id'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
       notify:
-        report: '&6[actor] reported [player] for &4[reason]&6 at [created]'
+        report: '&7#[id] &6[actor] reported [player] for &4[reason]&6 at [created]'
         location: '[world] - [x], [y], [z]'
 
   adnoteall:
