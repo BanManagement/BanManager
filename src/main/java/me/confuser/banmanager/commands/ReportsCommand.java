@@ -27,6 +27,7 @@ public class ReportsCommand extends MultiCommandHandler<BanManager> {
   public void registerCommands() {
     registerSubCommand(new AssignSubCommand());
     registerSubCommand(new CloseSubCommand());
+    registerSubCommand(new InfoSubCommand());
     registerSubCommand(new ListSubCommand());
     registerSubCommand(new TeleportSubCommand());
     registerSubCommand(new UnassignSubCommand());

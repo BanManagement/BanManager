@@ -312,6 +312,14 @@ messages:
       notify:
         report: '&7#[id] &6[actor] reported [player] for &4[reason]&6 at [created]'
         location: '[world] - [x], [y], [z]'
+    info:
+      error:
+        notFound: '&cReport not found'
+        invalidId: '&c[id] is not a valid report id'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+      notify:
+        report: '&7#[id] &6[actor] reported [player] for &4[reason]&6 at [created]'
+        location: '[world] - [x], [y], [z]'
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
