@@ -42,6 +42,7 @@ public class DateUtils {
     boolean firstappend = true;
 
     Calendar c = new GregorianCalendar();
+    Calendar t = new GregorianCalendar();
     long nowTime = System.currentTimeMillis();
     long endTime = nowTime + time * 1000L;
     Date actualTime = new Date(nowTime);
@@ -52,9 +53,10 @@ public class DateUtils {
       int duration = 0;
 
       while (c.getTime().getTime() <= endTime) {
+        t.setTime(c.getTime());
         c.add(field, 1);
         if (c.getTime().getTime() > endTime) {
-          c.add(field, -1);
+          c.setTime(t.getTime());
           break;
         } else {
           duration++;
