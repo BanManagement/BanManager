@@ -99,6 +99,8 @@ timeLimits:
 #    Moderator: 1d
   ipMutes:
 #    Moderator: 1d
+  rollbacks:
+#    Moderator: 1d
   nameBans:
 #    Moderator: 1d
 
