@@ -33,6 +33,8 @@ databases:
       ipRangeBans: bm_ip_range_bans
       ipRangeBanRecords: bm_ip_range_ban_records
       rollbacks: bm_rollbacks
+      nameBans: bm_name_bans
+      nameBanRecords: bm_name_ban_records
 
   # Global is only required if you want to sync with other servers, but still have separate bans, mutes etc.
   # This will enable /*all commands, e.g. /banall, /muteall
@@ -96,6 +98,8 @@ timeLimits:
   ipBans:
 #    Moderator: 1d
   ipMutes:
+#    Moderator: 1d
+  nameBans:
 #    Moderator: 1d
 
 # To prevent duplicate reports you can set a cooldown to limit the amount in seconds before a player can be reported again

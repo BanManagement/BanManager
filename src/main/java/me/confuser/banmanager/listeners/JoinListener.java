@@ -15,7 +15,6 @@ import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.apache.commons.lang.time.FastDateFormat;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -134,6 +133,37 @@ public class JoinListener extends Listeners<BanManager> {
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
       event.setKickMessage(message.toString());
       handleJoinDeny(event.getAddress().toString(), data.getReason());
+      return;
+    }
+
+    if (plugin.getNameBanStorage().isBanned(event.getName())) {
+      NameBanData data = plugin.getNameBanStorage().getBan(event.getName());
+
+      if (data.hasExpired()) {
+        try {
+          plugin.getNameBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        return;
+      }
+
+      Message message;
+
+      if (data.getExpires() == 0) {
+        message = Message.get("banname.name.disallowed");
+      } else {
+        message = Message.get("tempbanname.name.disallowed");
+        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+      }
+
+      message.set("name", event.getName());
+      message.set("reason", data.getReason());
+      message.set("actor", data.getActor().getName());
+
+      event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+      event.setKickMessage(message.toString());
       return;
     }
 

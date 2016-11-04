@@ -9,6 +9,7 @@ scheduler:
   ipBans: 30
   ipRangeBans: 30
   rollbacks: 30
+  nameBans: 30
   externalPlayerBans: 120
   externalPlayerMutes: 120
   externalPlayerNotes: 120
@@ -24,6 +25,7 @@ lastChecked:
   ipRangeBans: 0
   expiresCheck: 0
   rollbacks: 0
+  nameBans: 0
   externalPlayerBans: 0
   externalPlayerMutes: 0
   externalPlayerNotes: 0

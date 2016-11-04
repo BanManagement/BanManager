@@ -1,11 +1,11 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.events.*;
+import me.confuser.banmanager.data.*;
+import me.confuser.banmanager.events.IpBannedEvent;
+import me.confuser.banmanager.events.IpRangeBannedEvent;
+import me.confuser.banmanager.events.NameBannedEvent;
+import me.confuser.banmanager.events.PlayerBannedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
@@ -121,6 +121,42 @@ public class BanListener extends Listeners<BanManager> {
 
     message.set("from", IPUtils.toString(ban.getFromIp()))
            .set("to", IPUtils.toString(ban.getToIp()))
+           .set("actor", ban.getActor().getName())
+           .set("reason", ban.getReason());
+
+    if (!event.isSilent()) {
+      CommandUtils.broadcast(message.toString(), broadcastPermission);
+    }
+
+    // Check if the sender is online and does not have the
+    // broadcastPermission
+    Player player;
+    if ((player = CommandUtils.getPlayer(ban.getActor().getUUID())) == null) {
+      return;
+    }
+
+    if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
+      message.sendTo(player);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void notifyOnNameBan(NameBannedEvent event) {
+    NameBanData ban = event.getBan();
+
+    String broadcastPermission;
+    Message message;
+
+    if (ban.getExpires() == 0) {
+      broadcastPermission = "bm.notify.banname";
+      message = Message.get("banname.notify");
+    } else {
+      broadcastPermission = "bm.notify.tempbanname";
+      message = Message.get("tempbanname.notify");
+      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
+
+    message.set("name", ban.getName())
            .set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 

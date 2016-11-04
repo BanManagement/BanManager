@@ -222,6 +222,21 @@ commands:
     description: Rollback malicious actions
     usage: "/bmrollback <player> <timeDiff> [types]"
     permission: bm.command.bmrollback
+  banname:
+    description: "Ban a player by name"
+    usage: "/banname <name> <reason>"
+    alias: [bmbanname]
+    permission: bm.command.banname
+  tempbanname:
+    description: "Temporarily ban a player by name"
+    usage: "/tempbanname <name> <timeDiff> <reason>"
+    alias: [bmtempbanname]
+    permission: bm.command.tempbanname
+  unbanname:
+    description: "Unban a name"
+    usage: "/unbanname <name> [reason]"
+    alias: [bmunbanname]
+    permission: bm.command.unbanname
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
@@ -286,6 +301,9 @@ permissions:
       bm.command.report.override: true
       bm.command.reasons: true
       bm.command.bmrollback: true
+      bm.command.banname: true
+      bm.command.tempbanname: true
+      bm.command.unbanname: true
   bm.*:
     description: Gives access to all BanManager commands
     children:
@@ -353,6 +371,9 @@ permissions:
       bm.command.reports.unassign: true
       bm.command.reasons: true
       bm.command.bmrollback: true
+      bm.command.banname: true
+      bm.command.tempbanname: true
+      bm.command.unbanname: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -380,6 +401,9 @@ permissions:
       bm.notify.mutedip: true
       bm.notify.reports.open: true
       bm.notify.reports.assigned: true
+      bm.notify.banname: true
+      bm.notify.tempbanname: true
+      bm.notify.unbanname: true
   bm.exempt.*:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
@@ -620,4 +644,13 @@ permissions:
     default: op
   bm.command.bmrollback:
     description: Allows you to rollback player actions
+    default: op
+  bm.command.banname:
+    description: Allows you to ban a player by name
+    default: op
+  bm.command.tempbanname:
+    description: Allows you to temporarily ban a player by name
+    default: op
+  bm.command.unbanname:
+    description: Allows unbanning a name
     default: op

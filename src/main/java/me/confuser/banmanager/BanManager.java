@@ -70,6 +70,11 @@ public class BanManager extends BukkitPlugin {
   private RollbackStorage rollbackStorage;
 
   @Getter
+  private NameBanStorage nameBanStorage;
+  @Getter
+  private NameBanRecordStorage nameBanRecordStorage;
+
+  @Getter
   private IpBanStorage ipBanStorage;
   @Getter
   private IpBanRecordStorage ipBanRecordStorage;
@@ -236,6 +241,10 @@ public class BanManager extends BukkitPlugin {
     new KickCommand().register();
     new LoglessKickCommand().register();
 
+    new BanNameCommand().register();
+    new TempNameBanCommand().register();
+    new UnbanNameCommand().register();
+
     new WarnCommand().register();
     new TempWarnCommand().register();
     new DeleteLastWarningCommand().register();
@@ -360,6 +369,9 @@ public class BanManager extends BukkitPlugin {
     historyStorage = new HistoryStorage(localConn);
     rollbackStorage = new RollbackStorage(localConn);
 
+    nameBanStorage = new NameBanStorage(localConn);
+    nameBanRecordStorage = new NameBanRecordStorage(localConn);
+
     if (globalConn == null) {
       return;
     }
@@ -405,10 +417,10 @@ public class BanManager extends BukkitPlugin {
   public void setupRunnables() {
     if (globalConn == null) {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync());
+              new WarningSync(), new RollbackSync(), new NameSync());
     } else {
       syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync(),
+              new WarningSync(), new RollbackSync(), new NameSync(),
               new GlobalBanSync(), new GlobalMuteSync(), new GlobalIpSync(), new GlobalNoteSync());
     }
 

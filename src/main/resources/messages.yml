@@ -189,6 +189,25 @@ messages:
   unmuteall:
     notify: '&6[player] will be unmuted by [actor]'
 
+  banname:
+    name:
+      disallowed: '&6You have been banned from this server for &4[reason]'
+      kick: '&6You have been banned permanently for &4[reason]'
+    notify: '&6Name [name] has been permanently banned by [actor] for &4[reason]'
+    error:
+      exists: '&cName [name] is already banned'
+
+  tempbanname:
+    name:
+      disallowed: '&6You have been banned from this server for &4[reason] \n&6It expires in [expires]'
+      kick: '&6You have been temporarily banned for &4[reason]'
+    notify: '&6Name [name] has been temporarily banned for [expires] by [actor] for &4[reason]'
+
+  unbanname:
+    notify: '&6Name [name] has been unbanned by [actor]'
+    error:
+      noExists: '&cName [name] is not banned'
+
   banip:
     ip:
       disallowed: '&6You have been banned from this server for &4[reason]'
