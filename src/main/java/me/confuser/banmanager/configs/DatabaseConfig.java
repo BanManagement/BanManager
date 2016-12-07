@@ -50,7 +50,7 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    return "jdbc:mysql://" + host + ":" + port + "/" + name + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8";
+    return "jdbc:mysql://" + host + ":" + port + "/" + name + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8&useSSL=false";
   }
 
   public DatabaseTableConfig<?> getTable(String table) {
