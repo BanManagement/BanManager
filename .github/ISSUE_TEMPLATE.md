@@ -1,4 +1,4 @@
-# Report issue
+# Issue report
 <!--- To investigate your issue with BanManager you have to provide us -->
 <!--- some information about your environment. Failing to do so may -->
 <!--- result in an invalid report that cannot be resolved. -->
