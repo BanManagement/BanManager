@@ -3,20 +3,24 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import com.sk89q.guavabackport.collect.Range;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.IpRangeBanRecord;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpRangeBanEvent;
 import me.confuser.banmanager.events.IpRangeBannedEvent;
 import me.confuser.banmanager.events.IpRangeUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
@@ -39,19 +43,80 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
       return;
     }
 
-    CloseableIterator<IpRangeBanData> itr = iterator();
-
-    while (itr.hasNext()) {
-      IpRangeBanData ban = itr.next();
-      Range<Long> range = Range.closed(ban.getFromIp(), ban.getToIp());
-
-      bans.put(range, ban);
-      ranges.add(range);
-    }
-
-    itr.close();
+    loadAll();
 
     plugin.getLogger().info("Loaded " + bans.size() + " ip range bans into memory");
+  }
+
+  private void loadAll() {
+    DatabaseConnection connection;
+
+    try {
+      connection = this.getConnectionSource().getReadOnlyConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
+      return;
+    }
+    StringBuilder sql = new StringBuilder();
+
+    sql.append("SELECT t.id, a.id, a.name, a.ip, a.lastSeen, t.fromIp, t.toIp, t.reason,");
+    sql.append(" t.expires, t.created, t.updated");
+    sql.append(" FROM ");
+    sql.append(this.getTableInfo().getTableName());
+    sql.append(" t LEFT JOIN ");
+    sql.append(plugin.getPlayerStorage().getTableInfo().getTableName());
+    sql.append(" a ON actor_id = a.id");
+
+    CompiledStatement statement;
+
+    try {
+      statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
+              DatabaseConnection.DEFAULT_RESULT_FLAGS);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      connection.closeQuietly();
+
+      plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
+      return;
+    }
+
+    DatabaseResults results = null;
+
+    try {
+      results = statement.runQuery(null);
+
+      while (results.next()) {
+        PlayerData actor;
+        try {
+          actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+                  results.getLong(3),
+                  results.getLong(4));
+
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing actor for ip ban " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
+        IpRangeBanData ban = new IpRangeBanData(results.getInt(0), results.getLong(5), results.getLong(6),
+                actor,
+                results.getString(7),
+                results.getLong(8),
+                results.getLong(9),
+                results.getLong(10));
+
+        Range<Long> range = Range.closed(ban.getFromIp(), ban.getToIp());
+
+        bans.put(range, ban);
+        ranges.add(range);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (results != null) results.closeQuietly();
+
+      connection.closeQuietly();
+    }
   }
 
   public ConcurrentHashMap<Range, IpRangeBanData> getBans() {
@@ -92,9 +157,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     query.setWhere(where);
 
-    IpRangeBanData ban = query.queryForFirst();
-
-    return ban;
+    return query.queryForFirst();
   }
 
   public IpRangeBanData getBan(long ip) {
@@ -114,6 +177,10 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     ranges.add(range);
     bans.put(range, ban);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new IpRangeBannedEvent(ban, false));
+    }
   }
 
   public void removeBan(IpRangeBanData ban) {
@@ -143,11 +210,13 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     return true;
   }
+
   public boolean unban(IpRangeBanData ban, PlayerData actor) throws SQLException {
     return unban(ban, actor, "");
   }
+
   public boolean unban(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
-    IpRangeUnbanEvent event = new IpRangeUnbanEvent(ban, reason);
+    IpRangeUnbanEvent event = new IpRangeUnbanEvent(ban, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {

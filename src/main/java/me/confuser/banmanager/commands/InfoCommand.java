@@ -1,16 +1,18 @@
 package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
+import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerHistoryData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.InfoCommandParser;
+import me.confuser.banmanager.util.parsers.InfoCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
@@ -44,7 +46,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
     args = parser.getArgs();
 
-    if (args.length > 1) {
+    if (args.length > 2) {
       return false;
     }
 
@@ -52,7 +54,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       return false;
     }
 
-    if (args.length == 1 && !sender.hasPermission("bm.command.bminfo.others")) {
+    if (args.length >= 1 && !sender.hasPermission("bm.command.bminfo.others")) {
       Message.get("sender.error.noPermission").sendTo(sender);
       return true;
     }
@@ -100,7 +102,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
     ArrayList<String> messages = new ArrayList<>();
 
     boolean hasFlags = parser.isBans() || parser.isKicks() || parser.isMutes() || parser.isNotes() || parser
-            .isWarnings();
+            .isWarnings() || parser.getIps() != null;
 
     if (hasFlags) {
       long since = 0;
@@ -138,32 +140,47 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         return;
       }
 
-      ArrayList<HashMap<String, Object>> results;
+      if (parser.getIps() != null) {
+        if (!sender.hasPermission("bm.command.bminfo.history.ips")) {
+          Message.get("sender.error.noPermission").sendTo(sender);
+          return;
+        }
 
-      if (parser.getTime() != null && !parser.getTime().isEmpty()) {
-        results = plugin.getHistoryStorage().getSince(player, since, parser);
+        int page = parser.getIps() - 1;
+
+        if (page < 0) page = 0;
+
+        handleIpHistory(messages, player, since, page);
       } else {
-        results = plugin.getHistoryStorage().getAll(player, parser);
-      }
 
-      if (results == null || results.size() == 0) {
-        Message.get("info.history.noResults").sendTo(sender);
-        return;
-      }
+        ArrayList<HashMap<String, Object>> results;
 
-      String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
-      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
+        if (parser.getTime() != null && !parser.getTime().isEmpty()) {
+          results = plugin.getHistoryStorage().getSince(player, since, parser);
+        } else {
+          results = plugin.getHistoryStorage().getAll(player, parser);
+        }
 
-      for (HashMap<String, Object> result : results) {
-        Message message = Message.get("info.history.row")
-                                 .set("id", (int) result.get("id"))
-                                 .set("reason", (String) result.get("reason"))
-                                 .set("type", (String) result.get("type"))
-                                 .set("created", dateFormatter
-                                         .format((long) result.get("created") * 1000L))
-                                 .set("actor", (String) result.get("actor"));
+        if (results == null || results.size() == 0) {
+          Message.get("info.history.noResults").sendTo(sender);
+          return;
+        }
 
-        messages.add(message.toString());
+        String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
+        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
+
+        for (HashMap<String, Object> result : results) {
+          Message message = Message.get("info.history.row")
+                                   .set("id", (int) result.get("id"))
+                                   .set("reason", (String) result.get("reason"))
+                                   .set("type", (String) result.get("type"))
+                                   .set("created", dateFormatter
+                                           .format((long) result.get("created") * 1000L))
+                                   .set("actor", (String) result.get("actor"))
+                                   .set("meta", (String) result.get("meta"));
+
+          messages.add(message.toString());
+        }
       }
 
     } else {
@@ -172,23 +189,26 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         long banTotal = plugin.getPlayerBanRecordStorage().getCount(player);
         long muteTotal = plugin.getPlayerMuteRecordStorage().getCount(player);
         long warnTotal = plugin.getPlayerWarnStorage().getCount(player);
+        double warnPointsTotal = plugin.getPlayerWarnStorage().getPointsCount(player);
         long kickTotal = plugin.getPlayerKickStorage().getCount(player);
 
         messages.add(Message.get("info.stats.player")
                             .set("player", player.getName())
+                            .set("playerId", player.getUUID().toString())
                             .set("bans", Long.toString(banTotal))
                             .set("mutes", Long.toString(muteTotal))
                             .set("warns", Long.toString(warnTotal))
+                            .set("warnPoints", warnPointsTotal)
                             .set("kicks", Long.toString(kickTotal))
                             .toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.connection")) {
         messages.add(Message.get("info.connection")
-                .set("ip", IPUtils.toString(player.getIp()))
-                .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
-                        .format(player.getLastSeen() * 1000L))
-                .toString());
+                            .set("ip", IPUtils.toString(player.getIp()))
+                            .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
+                                    .format(player.getLastSeen() * 1000L))
+                            .toString());
       }
 
       if (plugin.getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
@@ -207,7 +227,6 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
           message.set("country", country)
                  .set("countryIso", countryIso)
                  .set("city", city);
-          city = cityResponse.getCity().getName();
         } catch (IOException | GeoIp2Exception ignored) {
         }
 
@@ -255,7 +274,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                 .set("reason", ban.getReason())
                 .set("actor", ban.getActor().getName())
                 .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                        .format(ban.getCreated() * 1000L))
+                                              .format(ban.getCreated() * 1000L))
                 .toString());
       }
 
@@ -278,7 +297,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
                 .set("reason", mute.getReason())
                 .set("actor", mute.getActor().getName())
                 .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                        .format(mute.getCreated() * 1000L))
+                                              .format(mute.getCreated() * 1000L))
                 .toString());
       }
 
@@ -286,6 +305,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         messages.add(Message.get("info.website.player")
                             .set("player", player.getName())
                             .set("uuid", player.getUUID().toString())
+                            .set("playerId", player.getUUID().toString())
                             .toString());
       }
     }
@@ -293,6 +313,31 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
     // TODO Show last warning
     for (String message : messages) {
       sender.sendMessage(message);
+    }
+  }
+
+  private void handleIpHistory(ArrayList<String> messages, PlayerData player, long since, int page) {
+    CloseableIterator<PlayerHistoryData> iterator = null;
+    try {
+      iterator = plugin.getPlayerHistoryStorage().getSince(player, since, page);
+
+      String dateTimeFormat = Message.getString("info.mute.dateTimeFormat");
+
+      while (iterator.hasNext()) {
+        PlayerHistoryData data = iterator.next();
+
+        messages.add(Message.get("info.ips.row")
+                            .set("join", FastDateFormat.getInstance(dateTimeFormat)
+                                                       .format(data.getJoin() * 1000L))
+                            .set("leave", FastDateFormat.getInstance(dateTimeFormat)
+                                                        .format(data.getLeave() * 1000L))
+                            .set("ip", IPUtils.toString(data.getIp()))
+                            .toString());
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (iterator != null) iterator.closeQuietly();
     }
   }
 }

@@ -1,20 +1,26 @@
 package me.confuser.banmanager;
 
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
+import com.j256.ormlite.support.ConnectionSource;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.commands.external.*;
+import me.confuser.banmanager.commands.global.*;
 import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
-import me.confuser.banmanager.storage.conversion.UUIDConvert;
-import me.confuser.banmanager.storage.external.*;
+import me.confuser.banmanager.storage.global.*;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UpdateUtils;
 import me.confuser.bukkitutil.BukkitPlugin;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.EventExecutor;
 import org.mcstats.MetricsLite;
 
 import java.io.IOException;
@@ -24,10 +30,9 @@ public class BanManager extends BukkitPlugin {
 
   @Getter
   public static BanManager plugin;
-
-  private JdbcPooledConnectionSource localConn;
-  private JdbcPooledConnectionSource externalConn;
-  private JdbcPooledConnectionSource conversionConn;
+  @Getter
+  private ConnectionSource localConn;
+  private ConnectionSource globalConn;
 
   @Getter
   private PlayerBanStorage playerBanStorage;
@@ -49,31 +54,54 @@ public class BanManager extends BukkitPlugin {
   private ActivityStorage activityStorage;
   @Getter
   private HistoryStorage historyStorage;
+  @Getter
+  private PlayerHistoryStorage playerHistoryStorage;
+  @Getter
+  private PlayerReportStorage playerReportStorage;
+  @Getter
+  private PlayerReportLocationStorage playerReportLocationStorage;
+  @Getter
+  private ReportStateStorage reportStateStorage;
+  @Getter
+  private PlayerReportCommandStorage playerReportCommandStorage;
+  @Getter
+  private PlayerReportCommentStorage playerReportCommentStorage;
+  @Getter
+  private RollbackStorage rollbackStorage;
+
+  @Getter
+  private NameBanStorage nameBanStorage;
+  @Getter
+  private NameBanRecordStorage nameBanRecordStorage;
 
   @Getter
   private IpBanStorage ipBanStorage;
   @Getter
   private IpBanRecordStorage ipBanRecordStorage;
   @Getter
+  private IpMuteStorage ipMuteStorage;
+  @Getter
+  private IpMuteRecordStorage ipMuteRecordStorage;
+  @Getter
   private IpRangeBanStorage ipRangeBanStorage;
   @Getter
   private IpRangeBanRecordStorage ipRangeBanRecordStorage;
 
   @Getter
-  private ExternalPlayerBanStorage externalPlayerBanStorage;
+  private GlobalPlayerBanStorage globalPlayerBanStorage;
   @Getter
-  private ExternalPlayerBanRecordStorage externalPlayerBanRecordStorage;
+  private GlobalPlayerBanRecordStorage globalPlayerBanRecordStorage;
   @Getter
-  private ExternalPlayerMuteStorage externalPlayerMuteStorage;
+  private GlobalPlayerMuteStorage globalPlayerMuteStorage;
   @Getter
-  private ExternalPlayerMuteRecordStorage externalPlayerMuteRecordStorage;
+  private GlobalPlayerMuteRecordStorage globalPlayerMuteRecordStorage;
   @Getter
-  private ExternalPlayerNoteStorage externalPlayerNoteStorage;
+  private GlobalPlayerNoteStorage globalPlayerNoteStorage;
 
   @Getter
-  private ExternalIpBanStorage externalIpBanStorage;
+  private GlobalIpBanStorage globalIpBanStorage;
   @Getter
-  private ExternalIpBanRecordStorage externalIpBanRecordStorage;
+  private GlobalIpBanRecordStorage globalIpBanRecordStorage;
 
   @Getter
   private DefaultConfig configuration;
@@ -89,24 +117,7 @@ public class BanManager extends BukkitPlugin {
   private GeoIpConfig geoIpConfig;
 
   @Getter
-  private BanSync banSync;
-  @Getter
-  private MuteSync muteSync;
-  @Getter
-  private IpSync ipSync;
-  @Getter
-  private IpRangeSync ipRangeSync;
-  @Getter
-  private ExpiresSync expiresSync;
-
-  @Getter
-  private ExternalBanSync externalBanSync;
-  @Getter
-  private ExternalMuteSync externalMuteSync;
-  @Getter
-  private ExternalIpSync externalIpSync;
-  @Getter
-  private ExternalNoteSync externalNoteSync;
+  private Runner syncRunner;
 
   @Override
   public void onEnable() {
@@ -143,10 +154,6 @@ public class BanManager extends BukkitPlugin {
       e.printStackTrace();
     }
 
-    if (conversionConn != null) {
-      setupConversion();
-    }
-
     setupListeners();
     setupCommands();
     setupRunnables();
@@ -164,94 +171,22 @@ public class BanManager extends BukkitPlugin {
     getServer().getScheduler().cancelTasks(plugin);
 
     if (localConn != null) {
+      // Save all player histories
+      if (configuration.isLogIpsEnabled()) {
+        playerHistoryStorage.save();
+      }
+
       localConn.closeQuietly();
     }
 
-    if (externalConn != null) {
-      externalConn.closeQuietly();
+    if (globalConn != null) {
+      globalConn.closeQuietly();
     }
 
-    if (conversionConn != null) {
-      conversionConn.closeQuietly();
-    }
   }
 
   private void disableDatabaseLogging() {
     System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
-  }
-
-  private void setupConversion() {
-    getLogger().info("Running pre-conversion launch checks");
-    ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
-
-    if (configuration.getLocalDb().getHost().equals(conversionDb.getHost()) && configuration.getLocalDb().getName()
-                                                                                            .equals(conversionDb
-                                                                                                    .getName())) {
-      if (!conversionChecks()) {
-        return;
-      }
-    }
-
-    // Begin the converting
-    getLogger().info("Conversion will begin shortly. You have 30 seconds to kill the process to abort.");
-    try {
-      Thread.sleep(30000L);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    getLogger().info("Launching conversion process");
-    new UUIDConvert(conversionConn);
-  }
-
-  private boolean conversionChecks() {
-    ConvertDatabaseConfig conversionDb = configuration.getConversionDb();
-
-    if (playerStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("playerIpsTable"))) {
-      getLogger().severe("players table equals playerIpsTable, aborting");
-      return false;
-    }
-
-    if (playerBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansTable"))) {
-      getLogger().severe("playerBans table equals bansTable, aborting");
-      return false;
-    }
-
-    if (playerBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("bansRecordTable"))) {
-      getLogger().severe("playerBanRecords table equals bansRecordTable, aborting");
-      return false;
-    }
-
-    if (playerMuteStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesTable"))) {
-      getLogger().severe("playerMutes table equals mutesTable, aborting");
-      return false;
-    }
-
-    if (playerMuteRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("mutesRecordTable"))) {
-      getLogger().severe("playerMuteRecords table equals mutesRecordTable, aborting");
-      return false;
-    }
-
-    if (playerKickStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("kicksTable"))) {
-      getLogger().severe("playerKicks table equals kicksTable, aborting");
-      return false;
-    }
-
-    if (playerWarnStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("warningsTable"))) {
-      getLogger().severe("playerWarnings table equals warningsTable, aborting");
-      return false;
-    }
-
-    if (ipBanStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansTable"))) {
-      getLogger().severe("ipBans table equals ipBansTable, aborting");
-      return false;
-    }
-
-    if (ipBanRecordStorage.getTableInfo().getTableName().equals(conversionDb.getTableName("ipBansRecordTable"))) {
-      getLogger().severe("ipBanRecords table equals ipBansRecordTable, aborting");
-      return false;
-    }
-
-    return true;
   }
 
   @Override
@@ -284,6 +219,11 @@ public class BanManager extends BukkitPlugin {
     new TempIpRangeBanCommand().register();
     new UnbanIpRangeCommand().register();
 
+    // IP Mutes
+    new MuteIpCommand().register();
+    new TempIpMuteCommand().register();
+    new UnmuteIpCommand().register();
+
     // Misc
     new ExportCommand().register();
     new ImportCommand().register();
@@ -293,9 +233,17 @@ public class BanManager extends BukkitPlugin {
     new BanListCommand().register();
     new ActivityCommand().register();
 
+    // Reports
+    new ReportCommand().register();
+    new ReportsCommand().register();
+
     // Kicks
     new KickCommand().register();
     new LoglessKickCommand().register();
+
+    new BanNameCommand().register();
+    new TempNameBanCommand().register();
+    new UnbanNameCommand().register();
 
     new WarnCommand().register();
     new TempWarnCommand().register();
@@ -306,10 +254,13 @@ public class BanManager extends BukkitPlugin {
 
     new ClearCommand().register();
     new DeleteCommand().register();
+    new RollbackCommand().register();
 
     new SyncCommand().register();
 
-    if (externalConn == null) return;
+    new ReasonsCommand().register();
+
+    if (globalConn == null) return;
 
     new BanAllCommand().register();
     new TempBanAllCommand().register();
@@ -356,46 +307,37 @@ public class BanManager extends BukkitPlugin {
       return false;
     }
 
-    localConn = setupConnection(configuration.getLocalDb());
+    localConn = setupConnection(configuration.getLocalDb(), "bm-local");
 
-    if (configuration.getConversionDb().isEnabled()) {
-      conversionConn = setupConnection(configuration.getConversionDb());
-    }
-
-    if (configuration.getExternalDb().isEnabled()) {
-      externalConn = setupConnection(configuration.getExternalDb());
+    if (configuration.getGlobalDb().isEnabled()) {
+      globalConn = setupConnection(configuration.getGlobalDb(), "bm-global");
     }
 
     return true;
   }
 
-  private JdbcPooledConnectionSource setupConnection(DatabaseConfig dbConfig) throws SQLException {
-    JdbcPooledConnectionSource connection = new JdbcPooledConnectionSource(dbConfig.getJDBCUrl());
+  private ConnectionSource setupConnection(DatabaseConfig dbConfig, String type) throws SQLException {
+    HikariDataSource ds = new HikariDataSource();
 
     if (!dbConfig.getUser().isEmpty()) {
-      connection.setUsername(dbConfig.getUser());
+      ds.setUsername(dbConfig.getUser());
     }
     if (!dbConfig.getPassword().isEmpty()) {
-      connection.setPassword(dbConfig.getPassword());
+      ds.setPassword(dbConfig.getPassword());
     }
 
-    connection.setMaxConnectionsFree(dbConfig.getMaxConnections());
-    /*
-     * There is a memory leak in ormlite-jbcd that means we should not use
-     * this. AutoReconnect handles this for us.
-     */
-    connection.setTestBeforeGet(false);
-    /* Keep the connection open for 15 minutes */
-    connection.setMaxConnectionAgeMillis(900000);
-    /*
-     * We should not use this. Auto reconnect does this for us. Waste of
-     * packets and CPU.
-     */
-//    connection.setCheckConnectionsEveryMillis(0);
-    connection.setDatabaseType(new MySQLDatabase());
-    connection.initialize();
+    ds.setJdbcUrl(dbConfig.getJDBCUrl());
+    ds.setMaximumPoolSize(dbConfig.getMaxConnections());
+    ds.setMinimumIdle(2);
+    ds.setPoolName(type);
 
-    return connection;
+    if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
+
+    ds.addDataSourceProperty("prepStmtCacheSize", "250");
+    ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    ds.addDataSourceProperty("cachePrepStmts", "true");
+
+    return new DataSourceConnectionSource(ds, new MySQLDatabase());
   }
 
   @SuppressWarnings("unchecked")
@@ -409,73 +351,86 @@ public class BanManager extends BukkitPlugin {
     playerWarnStorage = new PlayerWarnStorage(localConn);
     playerKickStorage = new PlayerKickStorage(localConn);
     playerNoteStorage = new PlayerNoteStorage(localConn);
+    playerHistoryStorage = new PlayerHistoryStorage(localConn);
+    reportStateStorage = new ReportStateStorage(localConn);
+    playerReportCommandStorage = new PlayerReportCommandStorage(localConn);
+    playerReportCommentStorage = new PlayerReportCommentStorage(localConn);
+    playerReportStorage = new PlayerReportStorage(localConn);
+    playerReportLocationStorage = new PlayerReportLocationStorage(localConn);
 
     ipBanStorage = new IpBanStorage(localConn);
     ipBanRecordStorage = new IpBanRecordStorage(localConn);
+    ipMuteStorage = new IpMuteStorage(localConn);
+    ipMuteRecordStorage = new IpMuteRecordStorage(localConn);
     ipRangeBanStorage = new IpRangeBanStorage(localConn);
     ipRangeBanRecordStorage = new IpRangeBanRecordStorage(localConn);
 
     activityStorage = new ActivityStorage(localConn);
     historyStorage = new HistoryStorage(localConn);
+    rollbackStorage = new RollbackStorage(localConn);
 
-    if (externalConn == null) {
+    nameBanStorage = new NameBanStorage(localConn);
+    nameBanRecordStorage = new NameBanRecordStorage(localConn);
+
+    if (globalConn == null) {
       return;
     }
 
-    externalPlayerBanStorage = new ExternalPlayerBanStorage(externalConn);
-    externalPlayerBanRecordStorage = new ExternalPlayerBanRecordStorage(externalConn);
-    externalPlayerMuteStorage = new ExternalPlayerMuteStorage(externalConn);
-    externalPlayerMuteRecordStorage = new ExternalPlayerMuteRecordStorage(externalConn);
-    externalPlayerNoteStorage = new ExternalPlayerNoteStorage(externalConn);
-    externalIpBanStorage = new ExternalIpBanStorage(externalConn);
-    externalIpBanRecordStorage = new ExternalIpBanRecordStorage(externalConn);
+    globalPlayerBanStorage = new GlobalPlayerBanStorage(globalConn);
+    globalPlayerBanRecordStorage = new GlobalPlayerBanRecordStorage(globalConn);
+    globalPlayerMuteStorage = new GlobalPlayerMuteStorage(globalConn);
+    globalPlayerMuteRecordStorage = new GlobalPlayerMuteRecordStorage(globalConn);
+    globalPlayerNoteStorage = new GlobalPlayerNoteStorage(globalConn);
+    globalIpBanStorage = new GlobalIpBanStorage(globalConn);
+    globalIpBanRecordStorage = new GlobalIpBanRecordStorage(globalConn);
   }
 
   @Override
   public void setupListeners() {
     new JoinListener().register();
-    new ChatListener().register();
+    new LeaveListener().register();
     new CommandListener().register();
     new HookListener().register();
+
+    ChatListener chatListener = new ChatListener();
+
+    // Set custom priority
+    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, configuration
+            .getChatPriority(), new EventExecutor() {
+
+      @Override
+      public void execute(Listener listener, Event event) throws EventException {
+        ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
+        ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
+      }
+    }, plugin);
 
     if (configuration.isDisplayNotificationsEnabled()) {
       new BanListener().register();
       new MuteListener().register();
       new NoteListener().register();
+      new ReportListener().register();
     }
   }
 
   @Override
   public void setupRunnables() {
-    banSync = new BanSync();
-    muteSync = new MuteSync();
-    ipSync = new IpSync();
-    ipRangeSync = new IpRangeSync();
-    expiresSync = new ExpiresSync();
-
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerBans"), banSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("playerMutes"), muteSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("ipBans"), ipSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("ipRangeBans"), ipRangeSync);
-    setupAsyncRunnable(schedulesConfig.getSchedule("expiresCheck"), expiresSync);
-
-    if (externalConn != null) {
-      externalBanSync = new ExternalBanSync();
-      externalMuteSync = new ExternalMuteSync();
-      externalIpSync = new ExternalIpSync();
-      externalNoteSync = new ExternalNoteSync();
-
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerBans"), externalBanSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerMutes"), externalMuteSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalIpBans"), externalIpSync);
-      setupAsyncRunnable(schedulesConfig.getSchedule("externalPlayerNotes"), externalNoteSync);
+    if (globalConn == null) {
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
+              new WarningSync(), new RollbackSync(), new NameSync());
+    } else {
+      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
+              new WarningSync(), new RollbackSync(), new NameSync(),
+              new GlobalBanSync(), new GlobalMuteSync(), new GlobalIpSync(), new GlobalNoteSync());
     }
+
+    setupAsyncRunnable(10L, syncRunner);
 
     /*
      * This task should be ran last with a 1L offset as it gets modified
      * above.
      */
-    setupAsyncRunnable(schedulesConfig.getSchedule("saveLastChecked") + 1L, new SaveLastChecked());
+    setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked());
 
     // Purge
     getServer().getScheduler().runTaskAsynchronously(plugin, new Purge());

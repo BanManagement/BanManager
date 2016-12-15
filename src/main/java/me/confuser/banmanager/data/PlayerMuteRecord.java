@@ -44,6 +44,10 @@ public class PlayerMuteRecord {
   @Getter
   private String createdReason;
 
+  @DatabaseField(index = true)
+  @Getter
+  private boolean soft = false;
+
   PlayerMuteRecord() {
 
   }
@@ -54,6 +58,7 @@ public class PlayerMuteRecord {
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
     createdReason = reason;
+    soft = mute.isSoft();
 
     this.reason = mute.getReason();
     this.actor = actor;
@@ -65,6 +70,7 @@ public class PlayerMuteRecord {
     expired = mute.getExpires();
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
+    soft = mute.isSoft();
 
     this.actor = actor;
     this.created = created;
@@ -75,6 +81,7 @@ public class PlayerMuteRecord {
             && mute.getExpires() == expired
             && mute.getCreated() == this.pastCreated
             && mute.getPlayer().getUUID().equals(this.getPlayer().getUUID())
-            && mute.getActor().getUUID().equals(this.pastActor.getUUID());
+            && mute.getActor().getUUID().equals(this.pastActor.getUUID())
+            && mute.isSoft() == soft;
   }
 }

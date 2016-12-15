@@ -21,7 +21,7 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 2);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -75,24 +75,17 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final String reason = CommandUtils.getReason(2, args);
+    final String reason = parser.getReason().getMessage();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        final long ip;
+        final Long ip = CommandUtils.getIp(ipStr);
 
-        if (isName) {
-          PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
-          if (player == null) {
-            sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-            return;
-          }
-
-          ip = player.getIp();
-        } else {
-          ip = IPUtils.toLong(ipStr);
+        if (ip == null) {
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+          return;
         }
 
         final boolean isBanned = plugin.getIpBanStorage().isBanned(ip);
@@ -105,19 +98,9 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isBanned) {
           IpBanData ban = plugin.getIpBanStorage().getBan(ip);
@@ -134,7 +117,7 @@ public class TempIpBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         }
 
         final IpBanData ban = new IpBanData(ip, actor, reason, expires);
-        boolean created = false;
+        boolean created;
 
         try {
           created = plugin.getIpBanStorage().ban(ban, isSilent);

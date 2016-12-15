@@ -2,6 +2,7 @@ package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -27,7 +28,9 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
     } else {
       // Attempt to add new columns
       try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255), "
+        + " ADD COLUMN `soft` TINYINT(1)," +
+          " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -69,5 +72,13 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
             "INTERVAL " + cleanup.getDays() + " DAY))");
+  }
+
+  public int deleteAll(PlayerData player) throws SQLException {
+    DeleteBuilder<PlayerMuteRecord, Integer> builder = deleteBuilder();
+
+    builder.where().eq("player_id", player);
+
+    return builder.delete();
   }
 }

@@ -1,16 +1,27 @@
 package me.confuser.banmanager.util;
 
+import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
+import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.data.PlayerNoteData;
+import me.confuser.banmanager.data.PlayerReportData;
+import me.confuser.banmanager.util.parsers.Reason;
+import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.Bukkit;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 
 public class CommandUtils {
+
+  private static BanManager plugin = BanManager.getPlugin();
 
   public static void dispatchCommand(CommandSender sender, String command) {
     Bukkit.dispatchCommand(sender, command);
@@ -45,7 +56,7 @@ public class CommandUtils {
     if (str.contains("|")) {
       delimiter = "\\|";
     } else {
-      delimiter = "\\,";
+      delimiter = ",";
     }
 
     return str.split(delimiter);
@@ -54,23 +65,154 @@ public class CommandUtils {
   public static void broadcast(String message, String permission) {
     Set<Permissible> permissibles = Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.user");
     for (Permissible permissible : permissibles) {
-      if (((permissible instanceof CommandSender)) && (permissible.hasPermission(permission))) {
+      if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible
+              .hasPermission(permission)) {
         CommandSender user = (CommandSender) permissible;
         user.sendMessage(message);
       }
     }
   }
 
-  public static String getReason(int start, String[] args) {
+  public static void broadcast(String message, String permission, CommandSender sender) {
+    broadcast(message, permission);
+
+    if (!sender.hasPermission(permission)) sender.sendMessage(message);
+  }
+
+  public static Reason getReason(int start, String[] args) {
     String reason = StringUtils.join(args, " ", start, args.length);
+    List<String> notes = new ArrayList<>();
 
-    if (!args[start].startsWith("#")) return reason;
+    String[] matches = null;
+    if (plugin.getConfiguration().isCreateNoteReasons()) {
+      matches = StringUtils.substringsBetween(reason, "(", ")");
+    }
 
-    String key = args[start].replace("#", "");
-    String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
+    if (matches != null) notes = Arrays.asList(matches);
 
-    if (replace == null) return reason;
+    for (int i = start; i < args.length; i++) {
+      if (!args[i].startsWith("#")) continue;
 
-    return reason.replace("#" + key, replace);
+      String key = args[i].replace("#", "");
+      String replace = BanManager.getPlugin().getReasonsConfig().getReason(key);
+
+      if (replace != null) reason = reason.replace("#" + key, replace);
+    }
+
+    for (String note : notes) {
+      reason = reason.replace("(" + note + ")", "");
+    }
+
+    reason = reason.trim();
+
+    return new Reason(reason, notes);
+  }
+
+  public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
+    if (plugin.getConfiguration().isCreateNoteReasons())
+      if (reason.getNotes().size() == 0) return;
+
+    for (String note : reason.getNotes()) {
+      try {
+        plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
+  }
+
+  public static boolean isUUID(String player) {
+    return player.length() > 16;
+  }
+
+  public static PlayerData getPlayer(CommandSender sender, String playerName, boolean mojangLookup) {
+    boolean isUUID = isUUID(playerName);
+    PlayerData player = null;
+
+    if (isUUID) {
+      try {
+        player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+      }
+    } else {
+      player = plugin.getPlayerStorage().retrieve(playerName, mojangLookup);
+    }
+
+    return player;
+  }
+
+  public static Player getPlayer(UUID uuid) {
+    if (plugin.getConfiguration().isOnlineMode()) return plugin.getServer().getPlayer(uuid);
+
+    for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+      if (UUIDUtils.getUUID(onlinePlayer).equals(uuid)) return onlinePlayer;
+    }
+
+    return null;
+  }
+
+  public static PlayerData getPlayer(CommandSender sender, String playerName) {
+    return getPlayer(sender, playerName, true);
+  }
+
+  public static PlayerData getActor(CommandSender sender) {
+    PlayerData actor = null;
+
+    if (sender instanceof Player) {
+      try {
+        actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+      }
+    } else {
+      actor = plugin.getPlayerStorage().getConsole();
+    }
+
+    return actor;
+  }
+
+  public static Long getIp(String ipStr) {
+    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    Long ip = null;
+
+    if (isName) {
+      PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+      if (player == null) return ip;
+
+      ip = player.getIp();
+    } else {
+      ip = IPUtils.toLong(ipStr);
+    }
+
+    return ip;
+  }
+
+  public static void sendReportList(ReportList reports, CommandSender sender, int page) {
+    String dateTimeFormat = Message.getString("report.list.row.dateTimeFormat");
+    FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
+
+    Message.get("report.list.row.header")
+           .set("page", page)
+           .set("maxPage", reports.getMaxPage())
+           .set("count", reports.getCount())
+           .sendTo(sender);
+
+    for (PlayerReportData report : reports.getList()) {
+      Message.get("report.list.row.all")
+             .set("id", report.getId())
+             .set("state", report.getState().getName())
+             .set("player", report.getPlayer().getName())
+             .set("actor", report.getActor().getName())
+             .set("reason", report.getReason())
+             .set("created", dateFormatter
+                     .format(report.getCreated() * 1000L))
+             .set("updated", dateFormatter
+                     .format(report.getUpdated() * 1000L))
+             .sendTo(sender);
+    }
   }
 }

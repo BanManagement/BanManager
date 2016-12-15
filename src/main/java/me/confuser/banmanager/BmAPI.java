@@ -1,6 +1,7 @@
 package me.confuser.banmanager;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -42,7 +43,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static PlayerData getPlayer(Player player) throws SQLException {
-    return getPlayer(player.getUniqueId());
+    return getPlayer(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -193,7 +194,7 @@ public class BmAPI {
    * @return
    */
   public static boolean isBanned(Player player) {
-    return isBanned(player.getUniqueId());
+    return isBanned(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -238,7 +239,7 @@ public class BmAPI {
    * @return
    */
   public static PlayerBanData getCurrentBan(Player player) {
-    return plugin.getPlayerBanStorage().getBan(player.getUniqueId());
+    return plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(player));
   }
 
 
@@ -289,7 +290,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason));
+    return mute(new PlayerMuteData(player, actor, reason, false));
   }
 
   /**
@@ -304,8 +305,25 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason), silent);
+    return mute(new PlayerMuteData(player, actor, reason, false), silent);
   }
+
+  /**
+   * Permanently mute a player.
+   * You must handle kicking the player if they are online.
+   *
+   * @param player - Player to mute
+   * @param actor  - Who the mute is by
+   * @param reason - Why they are mutened
+   * @param silent
+   * @param isSoft
+   *
+   * @throws SQLException
+   */
+  public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent, boolean isSoft) throws SQLException {
+    return mute(new PlayerMuteData(player, actor, reason, isSoft), silent);
+  }
+
 
   /**
    * Temporarily mute a player
@@ -319,7 +337,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires) throws SQLException {
-    return mute(new PlayerMuteData(player, actor, reason, expires));
+    return mute(new PlayerMuteData(player, actor, reason, false, expires));
   }
 
   /**
@@ -336,8 +354,26 @@ public class BmAPI {
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent) throws
           SQLException {
-    return mute(new PlayerMuteData(player, actor, reason, expires), silent);
+    return mute(new PlayerMuteData(player, actor, reason, false, expires), silent);
   }
+
+  /**
+   * Temporarily mute a player
+   * You must handle kicking the player if they are online.
+   *
+   * @param player  - Player to mute
+   * @param actor   - Who the mute is by
+   * @param reason  - Why they are mutened
+   * @param expires - Unix Timestamp stating the time of when the mute ends
+   * @param silent
+   *
+   * @throws SQLException
+   */
+  public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent, boolean isSoft) throws
+    SQLException {
+    return mute(new PlayerMuteData(player, actor, reason, isSoft, expires), silent);
+  }
+
 
   /**
    * @param mute
@@ -370,7 +406,7 @@ public class BmAPI {
    * @return
    */
   public static boolean isMuted(Player player) {
-    return isMuted(player.getUniqueId());
+    return isMuted(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -415,7 +451,7 @@ public class BmAPI {
    * @return
    */
   public static PlayerMuteData getCurrentMute(Player player) {
-    return plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
+    return plugin.getPlayerMuteStorage().getMute(UUIDUtils.getUUID(player));
   }
 
 
@@ -573,7 +609,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static void warn(PlayerData player, PlayerData actor, String reason, boolean read) throws SQLException {
-    warn(new PlayerWarnData(player, actor, reason, read));
+    warn(new PlayerWarnData(player, actor, reason, 1, read));
   }
 
   /**
@@ -590,7 +626,7 @@ public class BmAPI {
    */
   public static void warn(PlayerData player, PlayerData actor, String reason, boolean read, boolean silent) throws
           SQLException {
-    warn(new PlayerWarnData(player, actor, reason, read), silent);
+    warn(new PlayerWarnData(player, actor, reason, 1, read), silent);
   }
 
   /**
@@ -632,7 +668,7 @@ public class BmAPI {
   }
 
   /**
-   * @param message - The message config node
+   * @param key - The message config node
    *
    * @return String
    */
@@ -640,4 +676,7 @@ public class BmAPI {
     return Message.get(key);
   }
 
+  public static ConnectionSource getLocalConnection() {
+    return plugin.getLocalConn();
+  }
 }

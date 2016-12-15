@@ -4,7 +4,6 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -58,13 +57,13 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        PlayerMuteData mute;
+        final PlayerMuteData mute;
 
         if (isUUID) {
           mute = plugin.getPlayerMuteStorage().getMute(UUID.fromString(playerName));
@@ -78,19 +77,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
           return;
         }
 
-        PlayerData actor;
-
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        final PlayerData actor = CommandUtils.getActor(sender);
 
         //TODO refactor if async perm check is problem
         if (!actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.mute")
@@ -116,6 +103,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         Message message = Message.get("unmute.notify");
         message
                 .set("player", mute.getPlayer().getName())
+                .set("playerId", mute.getPlayer().getUUID().toString())
                 .set("actor", actor.getName())
                 .set("reason", reason);
 
@@ -124,6 +112,26 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         }
 
         CommandUtils.broadcast(message.toString(), "bm.notify.unmute");
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            Player bukkitPlayer = CommandUtils.getPlayer(mute.getPlayer().getUUID());
+
+            if (bukkitPlayer == null) return;
+            if (bukkitPlayer.hasPermission("bm.notify.unmute")) return;
+
+            Message.get("unmute.player")
+                    .set("displayName", bukkitPlayer.getDisplayName())
+                    .set("player", mute.getPlayer().getName())
+                    .set("playerId", mute.getPlayer().getUUID().toString())
+                    .set("reason", mute.getReason())
+                    .set("actor", actor.getName())
+                    .sendTo(bukkitPlayer);
+
+          }
+        });
       }
 
     });

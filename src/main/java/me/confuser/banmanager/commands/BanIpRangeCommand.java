@@ -6,9 +6,9 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -65,7 +65,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    final String reason = StringUtils.join(args, " ", 1, args.length);
+    final Reason reason = parser.getReason();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -85,7 +85,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
           actor = plugin.getPlayerStorage().getConsole();
         }
 
-        final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason);
+        final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason.getMessage());
         boolean created;
 
         try {

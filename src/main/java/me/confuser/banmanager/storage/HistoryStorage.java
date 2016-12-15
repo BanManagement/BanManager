@@ -1,14 +1,15 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.InfoCommandParser;
+import me.confuser.banmanager.util.parsers.InfoCommandParser;
+import org.bukkit.ChatColor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,41 +18,41 @@ import java.util.HashMap;
 public class HistoryStorage {
 
   private BanManager plugin = BanManager.getPlugin();
-  private JdbcPooledConnectionSource localConn;
+  private ConnectionSource localConn;
 
   // Queries
-  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, created, reason" +
+  final String banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
-                                   .getTableName() + " actor ON actor_id = actor.id" +
+                                   .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, created, reason" +
+  final String muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
-                                   .getTableName() + " actor ON actor_id = actor.id" +
+                                   .getTableName() + " actor ON pastActor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason" +
+  final String kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason, '' AS meta" +
           "    FROM " + plugin.getPlayerKickStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason" +
+  final String warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason, points AS meta" +
           "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
-  final String noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason" +
+  final String noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason, '' AS meta" +
           "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() + " t" +
           "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                    .getTableName() + " actor ON actor_id = actor.id" +
           "    WHERE player_id = ?";
 
-  private final String playerSql = "SELECT id, type, actor, created, reason FROM" +
+  private final String playerSql = "SELECT id, type, actor, created, reason, meta FROM" +
           "  ( {QUERIES}" +
           "  ) subquery" +
           " ORDER BY created DESC, FIELD(type, 'Ban', 'Warning', 'Mute', 'Kick', 'Note')";
 
-  public HistoryStorage(JdbcPooledConnectionSource localConn) {
+  public HistoryStorage(ConnectionSource localConn) {
     this.localConn = localConn;
   }
 
@@ -67,7 +68,7 @@ public class HistoryStorage {
     }
 
     final DatabaseResults result;
-    String sql = playerSql;
+    String sql;
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
@@ -135,7 +136,14 @@ public class HistoryStorage {
             put("type", result.getString(1));
             put("actor", result.getString(2));
             put("created", result.getLong(3));
-            put("reason", result.getString(4));
+
+            if (result.getString(1).equals("Note")) {
+              put("reason", ChatColor.translateAlternateColorCodes('&', result.getString(4)));
+            } else {
+              put("reason", result.getString(4));
+            }
+
+            put("meta", result.getString(5));
           }
         });
       }
@@ -226,6 +234,7 @@ public class HistoryStorage {
             put("actor", result.getString(2));
             put("created", result.getLong(3));
             put("reason", result.getString(4));
+            put("meta", result.getString(5));
           }
         });
       }

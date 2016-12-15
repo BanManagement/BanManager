@@ -23,6 +23,7 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
       add("kicks");
       add("muterecords");
       add("notes");
+      add("reports");
       add("warnings");
     }
   };
@@ -60,7 +61,7 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
             return;
           }
         } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
+          player = plugin.getPlayerStorage().retrieve(playerName, false);
         }
 
         if (player == null) {
@@ -92,38 +93,42 @@ public class ClearCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         for (String type : types) {
           try {
-            DeleteBuilder builder = null;
             switch (type) {
               case "banrecords":
-                builder = plugin.getPlayerBanRecordStorage().deleteBuilder();
-                break;
-
-              case "muterecords":
-                builder = plugin.getPlayerMuteRecordStorage().deleteBuilder();
-                break;
-
-              case "notes":
-                builder = plugin.getPlayerNoteStorage().deleteBuilder();
+                plugin.getPlayerBanRecordStorage().deleteAll(player);
                 break;
 
               case "kicks":
-                builder = plugin.getPlayerKickStorage().deleteBuilder();
+                plugin.getPlayerKickStorage().deleteAll(player);
+                break;
+
+              case "muterecords":
+                plugin.getPlayerMuteRecordStorage().deleteAll(player);
+                break;
+
+              case "notes":
+                plugin.getPlayerNoteStorage().deleteAll(player);
+                break;
+
+              case "reports":
+                plugin.getPlayerReportStorage().deleteAll(player);
                 break;
 
               case "warnings":
-                builder = plugin.getPlayerWarnStorage().deleteBuilder();
+                plugin.getPlayerWarnStorage().deleteAll(player);
                 break;
             }
-
-            builder.where().eq("player_id", player);
-            builder.delete();
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
             return;
           }
 
-          Message.get("bmclear.notify").set("type", type).set("player", player.getName()).sendTo(sender);
+          Message.get("bmclear.notify")
+                 .set("type", type)
+                 .set("player", player.getName())
+                 .set("playerId", player.getUUID().toString())
+                 .sendTo(sender);
         }
       }
     });

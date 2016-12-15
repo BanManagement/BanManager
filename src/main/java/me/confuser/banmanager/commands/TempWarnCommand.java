@@ -5,10 +5,10 @@ import me.confuser.banmanager.configs.ActionCommand;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
-import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
+import me.confuser.banmanager.util.parsers.WarnCommandParser;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,11 +26,16 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    final WarnCommandParser parser = new WarnCommandParser(args, 2);
     final String[] parsedArgs = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
+    if (parser.getPoints() != 1 && !sender.hasPermission(command.getPermission() + ".points")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
       return true;
     }
@@ -91,25 +96,13 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     final long expires = expiresCheck;
-    final String reason = CommandUtils.getReason(2, parsedArgs);
+    final Reason reason = parser.getReason();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        final PlayerData player;
-
-        if (isUUID) {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
-        }
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
@@ -132,23 +125,13 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
-        boolean isOnline = plugin.getServer().getPlayer(player.getUUID()) != null;
+        boolean isOnline = CommandUtils.getPlayer(player.getUUID()) != null;
 
-        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason, isOnline, expires);
+        final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser.getPoints(), isOnline, expires);
 
         boolean created;
 
@@ -164,36 +147,42 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        CommandUtils.handlePrivateNotes(player, actor, reason);
+
         if (isOnline) {
-          Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
+          Player bukkitPlayer = CommandUtils.getPlayer(player.getUUID());
 
           Message warningMessage = Message.get("tempwarn.player.warned")
                                           .set("displayName", bukkitPlayer.getDisplayName())
                                           .set("player", player.getName())
+                                          .set("playerId", player.getUUID().toString())
                                           .set("reason", warning.getReason())
                                           .set("actor", actor.getName())
-                                          .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
+                                          .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                                          .set("points", parser.getPoints());
 
           bukkitPlayer.sendMessage(warningMessage.toString());
         }
 
         Message message = Message.get("tempwarn.notify")
                                  .set("player", player.getName())
+                                 .set("playerId", player.getUUID().toString())
                                  .set("actor", actor.getName())
                                  .set("reason", warning.getReason())
-                                 .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()));
+                                 .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                                 .set("points", parser.getPoints());
 
         if (!sender.hasPermission("bm.notify.tempwarn")) {
           message.sendTo(sender);
         }
 
-        CommandUtils.broadcast(message.toString(), "bm.notify.tempwarn");
+        if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.tempwarn");
 
         final List<ActionCommand> actionCommands;
 
         try {
           actionCommands = plugin.getConfiguration().getWarningActions()
-                                 .getCommand((int) plugin.getPlayerWarnStorage().getCount(player));
+                                 .getCommand((int) plugin.getPlayerWarnStorage().getPointsCount(player));
         } catch (SQLException e) {
           e.printStackTrace();
           return;
@@ -211,9 +200,11 @@ public class TempWarnCommand extends AutoCompleteNameTabCommand<BanManager> {
             public void run() {
               String actionCommand = action.getCommand()
                                            .replace("[player]", player.getName())
+                                           .replace("[playerId]", player.getUUID().toString())
                                            .replace("[actor]", actor.getName())
                                            .replace("[reason]", warning.getReason())
-                                           .replace("[expires]", parsedArgs[1]);
+                                           .replace("[expires]", parsedArgs[1])
+                                           .replace("[points]", Double.toString(parser.getPoints()));
 
               plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), actionCommand);
             }

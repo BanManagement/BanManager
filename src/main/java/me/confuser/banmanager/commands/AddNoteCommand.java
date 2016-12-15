@@ -45,39 +45,14 @@ public class AddNoteCommand extends AutoCompleteNameTabCommand<BanManager> {
 
       @Override
       public void run() {
-        final PlayerData player;
-
-        if (isUUID) {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (Exception e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
-        }
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
           return;
         }
 
-        final PlayerData actor;
-
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
-
+        final PlayerData actor = CommandUtils.getActor(sender);
         final PlayerNoteData warning = new PlayerNoteData(player, actor, message);
 
         try {

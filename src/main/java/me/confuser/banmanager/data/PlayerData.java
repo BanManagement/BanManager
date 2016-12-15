@@ -40,7 +40,7 @@ public class PlayerData {
       }
 
       public PlayerData(Player player) {
-            uuid = player.getUniqueId();
+            uuid = UUIDUtils.getUUID(player);
             id = UUIDUtils.toBytes(uuid);
             name = player.getName();
             ip = IPUtils.toLong(player.getAddress().getAddress());

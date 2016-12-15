@@ -40,7 +40,7 @@ public class ExportCommand extends BukkitCommand<BanManager> {
 
       @Override
       public void run() {
-        Message finishedMessage = null;
+        Message finishedMessage;
         String fileName;
 
         if (args[0].startsWith("play")) {

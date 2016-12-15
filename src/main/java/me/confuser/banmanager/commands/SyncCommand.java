@@ -1,12 +1,17 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.runnables.BmRunnable;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 public class SyncCommand extends BukkitCommand<BanManager> {
+
+  private final String[] localSync = new String[] { "playerBans", "playerMutes", "ipBans", "ipRangeBans", "expiresCheck" };
+  private final String[] globalSync = new String[] { "globalPlayerBans", "globalPlayerMutes", "globalPlayerNotes",
+          "globalIpBans" };
 
   public SyncCommand() {
     super("bmsync");
@@ -18,7 +23,7 @@ public class SyncCommand extends BukkitCommand<BanManager> {
 
     final String type = args[0];
 
-    if (!type.equals("local") && !type.equals("external")) return false;
+    if (!type.equals("local") && !type.equals("global")) return false;
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -29,7 +34,7 @@ public class SyncCommand extends BukkitCommand<BanManager> {
         if (type.equals("local")) {
           handleLocalSync();
         } else {
-          handleExternalSync();
+          handleGlobalSync();
         }
 
         Message.get("sync.player.finished").set("type", type).sendTo(sender);
@@ -40,18 +45,24 @@ public class SyncCommand extends BukkitCommand<BanManager> {
   }
 
   private void handleLocalSync() {
-    if (!plugin.getBanSync().isRunning()) plugin.getBanSync().run();
-    if (!plugin.getMuteSync().isRunning()) plugin.getMuteSync().run();
-    if (!plugin.getIpSync().isRunning()) plugin.getIpSync().run();
-    if (!plugin.getIpRangeSync().isRunning()) plugin.getIpRangeSync().run();
-    if (!plugin.getExpiresSync().isRunning()) plugin.getExpiresSync().run();
+    for (String aLocalSync : localSync) {
+      BmRunnable runner = plugin.getSyncRunner().getRunner(aLocalSync);
+
+      if (runner.isRunning()) continue;
+
+      runner.run();
+    }
   }
 
-  private void handleExternalSync() {
-    if (plugin.getExternalPlayerBanStorage() == null) return;
+  private void handleGlobalSync() {
+    if (plugin.getGlobalPlayerBanStorage() == null) return;
 
-    if (!plugin.getExternalBanSync().isRunning()) plugin.getExternalBanSync().run();
-    if (!plugin.getExternalMuteSync().isRunning()) plugin.getExternalMuteSync().run();
-    if (!plugin.getExternalIpSync().isRunning()) plugin.getExternalIpSync().run();
+    for (String aGlobalSync : globalSync) {
+      BmRunnable runner = plugin.getSyncRunner().getRunner(aGlobalSync);
+
+      if (runner.isRunning()) continue;
+
+      runner.run();
+    }
   }
 }

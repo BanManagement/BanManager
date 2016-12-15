@@ -101,6 +101,12 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     List<PlayerData> results = queryForEq("name", data.getName());
     if (results.size() == 1) return status;
 
+    if (!plugin.getConfiguration().isOnlineMode()) {
+      plugin.getLogger()
+            .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
+      return status;
+    }
+
     // Duplicates found!
     for (PlayerData player : results) {
       if (player.getUUID().equals(data.getUUID())) continue;
@@ -131,6 +137,8 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     player = new PlayerData(uuid, name);
     create(player);
+
+    if (plugin.getConfiguration().isOfflineAutoComplete()) autoCompleteTree.put(name, VoidValue.SINGLETON);
 
     return player;
   }
@@ -213,7 +221,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     ArrayList<byte[]> ids = new ArrayList<>(onlinePlayers.size());
 
     for (Player player : onlinePlayers) {
-      ids.add(UUIDUtils.toBytes(player.getUniqueId()));
+      ids.add(UUIDUtils.toBytes(player));
     }
 
     return ids;

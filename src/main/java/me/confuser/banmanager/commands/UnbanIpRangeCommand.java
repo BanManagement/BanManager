@@ -2,7 +2,6 @@ package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;
@@ -65,7 +64,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
     }
 
     final long[] ranges = range;
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -127,7 +126,7 @@ public class UnbanIpRangeCommand extends BukkitCommand<BanManager> {
           return;
         }
 
-        Message message = Message.get("upbaniprange.notify");
+        Message message = Message.get("unbaniprange.notify");
         message
                 .set("from", IPUtils.toString(ban.getFromIp()))
                 .set("to", IPUtils.toString(ban.getToIp()))

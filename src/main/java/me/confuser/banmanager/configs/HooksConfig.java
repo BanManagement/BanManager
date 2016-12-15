@@ -13,12 +13,16 @@ public class HooksConfig {
     {
       add("ban");
       add("tempban");
+      add("unban");
       add("mute");
       add("tempmute");
+      add("unmute");
       add("ipban");
       add("tempipban");
+      add("unbanip");
       add("iprangeban");
       add("tempiprangeban");
+      add("unbaniprange");
       add("note");
       add("warn");
       add("tempwarn");
@@ -31,6 +35,11 @@ public class HooksConfig {
   private HashMap<String, Hook> hooks;
 
   public HooksConfig(ConfigurationSection config) {
+    if (config == null) {
+      isEnabled = false;
+      return;
+    }
+
     isEnabled = config.getBoolean("enabled", false);
     hooks = new HashMap<>();
 

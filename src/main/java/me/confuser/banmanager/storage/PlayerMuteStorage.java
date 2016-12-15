@@ -3,11 +3,16 @@ package me.confuser.banmanager.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.events.PlayerMuteEvent;
@@ -33,23 +38,98 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);
-    }
-
-    CloseableIterator<PlayerMuteData> itr = iterator();
-
-    while (itr.hasNext()) {
-      PlayerMuteData mute = itr.next();
-
+    } else {
+      // Attempt to add new columns
       try {
-        mutes.put(mute.getPlayer().getUUID(), mute);
-      } catch (Exception e) {
-        plugin.getLogger().severe("Failed to retrieve mute id " + mute.getId() + " due to missing player data");
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
+                " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
       }
     }
 
-    itr.close();
+    loadAll();
 
     plugin.getLogger().info("Loaded " + mutes.size() + " mutes into memory");
+  }
+
+  private void loadAll() {
+    DatabaseConnection connection;
+
+    try {
+      connection = this.getConnectionSource().getReadOnlyConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      plugin.getLogger().warning("Failed to retrieve mutes into memory");
+      return;
+    }
+    StringBuilder sql = new StringBuilder();
+
+    sql.append("SELECT t.id, p.id, p.name, p.ip, p.lastSeen, a.id, a.name, a.ip, a.lastSeen, t.reason,");
+    sql.append(" t.soft, t.expires, t.created, t.updated");
+    sql.append(" FROM ");
+    sql.append(this.getTableInfo().getTableName());
+    sql.append(" t LEFT JOIN ");
+    sql.append(plugin.getPlayerStorage().getTableInfo().getTableName());
+    sql.append(" p ON player_id = p.id");
+    sql.append(" LEFT JOIN ");
+    sql.append(plugin.getPlayerStorage().getTableInfo().getTableName());
+    sql.append(" a ON actor_id = a.id");
+
+    CompiledStatement statement;
+
+    try {
+      statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
+              DatabaseConnection.DEFAULT_RESULT_FLAGS);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      connection.closeQuietly();
+
+      plugin.getLogger().warning("Failed to retrieve mutes into memory");
+      return;
+    }
+
+    DatabaseResults results = null;
+
+    try {
+      results = statement.runQuery(null);
+
+      while (results.next()) {
+        PlayerData player;
+
+        try {
+          player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+                  results.getLong(3),
+                  results.getLong(4));
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing player for mute " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
+        PlayerData actor;
+
+        try {
+          actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
+                  results.getLong(7),
+                  results.getLong(8));
+        } catch (NullPointerException e) {
+          plugin.getLogger().warning("Missing actor for mute " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
+        PlayerMuteData mute = new PlayerMuteData(results.getInt(0), player, actor, results.getString(9), results.getBoolean(10), results.getLong(11),
+                results.getLong(12), results.getLong(13));
+
+        mutes.put(mute.getPlayer().getUUID(), mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (results != null) results.closeQuietly();
+
+      connection.closeQuietly();
+    }
   }
 
   public ConcurrentHashMap<UUID, PlayerMuteData> getMutes() {
@@ -94,6 +174,10 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
+
+    if (plugin.getConfiguration().isBroadcastOnSync()) {
+      Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, false));
+    }
   }
 
   public boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {
@@ -123,8 +207,9 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
     return unmute(mute, actor, "");
   }
+
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason) throws SQLException {
-    PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute, reason);
+    PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {

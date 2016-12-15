@@ -5,7 +5,7 @@ import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +22,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -69,7 +69,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    Player onlinePlayer;
+    final Player onlinePlayer;
 
     if (isUUID) {
       onlinePlayer = plugin.getServer().getPlayer(UUID.fromString(playerName));
@@ -87,25 +87,13 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = parser.getReason();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        final PlayerData player;
-
-        if (isUUID) {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          player = plugin.getPlayerStorage().retrieve(playerName, true);
-        }
+        final PlayerData player = CommandUtils.getPlayer(sender, playerName);
 
         if (player == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
@@ -117,19 +105,9 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isBanned) {
           PlayerBanData ban;
@@ -151,7 +129,7 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        final PlayerBanData ban = new PlayerBanData(player, actor, reason);
+        final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage());
         boolean created;
 
         try {
@@ -166,21 +144,22 @@ public class BanCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
+        CommandUtils.handlePrivateNotes(player, actor, reason);
+
         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(player.getUUID());
-
-            if (bukkitPlayer == null) return;
+            if (onlinePlayer == null) return;
 
             Message kickMessage = Message.get("ban.player.kick")
-                                         .set("displayName", bukkitPlayer.getDisplayName())
+                                         .set("displayName", onlinePlayer.getDisplayName())
                                          .set("player", player.getName())
+                                         .set("playerId", player.getUUID().toString())
                                          .set("reason", ban.getReason())
                                          .set("actor", actor.getName());
 
-            bukkitPlayer.kickPlayer(kickMessage.toString());
+            onlinePlayer.kickPlayer(kickMessage.toString());
           }
         });
 

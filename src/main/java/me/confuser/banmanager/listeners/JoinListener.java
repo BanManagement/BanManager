@@ -3,7 +3,10 @@ package me.confuser.banmanager.listeners;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
+import com.sk89q.guavabackport.cache.Cache;
+import com.sk89q.guavabackport.cache.CacheBuilder;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
@@ -11,6 +14,7 @@ import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,11 +27,52 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class JoinListener extends Listeners<BanManager> {
 
+  // Used for throttling attempted join messages
+  Cache<String, Long> joinCache = CacheBuilder.newBuilder()
+                                              .expireAfterWrite(1, TimeUnit.MINUTES)
+                                              .concurrencyLevel(2)
+                                              .maximumSize(100)
+                                              .build();
+
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
+    if (plugin.getConfiguration().isCheckOnJoin()) {
+      // Check for new bans/mutes
+      if (!plugin.getIpBanStorage().isBanned(event.getAddress())) {
+        try {
+          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toLong(event.getAddress()));
+
+          if (ban != null) plugin.getIpBanStorage().addBan(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (!plugin.getPlayerBanStorage().isBanned(UUIDUtils.getUUID(event))) {
+        try {
+          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(UUIDUtils.getUUID(event));
+
+          if (ban != null) plugin.getPlayerBanStorage().addBan(ban);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (!plugin.getPlayerMuteStorage().isMuted(UUIDUtils.getUUID(event))) {
+        try {
+          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(UUIDUtils.getUUID(event));
+
+          if (mute != null) plugin.getPlayerMuteStorage().addMute(mute);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
     if (plugin.getIpRangeBanStorage().isBanned(event.getAddress())) {
       IpRangeBanData data = plugin.getIpRangeBanStorage().getBan(event.getAddress());
 
@@ -91,7 +136,38 @@ public class JoinListener extends Listeners<BanManager> {
       return;
     }
 
-    PlayerBanData data = plugin.getPlayerBanStorage().getBan(event.getUniqueId());
+    if (plugin.getNameBanStorage().isBanned(event.getName())) {
+      NameBanData data = plugin.getNameBanStorage().getBan(event.getName());
+
+      if (data.hasExpired()) {
+        try {
+          plugin.getNameBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        return;
+      }
+
+      Message message;
+
+      if (data.getExpires() == 0) {
+        message = Message.get("banname.name.disallowed");
+      } else {
+        message = Message.get("tempbanname.name.disallowed");
+        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+      }
+
+      message.set("name", event.getName());
+      message.set("reason", data.getReason());
+      message.set("actor", data.getActor().getName());
+
+      event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+      event.setKickMessage(message.toString());
+      return;
+    }
+
+    PlayerBanData data = plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(event));
 
     if (data != null && data.hasExpired()) {
       try {
@@ -126,12 +202,18 @@ public class JoinListener extends Listeners<BanManager> {
   }
 
   private void handleJoinDeny(PlayerData player, String reason) {
+    if (joinCache.getIfPresent(player.getName()) != null) return;
+
+    joinCache.put(player.getName(), System.currentTimeMillis());
     Message message = Message.get("deniedNotify.player").set("player", player.getName()).set("reason", reason);
 
     CommandUtils.broadcast(message.toString(), "bm.notify.denied.player");
   }
 
   private void handleJoinDeny(String ip, String reason) {
+    if (joinCache.getIfPresent(ip) != null) return;
+
+    joinCache.put(ip, System.currentTimeMillis());
     Message message = Message.get("deniedNotify.ip").set("ip", ip).set("reason", reason);
 
     CommandUtils.broadcast(message.toString(), "bm.notify.denied.ip");
@@ -139,13 +221,16 @@ public class JoinListener extends Listeners<BanManager> {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(AsyncPlayerPreLoginEvent event) {
-    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+    PlayerData player = new PlayerData(UUIDUtils.getUUID(event), event.getName(), event.getAddress());
 
     try {
       plugin.getPlayerStorage().createOrUpdate(player);
     } catch (SQLException e) {
       e.printStackTrace();
+      return;
     }
+
+    if (plugin.getConfiguration().isLogIpsEnabled()) plugin.getPlayerHistoryStorage().create(player);
 
   }
 
@@ -159,18 +244,23 @@ public class JoinListener extends Listeners<BanManager> {
           return;
         }
 
+        UUID id = UUIDUtils.getUUID(event.getPlayer());
         CloseableIterator<PlayerNoteData> notesItr = null;
 
         try {
-          notesItr = plugin.getPlayerNoteStorage().getNotes(event.getPlayer().getUniqueId());
-          ArrayList<String> notes = new ArrayList<String>();
+          notesItr = plugin.getPlayerNoteStorage().getNotes(id);
+          ArrayList<String> notes = new ArrayList<>();
+          String dateTimeFormat = Message.getString("notes.dateTimeFormat");
+          FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
-          while (notesItr.hasNext()) {
+          while (notesItr != null && notesItr.hasNext()) {
             PlayerNoteData note = notesItr.next();
 
             Message noteMessage = Message.get("notes.note")
                                          .set("player", note.getActor().getName())
-                                         .set("message", note.getMessage());
+                                         .set("message", note.getMessageColours())
+                                         .set("created", dateFormatter.format(note.getCreated() * 1000L));
+
             notes.add(noteMessage.toString());
           }
 
@@ -194,7 +284,7 @@ public class JoinListener extends Listeners<BanManager> {
 
         CloseableIterator<PlayerWarnData> warnings = null;
         try {
-          warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(event.getPlayer().getUniqueId());
+          warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(id);
 
           while (warnings.hasNext()) {
             PlayerWarnData warning = warnings.next();
@@ -215,6 +305,31 @@ public class JoinListener extends Listeners<BanManager> {
         } finally {
           if (warnings != null) warnings.closeQuietly();
         }
+
+        if (event.getPlayer().hasPermission("bm.notify.reports.open")) {
+          try {
+            ReportList openReports = plugin.getPlayerReportStorage().getReports(1, 1);
+
+            if (openReports == null || openReports.getList().size() != 0) {
+              CommandUtils.sendReportList(openReports, event.getPlayer(), 1);
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
+        if (event.getPlayer().hasPermission("bm.notify.reports.assigned")) {
+          try {
+            ReportList assignedReports = plugin.getPlayerReportStorage().getReports(1, 2, id);
+
+            if (assignedReports == null || assignedReports.getList().size() != 0) {
+              CommandUtils.sendReportList(assignedReports, event.getPlayer(), 1);
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
       }
     }, 20L);
   }
@@ -264,11 +379,15 @@ public class JoinListener extends Listeners<BanManager> {
 
       public void run() {
         final long ip = IPUtils.toLong(event.getAddress());
-        final UUID uuid = event.getPlayer().getUniqueId();
+        final UUID uuid = UUIDUtils.getUUID(event.getPlayer());
         List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 
         if (duplicates.isEmpty()) {
           return;
+        }
+
+        if (plugin.getConfiguration().isDenyAlts()) {
+          denyAlts(duplicates, uuid);
         }
 
         if (plugin.getConfiguration().isPunishAlts()) {
@@ -302,6 +421,34 @@ public class JoinListener extends Listeners<BanManager> {
     }, 20L);
   }
 
+  private void denyAlts(List<PlayerData> duplicates, final UUID uuid) {
+    if (plugin.getPlayerBanStorage().isBanned(uuid)) return;
+
+    for (final PlayerData player : duplicates) {
+      if (player.getUUID().equals(uuid)) continue;
+
+      final PlayerBanData ban = plugin.getPlayerBanStorage().getBan(player.getUUID());
+
+      if (ban == null) continue;
+      if (ban.hasExpired()) continue;
+
+      plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+        @Override
+        public void run() {
+          Player bukkitPlayer = CommandUtils.getPlayer(uuid);
+
+          Message kickMessage = Message.get("denyalts.player.disallowed")
+                                       .set("player", player.getName())
+                                       .set("reason", ban.getReason())
+                                       .set("actor", ban.getActor().getName());
+
+          bukkitPlayer.kickPlayer(kickMessage.toString());
+        }
+      });
+    }
+  }
+
   private void punishAlts(List<PlayerData> duplicates, UUID uuid) throws SQLException {
 
     if (!plugin.getPlayerBanStorage().isBanned(uuid)) {
@@ -327,7 +474,7 @@ public class JoinListener extends Listeners<BanManager> {
 
           @Override
           public void run() {
-            Player bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
+            Player bukkitPlayer = CommandUtils.getPlayer(newBan.getPlayer().getUUID());
 
             Message kickMessage = Message.get("ban.player.kick")
                                          .set("displayName", bukkitPlayer.getDisplayName())
@@ -354,6 +501,7 @@ public class JoinListener extends Listeners<BanManager> {
         PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
                 , plugin.getPlayerStorage().getConsole()
                 , mute.getReason()
+                , mute.isSoft()
                 , mute.getExpires());
 
         plugin.getPlayerMuteStorage().mute(newMute, false);

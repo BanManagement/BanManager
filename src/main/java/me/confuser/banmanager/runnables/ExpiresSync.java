@@ -1,32 +1,32 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import lombok.Getter;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class ExpiresSync implements Runnable {
+public class ExpiresSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private PlayerBanStorage banStorage = plugin.getPlayerBanStorage();
   private PlayerBanRecordStorage banRecordStorage = plugin.getPlayerBanRecordStorage();
   private PlayerMuteStorage muteStorage = plugin.getPlayerMuteStorage();
   private PlayerMuteRecordStorage muteRecordStorage = plugin.getPlayerMuteRecordStorage();
   private IpBanStorage ipBanStorage = plugin.getIpBanStorage();
   private IpBanRecordStorage ipBanRecordStorage = plugin.getIpBanRecordStorage();
+  private IpMuteStorage ipMuteStorage = plugin.getIpMuteStorage();
+  private IpMuteRecordStorage ipMuteRecordStorage = plugin.getIpMuteRecordStorage();
   private IpRangeBanStorage ipRangeBanStorage = plugin.getIpRangeBanStorage();
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
-  @Getter
-  private boolean isRunning = false;
+
+  public ExpiresSync() {
+    super("expiresCheck");
+  }
 
   @Override
   public void run() {
-    isRunning = true;
     long now = (System.currentTimeMillis() / 1000L) + DateUtils.getTimeDiff();
 
     CloseableIterator<PlayerBanData> bans = null;
@@ -67,7 +67,7 @@ public class ExpiresSync implements Runnable {
     CloseableIterator<PlayerWarnData> warnings = null;
     try {
       warnings = warnStorage.queryBuilder().where().ne("expires", 0).and()
-                       .le("expires", now).iterator();
+                            .le("expires", now).iterator();
 
       while (warnings.hasNext()) {
         PlayerWarnData warning = warnings.next();
@@ -98,6 +98,23 @@ public class ExpiresSync implements Runnable {
       if (ipBans != null) ipBans.closeQuietly();
     }
 
+    CloseableIterator<IpMuteData> ipMutes = null;
+    try {
+      ipMutes = ipMuteStorage.queryBuilder().where().ne("expires", 0).and().le("expires", now).iterator();
+
+      while (ipMutes.hasNext()) {
+        IpMuteData mute = ipMutes.next();
+        ipMuteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole(), "");
+
+        ipMuteStorage.removeMute(mute);
+        ipMuteStorage.delete(mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (ipMutes != null) ipMutes.closeQuietly();
+    }
+
     CloseableIterator<IpRangeBanData> ipRangeBans = null;
     try {
       ipRangeBans = ipRangeBanStorage.queryBuilder().where().ne("expires", 0).and()
@@ -115,7 +132,5 @@ public class ExpiresSync implements Runnable {
     } finally {
       if (ipRangeBans != null) ipRangeBans.closeQuietly();
     }
-
-    isRunning = false;
   }
 }

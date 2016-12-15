@@ -34,11 +34,8 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
     PlayerNoteCreatedEvent event = new PlayerNoteCreatedEvent(data);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
-    if (event.isCancelled()) {
-      return false;
-    }
+    return !event.isCancelled() && create(data) == 1;
 
-    return create(data) == 1;
   }
 
   public CloseableIterator<PlayerNoteData> getNotes(UUID uniqueId) throws SQLException {
@@ -48,10 +45,7 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
   public int deleteAll(PlayerData player) throws SQLException {
     DeleteBuilder<PlayerNoteData, Integer> builder = deleteBuilder();
 
-    Where<PlayerNoteData, Integer> where = builder.where();
-    where.eq("player_id", player);
-
-    builder.setWhere(where);
+    builder.where().eq("player_id", player);
 
     return builder.delete();
   }

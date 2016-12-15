@@ -1,40 +1,30 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import lombok.Getter;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
+import me.confuser.banmanager.data.IpMuteData;
+import me.confuser.banmanager.data.IpMuteRecord;
 import me.confuser.banmanager.storage.IpBanStorage;
+import me.confuser.banmanager.storage.IpMuteStorage;
 
 import java.sql.SQLException;
 
-public class IpSync implements Runnable {
+public class IpSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private IpBanStorage banStorage = plugin.getIpBanStorage();
-  private long lastChecked = 0;
-  @Getter
-  private boolean isRunning = false;
+  private IpMuteStorage muteStorage = plugin.getIpMuteStorage();
 
   public IpSync() {
-    lastChecked = plugin.getSchedulesConfig().getLastChecked("ipBans");
+    super("ipBans");
   }
 
   @Override
   public void run() {
-    if (isRunning) return;
-
-    isRunning = true;
-    // New/updated bans check
     newBans();
-
-    // New unbans
     newUnbans();
-
-    lastChecked = System.currentTimeMillis() / 1000L;
-    plugin.getSchedulesConfig().setLastChecked("ipBans", lastChecked);
-    isRunning = false;
+    newMutes();
+    newUnmutes();
   }
 
   private void newBans() {
@@ -74,6 +64,53 @@ public class IpSync implements Runnable {
         }
 
         banStorage.removeBan(ban.getIp());
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+  }
+
+  private void newMutes() {
+
+    CloseableIterator<IpMuteData> itr = null;
+    try {
+      itr = muteStorage.findMutes(lastChecked);
+
+      while (itr.hasNext()) {
+        final IpMuteData mute = itr.next();
+
+        if (muteStorage.isMuted(mute.getIp()) && mute.getUpdated() < lastChecked) {
+          continue;
+        }
+
+        muteStorage.addMute(mute);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+  }
+
+  private void newUnmutes() {
+
+    CloseableIterator<IpMuteRecord> itr = null;
+    try {
+      itr = plugin.getIpMuteRecordStorage().findUnmutes(lastChecked);
+
+      while (itr.hasNext()) {
+        final IpMuteRecord mute = itr.next();
+
+        if (!muteStorage.isMuted(mute.getIp())) {
+          continue;
+        }
+
+        muteStorage.removeMute(mute.getIp());
 
       }
     } catch (SQLException e) {

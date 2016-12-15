@@ -22,9 +22,16 @@ public class KickCommand extends BukkitCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
-    args = parser.getArgs();
-    final boolean isSilent = parser.isSilent();
+    final boolean isSilent;
+    CommandParser parser = null;
+
+    if (args.length != 1) {
+      parser = new CommandParser(args, 1);
+      args = parser.getArgs();
+      isSilent = parser.isSilent();
+    } else {
+      isSilent = false;
+    }
 
     if (isSilent && !sender.hasPermission(command.getPermission() + ".silent")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
@@ -49,35 +56,25 @@ public class KickCommand extends BukkitCommand<BanManager> {
     final Player player = plugin.getServer().getPlayer(playerName);
 
     if (player == null) {
-      Message message = Message.get("sender.error.offline")
-                               .set("[player]", playerName);
+      Message.get("sender.error.offline")
+             .set("player", playerName)
+             .sendTo(sender);
 
-      sender.sendMessage(message.toString());
       return true;
     } else if (!sender.hasPermission("bm.exempt.override.kick") && player.hasPermission("bm.exempt.kick")) {
       Message.get("sender.error.exempt").set("player", player.getName()).sendTo(sender);
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args) : "";
+    final String reason = parser != null ? parser.getReason().getMessage() : "";
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         final Message kickMessage;
 
@@ -90,10 +87,30 @@ public class KickCommand extends BukkitCommand<BanManager> {
         kickMessage
                 .set("displayName", player.getDisplayName())
                 .set("player", player.getName())
+                .set("playerId", UUIDUtils.getUUID(player).toString())
                 .set("actor", actor.getName());
+
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+
+          @Override
+          public void run() {
+            player.kickPlayer(kickMessage.toString());
+
+            Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
+            message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+
+            if (isSilent || !sender.hasPermission("bm.notify.kick")) {
+              message.sendTo(sender);
+            }
+
+            if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.kick");
+          }
+        });
 
         if (plugin.getConfiguration().isKickLoggingEnabled()) {
           PlayerData player = plugin.getPlayerStorage().retrieve(playerName, false);
+
+          if (player == null) return;
 
           PlayerKickData data = new PlayerKickData(player, actor, reason);
 
@@ -111,23 +128,6 @@ public class KickCommand extends BukkitCommand<BanManager> {
             return;
           }
         }
-
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-          @Override
-          public void run() {
-            player.kickPlayer(kickMessage.toString());
-
-            Message message = Message.get("kick.notify");
-            message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
-
-            if (isSilent || !sender.hasPermission("bm.notify.kick")) {
-              message.sendTo(sender);
-            }
-
-            if (!isSilent) CommandUtils.broadcast(message.toString(), "bm.notify.kick");
-          }
-        });
 
       }
     });

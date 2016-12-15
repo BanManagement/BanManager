@@ -1,11 +1,10 @@
 package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
-
 import me.confuser.banmanager.BanManager;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -77,7 +76,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static byte[] toBytes(Player player) {
-    return toBytes(player.getUniqueId());
+    return toBytes(getUUID(player));
   }
 
   public static UUID fromBytes(byte[] array) {
@@ -91,7 +90,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static UUIDProfile getUUIDOf(String name) throws Exception {
-    Map<String, UUID> players = new UUIDUtils(Arrays.asList(name)).call();
+    Map<String, UUID> players = new UUIDUtils(Collections.singletonList(name)).call();
 
     if (players.isEmpty()) {
       return null;
@@ -138,21 +137,44 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
     if (obj.size() == 0) return null;
 
-    UUIDProfile profile = new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
+    return new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
+  }
 
-    return profile;
+  public static UUID getUUID(Player player) {
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
+
+    return createUUID(player.getName());
+  }
+
+  public static UUID getUUID(AsyncPlayerPreLoginEvent event) {
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return event.getUniqueId();
+
+    return createUUID(event.getName());
+  }
+
+  private static UUID createUUID(String s) {
+    try {
+      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s.toLowerCase()).getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      return null;
+    }
   }
 
   public Map<String, UUID> call() throws Exception {
-    BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
-    Map<String, UUID> uuidMap = new HashMap<>();
 
+    Map<String, UUID> uuidMap = new HashMap<>();
     if (!BanManager.getPlugin().getConfiguration().isOnlineMode()) {
-        for (String s : names)
-            uuidMap.put(s, createUUID(s));
-        return uuidMap;
+      BanManager.plugin.getLogger().info("Generating offline UUIDs for " + StringUtils.join(names, ','));
+
+      for (String s : names) {
+        uuidMap.put(s, createUUID(s));
+      }
+
+      return uuidMap;
     }
-    
+
+    BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
+
     int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
     for (int i = 0; i < requests; i++) {
       HttpURLConnection connection = createConnection(PROFILE_URL, "POST");
@@ -172,13 +194,5 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
       }
     }
     return uuidMap;
-  }
-
-  private static UUID createUUID(String s) { 
-    try { 
-      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s.toLowerCase()).getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) { 
-      return null; 
-    } 
   }
 }

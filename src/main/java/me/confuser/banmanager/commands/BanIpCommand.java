@@ -7,7 +7,7 @@ import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,7 +23,7 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
-    CommandParser parser = new CommandParser(args);
+    CommandParser parser = new CommandParser(args, 1);
     args = parser.getArgs();
     final boolean isSilent = parser.isSilent();
 
@@ -62,24 +62,17 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
       }
     }
 
-    final String reason = CommandUtils.getReason(1, args);
+    final Reason reason = parser.getReason();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
       @Override
       public void run() {
-        final long ip;
+        final Long ip = CommandUtils.getIp(ipStr);
 
-        if (isName) {
-          PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
-          if (player == null) {
-            sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-            return;
-          }
-
-          ip = player.getIp();
-        } else {
-          ip = IPUtils.toLong(ipStr);
+        if (ip == null) {
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+          return;
         }
 
         final boolean isBanned = plugin.getIpBanStorage().isBanned(ip);
@@ -92,19 +85,9 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
           return;
         }
 
-        final PlayerData actor;
+        final PlayerData actor = CommandUtils.getActor(sender);
 
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        if (actor == null) return;
 
         if (isBanned) {
           IpBanData ban = plugin.getIpBanStorage().getBan(ip);
@@ -120,8 +103,8 @@ public class BanIpCommand extends AutoCompleteNameTabCommand<BanManager> {
           }
         }
 
-        final IpBanData ban = new IpBanData(ip, actor, reason);
-        boolean created = false;
+        final IpBanData ban = new IpBanData(ip, actor, reason.getMessage());
+        boolean created;
 
         try {
           created = plugin.getIpBanStorage().ban(ban, isSilent);
