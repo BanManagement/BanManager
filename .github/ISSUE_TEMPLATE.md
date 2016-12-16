@@ -9,8 +9,10 @@ Server software (CB/Spigot/Sponge/Thermos...):
 Server version: 
 BanManager version: 
 BanManager config.yml: 
-<!--- Use pastebin.com or similar to provide your config file. Make sure to -->
-<!--- garble/remove any MySQL credentials before uploading your file! -->
+Are you running offline mode?: 
+If yes, are you running your server behind Bungeecoord with online mode?: 
+<!--- Hint: Use pastebin.com or similar to provide your config file. Make -->
+<!--- sure to garble/remove any MySQL credentials before uploading your file! -->
 
 
 **Descripe your issue:** 
