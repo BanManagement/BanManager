@@ -15,7 +15,7 @@ If yes, are you running your server behind Bungeecoord with online mode?:
 <!--- sure to garble/remove any MySQL credentials before uploading your file! -->
 
 
-**Descripe your issue:** 
+**Describe your issue:** 
 <!--- Tell us what happens or not happens und and you expect. -->
 <!--- If you have any BanManager related console output or BanManager seems -->
 <!--- not to load at all provide us a FULL STARTUP LOG on pastebin.com or similar. -->
