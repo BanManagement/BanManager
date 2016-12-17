@@ -37,7 +37,7 @@ commands:
     permission: bm.command.unbanall
   bminfo:
     description: "see information on a player"
-    usage: "/bminfo <player>"
+    usage: "/bminfo <player> [index]"
     aliases: [bmbminfo]
     permission: bm.command.bminfo
   banip:

@@ -178,6 +178,16 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return null;
   }
 
+  public List<PlayerData> retrieve(String name) {
+    try {
+      return queryForEq("name", name);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   public List<PlayerData> getDuplicates(long ip) {
     ArrayList<PlayerData> players = new ArrayList<>();
 

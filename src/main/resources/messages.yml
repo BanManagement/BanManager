@@ -74,6 +74,9 @@ messages:
   info:
     error:
       incorrectFlagUsage: '&cA flag has been incorrectly used'
+      invalidIndex: '&cInvalid player option used'
+      indexRequired: '&cMultiple players named [name], found, please select a player by providing an index between 1 and [size], e.g. /bminfo [name] 1'
+      index: '&7#[index] - &6[name] - &4[uuid]'
     stats:
       player: '&6[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
       times ([warnPoints] Points)'

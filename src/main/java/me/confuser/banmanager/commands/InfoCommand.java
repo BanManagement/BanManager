@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
@@ -59,11 +60,20 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       return true;
     }
 
-    final String search = args.length == 1 ? args[0] : sender.getName();
+    final String search = args.length > 0 ? args[0] : sender.getName();
     final boolean isName = !InetAddresses.isInetAddress(search);
 
     if (isName && search.length() > 16) {
       sender.sendMessage(Message.getString("sender.error.invalidIp"));
+      return true;
+    }
+
+    final Integer index;
+
+    try {
+      index = args.length == 2 ? Integer.parseInt(args[1]) : null;
+    } catch (NumberFormatException e) {
+      Message.get("info.error.invalidIndex").sendTo(sender);
       return true;
     }
 
@@ -73,7 +83,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       public void run() {
         if (isName) {
           try {
-            playerInfo(sender, search, parser);
+            playerInfo(sender, search, index, parser);
           } catch (SQLException e) {
             sender.sendMessage(Message.getString("sender.error.exception"));
             e.printStackTrace();
@@ -91,13 +101,37 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
     return true;
   }
 
-  public void playerInfo(CommandSender sender, String name, InfoCommandParser parser) throws SQLException {
-    PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
+  public void playerInfo(CommandSender sender, String name, Integer index, InfoCommandParser parser) throws SQLException {
+    List<PlayerData> players = plugin.getPlayerStorage().retrieve(name);
 
-    if (player == null) {
+    if (players == null || players.size() == 0) {
       sender.sendMessage(Message.get("sender.error.notFound").set("player", name).toString());
       return;
     }
+
+    if (players.size() > 1 && (index == null || index > players.size() || index < 1)) {
+      Message.get("info.error.indexRequired")
+             .set("size", players.size())
+             .set("name", name)
+             .sendTo(sender);
+
+      int i = 0;
+      for (PlayerData player : players) {
+        i++;
+
+        Message.get("info.error.index")
+               .set("index", i)
+               .set("uuid", player.getUUID().toString())
+               .set("name", player.getName())
+               .sendTo(sender);
+      }
+
+      return;
+    }
+
+    if (players.size() == 1) index = 1;
+
+    PlayerData player = players.get(index - 1);
 
     ArrayList<String> messages = new ArrayList<>();
 
