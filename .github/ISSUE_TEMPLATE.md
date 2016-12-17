@@ -1,33 +1,32 @@
 # Issue report
-<!--- To investigate your issue with BanManager you have to provide us -->
-<!--- some information about your environment. Failing to do so may -->
-<!--- result in an invalid report that cannot be resolved. -->
-<!--- Please stick to this template unless you are posting a feature request. -->
-**Your environment:** 
-<!--- Use /version and /version pluginname if in doubt -->
-Server software (CB/Spigot/Sponge/Thermos...):
-Server version: 
-BanManager version: 
-BanManager config.yml: 
-Are you running offline mode?: 
-If yes, are you running your server behind Bungeecoord with online mode?: 
-<!--- Hint: Use pastebin.com or similar to provide your config file. Make -->
-<!--- sure to garble/remove any MySQL credentials before uploading your file! -->
+<!--- This template is for bug reports, if you are using this for anothe reason, please ignore -->
+<!--- Note that leaving sections blank will make it difficult for us to troubleshoot and we may have to close the issue without a resolution -->
+**Tell us about your environment**
 
+<!--- Use /version and /version pluginname if in doubt -->
+* **Server Software:**
+* **Server Version:**
+* **BanManager Version:**
+
+* **Online/Offline mode**: 
+* **Bungeecoord online/offline mode (if applicable)**: 
+
+**BanManager config.yml**:
+<!-- Paste your configuration below: -->
+```yaml
+
+Ensure you mask/remove any MySQL credentials!
+
+```
 
 **Describe your issue:** 
-<!--- Tell us what happens or not happens und and you expect. -->
+<!--- Tell us what occurs and what you expected to occur. -->
 <!--- If you have any BanManager related console output or BanManager seems -->
 <!--- not to load at all provide us a FULL STARTUP LOG on pastebin.com or similar. -->
- 
-
 
 **How to replicate:** 
 <!--- If you can reproduce the issue please tell us in detail how to do that -->
  
-
-
-**Further information:**
+* **Further information:**
 <!--- Anything what you want to tell us that did not fit above can be put here -->
- 
  
