@@ -68,6 +68,8 @@ public class DefaultConfig extends Config<BanManager> {
   private boolean logIpsEnabled = true;
   @Getter
   private EventPriority chatPriority;
+  @Getter
+  private int maxReportLines;
 
   public DefaultConfig() {
     super("config.yml");
@@ -108,6 +110,7 @@ public class DefaultConfig extends Config<BanManager> {
     }
 
     maxOnlinePerIp = conf.getInt("maxOnlinePerIp", 0);
+    maxReportLines = conf.getInt("reports.maxLines", 20);
 
     hooksConfig = new HooksConfig(conf.getConfigurationSection("hooks"));
 

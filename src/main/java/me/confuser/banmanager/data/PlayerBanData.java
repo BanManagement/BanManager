@@ -67,6 +67,6 @@ public class PlayerBanData {
   }
 
   public boolean hasExpired() {
-            return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
-      }
+    return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
+  }
 }
