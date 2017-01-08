@@ -209,6 +209,10 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   }
 
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason) throws SQLException {
+    return unmute(mute, actor, reason, false);
+  }
+
+  public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean delete) throws SQLException {
     PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute, actor, reason);
     Bukkit.getServer().getPluginManager().callEvent(event);
 
@@ -219,7 +223,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     delete(mute);
     mutes.remove(mute.getPlayer().getUUID());
 
-    plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
+    if (!delete) plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
 
     return true;
   }
