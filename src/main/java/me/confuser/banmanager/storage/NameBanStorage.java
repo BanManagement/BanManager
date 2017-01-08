@@ -50,7 +50,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection();
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve bans into memory");
+      plugin.getLogger().warning("Failed to retrieve name bans into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -93,8 +93,8 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
           continue;
         }
 
-        NameBanData ban = new NameBanData(results.getInt(0), results.getString(1), actor, results.getString(9), results
-                .getLong(10), results.getLong(11), results.getLong(12));
+        NameBanData ban = new NameBanData(results.getInt(0), results.getString(1), actor, results.getString(6), results
+                .getLong(7), results.getLong(8), results.getLong(9));
 
         bans.put(ban.getName().toLowerCase(), ban);
       }
