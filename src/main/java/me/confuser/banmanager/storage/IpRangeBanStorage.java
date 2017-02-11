@@ -168,6 +168,10 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     return bans.get(range);
   }
 
+  public IpRangeBanData getBan(Range range) {
+    return bans.get(range);
+  }
+
   public IpRangeBanData getBan(InetAddress address) {
     return getBan(IPUtils.toLong(address));
   }

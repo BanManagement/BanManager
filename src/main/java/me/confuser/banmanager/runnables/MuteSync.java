@@ -30,8 +30,12 @@ public class MuteSync extends BmRunnable {
       while (itr.hasNext()) {
         final PlayerMuteData mute = itr.next();
 
-        if (muteStorage.isMuted(mute.getPlayer().getUUID()) && mute.getUpdated() < lastChecked) {
-          continue;
+        if (muteStorage.isMuted(mute.getPlayer().getUUID())) {
+          if (mute.getUpdated() < lastChecked) continue;
+
+          if (mute.equalsMute(muteStorage.getMute(mute.getPlayer().getUUID()))) {
+            continue;
+          }
         }
 
         muteStorage.addMute(mute);

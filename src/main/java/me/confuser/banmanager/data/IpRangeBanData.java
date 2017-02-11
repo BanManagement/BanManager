@@ -81,4 +81,13 @@ public class IpRangeBanData {
   public Range getRange() {
     return Range.closed(fromIp, toIp);
   }
+
+  public boolean equalsBan(IpRangeBanData ban) {
+    return ban.getReason().equals(this.reason)
+            && ban.getExpires() == expires
+            && ban.getCreated() == this.created
+            && ban.getFromIp() == this.fromIp
+            && ban.getToIp() == this.toIp
+            && ban.getActor().getUUID().equals(this.actor.getUUID());
+  }
 }

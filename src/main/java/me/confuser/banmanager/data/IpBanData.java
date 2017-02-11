@@ -69,4 +69,12 @@ public class IpBanData {
   public boolean hasExpired() {
         return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
+
+  public boolean equalsBan(IpBanData ban) {
+    return ban.getReason().equals(this.reason)
+            && ban.getExpires() == expires
+            && ban.getCreated() == this.created
+            && ban.getIp() == this.ip
+            && ban.getActor().getUUID().equals(this.actor.getUUID());
+  }
 }

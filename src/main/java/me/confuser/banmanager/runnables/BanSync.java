@@ -33,8 +33,12 @@ public class BanSync extends BmRunnable {
       while (itr.hasNext()) {
         final PlayerBanData ban = itr.next();
 
-        if (banStorage.isBanned(ban.getPlayer().getUUID()) && ban.getUpdated() < lastChecked) {
-          continue;
+        if (banStorage.isBanned(ban.getPlayer().getUUID())) {
+          if (ban.getUpdated() < lastChecked) continue;
+
+          if (ban.equalsBan(banStorage.getBan(ban.getPlayer().getUUID()))) {
+            continue;
+          }
         }
 
         banStorage.addBan(ban);
