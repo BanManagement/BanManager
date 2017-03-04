@@ -37,6 +37,7 @@ public class CommandListener extends Listeners<BanManager> {
 
         if ((isSoft && plugin.getConfiguration().isSoftBlockedCommand(check)) || plugin.getConfiguration().isBlockedCommand(check)) {
           shouldCancel = true;
+          cmd = check;
           break;
         }
       }
