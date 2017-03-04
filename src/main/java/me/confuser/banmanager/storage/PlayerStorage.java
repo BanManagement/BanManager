@@ -7,6 +7,7 @@ import com.googlecode.concurrenttrees.radix.node.concrete.voidvalue.VoidValue;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -98,7 +99,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     // Check for duplicates
-    List<PlayerData> results = queryForEq("name", data.getName());
+    List<PlayerData> results = queryForEq("name", new SelectArg(data.getName()));
     if (results.size() == 1) return status;
 
     if (!plugin.getConfiguration().isOnlineMode()) {
@@ -146,7 +147,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   public PlayerData retrieve(String name, boolean mojangLookup) {
 
     try {
-      List<PlayerData> results = queryForEq("name", name);
+      List<PlayerData> results = queryForEq("name", new SelectArg(name));
       if (results.size() == 1) {
         return results.get(0);
       }
@@ -180,7 +181,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   public List<PlayerData> retrieve(String name) {
     try {
-      return queryForEq("name", name);
+      return queryForEq("name", new SelectArg(name));
     } catch (SQLException e) {
       e.printStackTrace();
     }
