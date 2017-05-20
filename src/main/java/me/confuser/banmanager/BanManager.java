@@ -21,7 +21,6 @@ import org.bukkit.event.EventException;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
-import org.mcstats.MetricsLite;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -157,13 +156,6 @@ public class BanManager extends BukkitPlugin {
     setupListeners();
     setupCommands();
     setupRunnables();
-
-    try {
-      MetricsLite metrics = new MetricsLite(this);
-      metrics.start();
-    } catch (IOException e) {
-      // Failed to submit the stats :-(
-    }
   }
 
   @Override

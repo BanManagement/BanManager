@@ -46,10 +46,6 @@
                                     <shadedPattern>me.confuser.banmanager.bukkitutil</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>me.confuser.banmanager.internal.mcstats</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.j256.ormlite</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.ormlite</shadedPattern>
                                 </relocation>
@@ -122,10 +118,6 @@
             <url>http://ci.frostcast.net/plugin/repository/everything</url>
         </repository>
         <repository>
-            <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
@@ -169,12 +161,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics-lite</artifactId>
-            <version>R8-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>me.confuser</groupId>
