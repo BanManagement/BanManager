@@ -88,19 +88,7 @@ public class UnbanCommand extends BukkitCommand<BanManager> implements TabComple
           return;
         }
 
-        PlayerData actor;
-
-        if (sender instanceof Player) {
-          try {
-            actor = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
-            return;
-          }
-        } else {
-          actor = plugin.getPlayerStorage().getConsole();
-        }
+        final PlayerData actor = CommandUtils.getActor(sender);
 
         //TODO refactor if async perm check is problem
         if (!actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.ban")
