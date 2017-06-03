@@ -1,10 +1,10 @@
 package me.confuser.banmanager.listeners;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
-import com.sk89q.guavabackport.cache.Cache;
-import com.sk89q.guavabackport.cache.CacheBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.*;

@@ -74,7 +74,7 @@
                                     <shadedPattern>me.confuser.banmanager.internal.commons.net</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.sk89q.guavabackport</pattern>
+                                    <pattern>com.google.common</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.guava</shadedPattern>
                                 </relocation>
                                 <relocation>
@@ -128,19 +128,15 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <!-- Contains parts of Guava that are not compatible
-                 between Bukkit 10.0.1 and 17+ -->
-            <groupId>com.sk89q</groupId>
-            <artifactId>guavabackport</artifactId>
-            <version>1.1</version>
-            <scope>compile</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.j256.ormlite</groupId>
