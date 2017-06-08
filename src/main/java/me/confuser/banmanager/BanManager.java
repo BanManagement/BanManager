@@ -293,8 +293,8 @@ public class BanManager extends BukkitPlugin {
   }
 
   public boolean setupConnections() throws SQLException {
-    if (!configuration.getLocalDb().isEnabled()) {
-      getLogger().warning("Local Database is not enabled, disabling plugin");
+    if (!configuration.getLocalDb().isEnabled() && !configuration.getExternalDb().isEnabled()) {
+      getLogger().warning("Database is not enabled, disabling plugin");
       plugin.getPluginLoader().disablePlugin(this);
       return false;
     }
