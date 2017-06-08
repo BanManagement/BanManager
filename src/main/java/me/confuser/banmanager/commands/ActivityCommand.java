@@ -3,13 +3,16 @@ package me.confuser.banmanager.commands;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
 
@@ -44,7 +47,19 @@ public class ActivityCommand extends AutoCompleteNameTabCommand<BanManager> {
 
         if (args.length == 2) {
           messageType = "bmactivity.row.player";
-          PlayerData player = plugin.getPlayerStorage().retrieve(args[1], false);
+
+          PlayerData player = null;
+          final boolean isUUID = args[1].length() > 16;
+
+          if (isUUID) {
+            try {
+              player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(args[1])));
+            } catch (SQLException e) {
+              e.printStackTrace();
+            }
+          } else {
+            player = plugin.getPlayerStorage().retrieve(args[1], false);
+          }
 
           if (player == null) {
             sender.sendMessage(Message.get("sender.error.notFound").set("player", args[1]).toString());
