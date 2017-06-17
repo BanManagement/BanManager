@@ -227,6 +227,46 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     return players;
   }
+  
+  public List<PlayerData> getDuplicatesInTime(long ip, long timediff) {
+    ArrayList<PlayerData> players = new ArrayList<>();
+    long currentTime = System.currentTimeMillis() / 1000L;
+
+    if (plugin.getConfiguration().getBypassPlayerIps().contains(ip)) {
+      return players;
+    }
+
+    QueryBuilder<PlayerData, byte[]> query = queryBuilder();
+    try {
+      query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
+
+      Where<PlayerData, byte[]> where = query.where();
+
+      where.eq("ip", ip).and().ge("lastSeen", (currentTime - timediff));
+
+      query.setWhere(where);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return players;
+    }
+
+
+    CloseableIterator<PlayerData> itr = null;
+    try {
+      itr = query.limit(300L).iterator();
+
+      while (itr.hasNext()) {
+        players.add(itr.next());
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+    return players;
+  }
 
   public List<byte[]> getOnlineIds(Collection<? extends Player> onlinePlayers) {
     ArrayList<byte[]> ids = new ArrayList<>(onlinePlayers.size());
