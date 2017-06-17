@@ -370,6 +370,19 @@ public class JoinListener extends Listeners<BanManager> {
       }
 
     }
+    
+    if (plugin.getConfiguration().getMaxMultiaccountsRecently() > 0) {
+      long ip = IPUtils.toLong(event.getAddress());
+      long timediff = plugin.getConfiguration().getMultiaccountsTime();
+
+      List<PlayerData> multiaccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timediff);
+
+      if (multiaccountPlayers.size() > plugin.getConfiguration().getMaxMultiaccountsRecently()) {
+        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.getString("deniedMultiaccounts"));
+        return;
+      }
+
+    }
 
     if (!plugin.getConfiguration().isDuplicateIpCheckEnabled()) {
       return;
