@@ -9,6 +9,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    useSSL: false
+    verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
     tables:
@@ -46,6 +48,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    useSSL: false
+    verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
     tables:
