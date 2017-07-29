@@ -252,6 +252,8 @@ public class BanManager extends BukkitPlugin {
 
     new ReasonsCommand().register();
 
+    new UtilsCommand().register();
+
     if (globalConn == null) return;
 
     new BanAllCommand().register();

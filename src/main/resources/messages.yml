@@ -287,6 +287,15 @@ messages:
     error:
       invalid: '&cInvalid type, please choose between banrecords, muterecords, kicks, notes or warnings'
 
+  bmutils:
+    missingplayers:
+      notify: '&c[amount] missing players added'
+      noneFound: '&a0 missing players found'
+      found: '&c[amount] missing player data found. Fixing...'
+      error:
+        failedLookup: '&cFailed to lookup player [uuid], check server logs'
+      complete: '&a[amount] players resolved, please restart your server for failed punishments to take affect'
+
   bmrollback:
     notify: '&c[player] has had their [type] actions undone'
     error:
