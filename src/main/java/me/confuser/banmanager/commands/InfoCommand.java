@@ -6,10 +6,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerHistoryData;
-import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.parsers.InfoCommandParser;
@@ -287,6 +284,28 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
         messages.add(Message.get("info.stats.ip")
                             .set("bans", Long.toString(ipBanTotal))
                             .toString());
+
+        if (plugin.getIpBanStorage().isBanned(player.getIp())) {
+          IpBanData ban = plugin.getIpBanStorage().getBan(player.getIp());
+
+          Message message;
+
+          if (ban.getExpires() == 0) {
+            message = Message.get("info.ipban.permanent");
+          } else {
+            message = Message.get("info.ipban.temporary");
+            message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+          }
+
+          String dateTimeFormat = Message.getString("info.ipban.dateTimeFormat");
+
+          messages.add(message
+                  .set("reason", ban.getReason())
+                  .set("actor", ban.getActor().getName())
+                  .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                                                .format(ban.getCreated() * 1000L))
+                  .toString());
+        }
       }
 
       if (plugin.getPlayerBanStorage().isBanned(player.getUUID())) {
