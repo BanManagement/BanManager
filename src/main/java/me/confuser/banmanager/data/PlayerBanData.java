@@ -1,9 +1,9 @@
 package me.confuser.banmanager.data;
 
-import me.confuser.banmanager.storage.mysql.ByteArray;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
+import me.confuser.banmanager.storage.mysql.ByteArray;
 
 @DatabaseTable
 public class PlayerBanData {
@@ -69,4 +69,13 @@ public class PlayerBanData {
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
+
+  public boolean equalsBan(PlayerBanData ban) {
+    return ban.getReason().equals(this.reason)
+            && ban.getExpires() == expires
+            && ban.getCreated() == this.created
+            && ban.getPlayer().getUUID().equals(this.getPlayer().getUUID())
+            && ban.getActor().getUUID().equals(this.actor.getUUID());
+  }
+
 }

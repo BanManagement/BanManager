@@ -55,6 +55,10 @@ public class DefaultConfig extends Config<BanManager> {
   @Getter
   private int maxOnlinePerIp = 0;
   @Getter
+  private int maxMultiaccountsRecently = 0;
+  @Getter
+  private long multiaccountsTime = 300L;
+  @Getter
   private HooksConfig hooksConfig;
   @Getter
   private boolean broadcastOnSync = false;
@@ -111,6 +115,8 @@ public class DefaultConfig extends Config<BanManager> {
 
     maxOnlinePerIp = conf.getInt("maxOnlinePerIp", 0);
     maxReportLines = conf.getInt("reports.maxLines", 20);
+    maxMultiaccountsRecently = conf.getInt("maxMultiaccountsRecently", 0);
+    multiaccountsTime = conf.getLong("multiaccountsTime", 300L);
 
     hooksConfig = new HooksConfig(conf.getConfigurationSection("hooks"));
 

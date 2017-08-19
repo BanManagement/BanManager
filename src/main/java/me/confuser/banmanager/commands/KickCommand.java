@@ -38,7 +38,7 @@ public class KickCommand extends BukkitCommand<BanManager> {
       return true;
     }
 
-    if (args.length < 1) {
+    if (args.length < 1 || args[0].isEmpty()) {
       return false;
     }
 

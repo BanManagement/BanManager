@@ -1,5 +1,6 @@
 package me.confuser.banmanager.commands.report;
 
+import com.j256.ormlite.stmt.SelectArg;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.ReportState;
 import me.confuser.banmanager.util.CommandUtils;
@@ -38,7 +39,7 @@ public class ListSubCommand extends SubCommand<BanManager> {
 
         if (args.length == 2) {
           try {
-            List<ReportState> states = plugin.getReportStateStorage().queryForEq("name", args[1]);
+            List<ReportState> states = plugin.getReportStateStorage().queryForEq("name", new SelectArg(args[1]));
 
             if (states.size() == 0) {
               Message.get("report.list.error.invalidState").set("state", args[1]).sendTo(sender);

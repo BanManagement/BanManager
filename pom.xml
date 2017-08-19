@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.confuser</groupId>
     <artifactId>BanManager</artifactId>
-    <version>5.14.0-SNAPSHOT</version>
+    <version>5.15.0-SNAPSHOT</version>
     <name>BanManager</name>
     <description>A database driven ban system</description>
     <build>
@@ -46,10 +46,6 @@
                                     <shadedPattern>me.confuser.banmanager.bukkitutil</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>me.confuser.banmanager.internal.mcstats</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.j256.ormlite</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.ormlite</shadedPattern>
                                 </relocation>
@@ -78,7 +74,7 @@
                                     <shadedPattern>me.confuser.banmanager.internal.commons.net</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.sk89q.guavabackport</pattern>
+                                    <pattern>com.google.common</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.guava</shadedPattern>
                                 </relocation>
                                 <relocation>
@@ -114,16 +110,16 @@
     </build>
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>gravity-repo</id>
+            <url>http://repo.gravitydevelopment.net</url>
         </repository>
         <repository>
             <id>confuser-repo</id>
             <url>http://ci.frostcast.net/plugin/repository/everything</url>
-        </repository>
-        <repository>
-            <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/snapshots</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -136,19 +132,15 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <!-- Contains parts of Guava that are not compatible
-                 between Bukkit 10.0.1 and 17+ -->
-            <groupId>com.sk89q</groupId>
-            <artifactId>guavabackport</artifactId>
-            <version>1.1</version>
-            <scope>compile</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.j256.ormlite</groupId>
@@ -171,15 +163,9 @@
             <version>1.6.4</version>
         </dependency>
         <dependency>
-            <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics-lite</artifactId>
-            <version>R8-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>me.confuser</groupId>
             <artifactId>BukkitPluginUtil</artifactId>
-            <version>1.6.2</version>
+            <version>1.7.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.concurrent-trees</groupId>

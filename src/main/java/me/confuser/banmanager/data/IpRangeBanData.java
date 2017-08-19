@@ -1,8 +1,8 @@
 package me.confuser.banmanager.data;
 
+import com.google.common.collect.Range;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.sk89q.guavabackport.collect.Range;
 import lombok.Getter;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 
@@ -80,5 +80,14 @@ public class IpRangeBanData {
 
   public Range getRange() {
     return Range.closed(fromIp, toIp);
+  }
+
+  public boolean equalsBan(IpRangeBanData ban) {
+    return ban.getReason().equals(this.reason)
+            && ban.getExpires() == expires
+            && ban.getCreated() == this.created
+            && ban.getFromIp() == this.fromIp
+            && ban.getToIp() == this.toIp
+            && ban.getActor().getUUID().equals(this.actor.getUUID());
   }
 }

@@ -71,4 +71,12 @@ public class IpMuteData {
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
+
+  public boolean equalsMute(IpMuteData mute) {
+    return mute.getReason().equals(this.reason)
+            && mute.getExpires() == expires
+            && mute.getCreated() == this.created
+            && mute.getIp() == this.ip
+            && mute.getActor().getUUID().equals(this.actor.getUUID());
+  }
 }

@@ -36,8 +36,12 @@ public class IpSync extends BmRunnable {
       while (itr.hasNext()) {
         final IpBanData ban = itr.next();
 
-        if (banStorage.isBanned(ban.getIp()) && ban.getUpdated() < lastChecked) {
-          continue;
+        if (banStorage.isBanned(ban.getIp())) {
+          if (ban.getUpdated() < lastChecked) continue;
+
+          if (ban.equalsBan(banStorage.getBan(ban.getIp()))) {
+            continue;
+          }
         }
 
         banStorage.addBan(ban);
@@ -83,8 +87,12 @@ public class IpSync extends BmRunnable {
       while (itr.hasNext()) {
         final IpMuteData mute = itr.next();
 
-        if (muteStorage.isMuted(mute.getIp()) && mute.getUpdated() < lastChecked) {
-          continue;
+        if (muteStorage.isMuted(mute.getIp())) {
+          if (mute.getUpdated() < lastChecked) continue;
+
+          if (mute.equalsMute(muteStorage.getMute(mute.getIp()))) {
+            continue;
+          }
         }
 
         muteStorage.addMute(mute);

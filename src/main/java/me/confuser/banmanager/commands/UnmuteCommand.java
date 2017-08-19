@@ -4,6 +4,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.util.CommandUtils;
+import me.confuser.banmanager.util.parsers.UnbanCommandParser;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -24,6 +25,16 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
 
   @Override
   public boolean onCommand(final CommandSender sender, Command command, String commandName, String[] args) {
+    UnbanCommandParser parser = new UnbanCommandParser(args, 1);
+    args = parser.getArgs();
+
+    final boolean isDelete = parser.isDelete();
+
+    if (isDelete && !sender.hasPermission(command.getPermission() + ".delete")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (args.length < 1) {
       return false;
     }
@@ -57,7 +68,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
       return true;
     }
 
-    final String reason = args.length > 1 ? CommandUtils.getReason(1, args).getMessage() : "";
+    final String reason = parser.getReason().getMessage();
 
     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -89,7 +100,7 @@ public class UnmuteCommand extends BukkitCommand<BanManager> implements TabCompl
         boolean unmuted;
 
         try {
-          unmuted = plugin.getPlayerMuteStorage().unmute(mute, actor, reason);
+          unmuted = plugin.getPlayerMuteStorage().unmute(mute, actor, reason, isDelete);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();

@@ -20,6 +20,10 @@ public abstract class DatabaseConfig {
   @Getter
   private final String password;
   @Getter
+  private final boolean useSSL;
+  @Getter
+  private final boolean verifyServerCertificate;
+  @Getter
   private final boolean isEnabled;
   @Getter
   private int maxConnections;
@@ -36,6 +40,8 @@ public abstract class DatabaseConfig {
     isEnabled = conf.getBoolean("enabled");
     maxConnections = conf.getInt("maxConnections", 10);
     leakDetection = conf.getInt("leakDetection", 0);
+    useSSL = conf.getBoolean("useSSL", false);
+    verifyServerCertificate = conf.getBoolean("verifyServerCertificate", false);
 
     if (maxConnections > 30) maxConnections = 30;
   }
@@ -50,7 +56,10 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    return "jdbc:mysql://" + host + ":" + port + "/" + name + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    return "jdbc:mysql://" + host + ":" + port + "/" + name +
+            "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
+            "&useSSL=" + useSSL +
+            "&verifyServerCertificate=" + verifyServerCertificate;
   }
 
   public DatabaseTableConfig<?> getTable(String table) {

@@ -32,8 +32,12 @@ public class IpRangeSync extends BmRunnable {
       while (itr.hasNext()) {
         final IpRangeBanData ban = itr.next();
 
-        if (banStorage.isBanned(ban) && ban.getUpdated() < lastChecked) {
-          continue;
+        if (banStorage.isBanned(ban)) {
+          if (ban.getUpdated() < lastChecked) continue;
+
+          if (ban.equalsBan(banStorage.getBan(ban.getRange()))) {
+            continue;
+          }
         }
 
         banStorage.addBan(ban);

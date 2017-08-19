@@ -1,8 +1,8 @@
 package me.confuser.banmanager.data;
 
+import com.google.common.collect.Range;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.sk89q.guavabackport.collect.Range;
 import lombok.Getter;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 

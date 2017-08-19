@@ -237,6 +237,10 @@ commands:
     usage: "/unbanname <name> [reason]"
     alias: [bmunbanname]
     permission: bm.command.unbanname
+  bmutils:
+    description: "BanManager utility commands"
+    usage: "/bmutils help"
+    permission: bm.command.bmutils
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
@@ -304,6 +308,8 @@ permissions:
       bm.command.banname: true
       bm.command.tempbanname: true
       bm.command.unbanname: true
+      bm.command.bmutils: true
+      bm.command.bmutils.missingplayers: true
   bm.*:
     description: Gives access to all BanManager commands
     children:
@@ -374,6 +380,8 @@ permissions:
       bm.command.banname: true
       bm.command.tempbanname: true
       bm.command.unbanname: true
+      bm.command.bmutils: true
+      bm.command.bmutils.missingplayers: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -654,3 +662,9 @@ permissions:
   bm.command.unbanname:
     description: Allows unbanning a name
     default: op
+bm.command.bmutils:
+  description: Allows using bmutils base command
+  default: op
+bm.command.bmutils.missingplayers:
+  description: Allows resolving missing players
+  default: op

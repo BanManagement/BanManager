@@ -75,4 +75,12 @@ public class PlayerMuteData {
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
+
+  public boolean equalsMute(PlayerMuteData mute) {
+    return mute.getReason().equals(this.reason)
+            && mute.getExpires() == expires
+            && mute.getCreated() == this.created
+            && mute.getPlayer().getUUID().equals(this.getPlayer().getUUID())
+            && mute.getActor().getUUID().equals(this.actor.getUUID());
+  }
 }

@@ -1,5 +1,7 @@
 package me.confuser.banmanager.storage;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -8,8 +10,6 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
-import com.sk89q.guavabackport.cache.Cache;
-import com.sk89q.guavabackport.cache.CacheBuilder;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.CleanUp;
 import me.confuser.banmanager.data.PlayerData;

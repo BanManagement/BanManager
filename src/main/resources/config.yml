@@ -9,6 +9,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    useSSL: false
+    verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
     tables:
@@ -46,6 +48,8 @@ databases:
     user: root
     password: ''
     maxConnections: 10
+    useSSL: false
+    verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
     tables:
@@ -166,6 +170,14 @@ cleanUp:
 
 # Maximum amount of players allowed from a single ip, set to 0 to disable
 maxOnlinePerIp: 0
+
+# Maximum amount of players allowed from a single ip (recently logged in), set to 0 to disable
+# The time interval to check is set with multiaccountsTime
+maxMultiaccountsRecently: 0
+
+# Time interval to look up for recently players (in seconds)
+# Used with maxMultiaccountsRecently > 0
+multiaccountsTime: 300
 
 # Whether to check the database to see if the player is banned on join or not
 # Recommended to be disabled, the schedule sync tasks should suffice
