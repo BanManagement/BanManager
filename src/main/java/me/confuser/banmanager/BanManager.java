@@ -12,6 +12,7 @@ import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.global.*;
+import me.confuser.banmanager.storage.mysql.ConvertMyISAMToInnoDb;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UpdateUtils;
@@ -337,6 +338,8 @@ public class BanManager extends BukkitPlugin {
   @SuppressWarnings("unchecked")
   public void setupStorages() throws SQLException {
     // TODO Refactor this
+    new ConvertMyISAMToInnoDb(localConn, getConfiguration().getLocalDb().getTables()); // Convert to InnoDb if MyISAM
+
     playerStorage = new PlayerStorage(localConn);
     playerBanStorage = new PlayerBanStorage(localConn);
     playerBanRecordStorage = new PlayerBanRecordStorage(localConn);
@@ -369,6 +372,8 @@ public class BanManager extends BukkitPlugin {
     if (globalConn == null) {
       return;
     }
+
+    new ConvertMyISAMToInnoDb(globalConn, getConfiguration().getGlobalDb().getTables()); // Convert to InnoDb if MyISAM
 
     globalPlayerBanStorage = new GlobalPlayerBanStorage(globalConn);
     globalPlayerBanRecordStorage = new GlobalPlayerBanRecordStorage(globalConn);

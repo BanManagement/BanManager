@@ -5,6 +5,6 @@ import com.j256.ormlite.db.MysqlDatabaseType;
 public class MySQLDatabase extends MysqlDatabaseType {
 
       public MySQLDatabase() {
-            setCreateTableSuffix("ENGINE=MyISAM DEFAULT CHARSET=utf8");
+            setCreateTableSuffix("ENGINE=InnoDB DEFAULT CHARSET=utf8");
       }
 }

@@ -29,6 +29,7 @@ public abstract class DatabaseConfig {
   private int maxConnections;
   @Getter
   private int leakDetection;
+  @Getter
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
   private DatabaseConfig(ConfigurationSection conf) {
