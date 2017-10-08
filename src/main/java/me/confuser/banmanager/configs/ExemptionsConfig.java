@@ -13,6 +13,7 @@ public class ExemptionsConfig extends Config<BanManager> {
   private static ArrayList<String> types = new ArrayList<String>() {
 
     {
+      add("alts");
       add("ban");
       add("tempban");
       add("mute");

@@ -216,7 +216,9 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       itr = query.limit(300L).iterator();
 
       while (itr.hasNext()) {
-        players.add(itr.next());
+        PlayerData player = itr.next();
+
+        if (!plugin.getExemptionsConfig().isExempt(player, "alts")) players.add(player);
       }
 
     } catch (SQLException e) {
@@ -256,7 +258,9 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       itr = query.limit(300L).iterator();
 
       while (itr.hasNext()) {
-        players.add(itr.next());
+        PlayerData player = itr.next();
+
+        if (!plugin.getExemptionsConfig().isExempt(player, "alts")) players.add(player);
       }
 
     } catch (SQLException e) {

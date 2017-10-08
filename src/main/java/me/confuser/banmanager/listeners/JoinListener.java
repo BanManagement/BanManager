@@ -388,6 +388,8 @@ public class JoinListener extends Listeners<BanManager> {
       return;
     }
 
+    if (event.getPlayer().hasPermission("bm.exempt.alts")) return;
+
     plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
       public void run() {

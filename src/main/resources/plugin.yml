@@ -416,6 +416,7 @@ permissions:
     description: Players with this permission cannot be banned, kicked or muted
     default: op
     children:
+      bm.exempt.alts: true
       bm.exempt.ban: true
       bm.exempt.banip: true
       bm.exempt.kick: true
