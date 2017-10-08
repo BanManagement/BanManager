@@ -215,4 +215,15 @@ public class CommandUtils {
              .sendTo(sender);
     }
   }
+
+  public static void handlePunishmentCreateException(SQLException e, CommandSender sender, Message duplicateMessage) {
+    // For some reason ORMLite hides the error code (returns 0 instead of 1062)
+    if (e.getCause().getMessage().startsWith("Duplicate entry")) {
+      duplicateMessage.sendTo(sender);
+      return;
+    }
+
+    Message.get("sender.error.exception").sendTo(sender);
+    e.printStackTrace();
+  }
 }
