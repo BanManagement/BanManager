@@ -152,8 +152,8 @@ public class TempBanCommand extends AutoCompleteNameTabCommand<BanManager> {
         try {
           created = plugin.getPlayerBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          CommandUtils.handlePunishmentCreateException(e, sender, Message.get("ban.error.exists").set("player",
+                  playerName));
           return;
         }
 

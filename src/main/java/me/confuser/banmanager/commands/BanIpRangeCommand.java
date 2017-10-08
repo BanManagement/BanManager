@@ -4,6 +4,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
+import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
 import me.confuser.banmanager.util.parsers.Reason;
@@ -91,8 +92,7 @@ public class BanIpRangeCommand extends BukkitCommand<BanManager> {
         try {
           created = plugin.getIpRangeBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          CommandUtils.handlePunishmentCreateException(e, sender, Message.get("baniprange.error.exists"));
           return;
         }
 

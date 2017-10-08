@@ -4,10 +4,7 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.TimeLimitType;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.CommandParser;
-import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.*;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;
@@ -108,8 +105,7 @@ public class TempIpRangeBanCommand extends BukkitCommand<BanManager> {
         try {
           created = plugin.getIpRangeBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          CommandUtils.handlePunishmentCreateException(e, sender, Message.get("baniprange.error.exists"));
           return;
         }
 

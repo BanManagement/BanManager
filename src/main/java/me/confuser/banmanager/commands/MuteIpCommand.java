@@ -115,8 +115,8 @@ public class MuteIpCommand extends AutoCompleteNameTabCommand<BanManager> {
         try {
           created = plugin.getIpMuteStorage().mute(mute, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          CommandUtils.handlePunishmentCreateException(e, sender, Message.get("muteip.error.exists").set("ip",
+                  ipStr));
           return;
         }
 

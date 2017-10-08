@@ -153,8 +153,8 @@ public class MuteCommand extends AutoCompleteNameTabCommand<BanManager> {
         try {
           created = plugin.getPlayerMuteStorage().mute(mute, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          CommandUtils.handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
+                  playerName));
           return;
         }
 
