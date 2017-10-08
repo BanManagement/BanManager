@@ -88,6 +88,10 @@ messages:
       permanent: '&6Currently banned for &4[reason]&6 by [actor] at [created]'
       temporary: '&6Currently banned for &4[reason]&6 by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
+    ipban:
+      permanent: '&6Currently banned for &4[reason]&6 by [actor] at [created]'
+      temporary: '&6Currently banned for &4[reason]&6 by [actor] at [created] which expires in [expires]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     mute:
       permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'
       temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which expires in [expires]'
