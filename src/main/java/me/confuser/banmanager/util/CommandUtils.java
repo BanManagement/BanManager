@@ -8,6 +8,7 @@ import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
+import me.rayzr522.jsonmessage.JSONMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.Bukkit;
@@ -202,7 +203,7 @@ public class CommandUtils {
            .sendTo(sender);
 
     for (PlayerReportData report : reports.getList()) {
-      Message.get("report.list.row.all")
+      String message = Message.get("report.list.row.all")
              .set("id", report.getId())
              .set("state", report.getState().getName())
              .set("player", report.getPlayer().getName())
@@ -211,8 +212,13 @@ public class CommandUtils {
              .set("created", dateFormatter
                      .format(report.getCreated() * 1000L))
              .set("updated", dateFormatter
-                     .format(report.getUpdated() * 1000L))
-             .sendTo(sender);
+                     .format(report.getUpdated() * 1000L)).toString();
+
+      if (sender instanceof Player) {
+        JSONMessage.create(message).runCommand("/reports info " + report.getId()).send((Player) sender);
+      } else {
+        sender.sendMessage(message);
+      }
     }
   }
 
