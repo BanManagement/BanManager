@@ -9,8 +9,10 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.util.JSONCommandUtils;
 import me.confuser.banmanager.util.parsers.InfoCommandParser;
 import me.confuser.bukkitutil.Message;
+import me.rayzr522.jsonmessage.JSONMessage;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -130,7 +132,7 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
 
     PlayerData player = players.get(index - 1);
 
-    ArrayList<String> messages = new ArrayList<>();
+    ArrayList<Object> messages = new ArrayList<>();
 
     boolean hasFlags = parser.isBans() || parser.isKicks() || parser.isMutes() || parser.isNotes() || parser
             .isWarnings() || parser.getIps() != null;
@@ -266,15 +268,21 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
       if (sender.hasPermission("bm.command.bminfo.alts")) {
         messages.add(Message.getString("alts.header"));
 
-        StringBuilder duplicates = new StringBuilder();
+        List<PlayerData> duplicatePlayers = plugin.getPlayerStorage().getDuplicates(player.getIp());
 
-        for (PlayerData duplicatePlayer : plugin.getPlayerStorage().getDuplicates(player.getIp())) {
-          duplicates.append(duplicatePlayer.getName()).append(", ");
+        if (sender instanceof Player) {
+          messages.add(JSONCommandUtils.alts(duplicatePlayers));
+        } else {
+          StringBuilder duplicates = new StringBuilder();
+
+          for (PlayerData duplicatePlayer : duplicatePlayers) {
+            duplicates.append(duplicatePlayer.getName()).append(", ");
+          }
+
+          if (duplicates.length() >= 2) duplicates.setLength(duplicates.length() - 2);
+
+          messages.add(duplicates.toString());
         }
-
-        if (duplicates.length() >= 2) duplicates.setLength(duplicates.length() - 2);
-
-        messages.add(duplicates.toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.ipstats")) {
@@ -364,12 +372,16 @@ public class InfoCommand extends AutoCompleteNameTabCommand<BanManager> {
     }
 
     // TODO Show last warning
-    for (String message : messages) {
-      sender.sendMessage(message);
+    for (Object message : messages) {
+      if (message instanceof String) {
+        sender.sendMessage((String) message);
+      } else if (message instanceof JSONMessage){
+        ((JSONMessage) message).send((Player) sender);
+      }
     }
   }
 
-  private void handleIpHistory(ArrayList<String> messages, PlayerData player, long since, int page) {
+  private void handleIpHistory(ArrayList<Object> messages, PlayerData player, long since, int page) {
     CloseableIterator<PlayerHistoryData> iterator = null;
     try {
       iterator = plugin.getPlayerHistoryStorage().getSince(player, since, page);

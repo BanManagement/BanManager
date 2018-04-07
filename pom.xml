@@ -101,6 +101,10 @@
                                     <pattern>javax.annotation</pattern>
                                     <shadedPattern>me.confuser.banmanager.internal.jaxax.annotation</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>me.rayzr522.jsonmessage</pattern>
+                                    <shadedPattern>me.confuser.banmanager.internal.jsonmessage</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -124,6 +128,10 @@
         <repository>
             <id>Central</id>
             <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>rayzr-repo</id>
+            <url>https://cdn.rawgit.com/Rayzr522/maven-repo/master/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -198,6 +206,11 @@
             <groupId>com.maxmind.geoip2</groupId>
             <artifactId>geoip2</artifactId>
             <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.rayzr522</groupId>
+            <artifactId>jsonmessage</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
