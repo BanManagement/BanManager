@@ -6,14 +6,11 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.Message;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Long.parseLong;
 
 public class DateUtils {
 
@@ -27,6 +24,8 @@ public class DateUtils {
           Calendar.SECOND);
   private static final List<String> timesString = Arrays
           .asList("year", "month", "week", "day", "hour", "minute", "second");
+  private static final List<String> shortTimesString = Arrays
+          .asList("y", "mo", "w", "d", "h", "m", "s");
   private static BanManager plugin = BanManager.getPlugin();
   @Getter
   private static long timeDiff = 0;
@@ -94,6 +93,20 @@ public class DateUtils {
 
   // Copyright essentials, all credits to them for this.
   public static long parseDateDiff(String time, boolean future) throws Exception {
+    // Support raw timestamps
+    if (time.length() == 10) {
+      try {
+        long timestamp = Long.parseLong(time);
+
+        if (future && (timestamp - (System.currentTimeMillis() / 1000L)) < 0) {
+          throw new Exception("Timestamp must be in the future");
+        }
+
+        return timestamp;
+      } catch (NumberFormatException e) {
+      }
+    }
+
     Matcher m = timePattern.matcher(time);
     int years = 0;
     int months = 0;
@@ -177,7 +190,7 @@ public class DateUtils {
     GenericRawResults<String[]> results = plugin.getPlayerStorage()
                                                 .queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000L));
 
-    timeDiff = Long.parseLong(results.getFirstResult()[0]);
+    timeDiff = parseLong(results.getFirstResult()[0]);
 
     results.close();
 

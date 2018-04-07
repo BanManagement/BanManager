@@ -30,6 +30,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -47,6 +48,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -64,6 +66,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getBan().getPlayer().getUUID().toString()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -81,6 +84,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getMute().getActor().getName()
               , "reason", event.getMute().getReason()
+              , "expires", Long.toString(event.getMute().getExpires())
       ));
     }
   }
@@ -98,6 +102,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getMute().getActor().getName()
               , "reason", event.getMute().getReason()
+              , "expires", Long.toString(event.getMute().getExpires())
       ));
     }
   }
@@ -115,6 +120,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getMute().getPlayer().getUUID().toString()
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
+              , "expires", Long.toString(event.getMute().getExpires())
       ));
     }
   }
@@ -131,6 +137,7 @@ public class HookListener extends Listeners<BanManager> {
               "ip", IPUtils.toString(event.getBan().getIp())
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -147,6 +154,7 @@ public class HookListener extends Listeners<BanManager> {
               "ip", IPUtils.toString(event.getBan().getIp())
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -163,6 +171,7 @@ public class HookListener extends Listeners<BanManager> {
               "ip", IPUtils.toString(event.getBan().getIp())
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -181,6 +190,7 @@ public class HookListener extends Listeners<BanManager> {
               , "to", IPUtils.toString(event.getBan().getToIp())
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -199,6 +209,7 @@ public class HookListener extends Listeners<BanManager> {
               , "to", IPUtils.toString(event.getBan().getToIp())
               , "actor", event.getBan().getActor().getName()
               , "reason", event.getBan().getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -216,6 +227,7 @@ public class HookListener extends Listeners<BanManager> {
               , "to", IPUtils.toString(event.getBan().getToIp())
               , "actor", event.getActor().getName()
               , "reason", event.getReason()
+              , "expires", Long.toString(event.getBan().getExpires())
       ));
     }
   }
@@ -233,6 +245,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getWarning().getPlayer().getUUID().toString()
               , "actor", event.getWarning().getActor().getName()
               , "reason", event.getWarning().getReason()
+              , "expires", Long.toString(event.getWarning().getExpires())
       ));
     }
   }
@@ -250,6 +263,7 @@ public class HookListener extends Listeners<BanManager> {
               , "playerId", event.getWarning().getPlayer().getUUID().toString()
               , "actor", event.getWarning().getActor().getName()
               , "reason", event.getWarning().getReason()
+              , "expires", Long.toString(event.getWarning().getExpires())
       ));
     }
   }

@@ -8,6 +8,7 @@ bin
 .externalToolBuilders
 build.xml
 .DS_Store
+dependency-reduced-pom.xml
 
 # Package Files #
 *.jar
