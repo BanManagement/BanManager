@@ -47,6 +47,12 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+      try {
+        String update = "ALTER TABLE " + tableConfig
+                .getTableName() + " ADD UNIQUE KEY `" + tableConfig.getTableName() + "_player_idx` (`player_id`)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
