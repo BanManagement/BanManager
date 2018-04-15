@@ -74,6 +74,15 @@ public class CommandUtils {
     }
   }
 
+  public static void broadcast(JSONMessage message, String permission) {
+    Set<Permissible> permissibles = Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.user");
+    for (Permissible permissible : permissibles) {
+      if (permissible instanceof Player && permissible.hasPermission(permission)) {
+        message.send((Player) permissible);
+      }
+    }
+  }
+
   public static void broadcast(String message, String permission, CommandSender sender) {
     broadcast(message, permission);
 
@@ -204,15 +213,15 @@ public class CommandUtils {
 
     for (PlayerReportData report : reports.getList()) {
       String message = Message.get("report.list.row.all")
-             .set("id", report.getId())
-             .set("state", report.getState().getName())
-             .set("player", report.getPlayer().getName())
-             .set("actor", report.getActor().getName())
-             .set("reason", report.getReason())
-             .set("created", dateFormatter
-                     .format(report.getCreated() * 1000L))
-             .set("updated", dateFormatter
-                     .format(report.getUpdated() * 1000L)).toString();
+                              .set("id", report.getId())
+                              .set("state", report.getState().getName())
+                              .set("player", report.getPlayer().getName())
+                              .set("actor", report.getActor().getName())
+                              .set("reason", report.getReason())
+                              .set("created", dateFormatter
+                                      .format(report.getCreated() * 1000L))
+                              .set("updated", dateFormatter
+                                      .format(report.getUpdated() * 1000L)).toString();
 
       if (sender instanceof Player) {
         JSONMessage.create(message).runCommand("/reports info " + report.getId()).send((Player) sender);

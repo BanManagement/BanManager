@@ -315,6 +315,7 @@ messages:
 
   notes:
     header: '&6[player] has the following notes:'
+    joinAmount: '&6[player] has &e[amount] &6notes, click to view them'
     note: '&6[[player]] &e[message] - &e[created]'
     playerNote: '&a[[player]] &6[[actor]] &e[message] - &e[created]'
     dateTimeFormat: 'dd-MM-yyyy'

@@ -3,6 +3,7 @@ package me.confuser.banmanager.util;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
+import me.confuser.bukkitutil.Message;
 import me.rayzr522.jsonmessage.JSONMessage;
 import org.bukkit.ChatColor;
 
@@ -45,6 +46,14 @@ public class JSONCommandUtils {
 
       index++;
     }
+
+    return message;
+  }
+
+  public static JSONMessage notesAmount(String playerName, Message text) {
+    JSONMessage message = JSONMessage.create();
+
+    message.then(text.toString()).runCommand("/notes " + playerName);
 
     return message;
   }

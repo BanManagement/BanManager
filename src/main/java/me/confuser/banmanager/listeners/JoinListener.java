@@ -8,10 +8,7 @@ import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.commands.report.ReportList;
 import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.util.*;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -265,6 +262,13 @@ public class JoinListener extends Listeners<BanManager> {
           }
 
           if (notes.size() != 0) {
+            Message noteJoinMessage = Message.get("notes.joinAmount")
+                                             .set("amount", notes.size())
+                                             .set("player", event.getPlayer().getName());
+
+            CommandUtils.broadcast(JSONCommandUtils
+                    .notesAmount(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+
             String header = Message.get("notes.header")
                                    .set("player", event.getPlayer().getName())
                                    .toString();
@@ -370,7 +374,7 @@ public class JoinListener extends Listeners<BanManager> {
       }
 
     }
-    
+
     if (plugin.getConfiguration().getMaxMultiaccountsRecently() > 0) {
       long ip = IPUtils.toLong(event.getAddress());
       long timediff = plugin.getConfiguration().getMultiaccountsTime();
