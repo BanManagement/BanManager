@@ -53,7 +53,7 @@ public class JSONCommandUtils {
   public static JSONMessage notesAmount(String playerName, Message text) {
     JSONMessage message = JSONMessage.create();
 
-    message.then(text.toString()).runCommand("/notes " + playerName);
+    message.then(text.set("player", playerName).toString()).runCommand("/notes " + playerName);
 
     return message;
   }
