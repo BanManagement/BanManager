@@ -57,7 +57,7 @@ public class ListSubCommand extends SubCommand<BanManager> {
         ReportList reports;
 
         try {
-          if (!(sender instanceof Player) || sender.hasPermission("bm.command.report.list.others")) {
+          if (!(sender instanceof Player) || sender.hasPermission("bm.command.reports.list.others")) {
             reports = plugin.getPlayerReportStorage().getReports(page, state, null);
           } else {
             reports = plugin.getPlayerReportStorage()
