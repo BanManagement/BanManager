@@ -8,6 +8,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventPriority;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +76,10 @@ public class DefaultConfig extends Config<BanManager> {
 
   public DefaultConfig() {
     super("config.yml");
+  }
+
+  public DefaultConfig(File file) {
+    super(file);
   }
 
   @Override
