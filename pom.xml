@@ -118,8 +118,8 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>gravity-repo</id>
-            <url>http://repo.gravitydevelopment.net</url>
+            <id>dustplanet-releases</id>
+            <url>https://repo.dustplanet.de/artifactory/libs-release-local</url>
         </repository>
         <repository>
             <id>confuser-repo</id>
@@ -185,7 +185,7 @@
         <dependency>
             <groupId>net.gravitydevelopment.updater</groupId>
             <artifactId>updater</artifactId>
-            <version>2.3</version>
+            <version>3.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
