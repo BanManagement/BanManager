@@ -123,11 +123,11 @@
         </repository>
         <repository>
             <id>confuser-repo</id>
-            <url>http://ci.frostcast.net/plugin/repository/everything</url>
+            <url>https://ci.frostcast.net/plugin/repository/everything</url>
         </repository>
         <repository>
             <id>Central</id>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
             <id>rayzr-repo</id>
