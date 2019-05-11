@@ -66,7 +66,7 @@ public abstract class DatabaseConfig {
             "&verifyServerCertificate=" + verifyServerCertificate;
 
     if (!storageType.equals("mariadb")) {
-      url+= "&disableMariaDbDriver";
+      url += "&disableMariaDbDriver";
     }
 
     return url;

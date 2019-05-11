@@ -334,6 +334,9 @@ public class BanManager extends BukkitPlugin {
     if (dbConfig.getStorageType().equals("mariadb")) {
       databaseType = new MariaDBDatabase();
     } else {
+      // Forcefully specify the newer driver
+      ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
       databaseType = new MySQLDatabase();
 
       ds.addDataSourceProperty("useServerPrepStmts", "true");
