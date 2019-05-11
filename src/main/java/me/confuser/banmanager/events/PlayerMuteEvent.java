@@ -9,7 +9,7 @@ public class PlayerMuteEvent extends SilentCancellableEvent {
   private PlayerMuteData mute;
 
   public PlayerMuteEvent(PlayerMuteData mute, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.mute = mute;
   }
 }

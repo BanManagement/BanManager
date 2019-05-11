@@ -14,6 +14,8 @@ public class IpUnbanEvent extends CustomCancellableEvent {
   private String reason;
 
   public IpUnbanEvent(IpBanData ban, PlayerData actor, String reason) {
+    super(true);
+
     this.ban = ban;
     this.actor = actor;
     this.reason = reason;

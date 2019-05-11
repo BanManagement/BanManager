@@ -8,7 +8,8 @@ public abstract class SilentEvent extends CustomEvent {
   @Setter
   private boolean silent = false;
 
-  public SilentEvent(boolean silent) {
+  public SilentEvent(boolean silent, boolean isAsync) {
+    super(isAsync);
     this.silent = silent;
   }
 

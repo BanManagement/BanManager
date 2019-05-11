@@ -9,7 +9,7 @@ public class PlayerWarnedEvent extends SilentEvent {
   private PlayerWarnData warning;
 
   public PlayerWarnedEvent(PlayerWarnData warning, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.warning = warning;
   }
 }

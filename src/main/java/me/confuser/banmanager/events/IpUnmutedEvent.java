@@ -14,6 +14,8 @@ public class IpUnmutedEvent extends CustomCancellableEvent {
   private String reason;
 
   public IpUnmutedEvent(IpMuteData mute, PlayerData actor, String reason) {
+    super(true);
+
     this.mute = mute;
     this.actor = actor;
     this.reason = reason;

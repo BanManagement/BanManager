@@ -9,7 +9,7 @@ public class PlayerReportEvent extends SilentCancellableEvent {
   private PlayerReportData report;
 
   public PlayerReportEvent(PlayerReportData report, boolean isSilent) {
-    super(isSilent);
+    super(isSilent, true);
     this.report = report;
   }
 

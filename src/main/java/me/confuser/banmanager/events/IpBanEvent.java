@@ -9,7 +9,7 @@ public class IpBanEvent extends SilentCancellableEvent {
   private IpBanData ban;
 
   public IpBanEvent(IpBanData ban, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.ban = ban;
   }
 }
