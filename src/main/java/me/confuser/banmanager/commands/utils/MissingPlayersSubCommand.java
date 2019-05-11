@@ -45,7 +45,7 @@ public class MissingPlayersSubCommand extends SubCommand<BanManager> {
         ArrayList<UUID> players = new ArrayList<UUID>();
 
         try {
-          connection = plugin.getLocalConn().getReadOnlyConnection();
+          connection = plugin.getLocalConn().getReadOnlyConnection("");
         } catch (SQLException e) {
           e.printStackTrace();
 
@@ -64,7 +64,7 @@ public class MissingPlayersSubCommand extends SubCommand<BanManager> {
           try {
             CompiledStatement statement = connection
                     .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                            .DEFAULT_RESULT_FLAGS);
+                            .DEFAULT_RESULT_FLAGS, false);
 
             result = statement.runQuery(null);
 
@@ -80,7 +80,11 @@ public class MissingPlayersSubCommand extends SubCommand<BanManager> {
           }
         }
 
-        connection.closeQuietly();
+        try {
+          plugin.getLocalConn().releaseConnection(connection);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
 
         if (players.size() == 0) {
           Message.get("bmutils.missingplayers.noneFound").sendTo(sender);

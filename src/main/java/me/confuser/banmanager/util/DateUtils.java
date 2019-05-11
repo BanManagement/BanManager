@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.confuser.banmanager.BanManager;
 import me.confuser.bukkitutil.Message;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -184,7 +185,7 @@ public class DateUtils {
     return c.getTimeInMillis() / 1000L;
   }
 
-  public static long findTimeDiff() throws SQLException {
+  public static long findTimeDiff() throws SQLException, IOException {
     String query = "SELECT UNIX_TIMESTAMP() - ? as mysqlTime";
 
     GenericRawResults<String[]> results = plugin.getPlayerStorage()

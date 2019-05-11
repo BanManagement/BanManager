@@ -46,11 +46,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     plugin.getLogger().info("Loaded " + bans.size() + " bans into memory");
   }
 
-  private void loadAll(){
+  private void loadAll() throws SQLException {
     DatabaseConnection connection;
 
     try {
-      connection = this.getConnectionSource().getReadOnlyConnection();
+      connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
       e.printStackTrace();
       plugin.getLogger().warning("Failed to retrieve bans into memory");
@@ -73,10 +73,10 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS);
+              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
-      connection.closeQuietly();
+      this.getConnectionSource().releaseConnection(connection);
 
       plugin.getLogger().warning("Failed to retrieve bans into memory");
       return;
@@ -120,7 +120,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     } finally {
       if (results != null) results.closeQuietly();
 
-      connection.closeQuietly();
+      this.getConnectionSource().releaseConnection(connection);
     }
   }
 

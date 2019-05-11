@@ -1,5 +1,6 @@
 package me.confuser.banmanager;
 
+import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
@@ -12,6 +13,7 @@ import me.confuser.banmanager.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.global.*;
+import me.confuser.banmanager.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.storage.mysql.ConvertMyISAMToInnoDb;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
@@ -148,12 +150,11 @@ public class BanManager extends BukkitPlugin {
         getLogger()
                 .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
       }
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       getLogger().warning("An error occurred attempting to find the time difference, please see stack trace below");
       plugin.getPluginLoader().disablePlugin(this);
       e.printStackTrace();
     }
-
     setupListeners();
     setupCommands();
     setupRunnables();
@@ -328,11 +329,20 @@ public class BanManager extends BukkitPlugin {
 
     if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
 
-    ds.addDataSourceProperty("prepStmtCacheSize", "250");
-    ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-    ds.addDataSourceProperty("cachePrepStmts", "true");
+    DatabaseType databaseType;
 
-    return new DataSourceConnectionSource(ds, new MySQLDatabase());
+    if (dbConfig.getStorageType().equals("mariadb")) {
+      databaseType = new MariaDBDatabase();
+    } else {
+      databaseType = new MySQLDatabase();
+
+      ds.addDataSourceProperty("useServerPrepStmts", "true");
+      ds.addDataSourceProperty("prepStmtCacheSize", "250");
+      ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+      ds.addDataSourceProperty("cachePrepStmts", "true");
+    }
+
+    return new DataSourceConnectionSource(ds, databaseType);
   }
 
   @SuppressWarnings("unchecked")

@@ -247,7 +247,7 @@ public class ActivityStorage {
     DatabaseConnection connection;
 
     try {
-      connection = localConn.getReadOnlyConnection();
+      connection = localConn.getReadOnlyConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
 
@@ -259,7 +259,8 @@ public class ActivityStorage {
 
     try {
       CompiledStatement statement = connection
-              .compileStatement(hasActor ? sincePlayerSql : sinceSql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS);
+              .compileStatement(hasActor ? sincePlayerSql : sinceSql, StatementBuilder.StatementType.SELECT, null,
+                      DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
 
       int maxItems = hasActor ? 28 : 14;
 
@@ -273,7 +274,12 @@ public class ActivityStorage {
       result = statement.runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
-      connection.closeQuietly();
+
+      try {
+        localConn.releaseConnection(connection);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
 
       return null;
     }
@@ -300,7 +306,13 @@ public class ActivityStorage {
     } finally {
       result.closeQuietly();
     }
-    connection.closeQuietly();
+
+    try {
+      localConn.releaseConnection(connection);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
     return results;
   }
 }

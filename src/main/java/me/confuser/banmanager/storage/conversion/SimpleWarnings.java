@@ -48,7 +48,7 @@ public class SimpleWarnings implements IConverter {
     int count = 0;
 
     try {
-      read = connection.getReadOnlyConnection();
+      read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
       plugin.getLogger().severe("Failed to connect to SimpleWarnings database");
@@ -60,7 +60,7 @@ public class SimpleWarnings implements IConverter {
     try {
       results = read
               .compileStatement("SELECT `name`, `warning`, `placedby`, `date` FROM SimpleWarnings", StatementBuilder
-                      .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS)
+                      .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false)
               .runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
