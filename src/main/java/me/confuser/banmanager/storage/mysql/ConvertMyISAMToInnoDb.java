@@ -20,7 +20,7 @@ public class ConvertMyISAMToInnoDb {
     DatabaseConnection connection = null;
 
     try {
-      connection = db.getReadWriteConnection();
+      connection = db.getReadWriteConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
       return;
@@ -32,7 +32,7 @@ public class ConvertMyISAMToInnoDb {
 
       try {
         CompiledStatement statement = connection.compileStatement("SHOW TABLE STATUS WHERE Name = ?", StatementBuilder
-                .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS);
+                .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
 
         statement.setObject(0, table, SqlType.STRING);
 

@@ -10,6 +10,8 @@ import java.util.Map;
 public abstract class DatabaseConfig {
 
   @Getter
+  private final String storageType;
+  @Getter
   private final String host;
   @Getter
   private final int port;
@@ -33,6 +35,7 @@ public abstract class DatabaseConfig {
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
   private DatabaseConfig(ConfigurationSection conf) {
+    storageType = conf.getString("storageType", "mysql");
     host = conf.getString("host");
     port = conf.getInt("port", 3306);
     name = conf.getString("name");
@@ -57,7 +60,7 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    return "jdbc:mysql://" + host + ":" + port + "/" + name +
+    return "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
             "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
             "&useSSL=" + useSSL +
             "&verifyServerCertificate=" + verifyServerCertificate;

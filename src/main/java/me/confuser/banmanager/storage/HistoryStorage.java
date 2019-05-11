@@ -60,7 +60,7 @@ public class HistoryStorage {
     DatabaseConnection connection;
 
     try {
-      connection = localConn.getReadOnlyConnection();
+      connection = localConn.getReadOnlyConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
 
@@ -112,7 +112,7 @@ public class HistoryStorage {
     try {
       CompiledStatement statement = connection
               .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS);
+                      .DEFAULT_RESULT_FLAGS, false);
 
       for (int i = 0; i < typeCount; i++) {
         statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
@@ -121,6 +121,12 @@ public class HistoryStorage {
       result = statement.runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
+
+      try {
+        localConn.releaseConnection(connection);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
 
       return null;
     }
@@ -153,7 +159,11 @@ public class HistoryStorage {
       result.closeQuietly();
     }
 
-    connection.closeQuietly();
+    try {
+      localConn.releaseConnection(connection);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
     return results;
   }
@@ -162,7 +172,7 @@ public class HistoryStorage {
     DatabaseConnection connection;
 
     try {
-      connection = localConn.getReadOnlyConnection();
+      connection = localConn.getReadOnlyConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
 
@@ -170,7 +180,7 @@ public class HistoryStorage {
     }
 
     final DatabaseResults result;
-    String sql = playerSql;
+    String sql;
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
@@ -209,7 +219,7 @@ public class HistoryStorage {
     try {
       CompiledStatement statement = connection
               .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS);
+                      .DEFAULT_RESULT_FLAGS, false);
 
       for (int i = 0; i < typeCount; i++) {
         statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
@@ -218,6 +228,12 @@ public class HistoryStorage {
       result = statement.runQuery(null);
     } catch (SQLException e) {
       e.printStackTrace();
+
+      try {
+        localConn.releaseConnection(connection);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
 
       return null;
     }
@@ -244,7 +260,11 @@ public class HistoryStorage {
       result.closeQuietly();
     }
 
-    connection.closeQuietly();
+    try {
+      localConn.releaseConnection(connection);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
     return results;
   }

@@ -3,6 +3,7 @@ databases:
   # Local Database is always required. If not enabled, plugin will disable on startup.
   local:
     enabled: false
+    storageType: 'mysql'
     host: 127.0.0.1
     port: 3306
     name: local_bans
@@ -42,6 +43,7 @@ databases:
   # This will enable /*all commands, e.g. /banall, /muteall
   global:
     enabled: false
+    storageType: 'mysql'
     host: 127.0.0.1
     port: 3306
     name: global_bans
