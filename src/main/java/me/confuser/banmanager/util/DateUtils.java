@@ -191,7 +191,14 @@ public class DateUtils {
     GenericRawResults<String[]> results = plugin.getPlayerStorage()
                                                 .queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000L));
 
-    timeDiff = parseLong(results.getFirstResult()[0]);
+    String result = results.getFirstResult()[0];
+
+    // Some drivers appear to return a decimal such as MariaDB e.g. 0.0
+    if (result.contains(".")) {
+      timeDiff = Double.valueOf(result).longValue();
+    } else {
+      timeDiff = parseLong(result);
+    }
 
     results.close();
 
