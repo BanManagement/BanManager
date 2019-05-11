@@ -9,7 +9,7 @@ public class PlayerBanEvent extends SilentCancellableEvent {
   private PlayerBanData ban;
 
   public PlayerBanEvent(PlayerBanData ban, boolean isSilent) {
-    super(isSilent);
+    super(isSilent, true);
     this.ban = ban;
   }
 

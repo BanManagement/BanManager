@@ -9,7 +9,7 @@ public class PlayerBannedEvent extends SilentEvent {
   private PlayerBanData ban;
 
   public PlayerBannedEvent(PlayerBanData ban, boolean isSilent) {
-    super(isSilent);
+    super(isSilent, true);
     this.ban = ban;
   }
 

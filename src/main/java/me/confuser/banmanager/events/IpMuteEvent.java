@@ -9,7 +9,7 @@ public class IpMuteEvent extends SilentCancellableEvent {
   private IpMuteData mute;
 
   public IpMuteEvent(IpMuteData mute, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.mute = mute;
   }
 }

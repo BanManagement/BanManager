@@ -9,7 +9,7 @@ public class PlayerMutedEvent extends SilentEvent {
   private PlayerMuteData mute;
 
   public PlayerMutedEvent(PlayerMuteData mute, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.mute = mute;
   }
 }

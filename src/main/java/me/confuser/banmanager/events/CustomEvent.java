@@ -7,6 +7,10 @@ abstract class CustomEvent extends Event {
 
   private static final HandlerList handlers = new HandlerList();
 
+  public CustomEvent(boolean isAsync) {
+    super(isAsync);
+  }
+
   public HandlerList getHandlers() {
     return handlers;
   }

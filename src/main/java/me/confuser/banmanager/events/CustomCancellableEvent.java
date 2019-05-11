@@ -9,4 +9,8 @@ public abstract class CustomCancellableEvent extends CustomEvent implements Canc
   @Getter
   @Setter
   private boolean cancelled = false;
+
+  public CustomCancellableEvent(boolean isAsync) {
+    super(isAsync);
+  }
 }

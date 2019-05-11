@@ -9,7 +9,7 @@ public class PlayerReportedEvent extends SilentEvent {
   private PlayerReportData report;
 
   public PlayerReportedEvent(PlayerReportData report, boolean isSilent) {
-    super(isSilent);
+    super(isSilent, true);
     this.report = report;
   }
 

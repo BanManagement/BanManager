@@ -11,6 +11,7 @@ public class PlayerReportDeletedEvent extends CustomEvent {
   private PlayerReportData report;
 
   public PlayerReportDeletedEvent(PlayerReportData report) {
+    super(true);
     this.report = report;
   }
 }

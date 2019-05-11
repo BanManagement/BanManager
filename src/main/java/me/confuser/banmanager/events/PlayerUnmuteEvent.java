@@ -14,6 +14,8 @@ public class PlayerUnmuteEvent extends CustomCancellableEvent {
   private String reason;
 
   public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason) {
+    super(true);
+
     this.mute = mute;
     this.actor = actor;
     this.reason = reason;

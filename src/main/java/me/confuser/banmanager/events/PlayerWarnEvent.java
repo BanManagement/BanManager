@@ -9,7 +9,7 @@ public class PlayerWarnEvent extends SilentCancellableEvent {
   private PlayerWarnData warning;
 
   public PlayerWarnEvent(PlayerWarnData warning, boolean silent) {
-    super(silent);
+    super(silent, true);
     this.warning = warning;
   }
 }

@@ -8,7 +8,9 @@ public abstract class SilentCancellableEvent extends CustomCancellableEvent {
   @Setter
   private boolean silent = false;
 
-  public SilentCancellableEvent(boolean silent) {
+  public SilentCancellableEvent(boolean silent, boolean isAsync) {
+    super(isAsync);
+
     this.silent = silent;
   }
 

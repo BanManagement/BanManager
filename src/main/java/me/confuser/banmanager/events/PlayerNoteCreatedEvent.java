@@ -9,6 +9,7 @@ public class PlayerNoteCreatedEvent extends CustomCancellableEvent {
   private PlayerNoteData note;
 
   public PlayerNoteCreatedEvent(PlayerNoteData note) {
+    super(true);
     this.note = note;
   }
 }
