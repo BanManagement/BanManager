@@ -165,7 +165,7 @@ public class BanManager extends BukkitPlugin {
 
     if (localConn != null) {
       // Save all player histories
-      if (configuration.isLogIpsEnabled()) {
+      if (configuration.isLogIpsEnabled() && playerHistoryStorage != null) {
         playerHistoryStorage.save();
       }
 
