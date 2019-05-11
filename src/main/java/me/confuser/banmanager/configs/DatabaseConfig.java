@@ -60,10 +60,16 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    return "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
+    String url = "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
             "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
             "&useSSL=" + useSSL +
             "&verifyServerCertificate=" + verifyServerCertificate;
+
+    if (!storageType.equals("mariadb")) {
+      url+= "&disableMariaDbDriver";
+    }
+
+    return url;
   }
 
   public DatabaseTableConfig<?> getTable(String table) {
