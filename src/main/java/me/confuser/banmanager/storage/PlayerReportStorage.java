@@ -71,24 +71,22 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     if (state != null || uniqueId != null) {
       Where<PlayerReportData, Integer> where = query.where();
-
       if (state != null) where.eq("state_id", state);
       if (state != null && uniqueId != null) where.and();
       if (uniqueId != null) where.eq("actor_id", UUIDUtils.toBytes(uniqueId));
     }
 
-    query.setCountOf(true);
-    PreparedQuery<PlayerReportData> preparedQuery = query.prepare();
-
     long pageSize = 5L;
-    long count = countOf(preparedQuery);
+    long count = query.countOf();
     long maxPage = count == 0 ? 1 : (int) Math.ceil((double) count / pageSize);
 
     if (maxPage == 0) maxPage = 1;
 
     long offset = (page - 1) * pageSize;
 
-    query.setCountOf(false).offset(offset).limit(pageSize);
+    query.reset();
+
+    query.offset(offset).limit(pageSize);
 
     return new ReportList(query.query(), count, maxPage);
   }
