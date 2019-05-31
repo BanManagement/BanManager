@@ -10,6 +10,7 @@ build.xml
 .DS_Store
 dependency-reduced-pom.xml
 .gradle
+tmp
 
 # Package Files #
 *.jar

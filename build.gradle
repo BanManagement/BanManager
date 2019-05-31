@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2' }
+    }
+
+    dependencies {
+        //classpath 'gradle.plugin.net.minecrell:licenser:0.4.1'
+		classpath "io.freefair.gradle:lombok-plugin:3.6.4"
+    }
+}
+
+defaultTasks 'licenseFormat', 'build'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    //apply plugin: 'net.minecrell.licenser'
+	//apply plugin: "io.freefair.lombok"
+
+    group = 'me.confuser.banmanager'
+    version = '6.0.1-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    jar {
+        from '../LICENSE.txt'
+    }
+
+    def determinePatchVersion = {
+        // get the name of the last tag
+        def tagInfo = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags'
+            standardOutput = tagInfo
+        }
+        tagInfo = tagInfo.toString()
+
+        if (!tagInfo.contains('-')) {
+            return 0
+        }
+        return tagInfo.split("-")[1]
+    }
+
+    project.ext.majorVersion = '6'
+    project.ext.minorVersion = '0'
+    project.ext.patchVersion = determinePatchVersion()
+    project.ext.fullVersion = project.ext.majorVersion + '.' + project.ext.minorVersion + '.' + project.ext.patchVersion
+
+    //license {
+    //    header = rootProject.file('HEADER.txt')
+    //    include '**/*.java'
+    //    newLine = true
+    //}
+	
+	dependencies {
+        compile 'org.projectlombok:lombok:1.18.8'
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://repo.lucko.me/' }
+    }
+}

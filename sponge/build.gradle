@@ -1,0 +1,64 @@
+plugins {
+    id 'net.kyori.blossom' version '1.1.0'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+
+repositories {
+    maven { url 'https://repo.spongepowered.org/maven' }
+}
+
+dependencies {
+    compile project(':common')
+    compile project(':sponge:sponge-service')
+    //compile project(':sponge:sponge-service-api6')
+    compile project(':sponge:sponge-service-api7')
+
+    compileOnly('org.spongepowered:spongeapi:8.0.0-SNAPSHOT') {
+        exclude(module: 'configurate-core')
+        exclude(module: 'configurate-hocon')
+        exclude(module: 'configurate-gson')
+        exclude(module: 'configurate-yaml')
+    }
+    annotationProcessor('org.spongepowered:spongeapi:8.0.0-SNAPSHOT') {
+        exclude(module: 'configurate-core')
+        exclude(module: 'configurate-hocon')
+        exclude(module: 'configurate-gson')
+        exclude(module: 'configurate-yaml')
+    }
+    compileOnly 'net.kyori:text-adapter-spongeapi:3.0.2'
+}
+
+blossom {
+//    replaceTokenIn('src/main/java/me/lucko/luckperms/sponge/LPSpongeBootstrap.java')
+//    replaceToken '@version@', project.ext.fullVersion
+}
+
+shadowJar {
+    archiveName = "BanManager-Sponge-${project.ext.fullVersion}.jar"
+
+    dependencies {
+        include(dependency('me.confuser.banmanager:.*'))
+    }
+
+/*
+    relocate 'net.kyori.text', 'me.lucko.luckperms.lib.text'
+    relocate 'net.kyori.event', 'me.lucko.luckperms.lib.eventbus'
+    relocate 'com.github.benmanes.caffeine', 'me.lucko.luckperms.lib.caffeine'
+    relocate 'okio', 'me.lucko.luckperms.lib.okio'
+    relocate 'okhttp3', 'me.lucko.luckperms.lib.okhttp3'
+    relocate 'me.lucko.commodore', 'me.lucko.luckperms.lib.commodore'
+    relocate 'org.mariadb.jdbc', 'me.lucko.luckperms.lib.mariadb'
+    relocate 'com.mysql', 'me.lucko.luckperms.lib.mysql'
+    relocate 'org.postgresql', 'me.lucko.luckperms.lib.postgresql'
+    relocate 'com.zaxxer.hikari', 'me.lucko.luckperms.lib.hikari'
+    relocate 'com.mongodb', 'me.lucko.luckperms.lib.mongodb'
+    relocate 'org.bson', 'me.lucko.luckperms.lib.bson'
+    relocate 'redis.clients.jedis', 'me.lucko.luckperms.lib.jedis'
+    relocate 'org.apache.commons.pool2', 'me.lucko.luckperms.lib.commonspool2'
+    relocate 'ninja.leaping.configurate', 'me.lucko.luckperms.lib.configurate'
+	*/
+}
+
+artifacts {
+    archives shadowJar
+}

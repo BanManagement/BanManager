@@ -1,0 +1,51 @@
+dependencies {
+    compile project(':banmanager-api')
+
+    compile 'org.checkerframework:checker-qual:2.5.5'
+    compile('net.kyori:text-api:3.0.0') {
+        exclude(module: 'checker-qual')
+    }
+    compile('net.kyori:text-serializer-legacy:3.0.0') {
+        exclude(module: 'text-api')
+    }
+    compile('net.kyori:text-serializer-gson:3.0.0') {
+        exclude(module: 'text-api')
+        exclude(module: 'gson')
+    }
+    compile('net.kyori:event-api:3.0.0') {
+        exclude(module: 'checker-qual')
+        exclude(module: 'guava')
+    }
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.guava:guava:19.0'
+    compile 'com.github.ben-manes.caffeine:caffeine:2.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.14.1'
+    compile 'com.squareup.okio:okio:1.17.3'
+    compile('me.lucko.configurate:configurate-core:3.5') {
+        exclude(module: 'guava')
+    }
+    compile('me.lucko.configurate:configurate-yaml:3.5') {
+        exclude(module: 'snakeyaml')
+    }
+    compile('me.lucko.configurate:configurate-gson:3.5') {
+        exclude(module: 'gson')
+    }
+    compile 'me.lucko.configurate:configurate-hocon:3.5'
+    compile('me.lucko.configurate:configurate-toml:3.5') {
+        exclude(module: 'toml4j')
+    }
+    compile 'com.zaxxer:HikariCP:3.3.1'
+    compile 'redis.clients:jedis:2.10.2'
+    compile 'org.mongodb:mongo-java-driver:3.10.1'
+    compile 'org.yaml:snakeyaml:1.23'
+	
+	compile 'com.j256.ormlite:ormlite-core:5.1'
+	compile 'com.j256.ormlite:ormlite-jdbc:5.1'
+	compile 'com.google.guava:guava:17.0'
+	compile group: 'com.github.spullara.cli-parser', name: 'cli-parser', version: '1.1.5'
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+	compile 'com.maxmind.geoip2:geoip2:2.2.0'
+	compile 'com.googlecode.concurrent-trees:concurrent-trees:2.4.0'
+
+	
+}
