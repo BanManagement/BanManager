@@ -1,11 +1,12 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.data.PlayerWarnData;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.PlayerWarnStorage;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.bukkitutil.Message;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
@@ -13,8 +14,8 @@ public class WarningSync extends BmRunnable {
 
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
 
-  public WarningSync() {
-    super("playerWarnings");
+  public WarningSync(BanManagerPlugin plugin) {
+    super(plugin,"playerWarnings");
   }
 
   @Override
@@ -35,35 +36,27 @@ public class WarningSync extends BmRunnable {
           continue;
         }
 
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+        plugin.getBootstrap().getScheduler().executeSync(() -> {
+          Sender bukkitPlayer = CommandUtils.getSender(warn.getPlayer().getUUID());
 
-          @Override
-          public void run() {
-            Player bukkitPlayer = CommandUtils.getPlayer(warn.getPlayer().getUUID());
+          if (bukkitPlayer == null) return;
 
-            if (bukkitPlayer == null) return;
+          Message.WARN_PLAYER_WARNED.send(bukkitPlayer,
+                 "displayName", bukkitPlayer.getDisplayName(),
+                 "player", warn.getPlayer().getName(),
+                 "reason", warn.getReason(),
+                 "actor", warn.getActor().getName());
 
-            Message.get("warn.player.warned")
-                   .set("displayName", bukkitPlayer.getPlayer().getDisplayName())
-                   .set("player", warn.getPlayer().getName())
-                   .set("reason", warn.getReason())
-                   .set("actor", warn.getActor().getName())
-                   .sendTo(bukkitPlayer);
+          warn.setRead(true);
 
-            warn.setRead(true);
+          plugin.getBootstrap().getScheduler().executeAsync(() -> {
+            try {
+              plugin.getPlayerWarnStorage().update(warn);
+            } catch (SQLException e) {
+              e.printStackTrace();
+            }
+          });
 
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-              @Override
-              public void run() {
-                try {
-                  plugin.getPlayerWarnStorage().update(warn);
-                } catch (SQLException e) {
-                  e.printStackTrace();
-                }
-              }
-            });
-
-          }
         });
 
       }

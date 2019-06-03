@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
 
   public PlayerNoteStorage(ConnectionSource connection) throws SQLException {
     super(connection, (DatabaseTableConfig<PlayerNoteData>) BanManager.getPlugin().getConfiguration()

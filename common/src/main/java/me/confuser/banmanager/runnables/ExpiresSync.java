@@ -2,6 +2,7 @@ package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.*;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -21,8 +22,8 @@ public class ExpiresSync extends BmRunnable {
   private IpRangeBanRecordStorage ipRangeBanRecordStorage = plugin.getIpRangeBanRecordStorage();
   private PlayerWarnStorage warnStorage = plugin.getPlayerWarnStorage();
 
-  public ExpiresSync() {
-    super("expiresCheck");
+  public ExpiresSync(BanManagerPlugin plugin) {
+    super(plugin,"expiresCheck");
   }
 
   @Override

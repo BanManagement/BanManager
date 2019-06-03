@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.data.global.GlobalPlayerMuteData;
 import me.confuser.banmanager.data.global.GlobalPlayerMuteRecordData;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.PlayerMuteStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerMuteRecordStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerMuteStorage;
@@ -16,8 +17,8 @@ public class GlobalMuteSync extends BmRunnable {
   private PlayerMuteStorage localMuteStorage = plugin.getPlayerMuteStorage();
   private GlobalPlayerMuteRecordStorage recordStorage = plugin.getGlobalPlayerMuteRecordStorage();
 
-  public GlobalMuteSync() {
-    super("externalPlayerMutes");
+  public GlobalMuteSync(BanManagerPlugin plugin) {
+    super(plugin, "externalPlayerMutes");
   }
 
   @Override

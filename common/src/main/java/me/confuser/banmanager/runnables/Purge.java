@@ -1,16 +1,20 @@
 package me.confuser.banmanager.runnables;
 
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.CleanUp;
 import me.confuser.banmanager.configs.DefaultConfig;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 
 public class Purge implements Runnable {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin;
   private DefaultConfig config = plugin.getConfiguration();
+
+  public Purge(BanManagerPlugin plugin) {
+    this.plugin = plugin;
+  }
 
   @Override
   public void run() {

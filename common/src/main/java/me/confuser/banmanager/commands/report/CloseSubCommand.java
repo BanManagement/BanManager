@@ -1,43 +1,47 @@
 package me.confuser.banmanager.commands.report;
 
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.command.CommandResult;
+import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportCommandData;
 import me.confuser.banmanager.data.PlayerReportCommentData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.SubCommand;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.command.CommandSender;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
+import java.util.List;
 
-public class CloseSubCommand extends SubCommand<BanManager> {
+public class CloseSubCommand extends SubCommand<String> {
 
   public CloseSubCommand() {
     super("close");
   }
 
-  @Override
-  public boolean onCommand(final CommandSender sender, final String[] args) {
-    if (args.length == 0) return false;
+  //command.reports.close
 
-    if (CommandUtils.isValidNameDelimiter(args[0])) {
+  @Override
+  public CommandResult execute(BanManagerPlugin plugin, Sender sender, String s, List<String> args, String label) {
+    if (args.size() == 0) return CommandResult.INVALID_ARGS;
+
+    if (CommandUtils.isValidNameDelimiter(args.get(0))) {
       CommandUtils.handleMultipleNames(sender, "reports close", args);
-      return true;
+      return CommandResult.SUCCESS;
     }
 
     final int id;
 
     try {
-      id = Integer.parseInt(args[0]);
+      id = Integer.parseInt(args.get(0));
     } catch (NumberFormatException e) {
-      Message.get("report.tp.error.invalidId").set("id", args[0]).sendTo(sender);
-      return true;
+      Message.REPORT_TP_ERROR_INVALIDID.send(sender, "id", args.get(0));
+      return CommandResult.INVALID_ARGS;
     }
 
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getBootstrap().getScheduler().executeAsync(plugin, new Runnable() {
 
       @Override
       public void run() {
@@ -46,13 +50,13 @@ public class CloseSubCommand extends SubCommand<BanManager> {
         try {
           data = plugin.getPlayerReportStorage().queryForId(id);
         } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
+          Message.SENDER_ERROR_EXCEPTION.send(sender);
           e.printStackTrace();
           return;
         }
 
         if (data == null) {
-          sender.sendMessage(Message.getString("report.tp.error.notFound"));
+          Message.REPORT_TP_ERROR_NOTFOUND.send(sender);
           return;
         }
 
@@ -60,16 +64,15 @@ public class CloseSubCommand extends SubCommand<BanManager> {
           data.setState(plugin.getReportStateStorage().queryForId(4));
           plugin.getPlayerReportStorage().update(data);
         } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
+          Message.SENDER_ERROR_EXCEPTION.send(sender);
           e.printStackTrace();
           return;
         }
 
-        if (args.length == 1) {
-          String message = Message.get("report.close.notify.closed")
-                                  .set("actor", data.getActor().getName())
-                                  .set("id", data.getId())
-                                  .toString();
+        if (args.size() == 1) {
+          String message = Message.REPORT_CLOSE_NOTIFY_CLOSED.asString(plugin.getLocaleManager(),
+                                  "actor", data.getActor().getName(),
+                                  "id", data.getId());
 
           CommandUtils.broadcast(message, "bm.notify.report.closed", sender);
           return;
@@ -78,34 +81,30 @@ public class CloseSubCommand extends SubCommand<BanManager> {
         PlayerData actor = CommandUtils.getActor(sender);
 
         if (args[1].startsWith("/")) {
-          PlayerReportCommandData commandData = new PlayerReportCommandData(data, actor, args[1]
-                  .substring(1), StringUtils.join(args, " ", 2, args.length));
+          PlayerReportCommandData commandData = new PlayerReportCommandData(data, actor, args.get(1)
+                  .substring(1), StringUtils.join(args, " ", 2, args.size()));
 
-          final String command = StringUtils.join(args, " ", 1, args.length);
+          final String command = StringUtils.join(args, " ", 1, args.size());
 
           // Run command as actor
-          plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-              Message.get("report.close.dispatch").set("command", command).sendTo(sender);
-              plugin.getServer().dispatchCommand(sender, command.substring(1));
-            }
+          plugin.getBootstrap().getScheduler().executeSync(() -> {
+            Message.REPORT_CLOSE_DISPATCH.send(sender, "command", command);
+            plugin.getServer().dispatchCommand(sender, command.substring(1));
           });
 
           try {
             plugin.getPlayerReportCommandStorage().create(commandData);
           } catch (SQLException e) {
-            sender.sendMessage(Message.getString("sender.error.exception"));
+            Message.SENDER_ERROR_EXCEPTION.send(sender);
             e.printStackTrace();
             return;
           }
 
-          String message = Message.get("report.close.notify.command")
-                                  .set("actor", data.getActor().getName())
-                                  .set("id", data.getId())
-                                  .set("command", command)
-                                  .toString();
+          String message = Message.REPORT_CLOSE_NOTIFY_COMMAND.asString(plugin.getLocaleManager(),
+                                  "actor", data.getActor().getName(),
+                                  "id", data.getId(),
+                                  "command", command);
+
 
           CommandUtils.broadcast(message, "bm.notify.report.closed", sender);
         } else {
@@ -115,16 +114,15 @@ public class CloseSubCommand extends SubCommand<BanManager> {
           try {
             plugin.getPlayerReportCommentStorage().create(commentData);
           } catch (SQLException e) {
-            sender.sendMessage(Message.getString("sender.error.exception"));
+            Message.SENDER_ERROR_EXCEPTION.send(sender);
             e.printStackTrace();
             return;
           }
 
-          String message = Message.get("report.close.notify.comment")
-                                  .set("actor", data.getActor().getName())
-                                  .set("id", data.getId())
-                                  .set("comment", comment)
-                                  .toString();
+          String message = Message.REPORT_CLOSE_NOTIFY_COMMENT.asString(plugin.getLocaleManager(),
+                                  "actor", data.getActor().getName(),
+                                  "id", data.getId(),
+                                  "comment", comment);
 
           CommandUtils.broadcast(message, "bm.notify.report.closed", sender);
         }
@@ -132,16 +130,13 @@ public class CloseSubCommand extends SubCommand<BanManager> {
       }
     });
 
-    return true;
+    return CommandResult.SUCCESS;
   }
 
   @Override
-  public String getHelp() {
-    return "<id> [/command || comment]";
+  public void sendUsage(Sender sender, String label) {
+    sender.sendMessage("<id> [/command || comment]");
   }
 
-  @Override
-  public String getPermission() {
-    return "command.reports.close";
-  }
+
 }

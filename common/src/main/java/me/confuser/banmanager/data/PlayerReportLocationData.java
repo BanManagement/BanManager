@@ -4,7 +4,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
 import me.confuser.banmanager.storage.mysql.ByteArray;
-import org.bukkit.Location;
 
 @DatabaseTable
 public class PlayerReportLocationData {
@@ -50,15 +49,15 @@ public class PlayerReportLocationData {
 
   }
 
-  public PlayerReportLocationData(PlayerReportData report, PlayerData player, Location location) {
+  public PlayerReportLocationData(PlayerReportData report, PlayerData player, String world, double x, double y, double z, float pitch, float yaw) {
     this.report = report;
     this.player = player;
-    this.world = location.getWorld().getName();
-    this.x = location.getX();
-    this.y = location.getY();
-    this.z = location.getZ();
-    this.pitch = location.getPitch();
-    this.yaw = location.getYaw();
+    this.world = world;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.pitch = pitch;
+    this.yaw = yaw;
   }
 
 }

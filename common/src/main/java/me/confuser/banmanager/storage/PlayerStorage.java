@@ -14,10 +14,10 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.UUIDProfile;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   @Getter
   private RadixTree<VoidValue> autoCompleteTree;
 
@@ -44,13 +44,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     setupConsole();
     if (plugin.getConfiguration().isOfflineAutoComplete()) {
-      plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-        @Override
-        public void run() {
-          setupAutoComplete();
-        }
-      });
+      plugin.getBootstrap().getScheduler().executeAsync(this::setupAutoComplete);
     }
   }
 
@@ -104,7 +98,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     if (!plugin.getConfiguration().isOnlineMode()) {
       plugin.getLogger()
-            .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
+            .warn("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
       return status;
     }
 
@@ -118,7 +112,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         newName = UUIDUtils.getCurrentName(player.getUUID());
       } catch (Exception e) {
         plugin.getLogger()
-              .warning("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
+              .warn("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
         continue;
       }
 
@@ -272,13 +266,14 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return players;
   }
 
-  public List<byte[]> getOnlineIds(Collection<? extends Player> onlinePlayers) {
+  public List<byte[]> getOnlineIds(Collection<UUID> onlinePlayers) {
     ArrayList<byte[]> ids = new ArrayList<>(onlinePlayers.size());
 
-    for (Player player : onlinePlayers) {
-      ids.add(UUIDUtils.toBytes(player));
+    for (UUID onlinePlayerUUID : onlinePlayers) {
+      plugin.getBootstrap().getPlayerAsSender(onlinePlayerUUID).ifPresent(onlinePlayer -> ids.add(UUIDUtils.toBytes(onlinePlayer)));
     }
 
     return ids;
   }
+
 }

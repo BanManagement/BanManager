@@ -1,84 +1,78 @@
 package me.confuser.banmanager.commands.report;
 
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.command.CommandResult;
+import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.SubCommand;
-import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
+import java.util.List;
 
-public class UnassignSubCommand extends SubCommand<BanManager> {
+public class UnassignSubCommand extends SubCommand<String> {
 
   public UnassignSubCommand() {
     super("unassign");
   }
 
-  @Override
-  public boolean onCommand(final CommandSender sender, final String[] args) {
-    if (args.length != 1) return false;
+  //command.reports.unassign
 
-    if (CommandUtils.isValidNameDelimiter(args[0])) {
+  @Override
+  public CommandResult execute(BanManagerPlugin plugin, Sender sender, String s, List<String> args, String label) {
+    if (args.size() != 1) return CommandResult.INVALID_ARGS;
+
+    if (CommandUtils.isValidNameDelimiter(args.get(0))) {
       CommandUtils.handleMultipleNames(sender, "reports unassign", args);
-      return true;
+      return CommandResult.SUCCESS;
     }
 
     final int id;
 
     try {
-      id = Integer.parseInt(args[0]);
+      id = Integer.parseInt(args.get(0));
     } catch (NumberFormatException e) {
-      Message.get("report.tp.error.invalidId").set("id", args[0]).sendTo(sender);
-      return true;
+      Message.REPORT_TP_ERROR_INVALIDID.send(sender, "id", args.get(0));
+      return CommandResult.INVALID_ARGS;
     }
 
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getBootstrap().getScheduler().executeAsync(() -> {
+      final PlayerReportData data;
 
-      @Override
-      public void run() {
-        final PlayerReportData data;
-
-        try {
-          data = plugin.getPlayerReportStorage().queryForId(id);
-        } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
-        }
-
-        if (data == null) {
-          sender.sendMessage(Message.getString("report.tp.error.notFound"));
-          return;
-        }
-
-        data.setAssignee(null);
-
-        try {
-          data.setState(plugin.getReportStateStorage().queryForId(1));
-          plugin.getPlayerReportStorage().update(data);
-        } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
-        }
-
-        Message.get("report.unassign.player")
-               .set("id", data.getId())
-               .sendTo(sender);
+      try {
+        data = plugin.getPlayerReportStorage().queryForId(id);
+      } catch (SQLException e) {
+        Message.SENDER_ERROR_EXCEPTION.send(sender);
+        e.printStackTrace();
+        return;
       }
+
+      if (data == null) {
+        Message.REPORT_TP_ERROR_NOTFOUND.send(sender);
+        return;
+      }
+
+      data.setAssignee(null);
+
+      try {
+        data.setState(plugin.getReportStateStorage().queryForId(1));
+        plugin.getPlayerReportStorage().update(data);
+      } catch (SQLException e) {
+        Message.SENDER_ERROR_EXCEPTION.send(sender);
+        e.printStackTrace();
+        return;
+      }
+
+      Message.REPORT_UNASSIGN_PLAYER.send(sender, "id", data.getId());
     });
 
-    return true;
+    return CommandResult.SUCCESS;
   }
 
   @Override
-  public String getHelp() {
-    return "<id>";
+  public void sendUsage(Sender sender, String label) {
+    sender.sendMessage("<id>");
   }
 
-  @Override
-  public String getPermission() {
-    return "command.reports.unassign";
-  }
 }

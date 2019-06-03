@@ -1,131 +1,122 @@
 package me.confuser.banmanager.commands.report;
 
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.command.CommandResult;
+import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.SubCommand;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.List;
 
-public class AssignSubCommand extends SubCommand<BanManager> {
+public class AssignSubCommand extends SubCommand<String> {
 
-  public AssignSubCommand() {
-    super("assign");
+  public AssignSubCommand(LocaleManager locale) {
+    super(CommandSpec.REPORTS_ASSIGN.localize(locale), "assign", CommandPermission.REPORTS_ASSIGN, Predicates.alwaysFalse());
   }
 
   @Override
-  public boolean onCommand(final CommandSender sender, final String[] args) {
-    if (args.length == 0) return false;
-    if (!(sender instanceof Player) && args.length != 2) return false;
+  public CommandResult execute(BanManagerPlugin plugin, Sender sender, String s, List<String> args, String label) {
+    if (args.size() == 0) return CommandResult.INVALID_ARGS;
+    if (sender.isConsole() && args.size() != 2)
+      return CommandResult.INVALID_ARGS;
 
-    if (args.length != 1 && !sender.hasPermission("bm.command.report.assign.other")) {
-      Message.get("sender.error.noPermission").sendTo(sender);
-      return true;
+    if (args.size() != 1 && !sender.hasPermission("bm.command.report.assign.other")) {
+      Message.SENDER_ERROR_NOPERMISSION.send(sender);
+      return CommandResult.NO_PERMISSION;
     }
 
-    if (CommandUtils.isValidNameDelimiter(args[0])) {
+    if (CommandUtils.isValidNameDelimiter(args.get(0))) {
       CommandUtils.handleMultipleNames(sender, "reports assign", args);
-      return true;
+      return CommandResult.SUCCESS;
     }
 
     final Integer id;
 
     try {
-      id = Integer.parseInt(args[0]);
+      id = Integer.parseInt(args.get(0));
     } catch (NumberFormatException e) {
-      Message.get("report.tp.error.invalidId").set("id", args[0]).sendTo(sender);
-      return true;
+      Message.REPORT_TP_ERROR_INVALIDID.send(sender, "id", args.get(0));
+      return CommandResult.SUCCESS;
     }
 
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getBootstrap().getScheduler().executeAsync(() -> {
+      final PlayerReportData data;
 
-      @Override
-      public void run() {
-        final PlayerReportData data;
-
-        try {
-          data = plugin.getPlayerReportStorage().queryForId(id);
-        } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
-        }
-
-        if (data == null) {
-          sender.sendMessage(Message.getString("report.error.notFound"));
-          return;
-        }
-
-        final PlayerData player;
-        if (args.length == 2) {
-          player = plugin.getPlayerStorage().retrieve(args[1], false);
-        } else {
-          try {
-            player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((Player) sender));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.getString("sender.error.exception"));
-            e.printStackTrace();
-            return;
-          }
-        }
-
-        if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").toString());
-          return;
-        }
-
-        data.setAssignee(player);
-
-        try {
-          data.setState(plugin.getReportStateStorage().queryForId(2));
-          plugin.getPlayerReportStorage().update(data);
-        } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
-        }
-
-        Message.get("report.assign.player")
-               .set("id", data.getId())
-               .set("player", player.getName())
-               .sendTo(sender);
-
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-          @Override
-          public void run() {
-            Player bukkitPlayer = CommandUtils.getPlayer(player.getUUID());
-
-            if (bukkitPlayer == null) return;
-
-            Message.get("report.assign.notify")
-                   .set("id", data.getId())
-                   .set("displayName", bukkitPlayer.getDisplayName())
-                   .set("player", player.getName())
-                   .set("playerId", player.getUUID().toString())
-                   .set("reason", data.getReason())
-                   .set("actor", sender.getName()).sendTo(bukkitPlayer);
-
-          }
-        });
+      try {
+        data = plugin.getPlayerReportStorage().queryForId(id);
+      } catch (SQLException e) {
+        Message.SENDER_ERROR_EXCEPTION.send(sender);
+        e.printStackTrace();
+        return;
       }
+
+      if (data == null) {
+        Message.REPORT_TP_ERROR_NOTFOUND.send(sender);
+        return;
+      }
+
+      final PlayerData player;
+      if (args.size() == 2) {
+        player = plugin.getPlayerStorage().retrieve(args.get(1), false);
+      } else {
+        try {
+          player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(sender));
+        } catch (SQLException e) {
+          Message.SENDER_ERROR_EXCEPTION.send(sender);
+          e.printStackTrace();
+          return;
+        }
+      }
+
+      if (player == null) {
+        Message.SENDER_ERROR_NOT_FOUND.send(sender);
+        return;
+      }
+
+      data.setAssignee(player);
+
+      try {
+        data.setState(plugin.getReportStateStorage().queryForId(2));
+        plugin.getPlayerReportStorage().update(data);
+      } catch (SQLException e) {
+        Message.SENDER_ERROR_EXCEPTION.send(sender);
+        e.printStackTrace();
+        return;
+      }
+
+      Message.REPORT_ASSIGN_PLAYER.send(sender, "id", data.getId(), "player", player.getName());
+
+      plugin.getBootstrap().getScheduler().executeSync(() -> {
+        Sender bukkitPlayer = CommandUtils.getSender(player.getUUID());
+
+        if (bukkitPlayer == null) return;
+
+        Message.REPORT_ASSIGN_NOTIFY.send(bukkitPlayer,
+               "id", data.getId(),
+               "displayName", bukkitPlayer.getDisplayName(),
+               "player", player.getName(),
+               "playerId", player.getUUID().toString(),
+               "reason", data.getReason(),
+               "actor", sender.getName());
+
+      });
     });
 
-    return true;
+    return CommandResult.SUCCESS;
   }
 
   @Override
-  public String getHelp() {
-    return "<id> [player]";
+  public void sendUsage(Sender sender, String label) {
+    sender.sendMessage("<id> [player]");
   }
 
-  @Override
-  public String getPermission() {
-    return "command.reports.assign";
-  }
 }

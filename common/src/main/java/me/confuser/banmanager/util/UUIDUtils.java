@@ -2,6 +2,7 @@ package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.sender.Sender;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -79,6 +80,10 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     return toBytes(getUUID(player));
   }
 
+  public static byte[] toBytes(Sender sender) {
+    return toBytes(getUUID(sender));
+  }
+
   public static UUID fromBytes(byte[] array) {
     if (array.length != 16) {
       throw new IllegalArgumentException("Illegal byte array length: " + array.length);
@@ -144,6 +149,12 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
 
     return createUUID(player.getName());
+  }
+
+  public static UUID getUUID(Sender sender) {
+    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return sender.getUuid();
+
+    return createUUID(sender.getName());
   }
 
   public static UUID getUUID(AsyncPlayerPreLoginEvent event) {

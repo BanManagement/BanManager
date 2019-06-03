@@ -13,6 +13,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpRangeBanEvent;
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ArrayList<Range> ranges = new ArrayList<>();
   private ConcurrentHashMap<Range, IpRangeBanData> bans = new ConcurrentHashMap<>();
 
@@ -55,7 +56,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
+      plugin.getLogger().warn("Failed to retrieve ip range bans into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -77,7 +78,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
 
-      plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
+      plugin.getLogger().warn("Failed to retrieve ip range bans into memory");
       return;
     }
 
@@ -94,7 +95,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
                   results.getLong(4));
 
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for ip ban " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing actor for ip ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

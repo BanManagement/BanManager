@@ -7,9 +7,11 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.commands.*;
-import me.confuser.banmanager.commands.global.*;
+import me.confuser.banmanager.common.commands.*;
+import me.confuser.banmanager.common.commands.global.*;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.configs.*;
-import me.confuser.banmanager.listeners.*;
+import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.global.*;
@@ -28,10 +30,10 @@ import org.bukkit.plugin.EventExecutor;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class BanManager extends BukkitPlugin {
+public class BanManager {
 
   @Getter
-  public static BanManager plugin;
+  public static BanManagerPlugin plugin;
   @Getter
   private ConnectionSource localConn;
   private ConnectionSource globalConn;
@@ -399,30 +401,7 @@ public class BanManager extends BukkitPlugin {
 
   @Override
   public void setupListeners() {
-    new JoinListener().register();
-    new LeaveListener().register();
-    new CommandListener().register();
-    new HookListener().register();
-
-    ChatListener chatListener = new ChatListener();
-
-    // Set custom priority
-    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, configuration
-            .getChatPriority(), new EventExecutor() {
-
-      @Override
-      public void execute(Listener listener, Event event) throws EventException {
-        ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
-        ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
-      }
-    }, plugin);
-
-    if (configuration.isDisplayNotificationsEnabled()) {
-      new BanListener().register();
-      new MuteListener().register();
-      new NoteListener().register();
-      new ReportListener().register();
-    }
+  //Moved to registerPlatformListeners TODO sponge
   }
 
   @Override

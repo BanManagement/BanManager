@@ -4,13 +4,11 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 import lombok.Setter;
+import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.storage.PlayerStorage;
 import me.confuser.banmanager.storage.mysql.ByteArray;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -39,11 +37,11 @@ public class PlayerData {
 
       }
 
-      public PlayerData(Player player) {
-            uuid = UUIDUtils.getUUID(player);
+      public PlayerData(Sender sender) {
+            uuid = UUIDUtils.getUUID(sender);
             id = UUIDUtils.toBytes(uuid);
-            name = player.getName();
-            ip = IPUtils.toLong(player.getAddress().getAddress());
+            name = sender.getName();
+            ip = IPUtils.toLong(sender.getIPAddress());
       }
 
       public PlayerData(UUID uuid, String name) {
@@ -78,7 +76,7 @@ public class PlayerData {
             return uuid;
       }
 
-      public Player getPlayer() {
-            return Bukkit.getPlayer(uuid);
-      }
+      //public Player getPlayer() {
+      //      return Bukkit.getPlayer(uuid);
+      //}
 }

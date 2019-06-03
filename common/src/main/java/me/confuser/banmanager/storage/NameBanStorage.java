@@ -12,6 +12,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.NameBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.NameBanEvent;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ConcurrentHashMap<String, NameBanData> bans = new ConcurrentHashMap<>();
 
   public NameBanStorage(ConnectionSource connection) throws SQLException {
@@ -50,7 +51,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve name bans into memory");
+      plugin.getLogger().warn("Failed to retrieve name bans into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -72,7 +73,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
 
-      plugin.getLogger().warning("Failed to retrieve name bans into memory");
+      plugin.getLogger().warn("Failed to retrieve name bans into memory");
       return;
     }
 
@@ -89,7 +90,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
                   results.getLong(4),
                   results.getLong(5));
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for ban " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing actor for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

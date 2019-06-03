@@ -12,6 +12,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.PlayerBanEvent;
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<>();
 
   public PlayerBanStorage(ConnectionSource connection) throws SQLException {
@@ -53,7 +54,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve bans into memory");
+      plugin.getLogger().warn("Failed to retrieve bans into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -78,7 +79,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
       e.printStackTrace();
       this.getConnectionSource().releaseConnection(connection);
 
-      plugin.getLogger().warning("Failed to retrieve bans into memory");
+      plugin.getLogger().warn("Failed to retrieve bans into memory");
       return;
     }
 
@@ -95,7 +96,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
                   results.getLong(3),
                   results.getLong(4));
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing player for ban " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing player for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 
@@ -106,7 +107,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
                   results.getLong(7),
                   results.getLong(8));
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for ban " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing actor for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

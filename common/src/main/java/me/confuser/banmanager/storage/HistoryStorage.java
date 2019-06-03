@@ -7,6 +7,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.parsers.InfoCommandParser;
 import org.bukkit.ChatColor;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 
 public class HistoryStorage {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ConnectionSource localConn;
 
   // Queries

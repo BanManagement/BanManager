@@ -7,6 +7,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class ActivityStorage {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   // Queries
   final String sinceSql = "SELECT  type, name, actor, created FROM" +
           "  ( SELECT 'Ban' type, p.name AS name, actor.name AS actor, created" +

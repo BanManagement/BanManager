@@ -1,105 +1,94 @@
 package me.confuser.banmanager.commands.report;
 
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.command.CommandResult;
+import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Location;
 import me.confuser.banmanager.data.PlayerReportLocationData;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.commands.PlayerSubCommand;
-import org.apache.commons.lang.time.FastDateFormat;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
+import java.util.List;
 
-public class TeleportSubCommand extends PlayerSubCommand<BanManager> {
+public class TeleportSubCommand extends SubCommand<Sender> {
 
   public TeleportSubCommand() {
     super("tp");
   }
 
+  //command.reports.tp
+
   @Override
-  public boolean onPlayerCommand(final Player player, String[] args) {
-    if (args.length != 1) return false;
+  public CommandResult execute(BanManagerPlugin plugin, Sender sender, Sender target, List<String> args, String label) {
+    if (args.size() != 1) return CommandResult.INVALID_ARGS;
 
     final int id;
 
     try {
-      id = Integer.parseInt(args[0]);
+      id = Integer.parseInt(args.get(0));
     } catch (NumberFormatException e) {
-      Message.get("report.tp.error.invalidId").set("id", args[0]).sendTo(player);
-      return true;
+      Message.REPORT_TP_ERROR_INVALIDID.send(sender, args.get(0));
+      return CommandResult.INVALID_ARGS;
     }
 
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getBootstrap().getScheduler().executeAsync(() -> {
+      final PlayerReportLocationData data;
 
-      @Override
-      public void run() {
-        final PlayerReportLocationData data;
-
-        try {
-          data = plugin.getPlayerReportLocationStorage().getByReportId(id);
-        } catch (SQLException e) {
-          player.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
-        }
-
-        if (data == null) {
-          Message.get("report.tp.error.notFound").sendTo(player);
-          return;
-        }
-
-        final World world = plugin.getServer().getWorld(data.getWorld());
-
-        if (world == null) {
-          Message.get("report.tp.error.worldNotFound").set("world", data.getWorld()).sendTo(player);
-          return;
-        }
-
-        String dateTimeFormat = Message.getString("report.tp.dateTimeFormat");
-        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
-
-        Message.get("report.tp.notify.report")
-               .set("id", data.getReport().getId())
-               .set("player", data.getReport().getPlayer().getName())
-               .set("actor", data.getReport().getActor().getName())
-               .set("reason", data.getReport().getReason())
-               .set("created", dateFormatter
-                       .format(data.getReport().getCreated() * 1000L))
-               .sendTo(player);
-
-        Message.get("report.tp.notify.location")
-               .set("world", data.getWorld())
-               .set("x", data.getX())
-               .set("y", data.getY())
-               .set("z", data.getZ())
-               .sendTo(player);
-
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-          @Override
-          public void run() {
-            Location location = new Location(world, data.getX(), data.getY(), data.getZ(), data.getYaw(), data.getPitch());
-
-            // Teleport safety checks
-            if (player.isInsideVehicle()) player.leaveVehicle();
-
-            player.teleport(location);
-          }
-        });
+      try {
+        data = plugin.getPlayerReportLocationStorage().getByReportId(id);
+      } catch (SQLException e) {
+        Message.SENDER_ERROR_EXCEPTION.send(sender);
+        e.printStackTrace();
+        return;
       }
+
+      if (data == null) {
+        Message.REPORT_TP_ERROR_NOTFOUND.send(sender);
+        return;
+      }
+
+      boolean worldExists = plugin.getBootstrap().doesWorldExist(data.getWorld());
+
+      if (!worldExists) {
+        Message.REPORT_TP_ERROR_WORLDNOTFOUND.send(sender, "world", data.getWorld());
+        return;
+      }
+
+      String dateTimeFormat = Message.REPORT_TP_DATETIMEFORMAT.getMessage();
+      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
+
+      Message.REPORT_TP_NOTIFY_REPORT.send(sender,
+             "id", data.getReport().getId(),
+             "player", data.getReport().getPlayer().getName(),
+             "actor", data.getReport().getActor().getName(),
+             "reason", data.getReport().getReason(),
+             "created", dateFormatter.format(data.getReport().getCreated() * 1000L));
+
+      Message.REPORT_TP_NOTIFY_LOCATION.send(sender,
+             "world", data.getWorld(),
+             "x", data.getX(),
+             "y", data.getY(),
+             "z", data.getZ());
+
+      plugin.getBootstrap().getScheduler().executeSync(() -> {
+        Location location = new Location(data.getWorld(), data.getX(), data.getY(), data.getZ(), data.getYaw(), data.getPitch());
+
+        // Teleport safety checks TODO this doesn't seem right?
+        if (target.isInsideVehicle())
+          sender.leaveVehicle();
+
+        sender.teleport(location);
+      });
     });
 
-    return true;
+    return CommandResult.SUCCESS;
   }
 
   @Override
-  public String getHelp() {
-    return "<id>";
+  public void sendUsage(Sender sender, String label) {
+    sender.sendMessage("<id>");
   }
 
-  @Override
-  public String getPermission() {
-    return "command.reports.tp";
-  }
 }

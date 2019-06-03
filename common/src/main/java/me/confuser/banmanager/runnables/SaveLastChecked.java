@@ -1,10 +1,14 @@
 package me.confuser.banmanager.runnables;
 
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 public class SaveLastChecked implements Runnable {
 
-      private BanManager plugin = BanManager.getPlugin();
+      private BanManagerPlugin plugin;
+
+      public SaveLastChecked(BanManagerPlugin plugin) {
+            this.plugin = plugin;
+      }
 
       @Override
       public void run() {

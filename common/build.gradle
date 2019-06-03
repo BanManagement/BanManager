@@ -46,6 +46,9 @@ dependencies {
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 	compile 'com.maxmind.geoip2:geoip2:2.2.0'
 	compile 'com.googlecode.concurrent-trees:concurrent-trees:2.4.0'
+    //compile 'me.confuser:BukkitPluginUtil:1.7.0'//TODO remove
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    //compile 'me.rayzr522:jsonmessage:1.0.0'//Uses bukkit..
 
 	
 }

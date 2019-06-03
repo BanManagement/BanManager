@@ -33,6 +33,8 @@ dependencies {
         exclude(module: 'bukkit')
         exclude(module: 'metrics')
     }
+
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 processResources {

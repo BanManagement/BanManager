@@ -5,6 +5,7 @@ import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerWarnData;
 
@@ -14,12 +15,12 @@ import java.sql.Timestamp;
 
 public class SimpleWarnings implements IConverter {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private JdbcPooledConnectionSource connection;
 
   public SimpleWarnings() {
     try {
-      connection = new JdbcPooledConnectionSource("jdbc:sqlite:" + new File(plugin.getDataFolder().getParent(),
+      connection = new JdbcPooledConnectionSource("jdbc:sqlite:" + new File(plugin.getBootstrap().getDataDirectory().toFile().getParent(),
               "SimpleWarnings/Warnings.db").getAbsolutePath());
     } catch (SQLException e) {
       e.printStackTrace();

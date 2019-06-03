@@ -3,6 +3,7 @@ package me.confuser.banmanager.runnables;
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.PlayerNoteData;
 import me.confuser.banmanager.data.global.GlobalPlayerNoteData;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.PlayerNoteStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerNoteStorage;
 
@@ -13,8 +14,8 @@ public class GlobalNoteSync extends BmRunnable {
   private GlobalPlayerNoteStorage noteStorage = plugin.getGlobalPlayerNoteStorage();
   private PlayerNoteStorage localNoteStorage = plugin.getPlayerNoteStorage();
 
-  public GlobalNoteSync() {
-    super("externalPlayerNotes");
+  public GlobalNoteSync(BanManagerPlugin plugin) {
+    super(plugin, "externalPlayerNotes");
   }
 
   @Override

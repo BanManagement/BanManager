@@ -12,6 +12,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.IpMuteData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.events.IpMuteEvent;
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ConcurrentHashMap<Long, IpMuteData> mutes = new ConcurrentHashMap<>();
 
   public IpMuteStorage(ConnectionSource connection) throws SQLException {
@@ -52,7 +53,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection("");
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
+      plugin.getLogger().warn("Failed to retrieve ip mutes into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -74,7 +75,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
 
-      plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
+      plugin.getLogger().warn("Failed to retrieve ip mutes into memory");
       return;
     }
 

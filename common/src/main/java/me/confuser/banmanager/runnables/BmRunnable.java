@@ -1,10 +1,10 @@
 package me.confuser.banmanager.runnables;
 
 import lombok.Getter;
-import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 public abstract class BmRunnable implements Runnable {
-  protected BanManager plugin = BanManager.getPlugin();
+  protected BanManagerPlugin plugin;
 
   @Getter
   protected long lastChecked = 0;
@@ -13,7 +13,8 @@ public abstract class BmRunnable implements Runnable {
   @Getter
   protected final String name;
 
-  public BmRunnable(String schedulerName) {
+  public BmRunnable(BanManagerPlugin plugin, String schedulerName) {
+    this.plugin = plugin;
     name = schedulerName;
 
     lastChecked = plugin.getSchedulesConfig().getLastChecked(name);

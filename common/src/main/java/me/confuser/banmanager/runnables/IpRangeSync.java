@@ -1,20 +1,19 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.IpRangeBanData;
 import me.confuser.banmanager.data.IpRangeBanRecord;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.IpRangeBanStorage;
 
 import java.sql.SQLException;
 
 public class IpRangeSync extends BmRunnable {
 
-  private BanManager plugin = BanManager.getPlugin();
   private IpRangeBanStorage banStorage = plugin.getIpRangeBanStorage();
 
-  public IpRangeSync() {
-    super("ipRangeBans");
+  public IpRangeSync(BanManagerPlugin plugin) {
+    super(plugin,"ipRangeBans");
   }
 
   @Override

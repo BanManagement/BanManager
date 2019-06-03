@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.RollbackData;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 
 public class RollbackStorage extends BaseDaoImpl<RollbackData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
 
   public RollbackStorage(ConnectionSource connection) throws SQLException {
     super(connection, (DatabaseTableConfig<RollbackData>) BanManager.getPlugin().getConfiguration().getLocalDb()

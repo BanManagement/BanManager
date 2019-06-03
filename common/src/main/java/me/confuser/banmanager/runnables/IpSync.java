@@ -5,6 +5,7 @@ import me.confuser.banmanager.data.IpBanData;
 import me.confuser.banmanager.data.IpBanRecord;
 import me.confuser.banmanager.data.IpMuteData;
 import me.confuser.banmanager.data.IpMuteRecord;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.IpBanStorage;
 import me.confuser.banmanager.storage.IpMuteStorage;
 
@@ -15,8 +16,8 @@ public class IpSync extends BmRunnable {
   private IpBanStorage banStorage = plugin.getIpBanStorage();
   private IpMuteStorage muteStorage = plugin.getIpMuteStorage();
 
-  public IpSync() {
-    super("ipBans");
+  public IpSync(BanManagerPlugin plugin) {
+    super(plugin,"ipBans");
   }
 
   @Override

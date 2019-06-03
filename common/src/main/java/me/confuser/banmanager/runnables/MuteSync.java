@@ -3,6 +3,7 @@ package me.confuser.banmanager.runnables;
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.data.PlayerMuteRecord;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.storage.PlayerMuteStorage;
 
 import java.sql.SQLException;
@@ -11,8 +12,8 @@ public class MuteSync extends BmRunnable {
 
   private PlayerMuteStorage muteStorage = plugin.getPlayerMuteStorage();
 
-  public MuteSync() {
-    super("playerMutes");
+  public MuteSync(BanManagerPlugin plugin) {
+    super(plugin, "playerMutes");
   }
 
   @Override

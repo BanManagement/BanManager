@@ -2,7 +2,7 @@ package me.confuser.banmanager.events;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.event.Cancellable;
+import me.confuser.banmanager.api.event.Cancellable;
 
 public abstract class CustomCancellableEvent extends CustomEvent implements Cancellable {
 

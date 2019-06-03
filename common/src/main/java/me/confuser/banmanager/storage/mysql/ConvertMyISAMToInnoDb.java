@@ -8,13 +8,14 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConvertMyISAMToInnoDb {
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
 
   public ConvertMyISAMToInnoDb(ConnectionSource db, HashMap<String, DatabaseTableConfig<?>> tables) {
     DatabaseConnection connection = null;

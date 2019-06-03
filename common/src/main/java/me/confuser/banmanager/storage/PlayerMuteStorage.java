@@ -12,6 +12,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<>();
 
   public PlayerMuteStorage(ConnectionSource connection) throws SQLException {
@@ -67,7 +68,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
       e.printStackTrace();
-      plugin.getLogger().warning("Failed to retrieve mutes into memory");
+      plugin.getLogger().warn("Failed to retrieve mutes into memory");
       return;
     }
     StringBuilder sql = new StringBuilder();
@@ -92,7 +93,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
 
-      plugin.getLogger().warning("Failed to retrieve mutes into memory");
+      plugin.getLogger().warn("Failed to retrieve mutes into memory");
       return;
     }
 
@@ -109,7 +110,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
                   results.getLong(3),
                   results.getLong(4));
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing player for mute " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing player for mute " + results.getInt(0) + ", ignored");
           continue;
         }
 
@@ -120,7 +121,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
                   results.getLong(7),
                   results.getLong(8));
         } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for mute " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warn("Missing actor for mute " + results.getInt(0) + ", ignored");
           continue;
         }
 
