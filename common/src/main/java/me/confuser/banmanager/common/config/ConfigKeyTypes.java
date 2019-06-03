@@ -28,6 +28,7 @@ package me.confuser.banmanager.common.config;
 import com.google.common.collect.ImmutableMap;
 import me.confuser.banmanager.common.config.adapter.ConfigurationAdapter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -37,9 +38,11 @@ public class ConfigKeyTypes {
     private static final KeyFactory<Boolean> BOOLEAN = ConfigurationAdapter::getBoolean;
     private static final KeyFactory<String> STRING = ConfigurationAdapter::getString;
     private static final KeyFactory<Integer> INTEGER = ConfigurationAdapter::getInteger;
+    private static final KeyFactory<Long> LONG = ConfigurationAdapter::getLong;
     private static final KeyFactory<String> LOWERCASE_STRING = (adapter, path, def) -> adapter.getString(path, def).toLowerCase();
     private static final KeyFactory<Map<String, String>> STRING_MAP = (config, path, def) -> ImmutableMap.copyOf(config.getStringMap(path, ImmutableMap.of()));
     private static final KeyFactory<UUID> UUID = ConfigurationAdapter::getUUID;
+    private static final KeyFactory<List<String>> STRING_LIST = ConfigurationAdapter::getStringList;
 
     public static BaseConfigKey<UUID> uuidKey(String path, UUID def) {
         return UUID.createKey(path, def);
@@ -49,12 +52,20 @@ public class ConfigKeyTypes {
         return INTEGER.createKey(path, def);
     }
 
+    public static BaseConfigKey<Long> longKey(String path, Long def) {
+        return LONG.createKey(path, def);
+    }
+
     public static BaseConfigKey<Boolean> booleanKey(String path, boolean def) {
         return BOOLEAN.createKey(path, def);
     }
 
     public static BaseConfigKey<String> stringKey(String path, String def) {
         return STRING.createKey(path, def);
+    }
+
+    public static BaseConfigKey<List<String>> stringList(String path, List<String> def) {
+        return STRING_LIST.createKey(path, def);
     }
 
     public static BaseConfigKey<String> lowercaseStringKey(String path, String def) {
@@ -100,9 +111,9 @@ public class ConfigKeyTypes {
         }
     }
 
-    private static class FunctionalKey<T> extends BaseConfigKey<T> implements ConfigKey<T> {
+    public static class FunctionalKey<T> extends BaseConfigKey<T> implements ConfigKey<T> {
         private final KeyFactory<T> factory;
-        private final String path;
+        final String path;
         private final T def;
 
         FunctionalKey(KeyFactory<T> factory, String path, T def) {

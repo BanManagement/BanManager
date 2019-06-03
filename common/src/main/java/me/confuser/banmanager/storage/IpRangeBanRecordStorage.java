@@ -15,10 +15,11 @@ import me.confuser.banmanager.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integer> {
+public class
+IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integer> {
 
   public IpRangeBanRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpRangeBanRecord>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<IpRangeBanRecord>) BanManager.getPlugin().getLocalDb()
                                                                         .getTable("ipRangeBanRecords"));
 
     if (!this.isTableExists()) {

@@ -1,27 +1,31 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.common.util.Location;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.data.PlayerReportLocationData;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class TeleportSubCommand extends SubCommand<Sender> {
+public class TeleportSubCommand extends SubCommand<String> {
 
-  public TeleportSubCommand() {
-    super("tp");
+  public TeleportSubCommand(LocaleManager locale) {
+    super(CommandSpec.REPORTS_TP.localize(locale), "tp", CommandPermission.REPORTS_TP, Predicates.alwaysFalse());
   }
 
   //command.reports.tp
 
   @Override
-  public CommandResult execute(BanManagerPlugin plugin, Sender sender, Sender target, List<String> args, String label) {
+  public CommandResult execute(BanManagerPlugin plugin, Sender sender, String target, List<String> args, String label) {
     if (args.size() != 1) return CommandResult.INVALID_ARGS;
 
     final int id;
@@ -76,7 +80,7 @@ public class TeleportSubCommand extends SubCommand<Sender> {
         Location location = new Location(data.getWorld(), data.getX(), data.getY(), data.getZ(), data.getYaw(), data.getPitch());
 
         // Teleport safety checks TODO this doesn't seem right?
-        if (target.isInsideVehicle())
+        if (sender.isInsideVehicle())
           sender.leaveVehicle();
 
         sender.teleport(location);

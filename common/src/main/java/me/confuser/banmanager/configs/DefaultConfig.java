@@ -2,11 +2,8 @@ package me.confuser.banmanager.configs;
 
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.util.IPUtils;
-import me.confuser.bukkitutil.configs.Config;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.EventPriority;
 
 import java.io.File;
 import java.util.HashMap;
@@ -82,6 +79,8 @@ public class DefaultConfig extends Config<BanManager> {
     super(file);
   }
 
+  BanManagerPlugin plugin;
+
   @Override
   public void afterLoad() {
     localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
@@ -139,20 +138,16 @@ public class DefaultConfig extends Config<BanManager> {
     }
 
     // Run this after startup to ensure all aliases are found
-    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+    plugin.getBootstrap().getScheduler().syncLater((Runnable) () -> {
+      plugin.getLogger().info("The following commands are blocked whilst muted:");
+      handleBlockedCommands(conf.getStringList("mutedCommandBlacklist"), mutedBlacklistCommands);
 
-      @Override
-      public void run() {
-        plugin.getLogger().info("The following commands are blocked whilst muted:");
-        handleBlockedCommands(conf.getStringList("mutedCommandBlacklist"), mutedBlacklistCommands);
-
-        plugin.getLogger().info("The following commands are blocked whilst soft muted:");
-        handleBlockedCommands(conf.getStringList("softMutedCommandBlacklist"), softMutedBlacklistCommands);
-      }
-
+      plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+      handleBlockedCommands(conf.getStringList("softMutedCommandBlacklist"), softMutedBlacklistCommands);
     });
   }
 
+  /*
   private void convertToGlobal() {
     plugin.getLogger().info("Converting external connection details to global");
 
@@ -180,7 +175,7 @@ public class DefaultConfig extends Config<BanManager> {
     save();
 
     plugin.getLogger().info("Converted external connection details to global");
-  }
+  }*/
 
   private void handleBlockedCommands(List<String> blocked, HashSet<String> set) {
     for (String cmd : blocked) {

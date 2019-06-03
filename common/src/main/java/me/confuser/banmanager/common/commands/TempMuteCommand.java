@@ -51,12 +51,12 @@ public class TempMuteCommand extends SingleCommand {
 
     if (CommandUtils.isValidNameDelimiter(args[0])) {
       CommandUtils.handleMultipleNames(sender, this.getName(), args);
-      return true;
+      return CommandResult.SUCCESS;
     }
 
     if (args[0].equalsIgnoreCase(sender.getName())) {
       Message.SENDER_ERROR_NOSELF.send(sender);
-      return true;
+      return CommandResult.INVALID_ARGS;
     }
 
     // Check if UUID vs name
@@ -108,7 +108,7 @@ public class TempMuteCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_MUTE, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_MUTE, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.SUCCESS;
     }

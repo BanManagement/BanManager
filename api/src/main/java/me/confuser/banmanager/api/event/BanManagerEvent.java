@@ -26,7 +26,6 @@
 package me.confuser.banmanager.api.event;
 
 import lombok.NonNull;
-import me.confuser.banmanager.api.BanManagerApi;
 
 /**
  * A superinterface for all LuckPerms events.
@@ -34,13 +33,6 @@ import me.confuser.banmanager.api.BanManagerApi;
  * @since 3.0
  */
 public interface BanManagerEvent {
-
-    /**
-     * Get the API instance this event was dispatched from
-     *
-     * @return the api instance
-     */
-    @NonNull BanManagerApi getApi();
 
     /**
      * Gets the type of the event.

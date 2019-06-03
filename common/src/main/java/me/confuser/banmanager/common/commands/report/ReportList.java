@@ -1,4 +1,4 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import lombok.Getter;
 import me.confuser.banmanager.data.PlayerReportData;

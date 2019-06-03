@@ -65,15 +65,15 @@ public class RollbackCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.ROLLBACK, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.ROLLBACK, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
-      return true;
+      return CommandResult.SUCCESS;
     }
 
     final long expires = expiresCheck;
 
     // Check if UUID vs name
-    final String playerName = args[0];
+    final String playerName = args.get(0);
 
     plugin.getBootstrap().getScheduler().executeAsync(() -> {
       final PlayerData player = CommandUtils.getPlayer(sender, playerName);

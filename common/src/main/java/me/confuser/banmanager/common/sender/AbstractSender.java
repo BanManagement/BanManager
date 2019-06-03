@@ -26,10 +26,8 @@
 package me.confuser.banmanager.common.sender;
 
 import com.google.common.base.Splitter;
-
-
-import me.confuser.banmanager.api.Tristate;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.common.util.Location;
 import me.confuser.banmanager.util.TextUtils;
 import net.kyori.text.Component;
 
@@ -76,6 +74,11 @@ public final class AbstractSender<T> implements Sender {
     }
 
     @Override
+    public String getDisplayName() {
+        return this.name;//TODO
+    }
+
+    @Override
     public void sendMessage(String message) {
         final T t = this.reference.get();
         if (t != null) {
@@ -103,16 +106,6 @@ public final class AbstractSender<T> implements Sender {
         if (t != null) {
             this.factory.sendMessage(t, message);
         }
-    }
-
-    @Override
-    public Tristate getPermissionValue(String permission) {
-        T t = this.reference.get();
-        if (t != null) {
-            return this.factory.getPermissionValue(t, permission);
-        }
-
-        return isConsole() ? Tristate.TRUE : Tristate.UNDEFINED;
     }
 
     @Override
@@ -147,6 +140,39 @@ public final class AbstractSender<T> implements Sender {
         if (t != null) {
             this.factory.kick(t, message);
         }
+    }
+
+    @Override
+    public void teleport(Location location) {
+
+    }
+
+    @Override
+    public boolean isInsideVehicle() {
+        T t = this.reference.get();
+        if (t != null) {
+            return this.factory.isInsideVehicle(t);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void leaveVehicle() {
+        T t = this.reference.get();
+        if (t != null) {
+            this.factory.leaveVehicle(t);
+        }
+    }
+
+    @Override
+    public Location getLocation() {
+        T t = this.reference.get();
+        if (t != null) {
+            return this.factory.getLocation(t);
+        }
+
+        return null;
     }
 
     @Override

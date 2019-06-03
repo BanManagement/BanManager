@@ -2,6 +2,7 @@ package me.confuser.banmanager.bukkit.listeners;
 
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
 import me.confuser.banmanager.bukkit.utils.BukkitCommandUtils;
+import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.data.IpMuteData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
@@ -10,7 +11,6 @@ import me.confuser.banmanager.events.PlayerMutedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
-import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,24 +31,25 @@ public class BukkitMuteListener implements Listener {
     PlayerMuteData mute = event.getMute();
 
     String broadcastPermission;
-    Message message;
+    Message messagem;
 
     if (mute.getExpires() == 0) {
       broadcastPermission = "bm.notify.mute";
-      message = Message.get("mute.notify");
+      messagem = Message.MUTE_NOTIFY;
     } else {
       broadcastPermission = "bm.notify.tempmute";
-      message = Message.get("tempmute.notify");
-      message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+      messagem = Message.TEMPMUTE_NOTIFY;
     }
 
-    message.set("player", mute.getPlayer().getName())
-           .set("playerId", mute.getPlayer().getUUID().toString())
-           .set("actor", mute.getActor().getName())
-           .set("reason", mute.getReason());
+    String message = messagem.asString(plugin.getLocaleManager(),
+            "player", mute.getPlayer().getName(),
+            "playerId", mute.getPlayer().getUUID().toString(),
+            "actor", mute.getActor().getName(),
+            "reason", mute.getReason(),
+            "expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
     if (!event.isSilent()) {
-      CommandUtils.broadcast(message.toString(), broadcastPermission);
+      CommandUtils.broadcast(message, broadcastPermission);
     }
 
     // Check if the sender is online and does not have the
@@ -59,7 +60,7 @@ public class BukkitMuteListener implements Listener {
     }
 
     if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
-      message.sendTo(player);
+      player.sendMessage(message);
     }
   }
 
@@ -68,15 +69,14 @@ public class BukkitMuteListener implements Listener {
     IpMuteData mute = event.getMute();
 
     String broadcastPermission;
-    Message message;
+    Message messagem;
 
     if (mute.getExpires() == 0) {
       broadcastPermission = "bm.notify.muteip";
-      message = Message.get("muteip.notify");
+      messagem = Message.MUTEIP_NOTIFY;
     } else {
       broadcastPermission = "bm.notify.tempmuteip";
-      message = Message.get("tempmuteip.notify");
-      message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+      messagem = Message.TEMPMUTEIP_NOTIFY;
     }
 
     List<PlayerData> players = plugin.getPlayerStorage().getDuplicates(mute.getIp());
@@ -90,10 +90,12 @@ public class BukkitMuteListener implements Listener {
     if (playerNames.length() == 0) return;
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
-    message.set("ip", IPUtils.toString(mute.getIp()))
-           .set("actor", mute.getActor().getName())
-           .set("reason", mute.getReason())
-           .set("players", playerNames.toString());
+    String message = messagem.asString(plugin.getLocaleManager(),
+            "ip", IPUtils.toString(mute.getIp()),
+           "actor", mute.getActor().getName(),
+           "reason", mute.getReason(),
+           "players", playerNames.toString(),
+            "expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
     if (!event.isSilent()) {
       CommandUtils.broadcast(message.toString(), broadcastPermission);
@@ -107,7 +109,7 @@ public class BukkitMuteListener implements Listener {
     }
 
     if (event.isSilent() || !player.hasPermission(broadcastPermission)) {
-      message.sendTo(player);
+      player.sendMessage(message);
     }
   }
 }

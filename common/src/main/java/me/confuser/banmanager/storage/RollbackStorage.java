@@ -19,7 +19,7 @@ public class RollbackStorage extends BaseDaoImpl<RollbackData, Integer> {
   private BanManagerPlugin plugin = BanManager.getPlugin();
 
   public RollbackStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<RollbackData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<RollbackData>) BanManager.getPlugin().getLocalDb()
                                                                     .getTable("rollbacks"));
 
     if (!this.isTableExists()) {

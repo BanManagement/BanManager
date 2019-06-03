@@ -35,7 +35,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   private PlayerData console;
 
   public PlayerStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<PlayerData>) BanManager.getPlugin().getLocalDb()
                                                                   .getTable("players"));
 
     if (!isTableExists()) {

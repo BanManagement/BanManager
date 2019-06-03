@@ -49,7 +49,7 @@ public class TempBanCommand extends SingleCommand {
 
     if (args[0].equalsIgnoreCase(sender.getName())) {
       Message.SENDER_ERROR_NOSELF.send(sender);
-      return true;
+      return CommandResult.INVALID_ARGS;
     }
 
     // Check if UUID vs name
@@ -100,7 +100,7 @@ public class TempBanCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_BAN, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_BAN, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.SUCCESS;
     }

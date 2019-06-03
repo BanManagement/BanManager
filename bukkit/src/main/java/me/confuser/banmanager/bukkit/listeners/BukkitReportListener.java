@@ -1,20 +1,17 @@
 package me.confuser.banmanager.bukkit.listeners;
 
 import com.j256.ormlite.stmt.DeleteBuilder;
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Location;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.data.PlayerReportLocationData;
 import me.confuser.banmanager.events.PlayerReportDeletedEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
-import me.confuser.banmanager.util.BukkitUUIDUtils;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import me.confuser.bukkitutil.Message;
-import me.confuser.bukkitutil.listeners.Listeners;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,25 +30,24 @@ public class BukkitReportListener implements Listener {
   public void notifyOnReport(PlayerReportedEvent event) {
     PlayerReportData report = event.getReport();
 
-    Message message = Message.get("report.notify");
+    String message = Message.REPORT_NOTIFY.asString(plugin.getLocaleManager(),
+            "player", report.getPlayer().getName(),
+           "playerId", report.getPlayer().getUUID().toString(),
+           "actor", report.getActor().getName(),
+           "reason", report.getReason(),
+           "id", report.getId());
 
-    message.set("player", report.getPlayer().getName())
-           .set("playerId", report.getPlayer().getUUID().toString())
-           .set("actor", report.getActor().getName())
-           .set("reason", report.getReason())
-           .set("id", report.getId());
-
-    CommandUtils.broadcast(message.toString(), "bm.notify.report");
+    CommandUtils.broadcast(message, "bm.notify.report");
 
     // Check if the sender is online and does not have the
     // broadcastPermission
-    Player player;
-    if ((player = CommandUtils.getPlayer(report.getActor().getUUID())) == null) {
+    Sender player;
+    if ((player = CommandUtils.getSender(report.getActor().getUUID())) == null) {
       return;
     }
 
     if (!player.hasPermission("bm.notify.report")) {
-      message.sendTo(player);
+      player.sendMessage(message);
     }
   }
 
@@ -59,8 +55,8 @@ public class BukkitReportListener implements Listener {
   public void storeLocation(PlayerReportedEvent event) {
     PlayerReportData report = event.getReport();
 
-    Player player = CommandUtils.getPlayer(report.getPlayer().getUUID());
-    Player actor = CommandUtils.getPlayer(report.getActor().getUUID());
+    Sender player = CommandUtils.getSender(report.getPlayer().getUUID());
+    Sender actor = CommandUtils.getSender(report.getActor().getUUID());
 
     try {
       createLocation(report, player);
@@ -75,14 +71,14 @@ public class BukkitReportListener implements Listener {
     }
   }
 
-  private void createLocation(PlayerReportData report, Player player) throws SQLException {
+  private void createLocation(PlayerReportData report, Sender player) throws SQLException {
     if (player == null) return;
 
-    PlayerData playerData = plugin.getPlayerStorage().queryForId(BukkitUUIDUtils.toBytes(player));
+    PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player));
 
     Location location = player.getLocation();
     plugin.getPlayerReportLocationStorage()
-          .create(new PlayerReportLocationData(report, playerData, location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw()));
+          .create(new PlayerReportLocationData(report, playerData, location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw()));
   }
 
   @EventHandler

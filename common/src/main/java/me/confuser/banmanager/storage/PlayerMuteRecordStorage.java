@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integer> {
 
   public PlayerMuteRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerMuteRecord>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerMuteRecord>) BanManager.getPlugin()
                                                                         .getLocalDb().getTable("playerMuteRecords"));
 
     if (!this.isTableExists()) {

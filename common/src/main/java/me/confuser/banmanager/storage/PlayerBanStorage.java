@@ -20,7 +20,6 @@ import me.confuser.banmanager.events.PlayerBannedEvent;
 import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,8 +33,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   private ConcurrentHashMap<UUID, PlayerBanData> bans = new ConcurrentHashMap<>();
 
   public PlayerBanStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerBanData>) BanManager.getPlugin().getConfiguration().getLocalDb()
-                                                                     .getTable("playerBans"));
+    super(connection, (DatabaseTableConfig<PlayerBanData>) BanManager.getPlugin().getLocalDb().getTable("playerBans"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connection, tableConfig);

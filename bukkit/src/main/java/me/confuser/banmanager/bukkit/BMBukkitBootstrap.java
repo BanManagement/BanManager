@@ -32,7 +32,6 @@ import me.confuser.banmanager.common.plugin.logging.PluginLogger;
 import me.confuser.banmanager.common.sender.Sender;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -61,13 +60,13 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
     /**
      * The plugin classloader
      */
-    private final PluginClassLoader classLoader;
+    //private final PluginClassLoader classLoader;
 
     /**
      * A null-safe console instance which delegates to the server logger
      * if {@link Server#getConsoleSender()} returns null.
      */
-    private final ConsoleCommandSender console;
+    //private final ConsoleCommandSender console;
 
     /**
      * The plugin instance
@@ -90,8 +89,7 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
     public BMBukkitBootstrap() {
         this.logger = new JavaPluginLogger(getLogger());
         this.schedulerAdapter = new BukkitSchedulerAdapter(this);
-        this.classLoader = new ReflectionClassLoader(this);
-        this.console = new NullSafeConsoleCommandSender(getServer());
+        //this.classLoader = new ReflectionClassLoader(this);
         this.plugin = new BMBukkitPlugin(this);
     }
 
@@ -105,16 +103,6 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
     @Override
     public BukkitSchedulerAdapter getScheduler() {
         return this.schedulerAdapter;
-    }
-
-    @Override
-    public PluginClassLoader getPluginClassLoader() {
-        return this.classLoader;
-    }
-
-    @Override
-    public ConsoleCommandSender getConsole() {
-        return this.console;
     }
 
     // lifecycle
@@ -207,7 +195,7 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
 
     @Override
     public String getServerName() {
-        return getServer().getServerName();
+        return getServer().getName();
     }
 
     @Override
@@ -233,6 +221,12 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
     @Override
     public Optional<Sender> getPlayerAsSender(String username) {
         Optional<Player> player = getPlayer(username);
+        return player.map(value -> plugin.getSenderFactory().wrap(value));
+    }
+
+    @Override
+    public Optional<Sender> getPlayerAsSender(UUID uuid) {
+        Optional<Player> player = getPlayer(uuid);
         return player.map(value -> plugin.getSenderFactory().wrap(value));
     }
 
@@ -266,6 +260,11 @@ public class BMBukkitBootstrap extends JavaPlugin implements BanManagerBootstrap
     public boolean isPlayerOnline(UUID uuid) {
         Player player = getServer().getPlayer(uuid);
         return player != null && player.isOnline();
+    }
+
+    @Override
+    public boolean doesWorldExist(String name) {
+        return getServer().getWorld(name) != null;
     }
 
     private static boolean checkIncompatibleVersion() {

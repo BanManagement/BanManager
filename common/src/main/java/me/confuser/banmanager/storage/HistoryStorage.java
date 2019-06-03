@@ -10,7 +10,6 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.util.parsers.InfoCommandParser;
-import org.bukkit.ChatColor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

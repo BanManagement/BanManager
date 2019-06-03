@@ -82,7 +82,7 @@ public class TempIpMuteCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_MUTE, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.IP_MUTE, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.INVALID_ARGS;
     }

@@ -1,9 +1,9 @@
 package me.confuser.banmanager.bukkit.listeners;
 
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
+import me.confuser.banmanager.bukkit.utils.BukkitUUIDUtils;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.sender.Sender;
-import me.confuser.banmanager.util.BukkitUUIDUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

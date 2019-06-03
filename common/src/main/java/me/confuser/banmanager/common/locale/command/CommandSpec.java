@@ -93,6 +93,13 @@ public enum CommandSpec {
     TEMPBANNAME("Temporarily ban a name"),
     TEMPBANIPRANGE("Temporarily ban a cidr or wildcard ip range"),
     REPORTS_ASSIGN("Assign a report to a player, if none given assigns to self"),
+    REPORTS("REPORTS"),//TODO
+    REPORTS_INFO("REPORTS_INFO"),//TODO
+    REPORTS_CLOSE("REPORTS_CLOSE"),//TODO
+    REPORTS_LIST("REPORTS_LIST"),//TODO
+    REPORTS_TP("REPORTS_TP"),//TODO
+    REPORTS_UNASSIGN("REPORTS_UNASSIGN"),//TODO
+    BMUTILS("BMUTILS"),//TODO
 
     //
 

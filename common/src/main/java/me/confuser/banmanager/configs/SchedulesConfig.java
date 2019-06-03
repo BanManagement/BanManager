@@ -1,11 +1,8 @@
 package me.confuser.banmanager.configs;
 
-import me.confuser.banmanager.BanManager;
-import me.confuser.bukkitutil.configs.Config;
-
 import java.util.HashMap;
 
-public class SchedulesConfig extends Config<BanManager> {
+public class SchedulesConfig {
 
   private HashMap<String, Integer> schedules = new HashMap<>(6);
   private HashMap<String, Long> lastChecked = new HashMap<>(4);

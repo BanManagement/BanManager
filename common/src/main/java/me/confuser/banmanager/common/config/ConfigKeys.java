@@ -26,14 +26,13 @@
 //TODO redo for banmanager
 package me.confuser.banmanager.common.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static me.confuser.banmanager.common.config.ConfigKeyTypes.*;
 
@@ -67,26 +66,74 @@ public final class ConfigKeys {
 
     //BanManager
 
-    //Database
-    public static final ConfigKey<Boolean> DATABASE_ENABLED = booleanKey("database.enabled", true);
-    public static final ConfigKey<String> DATABASE_STORAGETYPE = stringKey("database.storageType", "mysql");
-    public static final ConfigKey<String> DATABASE_HOST = stringKey("database.host", "");
-    public static final ConfigKey<Integer> DATABASE_PORT = integerKey("database.port", 3306);
-    public static final ConfigKey<String> DATABASE_NAME = stringKey("database.name", "");
-    public static final ConfigKey<String> DATABASE_USER = stringKey("database.user", "");
-    public static final ConfigKey<String> DATABASE_PASSWORD = stringKey("database.password", "");
-    public static final ConfigKey<Boolean> DATABASE_USE_SSL = booleanKey("database.useSSL", false);
-    public static final ConfigKey<Boolean> DATABASE_VERIFY_SERVER_CERT = booleanKey("database.verifyServerCertificate", false);
-    public static final ConfigKey<Integer> DATABASE_MAX_CONNECTIONS = integerKey("database.maxConnections", 10);
-    public static final ConfigKey<Integer> DATABASE_LEAK_DETECTION = integerKey("database.leakDetection", 0);
-    public static final ConfigKey<Map<String, String>> DATABASE_TABLES = mapKey("database.tables");
+    //Misc - config.yml
+    public static final ConfigKey<Boolean> DEBUG = booleanKey("debug", false);
+    public static final ConfigKey<Boolean> ONLINEMODE = booleanKey("onlineMode", true);
 
-    //Console
+    //Database - config.yml
+    public static final ConfigKey<Boolean> DATABASE_LOCAL_ENABLED = booleanKey("databases.local.enabled", true);
+    public static final ConfigKey<String> DATABASE_LOCAL_STORAGETYPE = stringKey("databases.local.storageType", "mysql");
+    public static final ConfigKey<String> DATABASE_LOCAL_HOST = stringKey("databases.local.host", "");
+    public static final ConfigKey<Integer> DATABASE_LOCAL_PORT = integerKey("databases.local.port", 3306);
+    public static final ConfigKey<String> DATABASE_LOCAL_NAME = stringKey("databases.local.name", "");
+    public static final ConfigKey<String> DATABASE_LOCAL_USER = stringKey("databases.local.user", "");
+    public static final ConfigKey<String> DATABASE_LOCAL_PASSWORD = stringKey("databases.local.password", "");
+    public static final ConfigKey<Boolean> DATABASE_LOCAL_USE_SSL = booleanKey("databases.local.useSSL", false);
+    public static final ConfigKey<Boolean> DATABASE_LOCAL_VERIFY_SERVER_CERT = booleanKey("databases.local.verifyServerCertificate", false);
+    public static final ConfigKey<Integer> DATABASE_LOCAL_MAX_CONNECTIONS = integerKey("databases.local.maxConnections", 10);
+    public static final ConfigKey<Integer> DATABASE_LOCAL_LEAK_DETECTION = integerKey("databases.local.leakDetection", 0);
+    public static final ConfigKey<Map<String, String>> DATABASE_LOCAL_TABLES = mapKey("databases.local.tables");
+
+    public static final ConfigKey<Boolean> DATABASE_GLOBAL_ENABLED = booleanKey("databases.global.enabled", false);
+    public static final ConfigKey<String> DATABASE_GLOBAL_STORAGETYPE = stringKey("databases.global.storageType", "mysql");
+    public static final ConfigKey<String> DATABASE_GLOBAL_HOST = stringKey("databases.global.host", "");
+    public static final ConfigKey<Integer> DATABASE_GLOBAL_PORT = integerKey("databases.global.port", 3306);
+    public static final ConfigKey<String> DATABASE_GLOBAL_NAME = stringKey("databases.global.name", "");
+    public static final ConfigKey<String> DATABASE_GLOBAL_USER = stringKey("databases.global.user", "");
+    public static final ConfigKey<String> DATABASE_GLOBAL_PASSWORD = stringKey("databases.global.password", "");
+    public static final ConfigKey<Boolean> DATABASE_GLOBAL_USE_SSL = booleanKey("databases.global.useSSL", false);
+    public static final ConfigKey<Boolean> DATABASE_GLOBAL_VERIFY_SERVER_CERT = booleanKey("databases.global.verifyServerCertificate", false);
+    public static final ConfigKey<Integer> DATABASE_GLOBAL_MAX_CONNECTIONS = integerKey("databases.global.maxConnections", 10);
+    public static final ConfigKey<Integer> DATABASE_GLOBAL_LEAK_DETECTION = integerKey("databases.global.leakDetection", 3000);
+    public static final ConfigKey<Map<String, String>> DATABASE_GLOBAL_TABLES = mapKey("databases.global.tables");
+
+    //Console - console.yml
     public static final ConfigKey<String> CONSOLE_NAME = stringKey("console.name", "Console");
-    public static final ConfigKey<UUID> CONSOLE_UUID = uuidKey("console.uuid", UUID.randomUUID());
+    public static final ConfigKey<String> CONSOLE_UUID = stringKey("console.uuid", "0");
 
-    //Geoip
+    //Geoip - geoip.yml
     public static final ConfigKey<Boolean> GEOIP_ENABLED = booleanKey("geoip.enabled", false);
+    public static final ConfigKey<String> GEOIP_DOWNLOAD_CITY = stringKey("geoip.download.city", "https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz");
+    public static final ConfigKey<String> GEOIP_DOWNLOAD_COUNTRY = stringKey("geoip.download.city", "https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz");
+    public static final ConfigKey<Long> GEOIP_DOWNLOAD_LASTUPDATED = longKey("geoip.download.lastUpdated", 0L);
+    public static final ConfigKey<String> GEOIP_COUNTRIES_TYPE = stringKey("geoip.countries.type", "blacklist");
+    public static final ConfigKey<List<String>> GEOIP_COUNTRIES_LIST = stringList("geoip.countries.list", new ArrayList<>());
+
+    //Schedules - schedules.yml
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_EXPIRESCHECK = integerKey("scheduler.scheduler.expiresCheck", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_PLAYERBANS = integerKey("scheduler.scheduler.playerBans", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_PLAYERMUTES = integerKey("scheduler.scheduler.playerMutes", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_PLAYERWARNINGS = integerKey("scheduler.scheduler.playerWarnings", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_IPBANS = integerKey("scheduler.scheduler.ipBans", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_IPRANGEBANS = integerKey("scheduler.scheduler.ipRangeBans", 30);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_EXTERNALPLAYERBANS = integerKey("scheduler.scheduler.externalPlayerBans", 120);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_EXTERNALPLAYERMUTES = integerKey("scheduler.scheduler.externalPlayerMutes", 120);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_EXTERNALPLAYERNOTES = integerKey("scheduler.scheduler.externalPlayerNotes", 120);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_EXTERNALIPBANS = integerKey("scheduler.scheduler.externalIpBans", 120);
+    public static final ConfigKey<Integer> SCHEDULER_SCHEDULER_SAVELASTCHECKED = integerKey("scheduler.scheduler.saveLastChecked", 60);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_EXTERNALPLAYERNOTES = longKey("scheduler.lastChecked.externalPlayerNotes", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_PLAYERMUTES = longKey("scheduler.lastChecked.playerMutes", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_IPRANGEBANS = longKey("scheduler.lastChecked.ipRangeBans", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_EXPIRESCHECK = longKey("scheduler.lastChecked.expiresCheck", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_EXTERNALPLAYERMUTES = longKey("scheduler.lastChecked.externalPlayerMutes", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_PLAYERBANS = longKey("scheduler.lastChecked.playerBans", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_EXTERNALPLAYERBANS = longKey("scheduler.lastChecked.externalPlayerBans", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_EXTERNALIPBANS = longKey("scheduler.lastChecked.externalIpBans", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_PLAYERWARNINGS = longKey("scheduler.lastChecked.playerWarnings", 0L);
+    public static final ConfigKey<Long> SCHEDULER_LASTCHECKED_IPBANS = longKey("scheduler.lastChecked.ipBans", 0L);
+
+
+
 
     //End of BanManager
 

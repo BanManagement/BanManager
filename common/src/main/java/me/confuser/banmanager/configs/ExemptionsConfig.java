@@ -1,14 +1,11 @@
 package me.confuser.banmanager.configs;
 
-import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerExemptionsData;
-import me.confuser.bukkitutil.configs.Config;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
 
-public class ExemptionsConfig extends Config<BanManager> {
+public class ExemptionsConfig {
 
   private static ArrayList<String> types = new ArrayList<String>() {
 

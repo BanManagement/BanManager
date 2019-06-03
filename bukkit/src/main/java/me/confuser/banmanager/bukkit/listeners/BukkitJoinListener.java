@@ -7,7 +7,8 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
 import me.confuser.banmanager.bukkit.utils.BukkitCommandUtils;
-import me.confuser.banmanager.commands.report.ReportList;
+import me.confuser.banmanager.bukkit.utils.BukkitUUIDUtils;
+import me.confuser.banmanager.common.commands.report.ReportList;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.data.*;
@@ -61,7 +62,7 @@ public class BukkitJoinListener implements Listener {
 
       if (!plugin.getPlayerBanStorage().isBanned(BukkitUUIDUtils.getUUID(event))) {
         try {
-          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(UUIDUtils.getUUID(event));
+          PlayerBanData ban = plugin.getPlayerBanStorage().retrieveBan(BukkitUUIDUtils.getUUID(event));
 
           if (ban != null) plugin.getPlayerBanStorage().addBan(ban);
         } catch (SQLException e) {
@@ -71,7 +72,7 @@ public class BukkitJoinListener implements Listener {
 
       if (!plugin.getPlayerMuteStorage().isMuted(BukkitUUIDUtils.getUUID(event))) {
         try {
-          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(UUIDUtils.getUUID(event));
+          PlayerMuteData mute = plugin.getPlayerMuteStorage().retrieveMute(BukkitUUIDUtils.getUUID(event));
 
           if (mute != null) plugin.getPlayerMuteStorage().addMute(mute);
         } catch (SQLException e) {
@@ -179,7 +180,7 @@ public class BukkitJoinListener implements Listener {
       return;
     }
 
-    PlayerBanData data = plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(event));
+    PlayerBanData data = plugin.getPlayerBanStorage().getBan(BukkitUUIDUtils.getUUID(event));
 
     if (data != null && data.hasExpired()) {
       try {
@@ -261,31 +262,29 @@ public class BukkitJoinListener implements Listener {
       try {
         notesItr = plugin.getPlayerNoteStorage().getNotes(id);
         ArrayList<String> notes = new ArrayList<>();
-        String dateTimeFormat = Message.getString("notes.dateTimeFormat");
+        String dateTimeFormat = Message.NOTES_DATETIMEFORMAT.getMessage();
         FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
         while (notesItr != null && notesItr.hasNext()) {
           PlayerNoteData note = notesItr.next();
 
-          Message noteMessage = Message.get("notes.note")
-                                       .set("player", note.getActor().getName())
-                                       .set("message", note.getMessageColours())
-                                       .set("created", dateFormatter.format(note.getCreated() * 1000L));
+          String noteMessage = Message.NOTES_NOTE.asString(plugin.getLocaleManager(),
+                                       "player", note.getActor().getName(),
+                                       "message", note.getMessageColours(),
+                                       "created", dateFormatter.format(note.getCreated() * 1000L));
 
-          notes.add(noteMessage.toString());
+          notes.add(noteMessage);
         }
 
         if (notes.size() != 0) {
-          Message noteJoinMessage = Message.get("notes.joinAmount")
-                                           .set("amount", notes.size())
-                                           .set("player", event.getPlayer().getName());
+          String noteJoinMessage = Message.NOTES_JOINAMOUNT.asString(plugin.getLocaleManager(),
+                                           "amount", notes.size(),
+                                           "player", event.getPlayer().getName());
 
-          CommandUtils.broadcast(JSONCommandUtils
-                  .notesAmount(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+          CommandUtils.broadcast(JSONCommandUtils.notesAmount(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
-          String header = Message.get("notes.header")
-                                 .set("player", event.getPlayer().getName())
-                                 .toString();
+          String header = Message.NOTES_HEADER.asString(plugin.getLocaleManager(),
+                                 "player", event.getPlayer().getName());
 
           CommandUtils.broadcast(header, "bm.notify.notes.join");
 
@@ -362,10 +361,10 @@ public class BukkitJoinListener implements Listener {
         CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(event.getAddress());
 
         if (!plugin.getGeoIpConfig().isCountryAllowed(countryResponse)) {
-          Message message = Message.get("deniedCountry")
-                                   .set("country", countryResponse.getCountry().getName())
-                                   .set("countryIso", countryResponse.getCountry().getIsoCode());
-          event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message.toString());
+          String message = Message.DENIEDCOUNTRY.asString(plugin.getLocaleManager(),
+                                   "country", countryResponse.getCountry().getName(),
+                                   "countryIso", countryResponse.getCountry().getIsoCode());
+          event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
           return;
         }
 
@@ -382,7 +381,7 @@ public class BukkitJoinListener implements Listener {
       }
 
       if (count >= plugin.getConfiguration().getMaxOnlinePerIp()) {
-        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.getString("deniedMaxIp"));
+        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.DENIEDMAXIP.getMessage());
         return;
       }
 
@@ -395,7 +394,7 @@ public class BukkitJoinListener implements Listener {
       List<PlayerData> multiaccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timediff);
 
       if (multiaccountPlayers.size() > plugin.getConfiguration().getMaxMultiaccountsRecently()) {
-        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.getString("deniedMultiaccounts"));
+        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Message.DENIEDMULTIACCOUNTS.getMessage());
         return;
       }
 
@@ -409,7 +408,7 @@ public class BukkitJoinListener implements Listener {
 
     plugin.getBootstrap().getScheduler().asyncLater(() -> {
       final long ip = IPUtils.toLong(event.getAddress());
-      final UUID uuid = UUIDUtils.getUUID(event.getPlayer());
+      final UUID uuid = BukkitUUIDUtils.getUUID(event.getPlayer());
       List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 
       if (duplicates.isEmpty()) {
@@ -465,12 +464,12 @@ public class BukkitJoinListener implements Listener {
       plugin.getBootstrap().getScheduler().executeSync(() -> {
         Player bukkitPlayer = BukkitCommandUtils.getPlayer(uuid);
 
-        Message kickMessage = Message.get("denyalts.player.disallowed")
-                                     .set("player", player.getName())
-                                     .set("reason", ban.getReason())
-                                     .set("actor", ban.getActor().getName());
+        String kickMessage = Message.DENYALTS_PLAYER_DISALLOWED.asString(plugin.getLocaleManager(),
+                                     "player", player.getName(),
+                                     "reason", ban.getReason(),
+                                     "actor", ban.getActor().getName());
 
-        bukkitPlayer.kickPlayer(kickMessage.toString());
+        bukkitPlayer.kickPlayer(kickMessage);
       });
     }
   }
@@ -499,13 +498,13 @@ public class BukkitJoinListener implements Listener {
         plugin.getBootstrap().getScheduler().executeSync(() -> {
           Player bukkitPlayer = BukkitCommandUtils.getPlayer(newBan.getPlayer().getUUID());
 
-          Message kickMessage = Message.get("ban.player.kick")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", newBan.getPlayer().getName())
-                                       .set("reason", newBan.getReason())
-                                       .set("actor", newBan.getActor().getName());
+          String kickMessage = Message.BAN_PLAYER_KICK.asString(plugin.getLocaleManager(),
+                                       "displayName", bukkitPlayer.getDisplayName(),
+                                       "player", newBan.getPlayer().getName(),
+                                       "reason", newBan.getReason(),
+                                       "actor", newBan.getActor().getName());
 
-          bukkitPlayer.kickPlayer(kickMessage.toString());
+          bukkitPlayer.kickPlayer(kickMessage);
         });
       }
     } else if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {

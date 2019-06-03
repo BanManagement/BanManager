@@ -3,7 +3,8 @@ package me.confuser.banmanager.util;
 import com.j256.ormlite.dao.GenericRawResults;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
-import me.confuser.bukkitutil.Message;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ public class DateUtils {
           .asList("year", "month", "week", "day", "hour", "minute", "second");
   private static final List<String> shortTimesString = Arrays
           .asList("y", "mo", "w", "d", "h", "m", "s");
-  private static BanManager plugin = BanManager.getPlugin();
+  private static BanManagerPlugin plugin = BanManager.getPlugin();
   @Getter
   private static long timeDiff = 0;
   private static Pattern timePattern = Pattern
@@ -35,7 +36,7 @@ public class DateUtils {
 
   public static String formatDifference(long time) {
     if (time == 0) {
-      return Message.getString("never");
+      return Message.TIME_NEVER.getMessage();
     }
 
     StringBuilder diff = new StringBuilder();
@@ -85,7 +86,7 @@ public class DateUtils {
 
     }
 
-    return diff.length() == 0 ? Message.getString("time.now") : diff.toString();
+    return diff.length() == 0 ? Message.TIME_NOW.getMessage() : diff.toString();
   }
 
   public static String getDifferenceFormat(long timestamp) {

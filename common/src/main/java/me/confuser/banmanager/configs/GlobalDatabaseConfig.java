@@ -1,7 +1,6 @@
 package me.confuser.banmanager.configs;
 
 import me.confuser.banmanager.data.global.*;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 
@@ -20,8 +19,8 @@ public class GlobalDatabaseConfig extends DatabaseConfig {
     put("ipUnbans", GlobalIpBanRecordData.class);
   }};
 
-  public GlobalDatabaseConfig(ConfigurationSection conf) {
-    super(conf, types);
+  public GlobalDatabaseConfig() {
+    super(Type.GLOBAL, types);
   }
 
 }

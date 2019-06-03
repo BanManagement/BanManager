@@ -1,6 +1,6 @@
 package me.confuser.banmanager.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 
 import java.net.InetAddress;

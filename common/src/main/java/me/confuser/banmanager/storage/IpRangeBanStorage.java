@@ -22,7 +22,6 @@ import me.confuser.banmanager.events.IpRangeUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -36,7 +35,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   private ConcurrentHashMap<Range, IpRangeBanData> bans = new ConcurrentHashMap<>();
 
   public IpRangeBanStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpRangeBanData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<IpRangeBanData>) BanManager.getPlugin().getLocalDb()
                                                                       .getTable("ipRangeBans"));
 
     if (!this.isTableExists()) {

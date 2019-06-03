@@ -50,7 +50,7 @@ public class TempBanIpAllCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.IP_BAN, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.INVALID_ARGS;
     }

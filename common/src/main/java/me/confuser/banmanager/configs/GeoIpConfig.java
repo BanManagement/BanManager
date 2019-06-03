@@ -3,16 +3,18 @@ package me.confuser.banmanager.configs;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.model.CountryResponse;
 import lombok.Getter;
-import me.confuser.banmanager.BanManager;
-import me.confuser.bukkitutil.configs.Config;
+import me.confuser.banmanager.common.config.ConfigKeyTypes;
+import me.confuser.banmanager.common.config.ConfigKeys;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-public class GeoIpConfig extends Config<BanManager> {
+import static me.confuser.banmanager.BanManager.plugin;
+
+public class GeoIpConfig {
 
   @Getter
   private boolean enabled = false;
@@ -20,26 +22,27 @@ public class GeoIpConfig extends Config<BanManager> {
   private DatabaseReader cityDatabase;
   @Getter
   private DatabaseReader countryDatabase;
-  private HashSet<String> countries;
+  private List<String> countries;
   @Getter
   private String type;
 
   public GeoIpConfig() {
-    super("geoip.yml");
+    //TODO
+    //super("geoip.yml");
   }
 
   @Override
   public void afterLoad() {
-    enabled = conf.getBoolean("enabled", false);
+    enabled = plugin.getConfiguration().get(ConfigKeys.GEOIP_ENABLED);
 
     if (!enabled) return;
 
-    File cityFile = new File(plugin.getDataFolder(), "city.mmdb");
-    String cityDownloadUrl = conf.getString("download.city");
-    File countryFile = new File(plugin.getDataFolder(), "country.mmdb");
-    String countryDownloadUrl = conf.getString("download.country");
+    File cityFile = new File(plugin.getBootstrap().getDataDirectory().toFile(), "city.mmdb");
+    String cityDownloadUrl = plugin.getConfiguration().get(ConfigKeys.GEOIP_DOWNLOAD_CITY);
+    File countryFile = new File(plugin.getBootstrap().getDataDirectory().toFile(), "country.mmdb");
+    String countryDownloadUrl = plugin.getConfiguration().get(ConfigKeys.GEOIP_DOWNLOAD_COUNTRY);
 
-    long lastUpdated = conf.getLong("download.lastUpdated");
+    long lastUpdated = plugin.getConfiguration().get(ConfigKeys.GEOIP_DOWNLOAD_LASTUPDATED);
     boolean outdated = (System.currentTimeMillis() - lastUpdated) > 2592000000L; // older than 30 days?
 
     if (!cityFile.exists() || outdated) {
@@ -93,14 +96,14 @@ public class GeoIpConfig extends Config<BanManager> {
     if (!enabled) return;
 
     if (outdated) {
-      conf.set("download.lastUpdated", System.currentTimeMillis());
-      save();
+      plugin.getConfiguration().set((ConfigKeyTypes.FunctionalKey)ConfigKeys.GEOIP_DOWNLOAD_LASTUPDATED, System.currentTimeMillis());
+      plugin.getConfiguration().save();
     }
 
     plugin.getLogger().info("Successfully loaded GeoIP databases");
 
-    countries = new HashSet<>(conf.getStringList("countries.list"));
-    type = conf.getString("countries.type");
+    countries = plugin.getConfiguration().get(ConfigKeys.GEOIP_COUNTRIES_LIST);
+    type = plugin.getConfiguration().get(ConfigKeys.GEOIP_COUNTRIES_TYPE);
 
     plugin.getLogger().info("Loaded " + countries.size() + " countries on the " + type);
   }
@@ -111,10 +114,6 @@ public class GeoIpConfig extends Config<BanManager> {
     } else {
       return countries.contains(countryResponse.getCountry().getIsoCode());
     }
-  }
-
-  @Override
-  public void onSave() {
   }
 
   private void downloadDatabase(String downloadUrl, File location) throws IOException {
@@ -142,4 +141,5 @@ public class GeoIpConfig extends Config<BanManager> {
     output.close();
     input.close();
   }
+
 }

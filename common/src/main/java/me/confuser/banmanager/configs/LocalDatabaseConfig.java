@@ -1,7 +1,6 @@
 package me.confuser.banmanager.configs;
 
 import me.confuser.banmanager.data.*;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 
@@ -45,8 +44,10 @@ public class LocalDatabaseConfig extends DatabaseConfig {
     put("nameBanRecords", NameBanRecord.class);
   }};
 
-  public LocalDatabaseConfig(ConfigurationSection conf) {
-    super(conf, types);
+  public LocalDatabaseConfig() {
+    super(Type.LOCAL, types);
   }
+
+
 
 }

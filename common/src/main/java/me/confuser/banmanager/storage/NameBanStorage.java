@@ -20,7 +20,6 @@ import me.confuser.banmanager.events.NameBannedEvent;
 import me.confuser.banmanager.events.NameUnbanEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
   private ConcurrentHashMap<String, NameBanData> bans = new ConcurrentHashMap<>();
 
   public NameBanStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<NameBanData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<NameBanData>) BanManager.getPlugin().getLocalDb()
                                                                    .getTable("nameBans"));
 
     if (!this.isTableExists()) {

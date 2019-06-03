@@ -19,7 +19,6 @@ import me.confuser.banmanager.events.PlayerWarnEvent;
 import me.confuser.banmanager.events.PlayerWarnedEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -35,7 +34,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
                                                                  .build();
 
   public PlayerWarnStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerWarnData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerWarnData>) BanManager.getPlugin()
                                                                       .getLocalDb().getTable("playerWarnings"));
 
     if (!this.isTableExists()) {

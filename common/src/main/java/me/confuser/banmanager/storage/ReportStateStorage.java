@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class ReportStateStorage extends BaseDaoImpl<ReportState, Integer> {
 
   public ReportStateStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<ReportState>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<ReportState>) BanManager.getPlugin()
                                                                                 .getLocalDb()
                                                                                 .getTable("playerReportStates"));
 

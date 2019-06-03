@@ -13,7 +13,6 @@ import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
-import me.confuser.banmanager.data.PlayerBanData;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerMuteData;
 import me.confuser.banmanager.events.PlayerMuteEvent;
@@ -21,7 +20,6 @@ import me.confuser.banmanager.events.PlayerMutedEvent;
 import me.confuser.banmanager.events.PlayerUnmuteEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,7 +32,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<>();
 
   public PlayerMuteStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerMuteData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerMuteData>) BanManager.getPlugin()
                                                                       .getLocalDb().getTable("playerMutes"));
 
     if (!this.isTableExists()) {

@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
 
   public PlayerKickStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerKickData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerKickData>) BanManager.getPlugin()
                                                                       .getLocalDb().getTable("playerKicks"));
 
     if (!this.isTableExists()) {

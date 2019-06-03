@@ -25,9 +25,8 @@
 
 package me.confuser.banmanager.common.sender;
 
-import me.confuser.banmanager.api.Tristate;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
-
+import me.confuser.banmanager.common.util.Location;
 import net.kyori.text.Component;
 
 import java.net.InetAddress;
@@ -59,13 +58,17 @@ public abstract class SenderFactory<T> {
 
     protected abstract void sendMessage(T t, Component message);
 
-    protected abstract Tristate getPermissionValue(T t, String node);
-
     protected abstract boolean hasPermission(T t, String node);
 
     protected abstract InetAddress getIPAddress(T t);
 
     protected abstract void kick(T t, String message);
+
+    protected abstract Location getLocation(T t);
+
+    protected abstract void leaveVehicle(T t);
+
+    protected abstract boolean isInsideVehicle(T t);
 
     public final Sender wrap(T sender) {
         Objects.requireNonNull(sender, "sender");

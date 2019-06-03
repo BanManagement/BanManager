@@ -25,7 +25,6 @@
 
 package me.confuser.banmanager.common.sender;
 
-import me.confuser.banmanager.api.Tristate;
 import me.confuser.banmanager.common.command.CommandManager;
 import me.confuser.banmanager.common.command.access.CommandPermission;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
@@ -71,39 +70,6 @@ public interface Sender {
     String getDisplayName();
 
     /**
-     * Gets a string representing the senders username, and their current location
-     * within the network.
-     *
-     * @return a friendly identifier for the sender
-     */
-    /*default String getNameWithLocation() {
-        String name = getName();
-
-        ContextManager<?> contextManager = getPlugin().getContextManager();
-        if (contextManager == null) {
-            return name;
-        }
-
-        ImmutableContextSet staticContext = contextManager.getStaticContext();
-
-        String location;
-        if (staticContext.isEmpty()) {
-            return name;
-        } else if (staticContext.size() == 1) {
-            location = staticContext.iterator().next().getValue();
-        } else {
-            Set<String> servers = staticContext.getValues(Contexts.SERVER_KEY);
-            if (servers.size() == 1) {
-                location = servers.iterator().next();
-            } else {
-                location = staticContext.toSet().stream().map(pair -> pair.getKey() + "=" + pair.getValue()).collect(Collectors.joining(";"));
-            }
-        }
-
-        return name + "@" + location;
-    }*/
-
-    /**
      * Gets the sender's unique id.
      *
      * <p>See {@link #CONSOLE_UUID} for the console's UUID representation.</p>
@@ -127,14 +93,6 @@ public interface Sender {
      * @param message the message to send.
      */
     void sendMessage(Component message);
-
-    /**
-     * Gets the tristate a permission is set to.
-     *
-     * @param permission the permission to check for
-     * @return a tristate
-     */
-    Tristate getPermissionValue(String permission);
 
     /**
      * Check if the Sender has a permission.
@@ -204,5 +162,7 @@ public interface Sender {
 
     boolean isInsideVehicle();
     void leaveVehicle();
+
+    Location getLocation();
 
 }

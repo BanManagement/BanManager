@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer> {
 
   public PlayerBanRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerBanRecord>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerBanRecord>) BanManager.getPlugin()
                                                                        .getLocalDb().getTable("playerBanRecords"));
 
     if (!this.isTableExists()) {

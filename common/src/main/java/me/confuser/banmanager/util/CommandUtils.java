@@ -2,7 +2,7 @@ package me.confuser.banmanager.util;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.commands.report.ReportList;
+import me.confuser.banmanager.common.commands.report.ReportList;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
@@ -187,19 +187,6 @@ public class CommandUtils {
     return player;
   }
 
-  public static Player getPlayer(UUID uuid) {
-    if (plugin.getConfiguration().isOnlineMode()) {
-      return plugin.getBootstrap().getPlayer(uuid);
-    }
-
-    for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-      if (UUIDUtils.getUUID(onlinePlayer).equals(uuid))
-        return onlinePlayer;
-    }
-
-    return null;
-  }
-
   public static Sender getSender(UUID uuid) {
     if (plugin.getConfiguration().isOnlineMode()) {
       return plugin.getBootstrap().getPlayerAsSender(uuid).orElse(null);
@@ -261,16 +248,14 @@ public class CommandUtils {
             "count", reports.getCount());
 
     for (PlayerReportData report : reports.getList()) {
-      String message = Message.get("report.list.row.all")
-                              .set("id", report.getId())
-                              .set("state", report.getState().getName())
-                              .set("player", report.getPlayer().getName())
-                              .set("actor", report.getActor().getName())
-                              .set("reason", report.getReason())
-                              .set("created", dateFormatter
-                                      .format(report.getCreated() * 1000L))
-                              .set("updated", dateFormatter
-                                      .format(report.getUpdated() * 1000L)).toString();
+      String message = Message.REPORT_LIST_ROW_ALL.asString(plugin.getLocaleManager(),
+                              "id", report.getId(),
+                              "state", report.getState().getName(),
+                              "player", report.getPlayer().getName(),
+                              "actor", report.getActor().getName(),
+                              "reason", report.getReason(),
+                              "created", dateFormatter.format(report.getCreated() * 1000L),
+                              "updated", dateFormatter.format(report.getUpdated() * 1000L));
 
       if (!sender.isConsole()) {
         JSONMessage.create(message).runCommand("/reports info " + report.getId()).send((Player) sender);

@@ -80,6 +80,11 @@ public enum CommandPermission {
     TEMPBANNAME("tempbanname", Type.COMMAND),//bm.command.tempbanname
     TEMPBANIPRANGE("tempbaniprange", Type.COMMAND),//bm.command.tempbaniprange
     REPORTS_ASSIGN("reports.assign", Type.COMMAND),//bm.command.reports.assign
+    REPORTS_INFO("reports.info", Type.COMMAND),//bm.command.reports.info
+    REPORTS_CLOSE("reports.close", Type.COMMAND),//bm.command.reports.close
+    REPORTS_LIST("reports.list", Type.COMMAND),//bm.command.reports.list
+    REPORTS_TP("reports.tp", Type.COMMAND),//bm.command.reports.tp
+    REPORTS_UNASSIGN("reports.unassign", Type.COMMAND),//bm.command.reports.unassign
 
 
 

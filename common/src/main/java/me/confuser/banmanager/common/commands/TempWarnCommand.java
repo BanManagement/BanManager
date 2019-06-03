@@ -93,7 +93,7 @@ public class TempWarnCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_WARN, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.PLAYER_WARN, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.INVALID_ARGS;
     }
@@ -129,7 +129,7 @@ public class TempWarnCommand extends SingleCommand {
 
       if (actor == null) return;
 
-      boolean isOnline = CommandUtils.getPlayer(player.getUUID()) != null;
+      boolean isOnline = CommandUtils.getSender(player.getUUID()) != null;
 
       final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser.getPoints(), isOnline, expires);
 

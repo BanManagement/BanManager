@@ -11,6 +11,7 @@ build.xml
 dependency-reduced-pom.xml
 .gradle
 tmp
+out
 
 # Package Files #
 *.jar

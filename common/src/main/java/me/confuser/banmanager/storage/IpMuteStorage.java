@@ -21,7 +21,6 @@ import me.confuser.banmanager.events.IpUnmutedEvent;
 import me.confuser.banmanager.util.DateUtils;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -34,7 +33,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   private ConcurrentHashMap<Long, IpMuteData> mutes = new ConcurrentHashMap<>();
 
   public IpMuteStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpMuteData>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<IpMuteData>) BanManager.getPlugin().getLocalDb()
                                                                   .getTable("ipMutes"));
 
     if (!this.isTableExists()) {

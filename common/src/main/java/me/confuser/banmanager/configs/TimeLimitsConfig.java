@@ -1,9 +1,8 @@
 package me.confuser.banmanager.configs;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.util.DateUtils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 
@@ -11,7 +10,7 @@ public class TimeLimitsConfig {
 
   private HashMap<String, HashMap<String, String>> limits;
 
-  public TimeLimitsConfig(ConfigurationSection config) {
+  public TimeLimitsConfig() {
     limits = new HashMap<>();
 
     for (TimeLimitType type : TimeLimitType.values()) {
@@ -27,7 +26,7 @@ public class TimeLimitsConfig {
         try {
           DateUtils.parseDateDiff(time, true);
         } catch (Exception e) {
-          BanManager.getPlugin().getLogger().warning("Ignored " + type.getName() + " " + name + " due to invalid time");
+          BanManager.getPlugin().getLogger().warn("Ignored " + type.getName() + " " + name + " due to invalid time");
           continue;
         }
 
@@ -38,7 +37,7 @@ public class TimeLimitsConfig {
     }
   }
 
-  public boolean isPastLimit(CommandSender sender, TimeLimitType type, long expires) {
+  public boolean isPastLimit(Sender sender, TimeLimitType type, long expires) {
     if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass") || sender.hasPermission("bm.*")) {
       return false;
     }

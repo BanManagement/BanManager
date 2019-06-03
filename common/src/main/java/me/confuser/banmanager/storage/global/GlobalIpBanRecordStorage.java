@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class GlobalIpBanRecordStorage extends BaseDaoImpl<GlobalIpBanRecordData, Integer> {
 
   public GlobalIpBanRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<GlobalIpBanRecordData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<GlobalIpBanRecordData>) BanManager.getPlugin()
                                                                              .getGlobalDb().getTable("ipUnbans"));
 
     if (!this.isTableExists()) {

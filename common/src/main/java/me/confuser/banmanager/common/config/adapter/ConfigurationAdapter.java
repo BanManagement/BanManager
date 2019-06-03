@@ -37,9 +37,13 @@ public interface ConfigurationAdapter {
 
     void reload();
 
+    void save();
+
     String getString(String path, String def);
 
     int getInteger(String path, int def);
+
+    long getLong(String path, long def);
 
     boolean getBoolean(String path, boolean def);
 
@@ -50,5 +54,7 @@ public interface ConfigurationAdapter {
     Map<String, String> getStringMap(String path, Map<String, String> def);
 
     UUID getUUID(String path, UUID def);
+
+    void set(String path, Object value);
 
 }

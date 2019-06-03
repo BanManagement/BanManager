@@ -6,12 +6,10 @@ import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
-import me.confuser.banmanager.commands.*;
 import me.confuser.banmanager.common.commands.*;
 import me.confuser.banmanager.common.commands.global.*;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.configs.*;
-import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.runnables.*;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.global.*;
@@ -19,13 +17,6 @@ import me.confuser.banmanager.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.storage.mysql.ConvertMyISAMToInnoDb;
 import me.confuser.banmanager.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.UpdateUtils;
-import me.confuser.bukkitutil.BukkitPlugin;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.EventExecutor;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -139,7 +130,7 @@ public class BanManager {
 
       setupStorages();
     } catch (SQLException e) {
-      getLogger().warning("An error occurred attempting to make a database connection, please see stack trace below");
+      getPlugin().getBootstrap().getPluginLogger().warn("An error occurred attempting to make a database connection, please see stack trace below");
       plugin.getPluginLoader().disablePlugin(this);
       e.printStackTrace();
       return;
@@ -149,11 +140,10 @@ public class BanManager {
       long timeDiff = DateUtils.findTimeDiff();
 
       if (timeDiff > 1) {
-        getLogger()
-                .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
+        getPlugin().getBootstrap().getPluginLogger().severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
       }
     } catch (SQLException | IOException e) {
-      getLogger().warning("An error occurred attempting to find the time difference, please see stack trace below");
+      getPlugin().getBootstrap().getPluginLogger().warn("An error occurred attempting to find the time difference, please see stack trace below");
       plugin.getPluginLoader().disablePlugin(this);
       e.printStackTrace();
     }
@@ -164,7 +154,7 @@ public class BanManager {
 
   @Override
   public void onDisable() {
-    getServer().getScheduler().cancelTasks(plugin);
+    getPlugin().getBootstrap().getScheduler().shutdown();
 
     if (localConn != null) {
       // Save all player histories
@@ -183,16 +173,6 @@ public class BanManager {
 
   private void disableDatabaseLogging() {
     System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
-  }
-
-  @Override
-  public String getPermissionBase() {
-    return "bm";
-  }
-
-  @Override
-  public String getPluginFriendlyName() {
-    return "BanManager";
   }
 
   @Override
@@ -300,7 +280,7 @@ public class BanManager {
 
   public boolean setupConnections() throws SQLException {
     if (!configuration.getLocalDb().isEnabled()) {
-      getLogger().warning("Local Database is not enabled, disabling plugin");
+      getPlugin().getBootstrap().getPluginLogger().warn("Local Database is not enabled, disabling plugin");
       plugin.getPluginLoader().disablePlugin(this);
       return false;
     }
@@ -399,56 +379,4 @@ public class BanManager {
     globalIpBanRecordStorage = new GlobalIpBanRecordStorage(globalConn);
   }
 
-  @Override
-  public void setupListeners() {
-  //Moved to registerPlatformListeners TODO sponge
-  }
-
-  @Override
-  public void setupRunnables() {
-    if (globalConn == null) {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync(), new NameSync());
-    } else {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync(), new NameSync(),
-              new GlobalBanSync(), new GlobalMuteSync(), new GlobalIpSync(), new GlobalNoteSync());
-    }
-
-    setupAsyncRunnable(10L, syncRunner);
-
-    /*
-     * This task should be ran last with a 1L offset as it gets modified
-     * above.
-     */
-    setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked());
-
-    // Purge
-    getServer().getScheduler().runTaskAsynchronously(plugin, new Purge());
-
-    // TODO Refactor
-    if (!getConfiguration().isCheckForUpdates()) return;
-
-    getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-      @Override
-      public void run() {
-        if (UpdateUtils.isUpdateAvailable(getFile())) {
-          getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-              new UpdateListener().register();
-            }
-          });
-        }
-      }
-    });
-  }
-
-  private void setupAsyncRunnable(long length, Runnable runnable) {
-    if (length <= 0) return;
-
-    getServer().getScheduler().runTaskTimerAsynchronously(plugin, runnable, length, length);
-  }
 }

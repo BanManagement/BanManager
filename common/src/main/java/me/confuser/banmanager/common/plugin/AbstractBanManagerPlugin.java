@@ -2,11 +2,13 @@ package me.confuser.banmanager.common.plugin;
 
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
+import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import me.confuser.banmanager.common.config.AbstractConfiguration;
 import me.confuser.banmanager.common.config.BanManagerConfiguration;
+import me.confuser.banmanager.common.config.ConfigKeys;
 import me.confuser.banmanager.common.config.adapter.ConfigurationAdapter;
 import me.confuser.banmanager.common.locale.LocaleManager;
 import me.confuser.banmanager.common.plugin.logging.PluginLogger;
@@ -136,7 +138,7 @@ public abstract class AbstractBanManagerPlugin implements BanManagerPlugin {
         this.localeManager.tryLoad(this, getBootstrap().getConfigDirectory().resolve("lang.yml"));
 
         try {
-            if (!configuration.isDebugEnabled()) {
+            if (!configuration.get(ConfigKeys.DEBUG)) {
                 disableDatabaseLogging();
             }
 
@@ -171,17 +173,23 @@ public abstract class AbstractBanManagerPlugin implements BanManagerPlugin {
 
     }
 
+    private void disableDatabaseLogging() {
+        System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
+    }
+
+
     public boolean setupConnections() throws SQLException {
-        if (!configuration.getLocalDb().isEnabled()) {
+        if (!getLocalDb().isEnabled()) {
             getLogger().warn("Local Database is not enabled, disabling plugin");
-            plugin.getPluginLoader().disablePlugin(this);
+            //TODO sponge doesn't allow plugin disablement.
+            //plugin.getPluginLoader().disablePlugin(this);
             return false;
         }
 
-        localConn = setupConnection(configuration.getLocalDb(), "bm-local");
+        localConn = setupConnection(getLocalDb(), "bm-local");
 
-        if (configuration.getGlobalDb().isEnabled()) {
-            globalConn = setupConnection(configuration.getGlobalDb(), "bm-global");
+        if (getGlobalDb().isEnabled()) {
+            globalConn = setupConnection(getGlobalDb(), "bm-global");
         }
 
         return true;
@@ -231,7 +239,7 @@ public abstract class AbstractBanManagerPlugin implements BanManagerPlugin {
     @SuppressWarnings("unchecked")
     public void setupStorages() throws SQLException {
         // TODO Refactor this
-        new ConvertMyISAMToInnoDb(localConn, getConfiguration().getLocalDb().getTables()); // Convert to InnoDb if MyISAM
+        new ConvertMyISAMToInnoDb(localConn, getLocalDb().getTables()); // Convert to InnoDb if MyISAM
 
         playerStorage = new PlayerStorage(localConn);
         playerBanStorage = new PlayerBanStorage(localConn);
@@ -266,7 +274,7 @@ public abstract class AbstractBanManagerPlugin implements BanManagerPlugin {
             return;
         }
 
-        new ConvertMyISAMToInnoDb(globalConn, getConfiguration().getGlobalDb().getTables()); // Convert to InnoDb if MyISAM
+        new ConvertMyISAMToInnoDb(globalConn, getGlobalDb().getTables()); // Convert to InnoDb if MyISAM
 
         globalPlayerBanStorage = new GlobalPlayerBanStorage(globalConn);
         globalPlayerBanRecordStorage = new GlobalPlayerBanRecordStorage(globalConn);

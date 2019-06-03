@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class PlayerReportCommentStorage extends BaseDaoImpl<PlayerReportCommentData, Integer> {
 
   public PlayerReportCommentStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerReportCommentData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerReportCommentData>) BanManager.getPlugin()
                                                                                 .getLocalDb()
                                                                                 .getTable("playerReportComments"));
 

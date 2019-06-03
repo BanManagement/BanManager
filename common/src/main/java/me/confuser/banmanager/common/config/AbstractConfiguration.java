@@ -28,6 +28,8 @@ package me.confuser.banmanager.common.config;
 
 import me.confuser.banmanager.common.config.adapter.ConfigurationAdapter;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import me.confuser.banmanager.configs.DatabaseConfig;
+import me.confuser.banmanager.configs.SchedulesConfig;
 
 /**
  * An abstract implementation of {@link BanManagerConfiguration}.
@@ -61,6 +63,11 @@ public class AbstractConfiguration implements BanManagerConfiguration {
     }
 
     @Override
+    public <T> void set(ConfigKeyTypes.FunctionalKey<T> key, T value) {
+        this.adapter.set(key.path, value);
+    }
+
+    @Override
     public synchronized void load() {
         // if this is a reload operation
         boolean reload = true;
@@ -82,6 +89,11 @@ public class AbstractConfiguration implements BanManagerConfiguration {
             this.values[key.ordinal()] = value;
         }
 
+    }
+
+    @Override
+    public void save() {
+        this.adapter.save();
     }
 
     @Override

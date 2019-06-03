@@ -2,10 +2,9 @@ package me.confuser.banmanager.util;
 
 import com.google.common.collect.ImmutableList;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.config.ConfigKeys;
 import me.confuser.banmanager.common.sender.Sender;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -76,10 +75,6 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     return byteBuffer.array();
   }
 
-  public static byte[] toBytes(Player player) {
-    return toBytes(getUUID(player));
-  }
-
   public static byte[] toBytes(Sender sender) {
     return toBytes(getUUID(sender));
   }
@@ -125,42 +120,10 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     return (String) jsonProfile.get("name");
   }
 
-  public static UUIDProfile getUUIDProfile(String name, long time) throws Exception {
-    if (!BanManager.getPlugin().getConfiguration().isOnlineMode())
-      return new UUIDProfile(name, createUUID(name));
-
-    BanManager.plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
-    String url = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + time;
-
-    HttpURLConnection connection = createConnection(url, "GET");
-
-    int status = connection.getResponseCode();
-
-    if (status != 200) throw new Exception("Error retrieving name from " + url);
-
-    JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
-
-    if (obj.size() == 0) return null;
-
-    return new UUIDProfile((String) obj.get("name"), getUUID((String) obj.get("id")));
-  }
-
-  public static UUID getUUID(Player player) {
-    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
-
-    return createUUID(player.getName());
-  }
-
   public static UUID getUUID(Sender sender) {
-    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return sender.getUuid();
+    if (BanManager.getPlugin().getConfiguration().get(ConfigKeys.ONLINEMODE)) return sender.getUuid();
 
     return createUUID(sender.getName());
-  }
-
-  public static UUID getUUID(AsyncPlayerPreLoginEvent event) {
-    if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return event.getUniqueId();
-
-    return createUUID(event.getName());
   }
 
   private static UUID createUUID(String s) {
@@ -174,7 +137,7 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   public Map<String, UUID> call() throws Exception {
 
     Map<String, UUID> uuidMap = new HashMap<>();
-    if (!BanManager.getPlugin().getConfiguration().isOnlineMode()) {
+    if (!BanManager.getPlugin().getConfiguration().get(ConfigKeys.ONLINEMODE)) {
       BanManager.plugin.getLogger().info("Generating offline UUIDs for " + StringUtils.join(names, ','));
 
       for (String s : names) {

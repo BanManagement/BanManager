@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
 
   public IpMuteRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpMuteRecord>) BanManager.getPlugin().getConfiguration().getLocalDb()
+    super(connection, (DatabaseTableConfig<IpMuteRecord>) BanManager.getPlugin().getLocalDb()
                                                                    .getTable("ipMuteRecords"));
 
     if (!this.isTableExists()) {

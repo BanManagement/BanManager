@@ -26,6 +26,7 @@
 package me.confuser.banmanager.common.command;
 
 import com.google.common.collect.ImmutableList;
+import me.confuser.banmanager.common.commands.ReportsCommand;
 import me.confuser.banmanager.common.command.abstraction.Command;
 import me.confuser.banmanager.common.command.abstraction.CommandException;
 import me.confuser.banmanager.common.command.access.CommandPermission;
@@ -119,6 +120,8 @@ public class CommandManager {
                 .add(new TempIpMuteCommand(locale))
                 .add(new TempNameBanCommand(locale))
                 .add(new TempIpRangeBanCommand(locale))
+                .add(new ReportsCommand(locale))
+                .add(new UtilsCommand(locale))
                 .build();
     }
 
@@ -162,12 +165,12 @@ public class CommandManager {
                 Message.VIEW_AVAILABLE_COMMANDS_PROMPT.send(sender, label);
                 return CommandResult.SUCCESS;
             } else {
-                Collection<? extends Group> groups = this.plugin.getGroupManager().getAll().values();
+                /*Collection<? extends Group> groups = this.plugin.getGroupManager().getAll().values();
                 if (groups.size() <= 1 && groups.stream().allMatch(g -> g.getOwnNodes().isEmpty())) {
                     Message.FIRST_TIME_SETUP.send(sender, label, sender.getName());
                 } else {
                     Message.NO_PERMISSION_FOR_SUBCOMMANDS.send(sender);
-                }
+                }*/
                 return CommandResult.NO_PERMISSION;
             }
         }

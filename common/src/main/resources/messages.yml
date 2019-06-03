@@ -7,9 +7,6 @@
 
 messages:
   duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
-  deniedMaxIp: '&cToo many players with your ip address online'
-  deniedMultiaccounts: '&cToo many players with your ip address logged in recently'
-  deniedCountry: '&cYou may not connect from your region'
   none: 'none'
 # Commands
 
@@ -23,10 +20,6 @@ messages:
       started: '&aStarting force [type] synchronisation'
       finished: '&aForced [type] synchronisation complete'
 
-  update:
-    notify: '&6[BanManager] &aAn update is available'
-
-
 
   adnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
@@ -39,6 +32,4 @@ messages:
     noResults: '&cNo results found'
 
 
-  denyalts:
-    player:
-      disallowed: '&cThe IP address you are joining from is linked to a banned player'
+  DENYALTS_PLAYER_DISALLOWED("&cThe IP address you are joining from is linked to a banned player", true),

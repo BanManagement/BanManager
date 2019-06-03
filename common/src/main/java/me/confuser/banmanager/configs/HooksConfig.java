@@ -2,7 +2,7 @@ package me.confuser.banmanager.configs;
 
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
-import org.bukkit.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 import java.util.*;
 
@@ -28,7 +28,7 @@ public class HooksConfig {
       add("tempwarn");
     }
   };
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
 
   @Getter
   private boolean isEnabled = false;

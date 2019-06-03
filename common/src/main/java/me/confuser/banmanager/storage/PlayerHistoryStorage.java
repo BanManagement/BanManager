@@ -18,7 +18,7 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
   private ConcurrentHashMap<UUID, PlayerHistoryData> players = new ConcurrentHashMap<>();
 
   public PlayerHistoryStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerHistoryData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerHistoryData>) BanManager.getPlugin()
                                                                          .getLocalDb().getTable("playerHistory"));
 
     if (!this.isTableExists()) {

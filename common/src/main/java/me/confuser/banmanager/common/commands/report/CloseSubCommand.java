@@ -1,10 +1,14 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportCommandData;
 import me.confuser.banmanager.data.PlayerReportCommentData;
@@ -17,8 +21,8 @@ import java.util.List;
 
 public class CloseSubCommand extends SubCommand<String> {
 
-  public CloseSubCommand() {
-    super("close");
+  public CloseSubCommand(LocaleManager locale) {
+    super(CommandSpec.REPORTS_CLOSE.localize(locale), "close", CommandPermission.REPORTS_CLOSE, Predicates.alwaysFalse());
   }
 
   //command.reports.close

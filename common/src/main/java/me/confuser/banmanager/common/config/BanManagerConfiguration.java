@@ -65,6 +65,11 @@ public interface BanManagerConfiguration {
     void load();
 
     /**
+     * Saves all configuration values.
+     */
+    void save();
+
+    /**
      * Gets the value of a given context key.
      *
      * @param key the key
@@ -72,5 +77,13 @@ public interface BanManagerConfiguration {
      * @return the value mapped to the given key. May be null.
      */
     <T> T get(ConfigKey<T> key);
+
+    /**
+     * Sets the value of a given context key.
+     *
+     * @param key the key
+     * @param <T> the key return type
+     */
+    <T> void set(ConfigKeyTypes.FunctionalKey<T> key, T value);
 
 }

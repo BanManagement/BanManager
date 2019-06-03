@@ -27,14 +27,14 @@ public class BMBukkitPlugin extends AbstractBanManagerPlugin {
 
 
     private BukkitBanListener banListener = new BukkitBanListener(this);
-    private BukkitChatListener chatListener = new BukkitChatListener();
+    private BukkitChatListener chatListener = new BukkitChatListener(this);
     private BukkitCommandListener commandListener = new BukkitCommandListener(this);
     private BukkitHookListener hookListener = new BukkitHookListener(this);
-    private BukkitJoinListener joinListener = new BukkitJoinListener();
-    private BukkitLeaveListener leaveListener = new BukkitLeaveListener();
-    private BukkitMuteListener muteListener = new BukkitMuteListener();
-    private BukkitNoteListener noteListener = new BukkitNoteListener();
-    private BukkitReportListener reportListener = new BukkitReportListener();
+    private BukkitJoinListener joinListener = new BukkitJoinListener(this);
+    private BukkitLeaveListener leaveListener = new BukkitLeaveListener(this);
+    private BukkitMuteListener muteListener = new BukkitMuteListener(this);
+    private BukkitNoteListener noteListener = new BukkitNoteListener(this);
+    private BukkitReportListener reportListener = new BukkitReportListener(this);
 
     @Getter
     private Runner syncRunner;
@@ -94,7 +94,7 @@ public class BMBukkitPlugin extends AbstractBanManagerPlugin {
          * This task should be ran last with a 1L offset as it gets modified
          * above.
          */
-        setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked());
+        setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(this));
 
         // Purge
         getBootstrap().getScheduler().executeAsync(new Purge(this));
@@ -104,7 +104,10 @@ public class BMBukkitPlugin extends AbstractBanManagerPlugin {
 
         getBootstrap().getScheduler().executeAsync(() -> {
             if (UpdateUtils.isUpdateAvailable(getFile())) {
-                getBootstrap().getScheduler().executeSync(() -> new BukkitUpdateListener().register());
+                getBootstrap().getScheduler().executeSync(() -> {
+                    BukkitUpdateListener listener = new BukkitUpdateListener(this);
+                    Bukkit.getServer().getPluginManager().registerEvents(listener, this.bootstrap);
+                });
             }
         });
     }

@@ -49,6 +49,10 @@ dependencies {
     //compile 'me.confuser:BukkitPluginUtil:1.7.0'//TODO remove
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     //compile 'me.rayzr522:jsonmessage:1.0.0'//Uses bukkit..
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'commons-net:commons-net:3.6'
 
-	
+
+
+
 }

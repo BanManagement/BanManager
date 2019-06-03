@@ -25,18 +25,7 @@
 
 package me.confuser.banmanager.common.command.tabcomplete;
 
-import com.google.common.base.Splitter;
-
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
-import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
-import me.lucko.luckperms.common.treeview.PermissionRegistry;
-import me.lucko.luckperms.common.treeview.TreeNode;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Common completion suppliers used by the plugin
@@ -45,59 +34,8 @@ public final class TabCompletions {
 
     private static final CompletionSupplier BOOLEAN = CompletionSupplier.startsWith("true", "false");
 
-    private final CompletionSupplier groups;
-    private final CompletionSupplier tracks;
-    private final CompletionSupplier permissions;
-
     public TabCompletions(BanManagerPlugin plugin) {
-        this.groups = CompletionSupplier.startsWith(() -> plugin.getGroupManager().getAll().keySet());
-        this.tracks = CompletionSupplier.startsWith(() -> plugin.getTrackManager().getAll().keySet());
-        this.permissions = partial -> {
-            PermissionRegistry cache = plugin.getPermissionRegistry();
 
-            if (partial.isEmpty()) {
-                return cache.getRootNode().getChildren()
-                        .map(Map::keySet)
-                        .<List<String>>map(ArrayList::new)
-                        .orElse(Collections.emptyList());
-            }
-
-            String start = partial.toLowerCase();
-            List<String> parts = new ArrayList<>(Splitter.on('.').splitToList(start));
-            TreeNode root = cache.getRootNode();
-
-            if (parts.size() <= 1) {
-                if (!root.getChildren().isPresent()) {
-                    return Collections.emptyList();
-                }
-
-                return root.getChildren().get().keySet().stream().filter(TabCompleter.startsWithIgnoreCase(start)).collect(Collectors.toList());
-            }
-
-            String incomplete = parts.remove(parts.size() - 1);
-
-            for (String s : parts) {
-                if (!root.getChildren().isPresent()) {
-                    return Collections.emptyList();
-                }
-
-                TreeNode n = root.getChildren().get().get(s);
-                if (n == null) {
-                    return Collections.emptyList();
-                }
-
-                root = n;
-            }
-
-            if (!root.getChildren().isPresent()) {
-                return Collections.emptyList();
-            }
-
-            return root.getChildren().get().keySet().stream()
-                    .filter(TabCompleter.startsWithIgnoreCase(incomplete))
-                    .map(s -> String.join(".", parts) + "." + s)
-                    .collect(Collectors.toList());
-        };
     }
 
     // bit of a weird pattern, but meh it kinda works, reduces the boilerplate
@@ -105,18 +43,6 @@ public final class TabCompletions {
 
     public static CompletionSupplier booleans() {
         return BOOLEAN;
-    }
-
-    public static CompletionSupplier groups(BanManagerPlugin plugin) {
-        return plugin.getCommandManager().getTabCompletions().groups;
-    }
-
-    public static CompletionSupplier tracks(BanManagerPlugin plugin) {
-        return plugin.getCommandManager().getTabCompletions().tracks;
-    }
-
-    public static CompletionSupplier permissions(BanManagerPlugin plugin) {
-        return plugin.getCommandManager().getTabCompletions().permissions;
     }
 
 }

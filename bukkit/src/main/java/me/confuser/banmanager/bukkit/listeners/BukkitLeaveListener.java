@@ -1,6 +1,7 @@
 package me.confuser.banmanager.bukkit.listeners;
 
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
+import me.confuser.banmanager.bukkit.utils.BukkitUUIDUtils;
 import me.confuser.banmanager.data.PlayerHistoryData;
 import me.confuser.banmanager.util.BukkitUUIDUtils;
 import org.bukkit.event.EventHandler;

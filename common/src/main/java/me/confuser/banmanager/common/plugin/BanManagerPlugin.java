@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.locale.LocaleManager;
 import me.confuser.banmanager.common.plugin.bootstrap.BanManagerBootstrap;
 import me.confuser.banmanager.common.plugin.logging.PluginLogger;
 import me.confuser.banmanager.common.sender.SenderFactory;
+import me.confuser.banmanager.configs.*;
 import me.confuser.banmanager.runnables.Runner;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.storage.global.*;
@@ -25,6 +26,13 @@ public interface BanManagerPlugin {
      * @return the plugin's logger
      */
     PluginLogger getLogger();
+
+    /**
+     * Gets the event factory
+     *
+     * @return the event factory
+     */
+    //EventFactory getEventFactory();
 
     /**
      * Gets the plugin's configuration
@@ -81,6 +89,16 @@ public interface BanManagerPlugin {
     PlayerReportCommandStorage getPlayerReportCommandStorage();
     PlayerReportCommentStorage getPlayerReportCommentStorage();
     PlayerReportLocationStorage getPlayerReportLocationStorage();
+
+    //TODO refactor?
+    SchedulesConfig getSchedulesConfig();
+    DatabaseConfig getLocalDb();
+    DatabaseConfig getGlobalDb();
+    GeoIpConfig getGeoIpConfig();
+    TimeLimitsConfig getTimeLimits();
+    ExemptionsConfig getExemptionsConfig();
+    ReasonsConfig getReasonsConfig();
+    HooksConfig getHooksConfig();
 
     Runner getSyncRunner();
 

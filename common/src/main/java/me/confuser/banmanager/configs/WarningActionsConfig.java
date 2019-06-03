@@ -2,9 +2,9 @@ package me.confuser.banmanager.configs;
 
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class WarningActionsConfig {
 
-  private BanManager plugin = BanManager.getPlugin();
+  private BanManagerPlugin plugin = BanManager.getPlugin();
   @Getter
   private boolean isEnabled = false;
   private HashMap<Double, List<ActionCommand>> actions;
@@ -30,7 +30,7 @@ public class WarningActionsConfig {
 
     for (String amount : actionsConf.getKeys(false)) {
       if (!StringUtils.isNumeric(amount)) {
-        plugin.getLogger().warning("Invalid warning action, " + amount + " is not numeric");
+        plugin.getLogger().warn("Invalid warning action, " + amount + " is not numeric");
         continue;
       }
 
@@ -66,8 +66,7 @@ public class WarningActionsConfig {
         List<String> actions = actionsConf.getStringList(amount);
         if (actions.size() == 0) continue;
 
-        plugin.getLogger()
-              .warning("warningActions amount " + amount + " is using a deprecated list, please use new cmd and delay syntax");
+        plugin.getLogger().warn("warningActions amount " + amount + " is using a deprecated list, please use new cmd and delay syntax");
         List<ActionCommand> actionCommands = new ArrayList<>(actions.size());
 
         for (String action : actions) {

@@ -1,6 +1,7 @@
 package me.confuser.banmanager.bukkit.utils;
 
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.config.ConfigKeys;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.util.BukkitUUIDUtils;
 import org.bukkit.Bukkit;
@@ -17,7 +18,7 @@ public class BukkitCommandUtils {
     private static BanManagerPlugin plugin = BanManager.getPlugin();
 
     public static Player getPlayer(UUID uuid) {
-        if (plugin.getConfiguration().isOnlineMode())
+        if (plugin.getConfiguration().get(ConfigKeys.ONLINEMODE))
             return (Player) plugin.getBootstrap().getPlayer(uuid).orElse(null);
 
         for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {

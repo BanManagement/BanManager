@@ -1,11 +1,15 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import com.j256.ormlite.stmt.SelectArg;
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.data.ReportState;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.UUIDUtils;
@@ -15,8 +19,8 @@ import java.util.List;
 
 public class ListSubCommand extends SubCommand<String> {
 
-  public ListSubCommand() {
-    super("list");
+  public ListSubCommand(LocaleManager locale) {
+    super(CommandSpec.REPORTS_LIST.localize(locale), "list", CommandPermission.REPORTS_LIST, Predicates.alwaysFalse());
   }
 
   //command.reports.list

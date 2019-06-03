@@ -31,6 +31,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class BukkitConfigAdapter implements ConfigurationAdapter {
@@ -50,8 +51,22 @@ public class BukkitConfigAdapter implements ConfigurationAdapter {
     }
 
     @Override
+    public void save() {
+        try {
+            this.configuration.save(this.file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public UUID getUUID(String path, UUID def) {
         return UUID.fromString(this.configuration.getString(path, def.toString()));
+    }
+
+    @Override
+    public void set(String path, Object value) {
+        this.configuration.set(path, value);
     }
 
     @Override
@@ -62,6 +77,11 @@ public class BukkitConfigAdapter implements ConfigurationAdapter {
     @Override
     public int getInteger(String path, int def) {
         return this.configuration.getInt(path, def);
+    }
+
+    @Override
+    public long getLong(String path, long def) {
+        return this.configuration.getLong(path, def);
     }
 
     @Override

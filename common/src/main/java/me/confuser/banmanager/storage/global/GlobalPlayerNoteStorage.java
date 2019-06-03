@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class GlobalPlayerNoteStorage extends BaseDaoImpl<GlobalPlayerNoteData, Integer> {
 
   public GlobalPlayerNoteStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<GlobalPlayerNoteData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<GlobalPlayerNoteData>) BanManager.getPlugin()
                                                                             .getGlobalDb().getTable("playerNotes"));
 
     if (!this.isTableExists()) {

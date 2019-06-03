@@ -1,7 +1,10 @@
-package me.confuser.banmanager.util;
+package me.confuser.banmanager.bukkit.utils;
 
 import com.google.common.collect.ImmutableList;
 import me.confuser.banmanager.BanManager;
+import me.confuser.banmanager.common.config.ConfigKeys;
+import me.confuser.banmanager.util.UUIDProfile;
+import me.confuser.banmanager.util.UUIDUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,6 +21,8 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+
+import static me.confuser.banmanager.BanManager.plugin;
 
 /**
  * Based on UUIDFetcher by evilmidget38
@@ -102,7 +107,7 @@ public class BukkitUUIDUtils implements Callable<Map<String, UUID>> {//TODO abst
     }
 
     public static String getCurrentName(UUID uuid) throws Exception {
-        BanManager.plugin.getLogger().info("Requesting name for " + uuid.toString());
+        plugin.getLogger().info("Requesting name for " + uuid.toString());
         String url = "https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names";
 
         HttpURLConnection connection = createConnection(url, "GET");
@@ -121,10 +126,10 @@ public class BukkitUUIDUtils implements Callable<Map<String, UUID>> {//TODO abst
     }
 
     public static UUIDProfile getUUIDProfile(String name, long time) throws Exception {
-        if (!BanManager.getPlugin().getConfiguration().isOnlineMode())
+        if (!plugin.getConfiguration().get(ConfigKeys.ONLINEMODE))
             return new UUIDProfile(name, createUUID(name));
 
-        BanManager.plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
+        plugin.getLogger().info("Requesting UUID for " + name + " at " + time);
         String url = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + time;
 
         HttpURLConnection connection = createConnection(url, "GET");
@@ -141,13 +146,13 @@ public class BukkitUUIDUtils implements Callable<Map<String, UUID>> {//TODO abst
     }
 
     public static UUID getUUID(Player player) {
-        if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return player.getUniqueId();
+        if (plugin.getConfiguration().get(ConfigKeys.ONLINEMODE)) return player.getUniqueId();
 
         return createUUID(player.getName());
     }
 
     public static UUID getUUID(AsyncPlayerPreLoginEvent event) {
-        if (BanManager.getPlugin().getConfiguration().isOnlineMode()) return event.getUniqueId();
+        if (plugin.getConfiguration().get(ConfigKeys.ONLINEMODE)) return event.getUniqueId();
 
         return createUUID(event.getName());
     }
@@ -163,8 +168,8 @@ public class BukkitUUIDUtils implements Callable<Map<String, UUID>> {//TODO abst
     public Map<String, UUID> call() throws Exception {
 
         Map<String, UUID> uuidMap = new HashMap<>();
-        if (!BanManager.getPlugin().getConfiguration().isOnlineMode()) {
-            BanManager.plugin.getLogger().info("Generating offline UUIDs for " + StringUtils.join(names, ','));
+        if (!plugin.getConfiguration().get(ConfigKeys.ONLINEMODE)) {
+            plugin.getLogger().info("Generating offline UUIDs for " + StringUtils.join(names, ','));
 
             for (String s : names) {
                 uuidMap.put(s, createUUID(s));
@@ -173,7 +178,7 @@ public class BukkitUUIDUtils implements Callable<Map<String, UUID>> {//TODO abst
             return uuidMap;
         }
 
-        BanManager.plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
+        plugin.getLogger().info("Requesting UUIDs for " + StringUtils.join(names, ','));
 
         int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
         for (int i = 0; i < requests; i++) {

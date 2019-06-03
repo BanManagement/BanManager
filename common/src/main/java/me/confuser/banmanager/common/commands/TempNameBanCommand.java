@@ -56,7 +56,7 @@ public class TempNameBanCommand extends SingleCommand {
       return CommandResult.INVALID_ARGS;
     }
 
-    if (plugin.getConfiguration().getTimeLimits().isPastLimit(sender, TimeLimitType.NAME_BAN, expiresCheck)) {
+    if (plugin.getTimeLimits().isPastLimit(sender, TimeLimitType.NAME_BAN, expiresCheck)) {
       Message.TIME_ERROR_LIMIT.send(sender);
       return CommandResult.INVALID_ARGS;
     }

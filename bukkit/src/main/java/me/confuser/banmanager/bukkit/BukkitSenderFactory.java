@@ -25,16 +25,14 @@
 
 package me.confuser.banmanager.bukkit;
 
-import me.confuser.banmanager.api.Tristate;
 import me.confuser.banmanager.bukkit.compat.CraftBukkitUtil;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
 import me.confuser.banmanager.common.sender.SenderFactory;
+import me.confuser.banmanager.common.util.Location;
 import me.confuser.banmanager.util.TextUtils;
-
 import net.kyori.text.Component;
 import net.kyori.text.adapter.bukkit.TextAdapter;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
@@ -88,14 +86,6 @@ public class BukkitSenderFactory extends SenderFactory<CommandSender> {
     }
 
     @Override
-    protected Tristate getPermissionValue(CommandSender sender, String node) {
-        boolean isSet = sender.isPermissionSet(node);
-        boolean val = sender.hasPermission(node);
-
-        return !isSet ? val ? Tristate.TRUE : Tristate.UNDEFINED : Tristate.fromBoolean(val);
-    }
-
-    @Override
     protected boolean hasPermission(CommandSender sender, String node) {
         return sender.hasPermission(node);
     }
@@ -115,6 +105,33 @@ public class BukkitSenderFactory extends SenderFactory<CommandSender> {
             Player player = (Player) sender;
             player.kickPlayer(message);
         }
+    }
+
+    @Override
+    protected Location getLocation(CommandSender sender) {
+        if(sender instanceof Player) {
+            Player player = (Player) sender;
+            org.bukkit.Location location = player.getLocation();
+            return new Location(player.getWorld().getName(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        }
+        return null;
+    }
+
+    @Override
+    protected void leaveVehicle(CommandSender sender) {
+        if(sender instanceof Player) {
+            Player player = (Player) sender;
+            player.leaveVehicle();
+        }
+    }
+
+    @Override
+    protected boolean isInsideVehicle(CommandSender sender) {
+        if(sender instanceof Player) {
+            Player player = (Player) sender;
+            return player.isInsideVehicle();
+        }
+        return false;
     }
 
     private static final class SyncMessengerAgent implements Runnable {

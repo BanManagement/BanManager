@@ -25,16 +25,8 @@
 
 package me.confuser.banmanager.common.command.utils;
 
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.Tristate;
-import me.lucko.luckperms.api.context.ContextSet;
-import me.lucko.luckperms.common.locale.LocaleManager;
-import me.lucko.luckperms.common.locale.message.Message;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public final class MessageUtils {
     private MessageUtils() {}
@@ -87,83 +79,6 @@ public final class MessageUtils {
         StringBuilder sb = new StringBuilder();
         strings.forEach(s -> sb.append("&3").append(s).append("&b ---> "));
         return sb.delete(sb.length() - 6, sb.length()).toString();
-    }
-
-    /**
-     * Formats a boolean to a colored string
-     *
-     * @param b the boolean value
-     * @return a formatted boolean string
-     */
-    public static String formatBoolean(boolean b) {
-        return b ? "&atrue" : "&cfalse";
-    }
-
-    /**
-     * Formats a tristate to a colored string
-     *
-     * @param t the tristate value
-     * @return a formatted tristate string
-     */
-    public static String formatTristate(Tristate t) {
-        switch (t) {
-            case TRUE:
-                return "&atrue";
-            case FALSE:
-                return "&cfalse";
-            default:
-                return "&cundefined";
-        }
-    }
-
-    /**
-     * Produces a string representing a Nodes context, suitable for appending onto another message line.
-     *
-     * @param localeManager the locale manager
-     * @param node the node to query context from
-     * @return a string representing the nodes context, or an empty string if the node applies globally.
-     */
-    public static String getAppendableNodeContextString(LocaleManager localeManager, Node node) {
-        StringBuilder sb = new StringBuilder();
-        if (node.isServerSpecific()) {
-            sb.append(" ").append(contextToString(localeManager, Contexts.SERVER_KEY, node.getServer().get()));
-        }
-        if (node.isWorldSpecific()) {
-            sb.append(" ").append(contextToString(localeManager, Contexts.WORLD_KEY, node.getWorld().get()));
-        }
-        for (Map.Entry<String, String> c : node.getContexts().toSet()) {
-            sb.append(" ").append(contextToString(localeManager, c.getKey(), c.getValue()));
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Converts a context pair to a formatted string, surrounded by (  ) brackets.
-     *
-     *
-     * @param localeManager the locale manager
-     * @param key the context key
-     * @param value the context value
-     * @return a formatted string
-     */
-    public static String contextToString(LocaleManager localeManager, String key, String value) {
-        return Message.CONTEXT_PAIR.asString(localeManager, key, value);
-    }
-
-    public static String contextSetToString(LocaleManager localeManager, ContextSet set) {
-        if (set.isEmpty()) {
-            return Message.CONTEXT_PAIR__GLOBAL_INLINE.asString(localeManager);
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Map.Entry<String, String> e : set.toSet()) {
-            sb.append(Message.CONTEXT_PAIR_INLINE.asString(localeManager, e.getKey(), e.getValue()));
-            sb.append(Message.CONTEXT_PAIR_SEP.asString(localeManager));
-        }
-
-        return sb.delete(sb.length() - Message.CONTEXT_PAIR_SEP.asString(localeManager).length(), sb.length()).toString();
     }
 
 }

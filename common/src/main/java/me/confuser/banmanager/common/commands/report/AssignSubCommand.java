@@ -1,4 +1,4 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;

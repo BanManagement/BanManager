@@ -112,7 +112,7 @@ public class WarnCommand extends SingleCommand {
 
       if (actor == null) return;
 
-      boolean isOnline = CommandUtils.getPlayer(player.getUUID()) != null;
+      boolean isOnline = CommandUtils.getSender(player.getUUID()) != null;
 
       final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser.getPoints(), isOnline);
 

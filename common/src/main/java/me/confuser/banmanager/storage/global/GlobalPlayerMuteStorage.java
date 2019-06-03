@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class GlobalPlayerMuteStorage extends BaseDaoImpl<GlobalPlayerMuteData, Integer> {
 
   public GlobalPlayerMuteStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<GlobalPlayerMuteData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<GlobalPlayerMuteData>) BanManager.getPlugin()
                                                                             .getGlobalDb().getTable("playerMutes"));
 
     if (!this.isTableExists()) {

@@ -2,11 +2,11 @@ package me.confuser.banmanager;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.support.ConnectionSource;
+import me.confuser.banmanager.common.locale.message.Message;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.util.IPUtils;
 import me.confuser.banmanager.util.UUIDUtils;
-import me.confuser.bukkitutil.Message;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class BmAPI {
 
-  private static BanManager plugin = BanManager.getPlugin();
+  private static BanManagerPlugin plugin = BanManager.getPlugin();
 
   /**
    * @param uuid
@@ -33,17 +33,6 @@ public class BmAPI {
    */
   public static PlayerData getPlayer(UUID uuid) throws SQLException {
     return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid));
-  }
-
-  /**
-   * @param player
-   *
-   * @return PlayerData
-   *
-   * @throws SQLException
-   */
-  public static PlayerData getPlayer(Player player) throws SQLException {
-    return getPlayer(UUIDUtils.getUUID(player));
   }
 
   /**
@@ -189,17 +178,6 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param player
-   *
-   * @return
-   */
-  public static boolean isBanned(Player player) {
-    return isBanned(UUIDUtils.getUUID(player));
-  }
-
-  /**
-   * Thread safe
-   *
    * @param name
    *
    * @return
@@ -230,18 +208,6 @@ public class BmAPI {
   public static PlayerBanData getCurrentBan(UUID uuid) {
     return plugin.getPlayerBanStorage().getBan(uuid);
   }
-
-  /**
-   * Thread safe
-   *
-   * @param uuid
-   *
-   * @return
-   */
-  public static PlayerBanData getCurrentBan(Player player) {
-    return plugin.getPlayerBanStorage().getBan(UUIDUtils.getUUID(player));
-  }
-
 
   /**
    * @param player
@@ -401,17 +367,6 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param player
-   *
-   * @return
-   */
-  public static boolean isMuted(Player player) {
-    return isMuted(UUIDUtils.getUUID(player));
-  }
-
-  /**
-   * Thread safe
-   *
    * @param name
    *
    * @return
@@ -442,18 +397,6 @@ public class BmAPI {
   public static PlayerMuteData getCurrentMute(UUID uuid) {
     return plugin.getPlayerMuteStorage().getMute(uuid);
   }
-
-  /**
-   * Thread safe
-   *
-   * @param uuid
-   *
-   * @return
-   */
-  public static PlayerMuteData getCurrentMute(Player player) {
-    return plugin.getPlayerMuteStorage().getMute(UUIDUtils.getUUID(player));
-  }
-
 
   /**
    * @param player
@@ -587,7 +530,7 @@ public class BmAPI {
   }
 
   /**
-   * @param player
+   * @param ip
    *
    * @return
    *
@@ -672,7 +615,7 @@ public class BmAPI {
    *
    * @return String
    */
-  public static Message getMessage(String key) {
+  public static Message getMessage(String key) {//TODO
     return Message.get(key);
   }
 

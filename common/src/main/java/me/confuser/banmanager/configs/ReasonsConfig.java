@@ -3,14 +3,16 @@ package me.confuser.banmanager.configs;
 import com.google.common.base.CharMatcher;
 import lombok.Getter;
 import me.confuser.banmanager.BanManager;
-import me.confuser.bukkitutil.configs.Config;
+import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 
 import java.util.HashMap;
 import java.util.Set;
 
-public class ReasonsConfig extends Config<BanManager> {
+public class ReasonsConfig {
   @Getter
   private HashMap<String, String> reasons;
+
+  BanManagerPlugin plugin = BanManager.getPlugin();
 
   public ReasonsConfig() {
     super("reasons.yml");

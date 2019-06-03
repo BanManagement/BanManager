@@ -104,6 +104,13 @@ public enum Message {
 
     DENIEDNOTIFY_PLAYER("&cWarning: [player] attempted to join the server but was denied due to &4[reason]", true),
     DENIEDNOTIFY_IP("&cWarning: [ip] attempted to join the server but was denied due to &4[reason]", true),
+
+    DENIEDMAXIP("&cToo many players with your ip address online", true),
+    DENIEDMULTIACCOUNTS("&cToo many players with your ip address logged in recently", true),
+    DENIEDCOUNTRY("&cYou may not connect from your region", true),
+
+    DENYALTS_PLAYER_DISALLOWED("&cThe IP address you are joining from is linked to a banned player", true),
+
     DUPLICATEIP("&cWarning: [player] has the same IP as the following banned players:\\n&6[players]", true),
 
     DWARN_PLAYER_NOTIFY("&6Your most recent warning has been deleted by &4[actor]", true),
@@ -299,6 +306,8 @@ public enum Message {
     UNMUTEIP_NOTIFY("&6[ip] has been unmuted by [actor]", true),
     UNMUTEIP_ERROR_NOEXISTS("&c[ip] is not muted", true),
     UNMUTEIP_ERROR_NOTOWN("&c[ip] was not muted by you, unable to unmute", true),
+
+    UPDATE_NOTIFY("&6[BanManager] &aAn update is available", true),
 
     WARN_PLAYER_WARNED("&6You have been warned by [actor] for &4[reason]", true),
     WARN_PLAYER_DISALLOWED_HEADER("&cYou may not speak until you have accepted your most recent warning. Please type the following:", true),

@@ -25,7 +25,6 @@
 
 package me.confuser.banmanager.common.sender;
 
-import me.confuser.banmanager.api.Tristate;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.util.TextUtils;
 import net.kyori.text.Component;
@@ -58,11 +57,6 @@ public abstract class DummySender implements Sender {
     @Override
     public void sendMessage(Component message) {
         consumeMessage(TextUtils.toLegacy(message));
-    }
-
-    @Override
-    public Tristate getPermissionValue(String permission) {
-        return Tristate.TRUE;
     }
 
     @Override

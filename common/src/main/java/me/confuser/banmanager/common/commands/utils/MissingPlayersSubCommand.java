@@ -1,4 +1,4 @@
-package me.confuser.banmanager.commands.utils;
+package me.confuser.banmanager.common.commands.utils;
 
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
@@ -8,9 +8,13 @@ import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.CommandException;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -32,8 +36,8 @@ public class MissingPlayersSubCommand extends SubCommand<String> {
     }
   };
 
-  public MissingPlayersSubCommand() {
-    super("missingplayers");
+  public MissingPlayersSubCommand(LocaleManager locale) {
+    super(CommandSpec.BMUTILS_MISSINGPLAYERS.localize(locale), "missingplayers", CommandPermission.BMUTILS_MISSINGPLAYERS, Predicates.alwaysFalse());
   }
 
   //command.bmutils.missingplayers

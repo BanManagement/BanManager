@@ -1,10 +1,14 @@
-package me.confuser.banmanager.commands.report;
+package me.confuser.banmanager.common.commands.report;
 
 import me.confuser.banmanager.common.command.CommandResult;
 import me.confuser.banmanager.common.command.abstraction.SubCommand;
+import me.confuser.banmanager.common.command.access.CommandPermission;
+import me.confuser.banmanager.common.locale.LocaleManager;
+import me.confuser.banmanager.common.locale.command.CommandSpec;
 import me.confuser.banmanager.common.locale.message.Message;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.common.sender.Sender;
+import me.confuser.banmanager.common.util.Predicates;
 import me.confuser.banmanager.data.PlayerReportData;
 import me.confuser.banmanager.data.PlayerReportLocationData;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -14,10 +18,11 @@ import java.util.List;
 
 public class InfoSubCommand extends SubCommand<String> {
 
-  public InfoSubCommand() {
-    super("info");
-  }
   //command.reports.info
+
+  public InfoSubCommand(LocaleManager locale) {
+    super(CommandSpec.REPORTS_INFO.localize(locale), "info", CommandPermission.REPORTS_INFO, Predicates.alwaysFalse());
+  }
 
   @Override
   public CommandResult execute(BanManagerPlugin plugin, Sender sender, String s, List<String> args, String label) {

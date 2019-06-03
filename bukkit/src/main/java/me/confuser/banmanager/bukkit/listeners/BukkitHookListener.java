@@ -26,7 +26,7 @@ public class BukkitHookListener implements Listener {
   // TODO refactor to reduce duplicate code
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final PlayerBanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("ban") : config.getHook("tempban");
 
     if (hook == null) return;
@@ -44,7 +44,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final PlayerBannedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("ban") : config.getHook("tempban");
 
     if (hook == null) return;
@@ -62,7 +62,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onUnban(final PlayerUnbanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("unban");
 
     if (hook == null) return;
@@ -80,7 +80,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onMute(final PlayerMuteEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getMute().getExpires() == 0 ? config.getHook("mute") : config.getHook("tempmute");
 
     if (hook == null) return;
@@ -98,7 +98,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onMute(final PlayerMutedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getMute().getExpires() == 0 ? config.getHook("mute") : config.getHook("tempmute");
 
     if (hook == null) return;
@@ -116,7 +116,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onUnmute(final PlayerUnmuteEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("unmute");
 
     if (hook == null) return;
@@ -134,7 +134,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpBanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("ipban") : config.getHook("tempipban");
 
     if (hook == null) return;
@@ -151,7 +151,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpBannedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("ipban") : config.getHook("tempipban");
 
     if (hook == null) return;
@@ -168,7 +168,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onUnban(final IpUnbanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("unbanip");
 
     if (hook == null) return;
@@ -185,7 +185,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config
             .getHook("temprangeipban");
 
@@ -204,7 +204,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onBan(final IpRangeBannedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getBan().getExpires() == 0 ? config.getHook("iprangeban") : config
             .getHook("temprangeipban");
 
@@ -223,7 +223,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onUnban(final IpRangeUnbanEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("unbaniprange");
 
     if (hook == null) return;
@@ -241,7 +241,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onWarn(final PlayerWarnEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("warn");
 
     if (hook == null) return;
@@ -259,7 +259,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onWarn(final PlayerWarnedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = event.getWarning().getExpires() == 0 ? config.getHook("warn") : config.getHook("tempwarn");
 
     if (hook == null) return;
@@ -277,7 +277,7 @@ public class BukkitHookListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onNote(final PlayerNoteCreatedEvent event) {
-    HooksConfig config = plugin.getConfiguration().getHooksConfig();
+    HooksConfig config = plugin.getHooksConfig();
     final Hook hook = config.getHook("note");
 
     if (hook == null) return;

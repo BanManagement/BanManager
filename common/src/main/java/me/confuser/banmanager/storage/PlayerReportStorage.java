@@ -1,14 +1,13 @@
 package me.confuser.banmanager.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.commands.report.ReportList;
+import me.confuser.banmanager.common.commands.report.ReportList;
 import me.confuser.banmanager.common.plugin.BanManagerPlugin;
 import me.confuser.banmanager.data.PlayerData;
 import me.confuser.banmanager.data.PlayerReportData;
@@ -16,7 +15,6 @@ import me.confuser.banmanager.events.PlayerReportDeletedEvent;
 import me.confuser.banmanager.events.PlayerReportEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.UUIDUtils;
-import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -28,7 +26,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
   private BanManagerPlugin plugin = BanManager.getPlugin();
 
   public PlayerReportStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerReportData>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<PlayerReportData>) BanManager.getPlugin()
                                                                         .getLocalDb().getTable("playerReports"));
 
     if (!this.isTableExists()) {

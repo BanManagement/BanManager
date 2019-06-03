@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
 
   public NameBanRecordStorage(ConnectionSource connection) throws SQLException {
-    super(connection, (DatabaseTableConfig<NameBanRecord>) BanManager.getPlugin().getConfiguration()
+    super(connection, (DatabaseTableConfig<NameBanRecord>) BanManager.getPlugin()
                                                                      .getLocalDb().getTable("nameBanRecords"));
 
     if (!this.isTableExists()) {
