@@ -62,6 +62,7 @@ public abstract class DatabaseConfig {
   public String getJDBCUrl() {
     String url = "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
             "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
+            "&serverTimezone=UTC" +
             "&useSSL=" + useSSL +
             "&verifyServerCertificate=" + verifyServerCertificate;
 
