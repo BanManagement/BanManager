@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.confuser</groupId>
     <artifactId>BanManager</artifactId>
-    <version>6.0.1</version>
+    <version>6.0.2-SNAPSHOT</version>
     <name>BanManager</name>
     <description>A database driven ban system</description>
     <build>
