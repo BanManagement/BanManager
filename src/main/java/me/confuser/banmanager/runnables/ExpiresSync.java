@@ -2,6 +2,7 @@ package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.data.*;
+import me.confuser.banmanager.events.PlayerUnbanEvent;
 import me.confuser.banmanager.storage.*;
 import me.confuser.banmanager.util.DateUtils;
 
@@ -38,7 +39,7 @@ public class ExpiresSync extends BmRunnable {
         PlayerBanData ban = bans.next();
         banRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
-        banStorage.removeBan(ban);
+        banStorage.unban(ban, ban.getActor());
         banStorage.delete(ban);
       }
     } catch (SQLException e) {
