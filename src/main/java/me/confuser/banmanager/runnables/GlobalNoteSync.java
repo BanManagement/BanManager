@@ -1,8 +1,8 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.PlayerNoteData;
-import me.confuser.banmanager.data.global.GlobalPlayerNoteData;
+import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.data.global.GlobalPlayerNoteData;
 import me.confuser.banmanager.storage.PlayerNoteStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerNoteStorage;
 

@@ -1,13 +1,13 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.global.GlobalIpBanData;
-import me.confuser.banmanager.data.global.GlobalIpBanRecordData;
+import me.confuser.banmanager.common.data.IpBanData;
+import me.confuser.banmanager.common.data.global.GlobalIpBanData;
+import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
 import me.confuser.banmanager.storage.IpBanStorage;
 import me.confuser.banmanager.storage.global.GlobalIpBanRecordStorage;
 import me.confuser.banmanager.storage.global.GlobalIpBanStorage;
-import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 

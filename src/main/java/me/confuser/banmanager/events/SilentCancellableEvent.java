@@ -3,7 +3,7 @@ package me.confuser.banmanager.events;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class SilentCancellableEvent extends CustomCancellableEvent {
+public abstract class SilentCancellableEvent extends CommonCancellableEvent {
   @Getter
   @Setter
   private boolean silent = false;

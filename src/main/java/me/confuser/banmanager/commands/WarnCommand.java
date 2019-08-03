@@ -2,8 +2,8 @@ package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.ActionCommand;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerWarnData;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.banmanager.util.parsers.WarnCommandParser;

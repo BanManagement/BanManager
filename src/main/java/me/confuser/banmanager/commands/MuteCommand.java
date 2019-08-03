@@ -1,11 +1,11 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerMuteData;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;

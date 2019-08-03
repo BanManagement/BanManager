@@ -1,8 +1,8 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.PlayerMuteData;
-import me.confuser.banmanager.data.PlayerMuteRecord;
+import me.confuser.banmanager.common.data.PlayerMuteData;
+import me.confuser.banmanager.common.data.PlayerMuteRecord;
 import me.confuser.banmanager.storage.PlayerMuteStorage;
 
 import java.sql.SQLException;

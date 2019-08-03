@@ -2,13 +2,13 @@ package me.confuser.banmanager.listeners;
 
 import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.PlayerReportData;
-import me.confuser.banmanager.data.PlayerReportLocationData;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.data.PlayerReportLocationData;
 import me.confuser.banmanager.events.PlayerReportDeletedEvent;
 import me.confuser.banmanager.events.PlayerReportedEvent;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.entity.Player;

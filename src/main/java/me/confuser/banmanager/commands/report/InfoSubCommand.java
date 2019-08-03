@@ -1,13 +1,11 @@
 package me.confuser.banmanager.commands.report;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerReportData;
-import me.confuser.banmanager.data.PlayerReportLocationData;
+import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.data.PlayerReportLocationData;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.PlayerSubCommand;
 import org.apache.commons.lang.time.FastDateFormat;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;

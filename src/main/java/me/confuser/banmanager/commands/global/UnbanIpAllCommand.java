@@ -2,11 +2,11 @@ package me.confuser.banmanager.commands.global;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpBanData;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.global.GlobalIpBanRecordData;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.data.IpBanData;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
+import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.bukkit.command.Command;

@@ -1,7 +1,7 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.apache.commons.lang.StringUtils;

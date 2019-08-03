@@ -5,7 +5,7 @@ import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.SubCommand;
 import org.bukkit.command.CommandSender;

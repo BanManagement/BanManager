@@ -2,9 +2,8 @@ package me.confuser.banmanager;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.support.ConnectionSource;
-import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.entity.Player;
 

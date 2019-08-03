@@ -1,9 +1,9 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.PlayerMuteData;
-import me.confuser.banmanager.data.global.GlobalPlayerMuteData;
-import me.confuser.banmanager.data.global.GlobalPlayerMuteRecordData;
+import me.confuser.banmanager.common.data.PlayerMuteData;
+import me.confuser.banmanager.common.data.global.GlobalPlayerMuteData;
+import me.confuser.banmanager.common.data.global.GlobalPlayerMuteRecordData;
 import me.confuser.banmanager.storage.PlayerMuteStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerMuteRecordStorage;
 import me.confuser.banmanager.storage.global.GlobalPlayerMuteStorage;

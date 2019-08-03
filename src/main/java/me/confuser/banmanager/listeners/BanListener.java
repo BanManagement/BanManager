@@ -1,14 +1,13 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.events.IpBannedEvent;
 import me.confuser.banmanager.events.IpRangeBannedEvent;
 import me.confuser.banmanager.events.NameBannedEvent;
 import me.confuser.banmanager.events.PlayerBannedEvent;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.IPUtils;
+import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.entity.Player;

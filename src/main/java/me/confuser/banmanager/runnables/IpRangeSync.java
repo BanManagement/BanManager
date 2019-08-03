@@ -2,8 +2,8 @@ package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.IpRangeBanRecord;
+import me.confuser.banmanager.common.data.IpRangeBanData;
+import me.confuser.banmanager.common.data.IpRangeBanRecord;
 import me.confuser.banmanager.storage.IpRangeBanStorage;
 
 import java.sql.SQLException;

@@ -1,8 +1,8 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerHistoryData;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.data.PlayerHistoryData;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.listeners.Listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;

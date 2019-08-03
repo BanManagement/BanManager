@@ -2,9 +2,9 @@ package me.confuser.banmanager.commands.report;
 
 import com.j256.ormlite.stmt.SelectArg;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.ReportState;
+import me.confuser.banmanager.common.data.ReportState;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.SubCommand;
 import org.bukkit.command.CommandSender;

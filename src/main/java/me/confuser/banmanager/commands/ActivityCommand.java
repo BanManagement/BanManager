@@ -1,9 +1,9 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.util.DateUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.bukkit.command.Command;

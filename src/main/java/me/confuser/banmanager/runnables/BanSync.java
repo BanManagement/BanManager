@@ -1,8 +1,8 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerBanRecord;
+import me.confuser.banmanager.common.data.PlayerBanData;
+import me.confuser.banmanager.common.data.PlayerBanRecord;
 import me.confuser.banmanager.storage.PlayerBanStorage;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;

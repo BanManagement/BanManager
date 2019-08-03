@@ -1,8 +1,8 @@
 package me.confuser.banmanager.util;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerBanData;
-import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerBanData;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.bukkitutil.Message;
 import me.rayzr522.jsonmessage.JSONMessage;
 import org.bukkit.ChatColor;

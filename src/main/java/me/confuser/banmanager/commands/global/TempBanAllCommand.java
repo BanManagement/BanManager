@@ -2,10 +2,10 @@ package me.confuser.banmanager.commands.global;
 
 import me.confuser.banmanager.BanManager;
 import me.confuser.banmanager.configs.TimeLimitType;
-import me.confuser.banmanager.data.PlayerData;
-import me.confuser.banmanager.data.global.GlobalPlayerBanData;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.global.GlobalPlayerBanData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;
 import org.apache.commons.lang.StringUtils;

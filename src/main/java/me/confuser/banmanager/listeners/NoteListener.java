@@ -1,12 +1,11 @@
 package me.confuser.banmanager.listeners;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerNoteData;
+import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.events.PlayerNoteCreatedEvent;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.listeners.Listeners;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

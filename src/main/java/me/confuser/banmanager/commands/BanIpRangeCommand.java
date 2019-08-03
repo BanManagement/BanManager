@@ -1,12 +1,12 @@
 package me.confuser.banmanager.commands;
 
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpRangeBanData;
-import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.common.data.IpRangeBanData;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.util.CommandParser;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.IPUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.banmanager.util.parsers.Reason;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;

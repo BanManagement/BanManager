@@ -1,10 +1,9 @@
 package me.confuser.banmanager.commands;
 
-import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.banmanager.util.UUIDUtils;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import me.confuser.bukkitutil.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

@@ -2,8 +2,8 @@ package me.confuser.banmanager.commands;
 
 import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.BanManager;
-import me.confuser.banmanager.data.IpMuteData;
-import me.confuser.banmanager.data.PlayerData;
+import me.confuser.banmanager.common.data.IpMuteData;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.util.CommandUtils;
 import me.confuser.bukkitutil.Message;
 import me.confuser.bukkitutil.commands.BukkitCommand;

@@ -1,11 +1,6 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.*;
-import me.confuser.banmanager.storage.PlayerBanStorage;
-import me.confuser.banmanager.util.CommandUtils;
-import me.confuser.bukkitutil.Message;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.Iterator;

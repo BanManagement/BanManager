@@ -1,9 +1,8 @@
 package me.confuser.banmanager.runnables;
 
 import com.j256.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.data.*;
 import me.confuser.banmanager.storage.*;
-import me.confuser.banmanager.util.DateUtils;
+import me.confuser.banmanager.common.util.DateUtils;
 
 import java.sql.SQLException;
 
