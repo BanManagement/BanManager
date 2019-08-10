@@ -115,9 +115,16 @@ public class BanManagerPlugin {
   @Getter
   private GlobalIpBanRecordStorage globalIpBanRecordStorage;
 
-  public BanManagerPlugin(CommonLogger logger, File dataFolder) {
+  @Getter
+  private CommonServer server;
+  @Getter
+  private CommonScheduler scheduler;
+
+  public BanManagerPlugin(CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
     this.logger = logger;
     this.dataFolder = dataFolder;
+    this.server = server;
+    this.scheduler = scheduler;
   }
 
   public final void enable() throws Exception {

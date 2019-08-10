@@ -39,6 +39,11 @@ public class BukkitPlayer implements CommonPlayer {
     return onlineMode;
   }
 
+  @Override
+  public boolean hasPermission(String permission) {
+    return getPlayer().hasPermission(permission);
+  }
+
   private Player getPlayer() {
     if (isOnlineMode()) return Bukkit.getServer().getPlayer(uuid);
 

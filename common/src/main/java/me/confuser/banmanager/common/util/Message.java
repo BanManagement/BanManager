@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.util;
 
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configs.Config;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 
@@ -70,11 +71,11 @@ public class Message {
     return replace("[" + token + "]", replace.toString());
   }
 
-  public boolean sendTo(CommonPlayer player) {
-    if (player == null || message.isEmpty())
+  public boolean sendTo(CommonSender sender) {
+    if (sender == null || message.isEmpty())
       return false;
 
-    player.sendMessage(message);
+    sender.sendMessage(message);
 
     return true;
   }

@@ -7,4 +7,7 @@ public interface CommonPlayer {
   void sendMessage(String message);
   void sendMessage(Message message);
   boolean isOnlineMode();
+  boolean hasPermission(String permission);
+  String getDisplayName();
+  String getName();
 }

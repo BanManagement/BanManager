@@ -2,6 +2,7 @@ package me.confuser.banmanager.bukkit;
 
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.commands.BanCommand;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.Listener;
@@ -63,6 +64,10 @@ public class BMBukkitPlugin extends JavaPlugin {
       new NoteListener().register();
       new ReportListener().register();
     }
+  }
+
+  public void setupCommands() {
+    new BukkitCommand(new BanCommand(plugin));
   }
 
   public void setupRunnables() {
