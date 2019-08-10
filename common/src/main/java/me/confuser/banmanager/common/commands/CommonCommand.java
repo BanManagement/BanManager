@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.commands;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -56,5 +57,19 @@ public abstract class CommonCommand {
 
     Message.get("sender.error.exception").sendTo(sender);
     e.printStackTrace();
+  }
+
+  public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
+    if (plugin.getConfig().isCreateNoteReasons())
+      if (reason.getNotes().size() == 0) return;
+
+    for (String note : reason.getNotes()) {
+      try {
+        plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 }

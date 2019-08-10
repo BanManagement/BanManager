@@ -127,6 +127,8 @@ public class BanCommand extends CommonCommand {
         return;
       }
 
+      handlePrivateNotes(player, actor, parser.getReason());
+
       getPlugin().getScheduler().runSync(() -> {
         if (onlinePlayer == null) return;
 
