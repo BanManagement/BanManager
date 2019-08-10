@@ -6,9 +6,11 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.net.InetAddress;
 import java.util.UUID;
 
 public class BukkitPlayer implements CommonPlayer {
+
   private final UUID uuid;
   private final String name;
   private final boolean onlineMode;
@@ -42,6 +44,21 @@ public class BukkitPlayer implements CommonPlayer {
   @Override
   public boolean hasPermission(String permission) {
     return getPlayer().hasPermission(permission);
+  }
+
+  @Override
+  public String getDisplayName() {
+    return getPlayer().getDisplayName();
+  }
+
+  @Override
+  public String getName() {
+    return getPlayer().getName();
+  }
+
+  @Override
+  public InetAddress getAddress() {
+    return getPlayer().getAddress().getAddress();
   }
 
   private Player getPlayer() {

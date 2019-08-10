@@ -3,6 +3,7 @@ package me.confuser.banmanager.bukkit;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.BanCommand;
+import me.confuser.banmanager.common.commands.BanIpCommand;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.Listener;
@@ -68,6 +69,7 @@ public class BMBukkitPlugin extends JavaPlugin {
 
   public void setupCommands() {
     new BukkitCommand(new BanCommand(plugin));
+    new BukkitCommand(new BanIpCommand(plugin));
   }
 
   public void setupRunnables() {

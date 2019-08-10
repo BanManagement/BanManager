@@ -1,9 +1,11 @@
 package me.confuser.banmanager.common.commands;
 
+import com.google.common.net.InetAddresses;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -11,6 +13,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public abstract class CommonCommand {
+
   @Getter
   private static BanManagerPlugin plugin;
   @Getter
@@ -23,8 +26,6 @@ public abstract class CommonCommand {
     this.commandName = commandName;
     this.permission = "bm.command." + commandName;
   }
-
-  public abstract boolean onCommand(final CommonSender sender, CommandParser args);
 
   public static boolean isUUID(String player) {
     return player.length() > 16;
@@ -72,4 +73,22 @@ public abstract class CommonCommand {
     }
 
   }
+
+  public static Long getIp(String ipStr) {
+    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    Long ip = null;
+
+    if (isName) {
+      PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+      if (player == null) return ip;
+
+      ip = player.getIp();
+    } else {
+      ip = IPUtils.toLong(ipStr);
+    }
+
+    return ip;
+  }
+
+  public abstract boolean onCommand(final CommonSender sender, CommandParser args);
 }
