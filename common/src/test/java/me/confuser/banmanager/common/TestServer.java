@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common;
 
 import com.github.javafaker.Faker;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 
 import java.util.UUID;
@@ -44,5 +45,10 @@ public class TestServer implements CommonServer {
   @Override
   public CommonWorld getWorld(String name) {
     return null;
+  }
+
+  @Override
+  public CommonEvent callEvent(String name, Object... args) {
+    return new CommonEvent(false, false);
   }
 }

@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -139,9 +140,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   public void addBan(IpBanData ban) {
     bans.put(ban.getIp(), ban);
 
-//    if (plugin.getConfig().isBroadcastOnSync()) {
-//      Bukkit.getServer().getPluginManager().callEvent(new IpBannedEvent(ban, false));
-//    }
+    plugin.getServer().callEvent("IpBannedEvent", ban, plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(IpBanData ban) {
@@ -153,17 +152,16 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   }
 
   public boolean ban(IpBanData ban, boolean isSilent) throws SQLException {
-//    IpBanEvent event = new IpBanEvent(ban, isSilent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("IpBanEvent", ban, isSilent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(ban);
     bans.put(ban.getIp(), ban);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new IpBannedEvent(ban, event.isSilent()));
+    plugin.getServer().callEvent("IpBannedEvent", ban, event.isSilent());
 
     return true;
   }
@@ -173,12 +171,11 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   }
 
   public boolean unban(IpBanData ban, PlayerData actor, String reason) throws SQLException {
-//    IpUnbanEvent event = new IpUnbanEvent(ban, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("IpUnbanEvent", ban, actor, reason);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(ban);
     bans.remove(ban.getIp());
@@ -205,7 +202,6 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     query.setWhere(where);
 
     return query.iterator();
-
   }
 
 }

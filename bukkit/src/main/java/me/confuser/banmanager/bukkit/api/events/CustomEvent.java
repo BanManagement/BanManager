@@ -3,7 +3,7 @@ package me.confuser.banmanager.bukkit.api.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-abstract class CustomEvent extends Event {
+public abstract class CustomEvent extends Event {
 
   private static final HandlerList handlers = new HandlerList();
 

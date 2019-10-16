@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common;
 
+import com.google.common.eventbus.EventBus;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
@@ -127,11 +128,15 @@ public class BanManagerPlugin {
   @Getter
   private Runner syncRunner;
 
+  @Getter
+  private EventBus eventBus;
+
   public BanManagerPlugin(CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
     this.logger = logger;
     this.dataFolder = dataFolder;
     this.server = server;
     this.scheduler = scheduler;
+    this.eventBus = new EventBus();
   }
 
   public final void enable() throws Exception {

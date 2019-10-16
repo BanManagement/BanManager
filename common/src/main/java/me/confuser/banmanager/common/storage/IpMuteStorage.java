@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -132,9 +133,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   public void addMute(IpMuteData mute) {
     mutes.put(mute.getIp(), mute);
 
-//    if (plugin.getConfig().isBroadcastOnSync()) {
-//      Bukkit.getServer().getPluginManager().callEvent(new IpMutedEvent(mute, false));
-//    }
+    plugin.getServer().callEvent("IpMutedEvent", mute, plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeMute(IpMuteData mute) {
@@ -146,17 +145,16 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   }
 
   public boolean mute(IpMuteData mute, boolean isSilent) throws SQLException {
-//    IpMuteEvent event = new IpMuteEvent(mute, isSilent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("IpMuteEvent", mute, isSilent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(mute);
     mutes.put(mute.getIp(), mute);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new IpMutedEvent(mute, event.isSilent()));
+    plugin.getServer().callEvent("IpMutedEvent", mute, event.isSilent());
 
     return true;
   }
@@ -166,12 +164,11 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   }
 
   public boolean unmute(IpMuteData mute, PlayerData actor, String reason) throws SQLException {
-//    IpUnmutedEvent event = new IpUnmutedEvent(mute, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("IpUnmutedEvent", mute, actor, reason);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(mute);
     mutes.remove(mute.getIp());

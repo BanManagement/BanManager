@@ -3,6 +3,7 @@ package me.confuser.banmanager.sponge;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.spongepowered.api.Sponge;
 
@@ -42,6 +43,11 @@ public class SpongeServer implements CommonServer {
   }
 
   public CommonWorld getWorld(String name) {
+    return null;
+  }
+
+  @Override
+  public CommonEvent callEvent(String name, Object... args) {
     return null;
   }
 }

@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -177,23 +178,20 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-//    if (plugin.getConfig().isBroadcastOnSync()) {
-//      Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, false));
-//    }
+    plugin.getServer().callEvent("PlayerMutedEvent", mute, plugin.getConfig().isBroadcastOnSync());
   }
 
   public boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {
-//    PlayerMuteEvent event = new PlayerMuteEvent(mute, silent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, silent);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(mute);
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, event.isSilent()));
+    plugin.getServer().callEvent("PlayerMutedEvent", mute, event.isSilent());
 
     return true;
   }
@@ -215,12 +213,11 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   }
 
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean delete) throws SQLException {
-//    PlayerUnmuteEvent event = new PlayerUnmuteEvent(mute, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, reason);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(mute);
     mutes.remove(mute.getPlayer().getUUID());

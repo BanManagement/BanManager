@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common;
 
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 
 import java.util.UUID;
@@ -13,4 +14,5 @@ public interface CommonServer {
   CommonSender getConsoleSender();
   boolean dispatchCommand(CommonSender consoleSender, String command);
   CommonWorld getWorld(String name);
+  CommonEvent callEvent(String name, Object ...args);
 }

@@ -10,6 +10,7 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
@@ -79,18 +80,17 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
   }
 
   public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
-//    PlayerWarnEvent event = new PlayerWarnEvent(data, silent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("PlayerWarnEvent", data, silent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     if (plugin.getConfig().isWarningMutesEnabled()) muteWarnings.put(data.getPlayer().getUUID(), data);
 
     boolean created = create(data) == 1;
 
-//    if (created) Bukkit.getServer().getPluginManager().callEvent(new PlayerWarnedEvent(data, event.isSilent()));
+    if (created) plugin.getServer().callEvent("PlayerWarnedEvent", data, event.isSilent());
 
     return created;
   }

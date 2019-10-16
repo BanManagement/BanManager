@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -148,9 +149,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   public void addBan(PlayerBanData ban) {
     bans.put(ban.getPlayer().getUUID(), ban);
 
-//    if (plugin.getConfig().isBroadcastOnSync()) {
-//      Bukkit.getServer().getPluginManager().callEvent(new PlayerBannedEvent(ban, false));
-//    }
+    plugin.getServer().callEvent("PlayerBannedEvent", ban, plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(PlayerBanData ban) {
@@ -172,17 +171,16 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   }
 
   public boolean ban(PlayerBanData ban, boolean isSilent) throws SQLException {
-//    PlayerBanEvent event = new PlayerBanEvent(ban, isSilent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, isSilent);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new PlayerBannedEvent(ban, event.isSilent()));
+    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent());
 
     return true;
   }
@@ -195,12 +193,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   }
 
   public boolean unban(PlayerBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
-//    PlayerUnbanEvent event = new PlayerUnbanEvent(ban, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("PlayerUnbanEvent", ban, actor, reason);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(ban);
     bans.remove(ban.getPlayer().getUUID());

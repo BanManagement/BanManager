@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.UUIDUtils;
@@ -29,11 +30,9 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
   }
 
   public boolean addNote(PlayerNoteData data) throws SQLException {
-//    PlayerNoteCreatedEvent event = new PlayerNoteCreatedEvent(data);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("PlayerNoteCreatedEvent", data);
 
-//    return !event.isCancelled() && create(data) == 1;
-    return create(data) == 1;
+    return !event.isCancelled() && create(data) == 1;
   }
 
   public CloseableIterator<PlayerNoteData> getNotes(UUID uniqueId) throws SQLException {

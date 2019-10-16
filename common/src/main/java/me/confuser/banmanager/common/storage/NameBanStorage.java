@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -129,17 +130,16 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
   }
 
   public boolean ban(NameBanData ban, boolean isSilent) throws SQLException {
-//    NameBanEvent event = new NameBanEvent(ban, isSilent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("NameBanEvent", ban, isSilent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(ban);
     bans.put(ban.getName().toLowerCase(), ban);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new NameBannedEvent(ban, event.isSilent()));
+    plugin.getServer().callEvent("NameBannedEvent", ban, event.isSilent());
 
     return true;
   }
@@ -153,12 +153,11 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
   }
 
   public boolean unban(NameBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
-//    NameUnbanEvent event = new NameUnbanEvent(ban, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
+    CommonEvent event = plugin.getServer().callEvent("NameUnbanEvent", ban, actor, reason);
 
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(ban);
     bans.remove(ban.getName().toLowerCase());

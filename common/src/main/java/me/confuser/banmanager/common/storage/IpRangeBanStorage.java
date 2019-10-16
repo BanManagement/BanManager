@@ -12,6 +12,7 @@ import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -179,9 +180,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     ranges.add(range);
     bans.put(range, ban);
 
-//    if (plugin.getConfig().isBroadcastOnSync()) {
-//      Bukkit.getServer().getPluginManager().callEvent(new IpRangeBannedEvent(ban, false));
-//    }
+    plugin.getServer().callEvent("IpRangeBannedEvent", ban, plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(IpRangeBanData ban) {
@@ -194,12 +193,11 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   }
 
   public boolean ban(IpRangeBanData ban, boolean silent) throws SQLException {
-//    IpRangeBanEvent event = new IpRangeBanEvent(ban, silent);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban, silent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     create(ban);
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
@@ -207,7 +205,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     bans.put(range, ban);
     ranges.add(range);
 
-//    Bukkit.getServer().getPluginManager().callEvent(new IpRangeBannedEvent(ban, event.isSilent()));
+    plugin.getServer().callEvent("IpRangeBannedEvent", ban, event.isSilent());
 
     return true;
   }
@@ -217,12 +215,11 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   }
 
   public boolean unban(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
-//    IpRangeUnbanEvent event = new IpRangeUnbanEvent(ban, actor, reason);
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("IpRangeUnbanEvent", ban, actor, reason);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     delete(ban);
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());

@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.util.ReportList;
@@ -47,17 +48,15 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
   }
 
   public boolean report(PlayerReportData data, boolean isSilent) throws SQLException {
-//    PlayerReportEvent event = new PlayerReportEvent(data, isSilent);
-//
-//    Bukkit.getServer().getPluginManager().callEvent(event);
-//
-//    if (event.isCancelled()) {
-//      return false;
-//    }
+    CommonEvent event = plugin.getServer().callEvent("PlayerReportEvent", data, isSilent);
+
+    if (event.isCancelled()) {
+      return false;
+    }
 
     if (create(data) != 1) return false;
 
-//    Bukkit.getServer().getPluginManager().callEvent(new PlayerReportedEvent(data, isSilent));
+    plugin.getServer().callEvent("PlayerReportedEvent", data, isSilent);
 
     return true;
   }
@@ -118,7 +117,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     if (report == null) return 0;
 
-//    Bukkit.getServer().getPluginManager().callEvent(new PlayerReportDeletedEvent(report));
+    plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
 
     super.deleteById(id);
 
