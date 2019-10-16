@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.configs;
 
 import me.confuser.banmanager.common.CommonLogger;
+import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.util.DateUtils;
 
@@ -37,27 +38,27 @@ public class TimeLimitsConfig {
     }
   }
 
-//  public boolean isPastLimit(CommandSender sender, TimeLimitType type, long expires) {
-//    if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass") || sender.hasPermission("bm.*")) {
-//      return false;
-//    }
-//
-//    HashMap<String, String> groups = limits.get(type.getName());
-//
-//    if (groups == null) return false;
-//
-//    for (String group : groups.keySet()) {
-//      if (sender.hasPermission("bm.timelimit." + type.getName() + "." + group)) {
-//        try {
-//          if (expires > DateUtils.parseDateDiff(groups.get(group), true)) {
-//            return true;
-//          }
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
-//      }
-//    }
-//
-//    return false;
-//  }
+  public boolean isPastLimit(CommonSender sender, TimeLimitType type, long expires) {
+    if (sender.hasPermission("bm.timelimit." + type.getName() + ".bypass") || sender.hasPermission("bm.*")) {
+      return false;
+    }
+
+    HashMap<String, String> groups = limits.get(type.getName());
+
+    if (groups == null) return false;
+
+    for (String group : groups.keySet()) {
+      if (sender.hasPermission("bm.timelimit." + type.getName() + "." + group)) {
+        try {
+          if (expires > DateUtils.parseDateDiff(groups.get(group), true)) {
+            return true;
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    return false;
+  }
 }

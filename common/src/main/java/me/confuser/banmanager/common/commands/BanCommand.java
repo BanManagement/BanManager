@@ -12,7 +12,7 @@ import java.util.UUID;
 public class BanCommand extends CommonCommand {
 
   public BanCommand(BanManagerPlugin plugin) {
-    super(plugin, "ban");
+    super(plugin, "ban", 1);
   }
 
   @Override
@@ -130,7 +130,7 @@ public class BanCommand extends CommonCommand {
       handlePrivateNotes(player, actor, parser.getReason());
 
       getPlugin().getScheduler().runSync(() -> {
-        if (onlinePlayer == null) return;
+       if (onlinePlayer == null) return;
 
         Message kickMessage = Message.get("ban.player.kick")
                                      .set("displayName", onlinePlayer.getDisplayName())

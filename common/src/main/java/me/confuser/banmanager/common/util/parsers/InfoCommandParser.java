@@ -1,35 +1,31 @@
 package me.confuser.banmanager.common.util.parsers;
 
-import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import lombok.Getter;
+import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.commands.CommandParser;
 
-import java.util.List;
-
-public class InfoCommandParser {
-
-  @Getter
-  private final String[] args;
+public class InfoCommandParser extends CommandParser {
 
   @Argument(alias = "k")
   @Getter
-  private boolean kicks = false;
+  private boolean kicks;
 
   @Argument(alias = "w")
   @Getter
-  private boolean warnings = false;
+  private boolean warnings;
 
   @Argument(alias = "b")
   @Getter
-  private boolean bans = false;
+  private boolean bans;
 
   @Argument(alias = "m")
   @Getter
-  private boolean mutes = false;
+  private boolean mutes;
 
   @Argument(alias = "n")
   @Getter
-  private boolean notes = false;
+  private boolean notes;
 
   @Argument(alias = "t")
   @Getter
@@ -39,9 +35,12 @@ public class InfoCommandParser {
   @Getter
   private Integer ips;
 
-  public InfoCommandParser(String[] args) throws IllegalArgumentException {
-    List<String> parsedArgs = Args.parse(this, args, false);
-    this.args = parsedArgs.toArray(new String[parsedArgs.size()]);
+  public InfoCommandParser(BanManagerPlugin plugin, String[] args) {
+    super(plugin, args);
+  }
+
+  public InfoCommandParser(BanManagerPlugin plugin, String[] args, int start) {
+    super(plugin, args, start);
   }
 
 }

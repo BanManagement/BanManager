@@ -12,7 +12,7 @@ public abstract class BasePluginTest {
   @Before
   public void setup() throws Exception {
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot());
+    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
 
     plugin.enable();
   }

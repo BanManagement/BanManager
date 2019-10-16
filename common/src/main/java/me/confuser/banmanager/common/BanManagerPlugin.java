@@ -7,7 +7,11 @@ import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
+import lombok.Setter;
+import me.confuser.banmanager.common.commands.*;
+import me.confuser.banmanager.common.commands.global.*;
 import me.confuser.banmanager.common.configs.*;
+import me.confuser.banmanager.common.runnables.Runner;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
@@ -119,6 +123,9 @@ public class BanManagerPlugin {
   private CommonServer server;
   @Getter
   private CommonScheduler scheduler;
+  @Setter
+  @Getter
+  private Runner syncRunner;
 
   public BanManagerPlugin(CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
     this.logger = logger;
@@ -302,5 +309,65 @@ public class BanManagerPlugin {
     globalPlayerNoteStorage = new GlobalPlayerNoteStorage(this);
     globalIpBanStorage = new GlobalIpBanStorage(this);
     globalIpBanRecordStorage = new GlobalIpBanRecordStorage(this);
+  }
+
+  public CommonCommand[] getCommands() {
+    return new CommonCommand[] {
+            new ActivityCommand(this),
+            new AddNoteCommand(this),
+            new BanCommand(this),
+            new BanIpCommand(this),
+            new BanIpCommand(this),
+            new BanIpRangeCommand(this),
+            new BanListCommand(this),
+            new BanNameCommand(this),
+            new ClearCommand(this),
+            new DeleteCommand(this),
+            new DeleteLastWarningCommand(this),
+            new ExportCommand(this),
+            new FindAltsCommand(this),
+            new InfoCommand(this),
+            new KickCommand(this),
+            new LoglessKickCommand(this),
+            new MuteCommand(this),
+            new MuteIpCommand(this),
+            new NotesCommand(this),
+            new ReasonsCommand(this),
+            new ReloadCommand(this),
+            new ReportCommand(this),
+            new ReportsCommand(this),
+            new RollbackCommand(this),
+            new SyncCommand(this),
+            new TempBanCommand(this),
+            new TempIpBanCommand(this),
+            new TempIpMuteCommand(this),
+            new TempIpRangeBanCommand(this),
+            new TempMuteCommand(this),
+            new TempNameBanCommand(this),
+            new TempWarnCommand(this),
+            new UnbanCommand(this),
+            new UnbanIpCommand(this),
+            new UnbanIpRangeCommand(this),
+            new UnbanNameCommand(this),
+            new UnmuteCommand(this),
+            new UnmuteIpCommand(this),
+            new UtilsCommand(this),
+            new WarnCommand(this)
+    };
+  }
+
+  public CommonCommand[] getGlobalCommands() {
+    return new CommonCommand[] {
+            new AddNoteAllCommand(this),
+            new BanAllCommand(this),
+            new BanIpAllCommand(this),
+            new MuteAllCommand(this),
+            new TempBanAllCommand(this),
+            new TempBanIpAllCommand(this),
+            new TempMuteAllCommand(this),
+            new UnbanAllCommand(this),
+            new UnbanIpAllCommand(this),
+            new UnmuteAllCommand(this)
+    };
   }
 }

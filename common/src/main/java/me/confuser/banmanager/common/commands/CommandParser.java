@@ -12,10 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommandParser {
-  private BanManagerPlugin plugin;
 
   @Getter
   protected String[] args;
+
+  private BanManagerPlugin plugin;
 
   @Argument(alias = "s")
   @Getter
@@ -38,7 +39,8 @@ public class CommandParser {
 
   public CommandParser(BanManagerPlugin plugin, String[] args, int start) {
     this.plugin = plugin;
-    reason = getReason(start, args);
+    this.args = args;
+    reason = getReason(start);
     String[] newArgs = reason.getMessage().split(" ");
 
     if (args.length > start) {
@@ -54,7 +56,7 @@ public class CommandParser {
     reason.setMessage(StringUtils.join(this.args, " ", start, this.args.length));
   }
 
-  private Reason getReason(int start, String[] args) {
+  public Reason getReason(int start) {
     String reason = StringUtils.join(args, " ", start, args.length);
     List<String> notes = new ArrayList<>();
 

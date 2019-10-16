@@ -132,7 +132,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   public void addMute(IpMuteData mute) {
     mutes.put(mute.getIp(), mute);
 
-//    if (plugin.getConfiguration().isBroadcastOnSync()) {
+//    if (plugin.getConfig().isBroadcastOnSync()) {
 //      Bukkit.getServer().getPluginManager().callEvent(new IpMutedEvent(mute, false));
 //    }
   }

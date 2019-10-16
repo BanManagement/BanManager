@@ -15,7 +15,7 @@ import java.util.UUID;
 public class BanIpCommand extends CommonCommand {
 
   public BanIpCommand(BanManagerPlugin plugin) {
-    super(plugin, "banip");
+    super(plugin, "banip", 1);
   }
 
   @Override

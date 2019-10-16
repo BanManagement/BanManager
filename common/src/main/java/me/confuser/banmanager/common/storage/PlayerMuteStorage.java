@@ -177,7 +177,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-//    if (plugin.getConfiguration().isBroadcastOnSync()) {
+//    if (plugin.getConfig().isBroadcastOnSync()) {
 //      Bukkit.getServer().getPluginManager().callEvent(new PlayerMutedEvent(mute, false));
 //    }
   }

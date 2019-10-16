@@ -1,14 +1,14 @@
 package me.confuser.banmanager.bukkit;
 
 import lombok.Getter;
+import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.commands.BanCommand;
-import me.confuser.banmanager.common.commands.BanIpCommand;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
+import me.confuser.banmanager.common.commands.CommonCommand;
+import me.confuser.banmanager.common.runnables.*;
+import net.gravitydevelopment.updater.Updater;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BMBukkitPlugin extends JavaPlugin {
@@ -18,7 +18,10 @@ public class BMBukkitPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    plugin = new BanManagerPlugin(new PluginLogger(getLogger()), getDataFolder());
+    BukkitServer server = new BukkitServer();
+    plugin = new BanManagerPlugin(new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server);
+
+    server.enable(plugin);
 
     try {
       plugin.enable();
@@ -41,46 +44,57 @@ public class BMBukkitPlugin extends JavaPlugin {
   }
 
   public void setupListeners() {
-    new JoinListener().register();
-    new LeaveListener().register();
-    new CommandListener().register();
-    new HookListener().register();
+    registerEvent(new JoinListener(plugin));
+    registerEvent(new LeaveListener(plugin));
+    registerEvent(new CommandListener(plugin));
+    registerEvent(new HookListener(plugin));
 
-    ChatListener chatListener = new ChatListener();
+    ChatListener chatListener = new ChatListener(plugin);
 
     // Set custom priority
-    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, plugin.getConfig()
-            .getChatPriority(), new EventExecutor() {
-
-      @Override
-      public void execute(Listener listener, Event event) throws EventException {
+    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(plugin.getConfig().getChatPriority()),
+      (listener, event) -> {
         ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
         ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
-      }
-    }, plugin);
+      }, this);
 
-    if (configuration.isDisplayNotificationsEnabled()) {
-      new BanListener().register();
-      new MuteListener().register();
-      new NoteListener().register();
-      new ReportListener().register();
+    if (plugin.getConfig().isDisplayNotificationsEnabled()) {
+      registerEvent(new BanListener(plugin));
+      registerEvent(new MuteListener(plugin));
+      registerEvent(new NoteListener(plugin));
+      registerEvent(new ReportListener(plugin));
     }
+  }
+
+  private void registerEvent(Listener listener) {
+    getServer().getPluginManager().registerEvents(listener, this);
   }
 
   public void setupCommands() {
-    new BukkitCommand(new BanCommand(plugin));
-    new BukkitCommand(new BanIpCommand(plugin));
+    for (CommonCommand cmd : plugin.getCommands()) {
+      new BukkitCommand(cmd);
+    }
+
+    if (plugin.getGlobalConn() != null) {
+      for (CommonCommand cmd : plugin.getGlobalCommands()) {
+        new BukkitCommand(cmd);
+      }
+    }
   }
 
   public void setupRunnables() {
-    if (globalConn == null) {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync(), new NameSync());
+    Runner syncRunner;
+
+    if (plugin.getGlobalConn() == null) {
+      syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
+              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
     } else {
-      syncRunner = new Runner(new BanSync(), new MuteSync(), new IpSync(), new IpRangeSync(), new ExpiresSync(),
-              new WarningSync(), new RollbackSync(), new NameSync(),
-              new GlobalBanSync(), new GlobalMuteSync(), new GlobalIpSync(), new GlobalNoteSync());
+      syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
+              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
+              new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
     }
+
+    plugin.setSyncRunner(syncRunner);
 
     setupAsyncRunnable(10L, syncRunner);
 
@@ -88,27 +102,20 @@ public class BMBukkitPlugin extends JavaPlugin {
      * This task should be ran last with a 1L offset as it gets modified
      * above.
      */
-    setupAsyncRunnable((schedulesConfig.getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked());
+    setupAsyncRunnable((plugin.getSchedulesConfig()
+                              .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
 
     // Purge
-    getServer().getScheduler().runTaskAsynchronously(plugin, new Purge());
+    plugin.getScheduler().runAsync(new Purge(plugin));
 
     // TODO Refactor
     if (!plugin.getConfig().isCheckForUpdates()) return;
 
-    getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    plugin.getScheduler().runAsync(() -> {
+      Updater updater = new Updater(this, 41473, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
 
-      @Override
-      public void run() {
-        if (UpdateUtils.isUpdateAvailable(getFile())) {
-          getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-              new UpdateListener().register();
-            }
-          });
-        }
+      if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
+        plugin.getScheduler().runSync(() -> registerEvent(new UpdateListener(plugin)));
       }
     });
   }
@@ -116,6 +123,6 @@ public class BMBukkitPlugin extends JavaPlugin {
   private void setupAsyncRunnable(long length, Runnable runnable) {
     if (length <= 0) return;
 
-    getServer().getScheduler().runTaskTimerAsynchronously(plugin, runnable, length, length);
+    getServer().getScheduler().runTaskTimerAsynchronously(this, runnable, length, length);
   }
 }

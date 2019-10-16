@@ -1,9 +1,12 @@
 package me.confuser.banmanager.bukkit;
 
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
@@ -21,44 +24,65 @@ public class BukkitPlayer implements CommonPlayer {
     this.onlineMode = onlineMode;
   }
 
-  @Override
+  public BukkitPlayer(Player player, boolean onlineMode) {
+    this(player.getUniqueId(), player.getName(), onlineMode);
+  }
+
   public void kick(String message) {
     getPlayer().kickPlayer(message);
   }
 
-  @Override
   public void sendMessage(String message) {
     getPlayer().sendMessage(message);
   }
 
-  @Override
   public void sendMessage(Message message) {
     sendMessage(message.toString());
   }
 
-  @Override
+  public boolean isConsole() {
+    return false;
+  }
+
+  public PlayerData getData() {
+    return null;
+  }
+
   public boolean isOnlineMode() {
     return onlineMode;
   }
 
-  @Override
   public boolean hasPermission(String permission) {
     return getPlayer().hasPermission(permission);
   }
 
-  @Override
   public String getDisplayName() {
     return getPlayer().getDisplayName();
   }
 
-  @Override
   public String getName() {
     return getPlayer().getName();
   }
 
-  @Override
   public InetAddress getAddress() {
     return getPlayer().getAddress().getAddress();
+  }
+
+  public UUID getUniqueId() {
+    return getPlayer().getUniqueId();
+  }
+
+  public boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw) {
+    Player player = getPlayer();
+    Location location = new Location(Bukkit.getWorld(world.getName()), x, y, z, yaw, pitch);
+
+    if (player.isInsideVehicle()) player.leaveVehicle();
+
+    return player.teleport(location);
+  }
+
+  public boolean isOnline() {
+    return getPlayer() != null;
   }
 
   private Player getPlayer() {

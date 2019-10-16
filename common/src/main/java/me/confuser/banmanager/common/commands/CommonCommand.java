@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -20,11 +21,28 @@ public abstract class CommonCommand {
   private final String permission;
   @Getter
   private final String commandName;
+  private Class parser;
+  private Integer start = null;
 
   public CommonCommand(BanManagerPlugin plugin, String commandName) {
     this.plugin = plugin;
     this.commandName = commandName;
     this.permission = "bm.command." + commandName;
+    this.parser = CommandParser.class;
+  }
+
+  public CommonCommand(BanManagerPlugin plugin, String commandName, int start) {
+    this(plugin, commandName);
+
+    this.start = start;
+  }
+
+  public CommonCommand(BanManagerPlugin plugin, String commandName, Class parser, int
+          start) {
+    this(plugin, commandName);
+
+    this.parser = parser;
+    this.start = start;
   }
 
   public static boolean isUUID(String player) {
@@ -88,6 +106,17 @@ public abstract class CommonCommand {
     }
 
     return ip;
+  }
+
+  public CommandParser getParser(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    if (start == null) {
+      return (CommandParser) parser.getDeclaredConstructor(BanManagerPlugin.class, String[].class).newInstance(plugin,
+              args);
+    }
+
+    return (CommandParser) parser.getDeclaredConstructor(BanManagerPlugin.class, String[].class, int.class)
+                                 .newInstance(plugin,
+                                         args, start);
   }
 
   public abstract boolean onCommand(final CommonSender sender, CommandParser args);

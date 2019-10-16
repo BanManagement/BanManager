@@ -4,24 +4,22 @@ import me.confuser.banmanager.common.CommonLogger;
 import org.slf4j.Logger;
 
 public class PluginLogger implements CommonLogger {
-  private final Logger logger;
 
-  public PluginLogger(Logger logger) {
-    this.logger = logger;
-  }
+    private final Logger logger;
 
-  @Override
-  public void info(String msg) {
-    logger.info(msg);
-  }
+    public PluginLogger(Logger logger) {
+        this.logger = logger;
+    }
 
-  @Override
-  public void warning(String msg) {
-    logger.warn(msg);
-  }
+    public void info(String msg) {
+        logger.info(msg);
+    }
 
-  @Override
-  public void severe(String msg) {
-    logger.error(msg);
-  }
+    public void warning(String msg) {
+        logger.warn(msg);
+    }
+
+    public void severe(String msg) {
+        logger.error(msg);
+    }
 }

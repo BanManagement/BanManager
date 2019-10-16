@@ -5,6 +5,7 @@ bin
 .project
 .idea
 *.iml
+.flattened-pom.xml
 .externalToolBuilders
 build.xml
 .DS_Store
@@ -14,8 +15,4 @@ dependency-reduced-pom.xml
 *.jar
 *.war
 *.ear
-
-# Web Interface Files #
-banmanagement/settings.php
-cache
-/target
+target

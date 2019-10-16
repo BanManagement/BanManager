@@ -36,37 +36,32 @@ public class BMSpongePlugin {
   @Inject
   private PluginContainer pluginContainer;
 
-  @Inject
-  public BMSpongePlugin(Logger logger) throws IOException {
-    this.logger = new PluginLogger(logger);
-
-    this.plugin = new BanManagerPlugin(this.logger, dataFolder.toFile());
-
-//    YAMLConfigurationLoader.@NonNull Builder builder = YAMLConfigurationLoader.builder()
-//                                                                              .setFile(new File(dataFolder, "config.yml");
+//  @Inject
+//  public BMSpongePlugin(Logger logger) throws IOException {
+//    this.logger = new PluginLogger(logger);
 //
-//    builder.build().
-  }
-
-  @Listener
-  public void onDisable(GameStoppingServerEvent event) {
-    this.plugin.disable();
-  }
-
-  @Listener
-  public void onEnable(GamePreInitializationEvent event) {
-    this.plugin.enable();
-  }
-
-  public CommonLogger getLogger() {
-    return logger;
-  }
-
-  private CommonConfig loadCommonConfig(ConfigurationNode config) {
-
-
-    CommonConfig commonConfig = new CommonConfig(
-            new LocalDatabaseConfig(config.getChildrenMap().entrySet()),
-            globalConfig, timeLimits, mutedBlacklistCommands);
-  }
+//    this.plugin = new BanManagerPlugin(this.logger, dataFolder.toFile());
+//  }
+//
+//  @Listener
+//  public void onDisable(GameStoppingServerEvent event) {
+//    this.plugin.disable();
+//  }
+//
+//  @Listener
+//  public void onEnable(GamePreInitializationEvent event) {
+//    this.plugin.enable();
+//  }
+//
+//  public CommonLogger getLogger() {
+//    return logger;
+//  }
+//
+//  private CommonConfig loadCommonConfig(ConfigurationNode config) {
+//
+//
+//    CommonConfig commonConfig = new CommonConfig(
+//            new LocalDatabaseConfig(config.getChildrenMap().entrySet()),
+//            globalConfig, timeLimits, mutedBlacklistCommands);
+//  }
 }

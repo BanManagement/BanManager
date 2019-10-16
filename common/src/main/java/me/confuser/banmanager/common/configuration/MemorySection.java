@@ -469,7 +469,7 @@ public class MemorySection implements ConfigurationSection {
     // Java
     @Override public List<?> getList(String path) {
         Object def = getDefault(path);
-        return getList(path, def instanceof List ? (List<?>) def : null);
+        return getList(path, def instanceof List ? (List<?>) def : new ArrayList<>());
     }
 
     @Override public List<?> getList(String path, List<?> def) {

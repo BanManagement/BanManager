@@ -5,19 +5,146 @@
     <parent>
         <artifactId>BanManager</artifactId>
         <groupId>me.confuser.banmanager</groupId>
-        <version>6.0.2</version>
+        <version>LATEST</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>BanManagerBukkit</artifactId>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>../common/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <filters>
+                                <filter>
+                                    <artifact>org.mariadb.jdbc</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>mysql</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.gravitydevelopment.updater</pattern>
+                                    <shadedPattern>me.confuser.banmanager.updater</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.j256.ormlite</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.ormlite</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mariadb.jdbc</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.mariadb</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.mysql</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.mysql</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.sl4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.googlecode.concurrenttrees</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.concurrenttrees</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.net</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.commons.net</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.apachecommons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sampullara.cli</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.cli</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.maxmind</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.maxmind</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.jackson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.http</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.http</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.codec</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.commons.codec</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.jaxax.annotation</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <repositories>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>dustplanet-releases</id>
-            <url>https://repo.dustplanet.de/artifactory/libs-release-local</url>
         </repository>
         <repository>
             <id>confuser-repo</id>
@@ -27,14 +154,12 @@
             <id>rayzr-repo</id>
             <url>https://cdn.rawgit.com/Rayzr522/maven-repo/master/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
@@ -42,9 +167,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.gravitydevelopment.updater</groupId>
+            <groupId>com.github.timbru31</groupId>
             <artifactId>updater</artifactId>
-            <version>3.0.3</version>
+            <version>master-updater-4.0.0-gb5d45c8-10</version>
         </dependency>
         <dependency>
             <groupId>me.rayzr522</groupId>
@@ -54,7 +179,7 @@
         <dependency>
             <groupId>me.confuser.banmanager</groupId>
             <artifactId>BanManagerCommon</artifactId>
-            <version>6.0.2</version>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
 </project>

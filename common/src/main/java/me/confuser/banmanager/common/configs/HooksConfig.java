@@ -70,29 +70,28 @@ public class HooksConfig {
   private List<ActionCommand> getActionCommands(String event, List<Map<?, ?>> mapList) {
     List<ActionCommand> actionCommands = new ArrayList<>();
 
-    if (mapList != null && mapList.size() != 0) {
+    if (mapList == null || mapList.size() == 0) return actionCommands;
 
-      for (Map<?, ?> map : mapList) {
-        if (map.get("cmd") == null) {
-          logger.severe("Missing cmd from " + event + " hook");
+    for (Map<?, ?> map : mapList) {
+      if (map.get("cmd") == null) {
+        logger.severe("Missing cmd from " + event + " hook");
+        continue;
+      }
+
+      long delay = 0;
+
+      if (map.get("delay") != null) {
+        try {
+          delay = Long.valueOf((Integer) map.get("delay"));
+        } catch (NumberFormatException e) {
+          logger.severe("Invalid delay for " + map.get("cmd"));
           continue;
         }
 
-        long delay = 0;
-
-        if (map.get("delay") != null) {
-          try {
-            delay = Long.valueOf((Integer) map.get("delay"));
-          } catch (NumberFormatException e) {
-            logger.severe("Invalid delay for " + map.get("cmd"));
-            continue;
-          }
-
-          delay = delay * 20L; // Convert from seconds to ticks
-        }
-
-        actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
+        delay = delay * 20L; // Convert from seconds to ticks
       }
+
+      actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
     }
 
     return actionCommands;
