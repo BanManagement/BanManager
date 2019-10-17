@@ -1,8 +1,6 @@
-package me.confuser.banmanager.bukkit.listeners;
+package me.confuser.banmanager.sponge.listeners;
 
 
-import me.confuser.banmanager.bukkit.api.events.IpMutedEvent;
-import me.confuser.banmanager.bukkit.api.events.PlayerMutedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.IpMuteData;
@@ -11,13 +9,16 @@ import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import me.confuser.banmanager.sponge.api.events.IpMutedEvent;
+import me.confuser.banmanager.sponge.api.events.PlayerMutedEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
 
 import java.util.List;
 
-public class MuteListener implements Listener {
+public class MuteListener {
 
   private BanManagerPlugin plugin;
 
@@ -25,7 +26,8 @@ public class MuteListener implements Listener {
     this.plugin = plugin;
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnMute(PlayerMutedEvent event) {
     PlayerMuteData mute = event.getMute();
 
@@ -63,7 +65,8 @@ public class MuteListener implements Listener {
     }
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnMute(IpMutedEvent event) {
     IpMuteData mute = event.getMute();
 

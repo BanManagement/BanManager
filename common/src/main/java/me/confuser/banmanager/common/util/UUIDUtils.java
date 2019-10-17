@@ -143,10 +143,10 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
       String body = new Gson().toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
       writeBody(connection, body);
 
-      JsonResponseProfiles array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-              JsonResponseProfiles.class);
+      JsonResponseProfileDetail[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
+              JsonResponseProfileDetail[].class);
 
-      for (JsonResponseProfileDetail profile : array.content) {
+      for (JsonResponseProfileDetail profile : array) {
         UUID uuid = UUIDUtils.getUUID(profile.id);
         uuidMap.put(profile.name, uuid);
       }
@@ -168,11 +168,6 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
 
     private String name;
     private long changedToAt;
-  }
-
-  public class JsonResponseProfiles {
-
-    private List<JsonResponseProfileDetail> content;
   }
 
   public class JsonResponseProfileDetail {

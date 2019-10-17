@@ -25,6 +25,10 @@ public class SpongePlayer implements CommonPlayer {
     this.onlineMode = onlineMode;
   }
 
+  public SpongePlayer(Player player, boolean onlineMode) {
+    this(player.getUniqueId(), player.getName(), onlineMode);
+  }
+
   @Override
   public void kick(String message) {
     getPlayer().kick(Text.of(message));
@@ -56,7 +60,7 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   public boolean isOnline() {
-    return false;
+    return getPlayer() != null;
   }
 
   @Override
@@ -80,7 +84,7 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   public UUID getUniqueId() {
-    return null;
+    return uuid;
   }
 
   public boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw) {

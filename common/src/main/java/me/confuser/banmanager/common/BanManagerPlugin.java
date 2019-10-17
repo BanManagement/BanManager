@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common;
 
-import com.google.common.eventbus.EventBus;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
@@ -128,15 +127,11 @@ public class BanManagerPlugin {
   @Getter
   private Runner syncRunner;
 
-  @Getter
-  private EventBus eventBus;
-
   public BanManagerPlugin(CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
     this.logger = logger;
     this.dataFolder = dataFolder;
     this.server = server;
     this.scheduler = scheduler;
-    this.eventBus = new EventBus();
   }
 
   public final void enable() throws Exception {
@@ -148,7 +143,7 @@ public class BanManagerPlugin {
       }
 
       if (!setupConnections()) {
-        return;
+        throw new Exception("Unable to connect to database, ensure local is enabled in config and your connection details are correct");
       }
 
       setupStorage();
@@ -321,7 +316,6 @@ public class BanManagerPlugin {
             new ActivityCommand(this),
             new AddNoteCommand(this),
             new BanCommand(this),
-            new BanIpCommand(this),
             new BanIpCommand(this),
             new BanIpRangeCommand(this),
             new BanListCommand(this),

@@ -1,8 +1,6 @@
-package me.confuser.banmanager.bukkit.listeners;
+package me.confuser.banmanager.sponge.listeners;
 
 import com.j256.ormlite.stmt.DeleteBuilder;
-import me.confuser.banmanager.bukkit.api.events.PlayerReportDeletedEvent;
-import me.confuser.banmanager.bukkit.api.events.PlayerReportedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -10,16 +8,21 @@ import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.data.PlayerReportLocationData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import me.confuser.banmanager.sponge.api.events.PlayerReportDeletedEvent;
+import me.confuser.banmanager.sponge.api.events.PlayerReportedEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
-public class ReportListener implements Listener {
+public class ReportListener {
 
   private BanManagerPlugin plugin;
 
@@ -27,7 +30,8 @@ public class ReportListener implements Listener {
     this.plugin = plugin;
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnReport(PlayerReportedEvent event) {
     PlayerReportData report = event.getReport();
 
@@ -54,21 +58,22 @@ public class ReportListener implements Listener {
     }
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void storeLocation(PlayerReportedEvent event) {
     PlayerReportData report = event.getReport();
 
-    Player player = Bukkit.getServer().getPlayer(report.getPlayer().getUUID());
-    Player actor = Bukkit.getServer().getPlayer(report.getActor().getUUID());
+    Optional<Player> player = Sponge.getServer().getPlayer(report.getPlayer().getUUID());
+    Optional<Player> actor = Sponge.getServer().getPlayer(report.getActor().getUUID());
 
     try {
-      createLocation(report, player);
+      if (player.isPresent())  createLocation(report, player.get());
     } catch (SQLException e) {
       e.printStackTrace();
     }
 
     try {
-      createLocation(report, actor);
+      if (actor.isPresent()) createLocation(report, actor.get());
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -78,18 +83,15 @@ public class ReportListener implements Listener {
     if (player == null) return;
 
     PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player.getUniqueId()));
-    Location loc = player.getLocation();
+    Location<World> loc = player.getLocation();
 
     plugin.getPlayerReportLocationStorage()
-          .create(new PlayerReportLocationData(report, playerData, loc.getWorld().getName(), loc.getX(), loc.getY(), loc
-                  .getZ()
-                  , loc.getPitch(), loc.getYaw()));
+          .create(new PlayerReportLocationData(report, playerData, player.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), 0, 0));
   }
 
-  @EventHandler
+  @Listener
   public void deleteReferences(PlayerReportDeletedEvent event) {
     int id = event.getReport().getId();
-
 
     try {
       DeleteBuilder location = plugin.getPlayerReportLocationStorage().deleteBuilder();

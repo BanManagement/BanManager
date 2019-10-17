@@ -1,23 +1,24 @@
-package me.confuser.banmanager.bukkit.listeners;
+package me.confuser.banmanager.sponge.listeners;
 
 
-import me.confuser.banmanager.bukkit.api.events.IpBannedEvent;
-import me.confuser.banmanager.bukkit.api.events.IpRangeBannedEvent;
-import me.confuser.banmanager.bukkit.api.events.NameBannedEvent;
-import me.confuser.banmanager.bukkit.api.events.PlayerBannedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import me.confuser.banmanager.sponge.api.events.IpBannedEvent;
+import me.confuser.banmanager.sponge.api.events.IpRangeBannedEvent;
+import me.confuser.banmanager.sponge.api.events.NameBannedEvent;
+import me.confuser.banmanager.sponge.api.events.PlayerBannedEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
 
 import java.util.List;
 
-public class BanListener implements Listener {
+public class BanListener {
 
   private BanManagerPlugin plugin;
 
@@ -25,7 +26,8 @@ public class BanListener implements Listener {
     this.plugin = plugin;
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnBan(PlayerBannedEvent event) {
     PlayerBanData ban = event.getBan();
 
@@ -63,7 +65,8 @@ public class BanListener implements Listener {
     }
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnIpBan(IpBannedEvent event) {
     IpBanData ban = event.getBan();
 
@@ -111,7 +114,8 @@ public class BanListener implements Listener {
     }
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnIpRangeBan(IpRangeBannedEvent event) {
     IpRangeBanData ban = event.getBan();
 
@@ -149,7 +153,8 @@ public class BanListener implements Listener {
     }
   }
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnNameBan(NameBannedEvent event) {
     NameBanData ban = event.getBan();
 
