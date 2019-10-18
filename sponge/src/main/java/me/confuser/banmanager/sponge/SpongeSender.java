@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
 
 public class SpongeSender implements CommonSender {
 
@@ -31,7 +30,7 @@ public class SpongeSender implements CommonSender {
 
   @Override
   public void sendMessage(String message) {
-    sender.sendMessage(Text.of(message));
+    sender.sendMessage(SpongeServer.formatMessage(message));
   }
 
   @Override
