@@ -99,9 +99,8 @@ public class WarnCommand extends CommonCommand {
 
       if (actor == null) return;
 
-      boolean isOnline = onlinePlayer.isOnline();
       final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser
-          .getPoints(), isOnline);
+          .getPoints(), onlinePlayer != null);
 
       boolean created;
 
@@ -119,7 +118,7 @@ public class WarnCommand extends CommonCommand {
 
       handlePrivateNotes(player, actor, reason);
 
-      if (isOnline) {
+      if (onlinePlayer != null) {
         Message warningMessage = Message.get("warn.player.warned")
             .set("displayName", onlinePlayer.getDisplayName())
             .set("player", player.getName())

@@ -118,10 +118,8 @@ public class TempWarnCommand extends CommonCommand {
 
       if (actor == null) return;
 
-      boolean isOnline = getPlugin().getServer().getPlayer(player.getUUID()).isOnline();
-
       final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser
-              .getPoints(), isOnline, expires);
+              .getPoints(), onlinePlayer != null, expires);
 
       boolean created;
 
@@ -139,11 +137,9 @@ public class TempWarnCommand extends CommonCommand {
 
       handlePrivateNotes(player, actor, reason);
 
-      if (isOnline) {
-        CommonPlayer bukkitPlayer = getPlugin().getServer().getPlayer(player.getUUID());
-
+      if (onlinePlayer != null) {
         Message warningMessage = Message.get("tempwarn.player.warned")
-                                        .set("displayName", bukkitPlayer.getDisplayName())
+                                        .set("displayName", onlinePlayer.getDisplayName())
                                         .set("player", player.getName())
                                         .set("playerId", player.getUUID().toString())
                                         .set("reason", warning.getReason())
@@ -151,7 +147,7 @@ public class TempWarnCommand extends CommonCommand {
                                         .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
                                         .set("points", parser.getPoints());
 
-        bukkitPlayer.sendMessage(warningMessage.toString());
+        onlinePlayer.sendMessage(warningMessage.toString());
       }
 
       Message message = Message.get("tempwarn.notify")
