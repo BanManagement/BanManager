@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
+import me.confuser.banmanager.bukkit.BukkitServer;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
@@ -100,7 +101,7 @@ public class JoinListener implements Listener {
       message.set("actor", data.getActor().getName());
 
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(message.toString());
+      event.setKickMessage(BukkitServer.formatMessage(message.toString()));
       return;
     }
 
@@ -131,7 +132,7 @@ public class JoinListener implements Listener {
       message.set("actor", data.getActor().getName());
 
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(message.toString());
+      event.setKickMessage(BukkitServer.formatMessage(message.toString()));
       handleJoinDeny(event.getAddress().toString(), data.getReason());
       return;
     }
@@ -163,7 +164,7 @@ public class JoinListener implements Listener {
       message.set("actor", data.getActor().getName());
 
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(message.toString());
+      event.setKickMessage(BukkitServer.formatMessage(message.toString()));
       return;
     }
 
@@ -197,7 +198,7 @@ public class JoinListener implements Listener {
     message.set("actor", data.getActor().getName());
 
     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-    event.setKickMessage(message.toString());
+    event.setKickMessage(BukkitServer.formatMessage(message.toString()));
     handleJoinDeny(data.getPlayer(), data.getReason());
   }
 

@@ -9,13 +9,13 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.*;
+import me.confuser.banmanager.sponge.SpongeServer;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -102,7 +102,7 @@ public class JoinListener {
       message.set("actor", data.getActor().getName());
 
       event.setCancelled(true);
-      event.setMessage(Text.of(message.toString()));
+      event.setMessage(SpongeServer.formatMessage(message.toString()));
       return;
     }
 
@@ -133,7 +133,7 @@ public class JoinListener {
       message.set("actor", data.getActor().getName());
 
       event.setCancelled(true);
-      event.setMessage(Text.of(message.toString()));
+      event.setMessage(SpongeServer.formatMessage(message.toString()));
       handleJoinDeny(address.toString(), data.getReason());
       return;
     }
@@ -167,7 +167,7 @@ public class JoinListener {
       message.set("actor", data.getActor().getName());
 
       event.setCancelled(true);
-      event.setMessage(Text.of(message.toString()));
+      event.setMessage(SpongeServer.formatMessage(message.toString()));
       return;
     }
 
@@ -201,7 +201,7 @@ public class JoinListener {
     message.set("actor", data.getActor().getName());
 
     event.setCancelled(true);
-    event.setMessage(Text.of(message.toString()));
+    event.setMessage(SpongeServer.formatMessage(message.toString()));
     handleJoinDeny(data.getPlayer(), data.getReason());
   }
 
@@ -354,7 +354,7 @@ public class JoinListener {
           Message message = Message.get("deniedCountry")
                                    .set("country", countryResponse.getCountry().getName())
                                    .set("countryIso", countryResponse.getCountry().getIsoCode());
-          event.setMessage(Text.of(message.toString()));
+          event.setMessage(SpongeServer.formatMessage(message.toString()));
           event.setCancelled(true);
           return;
         }
@@ -372,7 +372,7 @@ public class JoinListener {
       }
 
       if (count >= plugin.getConfig().getMaxOnlinePerIp()) {
-        event.setMessage(Text.of(Message.getString("deniedMaxIp")));
+        event.setMessage(SpongeServer.formatMessage(Message.getString("deniedMaxIp")));
         event.setCancelled(true);
         return;
       }
@@ -385,7 +385,7 @@ public class JoinListener {
       List<PlayerData> multiaccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timediff);
 
       if (multiaccountPlayers.size() > plugin.getConfig().getMaxMultiaccountsRecently()) {
-        event.setMessage(Text.of(Message.getString("deniedMultiaccounts")));
+        event.setMessage(SpongeServer.formatMessage(Message.getString("deniedMultiaccounts")));
         event.setCancelled(true);
         return;
       }

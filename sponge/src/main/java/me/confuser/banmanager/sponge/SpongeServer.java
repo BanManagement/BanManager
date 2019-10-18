@@ -9,11 +9,9 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.sponge.api.events.*;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
 import java.util.Arrays;
@@ -47,8 +45,8 @@ public class SpongeServer implements CommonServer {
   @Override
   public CommonPlayer[] getOnlinePlayers() {
     return Sponge.getServer().getOnlinePlayers().stream()
-            .map(player -> new SpongePlayer(player, plugin.getConfig().isOnlineMode()))
-            .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
+        .map(player -> new SpongePlayer(player, plugin.getConfig().isOnlineMode()))
+        .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
   }
 
   @Override
@@ -66,6 +64,10 @@ public class SpongeServer implements CommonServer {
     broadcast(message, permission);
 
     if (!sender.hasPermission(permission)) sender.sendMessage(message);
+  }
+
+  public static Text formatMessage(String message) {
+    return TextSerializers.FORMATTING_CODE.deserialize(message);
   }
 
   public CommonSender getConsoleSender() {
@@ -188,7 +190,7 @@ public class SpongeServer implements CommonServer {
     Sponge.getEventManager().post(event);
 
     if (event instanceof SilentCancellableEvent) {
-      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(),((SilentCancellableEvent) event).isSilent());
+      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(), ((SilentCancellableEvent) event).isSilent());
     } else if (event instanceof SilentEvent) {
       commonEvent = new CommonEvent(false, ((SilentEvent) event).isSilent());
     } else if (event instanceof CustomCancellableEvent) {
