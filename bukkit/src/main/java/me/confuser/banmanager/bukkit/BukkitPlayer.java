@@ -2,9 +2,11 @@ package me.confuser.banmanager.bukkit;
 
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -40,12 +42,17 @@ public class BukkitPlayer implements CommonPlayer {
     sendMessage(message.toString());
   }
 
+  @Override
+  public void sendJSONMessage(String jsonString) {
+    getPlayer().spigot().sendMessage(ComponentSerializer.parse(jsonString));
+  }
+
   public boolean isConsole() {
     return false;
   }
 
   public PlayerData getData() {
-    return null;
+    return CommonCommand.getPlayer(this, getName(), false);
   }
 
   public boolean isOnlineMode() {

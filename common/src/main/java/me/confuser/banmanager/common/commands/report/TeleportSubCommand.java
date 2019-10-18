@@ -76,7 +76,7 @@ public class TeleportSubCommand extends CommonSubCommand {
              .sendTo(sender);
 
       getPlugin().getScheduler().runSync(() -> {
-        CommonPlayer player = getPlugin().getServer().getPlayer(sender.getData().getUUID());
+        CommonPlayer player = getPlugin().getServer().getPlayer(sender.getName());
 
         player.teleport(world, data.getX(), data.getY(), data.getZ(), data.getYaw(), data
                 .getPitch());

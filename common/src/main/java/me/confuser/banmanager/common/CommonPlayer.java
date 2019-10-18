@@ -15,6 +15,8 @@ public interface CommonPlayer extends CommonSender {
 
   void sendMessage(Message message);
 
+  void sendJSONMessage(String jsonString);
+
   @Override
   boolean isConsole();
 

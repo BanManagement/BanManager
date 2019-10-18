@@ -2,11 +2,15 @@ package me.confuser.banmanager.sponge;
 
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.net.InetAddress;
 import java.util.Optional;
@@ -44,13 +48,18 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   @Override
+  public void sendJSONMessage(String jsonString) {
+    getPlayer().sendMessage(TextSerializers.JSON.deserialize(jsonString));
+  }
+
+  @Override
   public boolean isConsole() {
     return false;
   }
 
   @Override
   public PlayerData getData() {
-    return null;
+    return CommonCommand.getPlayer(this, getName(), false);
   }
 
   @Override
@@ -87,7 +96,10 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   public boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw) {
-    return false;
+    Player player = getPlayer();
+    Location<World> location = Sponge.getServer().getWorld(world.getName()).get().getLocation(x, y, z);
+
+    return getPlayer().setLocation(location);
   }
 
   private Player getPlayer() {

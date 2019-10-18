@@ -1,5 +1,6 @@
 package me.confuser.banmanager.sponge;
 
+import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.spongepowered.api.Sponge;
@@ -7,6 +8,7 @@ import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -34,22 +36,36 @@ public class SpongeCommand implements CommandCallable {
   }
 
   @Override
-  public CommandResult process(CommandSource source, String arguments) throws CommandException {
-    CommonSender commonSender = new SpongeSender(CommonCommand.getPlugin(), source);
-    boolean result = false;
+  public CommandResult process(CommandSource source, String arguments) {
+    if (source instanceof Player) {
+      CommonPlayer sender = new SpongePlayer((Player) source, CommonCommand.getPlugin().getConfig().isOnlineMode());
+      boolean result = execute(sender, arguments);
 
+      if (!result) {
+        sender.sendMessage(command.getUsage());
+        return CommandResult.empty();
+      }
+    } else {
+      CommonSender sender = new SpongeSender(CommonCommand.getPlugin(), source);
+      boolean result = execute(sender, arguments);
+
+      if (!result) {
+        sender.sendMessage(command.getUsage());
+        return CommandResult.empty();
+      }
+    }
+
+    return CommandResult.success();
+  }
+
+  private boolean execute(CommonSender sender, String arguments) {
     try {
-      result = this.command.onCommand(commonSender, this.command.getParser(arguments.split(" ")));
+      return this.command.onCommand(sender, this.command.getParser(arguments.split(" ")));
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       e.printStackTrace();
     }
 
-    if (!result) {
-      commonSender.sendMessage(command.getUsage());
-      return CommandResult.empty();
-    }
-
-    return CommandResult.success();
+    return false;
   }
 
   @Override

@@ -115,6 +115,11 @@
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
+            <artifactId>text-serializer-gson</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
             <artifactId>text-serializer-legacy</artifactId>
             <version>3.0.2</version>
         </dependency>

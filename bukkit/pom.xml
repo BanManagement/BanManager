@@ -153,8 +153,8 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -162,11 +162,6 @@
             <groupId>com.github.timbru31</groupId>
             <artifactId>updater</artifactId>
             <version>master-updater-4.0.0-gb5d45c8-10</version>
-        </dependency>
-        <dependency>
-            <groupId>me.rayzr522</groupId>
-            <artifactId>jsonmessage</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>me.confuser.banmanager</groupId>
