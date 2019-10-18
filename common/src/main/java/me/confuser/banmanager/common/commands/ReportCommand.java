@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ReportCommand extends CommonCommand {
 
   public ReportCommand(BanManagerPlugin plugin) {
-    super(plugin, "report");
+    super(plugin, "report", 0);
   }
 
   @Override
