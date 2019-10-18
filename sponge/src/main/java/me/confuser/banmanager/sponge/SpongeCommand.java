@@ -1,5 +1,6 @@
 package me.confuser.banmanager.sponge;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.spongepowered.api.Sponge;
@@ -66,9 +67,9 @@ public class SpongeCommand implements CommandCallable {
 
   private CommonSender getSender(CommandSource source) {
     if (source instanceof Player) {
-      return new SpongePlayer((Player) source, CommonCommand.getPlugin().getConfig().isOnlineMode());
+      return new SpongePlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
     } else {
-      return new SpongeSender(CommonCommand.getPlugin(), source);
+      return new SpongeSender(BanManagerPlugin.getInstance(), source);
     }
   }
 

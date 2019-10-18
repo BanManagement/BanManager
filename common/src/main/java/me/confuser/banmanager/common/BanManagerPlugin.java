@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import static java.lang.Long.parseLong;
 
 public class BanManagerPlugin {
+  private static BanManagerPlugin self;
 
   @Getter
   private final CommonLogger logger;
@@ -132,6 +133,7 @@ public class BanManagerPlugin {
     this.dataFolder = dataFolder;
     this.server = server;
     this.scheduler = scheduler;
+    self = this;
   }
 
   public final void enable() throws Exception {
@@ -368,5 +370,9 @@ public class BanManagerPlugin {
             new UnbanIpAllCommand(this),
             new UnmuteAllCommand(this)
     };
+  }
+
+  public static BanManagerPlugin getInstance() {
+    return self;
   }
 }

@@ -94,8 +94,8 @@ public class FindAltsCommand extends CommonCommand {
     for (PlayerData player : players) {
       TextColor colour = TextColor.GREEN;
 
-      if (CommonCommand.getPlugin().getPlayerBanStorage().isBanned(player.getUUID())) {
-        PlayerBanData ban = CommonCommand.getPlugin().getPlayerBanStorage().getBan(player.getUUID());
+      if (BanManagerPlugin.getInstance().getPlayerBanStorage().isBanned(player.getUUID())) {
+        PlayerBanData ban = BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(player.getUUID());
 
         if (ban.getExpires() == 0) {
           colour = TextColor.RED;
@@ -104,7 +104,7 @@ public class FindAltsCommand extends CommonCommand {
         }
       } else {
         try {
-          if (CommonCommand.getPlugin().getPlayerBanRecordStorage().getCount(player) != 0) {
+          if (BanManagerPlugin.getInstance().getPlayerBanRecordStorage().getCount(player) != 0) {
             colour = TextColor.YELLOW;
           }
         } catch (SQLException e) {

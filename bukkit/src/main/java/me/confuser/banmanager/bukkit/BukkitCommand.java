@@ -1,5 +1,6 @@
 package me.confuser.banmanager.bukkit;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.bukkit.Bukkit;
@@ -38,9 +39,9 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
 
   private CommonSender getSender(CommandSender source) {
     if (source instanceof Player) {
-      return new BukkitPlayer((Player) source, CommonCommand.getPlugin().getConfig().isOnlineMode());
+      return new BukkitPlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
     } else {
-      return new BukkitSender(CommonCommand.getPlugin(), source);
+      return new BukkitSender(BanManagerPlugin.getInstance(), source);
     }
   }
 

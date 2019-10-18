@@ -20,7 +20,7 @@ import java.util.UUID;
 public abstract class CommonCommand {
 
   @Getter
-  private static BanManagerPlugin plugin;
+  private BanManagerPlugin plugin;
   @Getter
   private final String usage;
   @Getter
@@ -71,13 +71,13 @@ public abstract class CommonCommand {
 
     if (isUUID) {
       try {
-        player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
+        player = BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();
       }
     } else {
-      player = plugin.getPlayerStorage().retrieve(playerName, mojangLookup);
+      player = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(playerName, mojangLookup);
     }
 
     return player;
@@ -95,12 +95,12 @@ public abstract class CommonCommand {
   }
 
   public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
-    if (plugin.getConfig().isCreateNoteReasons())
+    if (BanManagerPlugin.getInstance().getConfig().isCreateNoteReasons())
       if (reason.getNotes().size() == 0) return;
 
     for (String note : reason.getNotes()) {
       try {
-        plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
+        BanManagerPlugin.getInstance().getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
       } catch (SQLException e) {
         e.printStackTrace();
       }
@@ -113,7 +113,7 @@ public abstract class CommonCommand {
     Long ip = null;
 
     if (isName) {
-      PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
+      PlayerData player = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(ipStr, false);
       if (player == null) return ip;
 
       ip = player.getIp();
