@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.net.InetAddress;
 import java.util.Optional;
@@ -31,12 +32,12 @@ public class SpongePlayer implements CommonPlayer {
 
   @Override
   public void kick(String message) {
-    getPlayer().kick(Text.of(message));
+    getPlayer().kick(TextSerializers.FORMATTING_CODE.deserialize(message));
   }
 
   @Override
   public void sendMessage(String message) {
-    getPlayer().sendMessage(Text.of(message));
+    getPlayer().sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
   }
 
   @Override

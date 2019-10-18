@@ -29,11 +29,11 @@ public class BukkitPlayer implements CommonPlayer {
   }
 
   public void kick(String message) {
-    getPlayer().kickPlayer(message);
+    getPlayer().kickPlayer(BukkitServer.formatMessage(message));
   }
 
   public void sendMessage(String message) {
-    getPlayer().sendMessage(message);
+    getPlayer().sendMessage(BukkitServer.formatMessage(message));
   }
 
   public void sendMessage(Message message) {

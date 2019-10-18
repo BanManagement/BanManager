@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -63,7 +64,7 @@ public class BukkitServer implements CommonServer {
       if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible
               .hasPermission(permission)) {
         CommandSender user = (CommandSender) permissible;
-        user.sendMessage(message);
+        user.sendMessage(BukkitServer.formatMessage(message));
       }
     }
   }
@@ -73,6 +74,11 @@ public class BukkitServer implements CommonServer {
     broadcast(message, permission);
 
     if (!sender.hasPermission(permission)) sender.sendMessage(message);
+  }
+
+  public static String formatMessage(String message) {
+    return ChatColor
+            .translateAlternateColorCodes('&', message.replace("\\n", "\n"));
   }
 
   @Override
