@@ -21,7 +21,7 @@ import java.nio.file.Path;
 @Plugin(
     id = "banmanager",
     name = "BanManager",
-    version = "@version@",
+    version = Version.VERSION,
     authors = "confuser",
     description = "A punishment plugin",
     url = "https://banmanagement.com"
