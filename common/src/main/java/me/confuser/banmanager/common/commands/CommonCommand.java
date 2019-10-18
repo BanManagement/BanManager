@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.commands;
 import com.google.common.net.InetAddresses;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.IPUtils;
@@ -11,6 +12,7 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 public abstract class CommonCommand {
@@ -18,16 +20,25 @@ public abstract class CommonCommand {
   @Getter
   private static BanManagerPlugin plugin;
   @Getter
+  private final String usage;
+  @Getter
   private final String permission;
   @Getter
   private final String commandName;
+  @Getter
+  private final List<String> aliases;
   private Class parser;
   private Integer start = null;
 
   public CommonCommand(BanManagerPlugin plugin, String commandName) {
     this.plugin = plugin;
     this.commandName = commandName;
-    this.permission = "bm.command." + commandName;
+
+    PluginInfo.CommandInfo info = plugin.getConfig().getPluginInfo().getCommand(commandName);
+
+    this.usage = info.getUsage();
+    this.permission = info.getPermission();
+    this.aliases = info.getAliases();
     this.parser = CommandParser.class;
   }
 

@@ -19,12 +19,12 @@ import org.spongepowered.api.plugin.Plugin;
 import java.nio.file.Path;
 
 @Plugin(
-        id = "banmanager",
-        name = "BanManager",
-        version = "@version@",
-        authors = "confuser",
-        description = "A punishment plugin",
-        url = "https://banmanagement.com"
+    id = "banmanager",
+    name = "BanManager",
+    version = "@version@",
+    authors = "confuser",
+    description = "A punishment plugin",
+    url = "https://banmanagement.com"
 )
 public class BMSpongePlugin {
 
@@ -116,11 +116,11 @@ public class BMSpongePlugin {
 
     if (plugin.getGlobalConn() == null) {
       syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
+          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
     } else {
       syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
-              new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
+          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
+          new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
     }
 
     plugin.setSyncRunner(syncRunner);
@@ -132,7 +132,7 @@ public class BMSpongePlugin {
      * above.
      */
     setupAsyncRunnable((plugin.getSchedulesConfig()
-            .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
+        .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
 
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));

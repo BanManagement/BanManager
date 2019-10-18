@@ -44,7 +44,12 @@ public class SpongeCommand implements CommandCallable {
       e.printStackTrace();
     }
 
-    return result ? CommandResult.success() : CommandResult.empty();
+    if (!result) {
+      commonSender.sendMessage(command.getUsage());
+      return CommandResult.empty();
+    }
+
+    return CommandResult.success();
   }
 
   @Override
@@ -69,6 +74,6 @@ public class SpongeCommand implements CommandCallable {
 
   @Override
   public Text getUsage(CommandSource source) {
-    return Text.of();
+    return Text.of(command.getUsage());
   }
 }
