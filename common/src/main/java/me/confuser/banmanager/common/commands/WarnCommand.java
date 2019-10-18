@@ -16,7 +16,7 @@ import java.util.UUID;
 public class WarnCommand extends CommonCommand {
 
   public WarnCommand(BanManagerPlugin plugin) {
-    super(plugin, "warn", WarnCommandParser.class, 1);
+    super(plugin, "warn", true, WarnCommandParser.class, 1);
   }
 
   @Override
@@ -101,7 +101,7 @@ public class WarnCommand extends CommonCommand {
 
       boolean isOnline = onlinePlayer.isOnline();
       final PlayerWarnData warning = new PlayerWarnData(player, actor, reason.getMessage(), parser
-              .getPoints(), isOnline);
+          .getPoints(), isOnline);
 
       boolean created;
 
@@ -121,22 +121,22 @@ public class WarnCommand extends CommonCommand {
 
       if (isOnline) {
         Message warningMessage = Message.get("warn.player.warned")
-                                        .set("displayName", onlinePlayer.getDisplayName())
-                                        .set("player", player.getName())
-                                        .set("playerId", player.getUUID().toString())
-                                        .set("reason", warning.getReason())
-                                        .set("actor", actor.getName())
-                                        .set("points", parser.getPoints());
+            .set("displayName", onlinePlayer.getDisplayName())
+            .set("player", player.getName())
+            .set("playerId", player.getUUID().toString())
+            .set("reason", warning.getReason())
+            .set("actor", actor.getName())
+            .set("points", parser.getPoints());
 
         onlinePlayer.sendMessage(warningMessage.toString());
       }
 
       Message message = Message.get("warn.notify")
-                               .set("player", player.getName())
-                               .set("playerId", player.getUUID().toString())
-                               .set("actor", actor.getName())
-                               .set("reason", warning.getReason())
-                               .set("points", parser.getPoints());
+          .set("player", player.getName())
+          .set("playerId", player.getUUID().toString())
+          .set("actor", actor.getName())
+          .set("reason", warning.getReason())
+          .set("points", parser.getPoints());
 
       if (!sender.hasPermission("bm.notify.warn")) {
         message.sendTo(sender);
@@ -148,7 +148,7 @@ public class WarnCommand extends CommonCommand {
 
       try {
         actionCommands = getPlugin().getConfig().getWarningActions()
-                               .getCommand(getPlugin().getPlayerWarnStorage().getPointsCount(player));
+            .getCommand(getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
         e.printStackTrace();
         return;
@@ -161,11 +161,11 @@ public class WarnCommand extends CommonCommand {
       for (final ActionCommand action : actionCommands)
         getPlugin().getScheduler().runSyncLater(() -> {
           String actionCommand = action.getCommand()
-                                       .replace("[player]", player.getName())
-                                       .replace("[playerId]", player.getUUID().toString())
-                                       .replace("[actor]", actor.getName())
-                                       .replace("[reason]", warning.getReason())
-                                       .replace("[points]", Double.toString(parser.getPoints()));
+              .replace("[player]", player.getName())
+              .replace("[playerId]", player.getUUID().toString())
+              .replace("[actor]", actor.getName())
+              .replace("[reason]", warning.getReason())
+              .replace("[points]", Double.toString(parser.getPoints()));
 
           getPlugin().getServer().dispatchCommand(getPlugin().getServer().getConsoleSender(), actionCommand);
         }, action.getDelay());

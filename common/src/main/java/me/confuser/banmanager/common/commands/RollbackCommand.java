@@ -34,7 +34,7 @@ public class RollbackCommand extends CommonCommand {
   };
 
   public RollbackCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmrollback");
+    super(plugin, "bmrollback", true);
   }
 
   @Override
@@ -100,7 +100,7 @@ public class RollbackCommand extends CommonCommand {
         } else if (sender.hasPermission("bm.command.bmrollback." + type)) {
           try {
             getPlugin().getRollbackStorage()
-                       .create(new RollbackData(player, sender.getData(), type, expires, now));
+                .create(new RollbackData(player, sender.getData(), type, expires, now));
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             e.printStackTrace();
@@ -125,7 +125,7 @@ public class RollbackCommand extends CommonCommand {
 
             case "banrecords":
               QueryBuilder<PlayerBanRecord, Integer> banRecords = getPlugin().getPlayerBanRecordStorage()
-                                                                             .queryBuilder();
+                  .queryBuilder();
               banRecords.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
 
               for (PlayerBanRecord record : banRecords.query()) {
@@ -153,7 +153,7 @@ public class RollbackCommand extends CommonCommand {
             case "ipbanrecords":
               QueryBuilder<IpBanRecord, Integer> ipBanRecords = getPlugin().getIpBanRecordStorage().queryBuilder();
               ipBanRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                          .ge("created", expires);
+                  .ge("created", expires);
 
               for (IpBanRecord record : ipBanRecords.query()) {
                 try {
@@ -186,9 +186,9 @@ public class RollbackCommand extends CommonCommand {
 
             case "muterecords":
               QueryBuilder<PlayerMuteRecord, Integer> muteRecords = getPlugin().getPlayerMuteRecordStorage()
-                                                                               .queryBuilder();
+                  .queryBuilder();
               muteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                         .ge("created", expires);
+                  .ge("created", expires);
 
               for (PlayerMuteRecord record : muteRecords.query()) {
                 try {
@@ -214,7 +214,7 @@ public class RollbackCommand extends CommonCommand {
             case "ipmuterecords":
               QueryBuilder<IpMuteRecord, Integer> ipMuteRecords = getPlugin().getIpMuteRecordStorage().queryBuilder();
               ipMuteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                           .ge("created", expires);
+                  .ge("created", expires);
 
               for (IpMuteRecord record : ipMuteRecords.query()) {
                 try {
@@ -259,10 +259,10 @@ public class RollbackCommand extends CommonCommand {
         }
 
         Message.get("bmrollback.notify")
-               .set("type", type)
-               .set("player", player.getName())
-               .set("playerId", player.getUUID().toString())
-               .sendTo(sender);
+            .set("type", type)
+            .set("player", player.getName())
+            .set("playerId", player.getUUID().toString())
+            .sendTo(sender);
       }
     });
 

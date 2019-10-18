@@ -12,7 +12,7 @@ import java.util.UUID;
 public class MuteCommand extends CommonCommand {
 
   public MuteCommand(BanManagerPlugin plugin) {
-    super(plugin, "mute", 1);
+    super(plugin, "mute", true, 1);
   }
 
   @Override
@@ -129,7 +129,7 @@ public class MuteCommand extends CommonCommand {
           created = getPlugin().getPlayerMuteStorage().mute(mute, isSilent);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
-                  playerName));
+              playerName));
           return;
         }
 
@@ -144,11 +144,11 @@ public class MuteCommand extends CommonCommand {
         if (isSoft || commonPlayer == null) return;
 
         Message muteMessage = Message.get("mute.player.disallowed")
-                                     .set("displayName", commonPlayer.getDisplayName())
-                                     .set("player", player.getName())
-                                     .set("playerId", player.getUUID().toString())
-                                     .set("reason", mute.getReason())
-                                     .set("actor", actor.getName());
+            .set("displayName", commonPlayer.getDisplayName())
+            .set("player", player.getName())
+            .set("playerId", player.getUUID().toString())
+            .set("reason", mute.getReason())
+            .set("actor", actor.getName());
 
         commonPlayer.sendMessage(muteMessage.toString());
 

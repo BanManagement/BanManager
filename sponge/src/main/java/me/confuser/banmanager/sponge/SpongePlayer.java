@@ -104,6 +104,11 @@ public class SpongePlayer implements CommonPlayer {
     return getPlayer().setLocation(location);
   }
 
+  @Override
+  public boolean canSee(CommonPlayer player) {
+    return getPlayer().canSee(Sponge.getServer().getPlayer(player.getUniqueId()).get());
+  }
+
   private Player getPlayer() {
     if (isOnlineMode()) {
       Optional<Player> player = Sponge.getServer().getPlayer(uuid);

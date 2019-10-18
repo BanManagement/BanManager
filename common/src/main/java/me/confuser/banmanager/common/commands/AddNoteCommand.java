@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class AddNoteCommand extends CommonCommand {
 
   public AddNoteCommand(BanManagerPlugin plugin) {
-    super(plugin, "addnote");
+    super(plugin, "addnote", true);
   }
 
   @Override

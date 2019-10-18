@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class KickCommand extends CommonCommand {
 
   public KickCommand(BanManagerPlugin plugin) {
-    super(plugin, "kick");
+    super(plugin, "kick", true);
   }
 
   @Override

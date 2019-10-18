@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ReportCommand extends CommonCommand {
 
   public ReportCommand(BanManagerPlugin plugin) {
-    super(plugin, "report", 0);
+    super(plugin, "report", true, 0);
   }
 
   @Override
@@ -87,7 +87,7 @@ public class ReportCommand extends CommonCommand {
 
       try {
         PlayerReportData report = new PlayerReportData(player, actor, reason, getPlugin().getReportStateStorage()
-                                                                                         .queryForId(1));
+            .queryForId(1));
         getPlugin().getPlayerReportStorage().report(report, isSilent);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());

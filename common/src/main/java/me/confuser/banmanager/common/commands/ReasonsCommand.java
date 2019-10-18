@@ -8,7 +8,7 @@ import java.util.Map;
 public class ReasonsCommand extends CommonCommand {
 
   public ReasonsCommand(BanManagerPlugin plugin) {
-    super(plugin, "reasons");
+    super(plugin, "reasons", false);
   }
 
   @Override

@@ -39,4 +39,6 @@ public interface CommonPlayer extends CommonSender {
   UUID getUniqueId();
 
   boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw);
+
+  boolean canSee(CommonPlayer player);
 }

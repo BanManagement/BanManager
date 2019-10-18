@@ -22,7 +22,7 @@ public class DeleteCommand extends CommonCommand {
   };
 
   public DeleteCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmdelete");
+    super(plugin, "bmdelete", false);
   }
 
   @Override

@@ -20,7 +20,7 @@ public abstract class MultiCommonCommand extends CommonCommand {
   private String noPermissionMessage = "You do not have permission for this command";
 
   public MultiCommonCommand(BanManagerPlugin plugin, String commandName) {
-    super(plugin, commandName);
+    super(plugin, commandName, false);
 
     commandTypeHelpMessage = "Type /" + commandName + " help for help";
   }

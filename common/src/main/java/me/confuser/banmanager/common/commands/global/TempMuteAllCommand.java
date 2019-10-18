@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class TempMuteAllCommand extends CommonCommand {
 
   public TempMuteAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempmuteall");
+    super(plugin, "tempmuteall", true);
   }
 
   @Override

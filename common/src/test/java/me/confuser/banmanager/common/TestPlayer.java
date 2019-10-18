@@ -84,4 +84,9 @@ public class TestPlayer implements CommonPlayer {
   public boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw) {
     return false;
   }
+
+  @Override
+  public boolean canSee(CommonPlayer player) {
+    return true;
+  }
 }

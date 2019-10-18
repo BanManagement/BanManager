@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class TempNameBanCommand extends CommonCommand {
 
   public TempNameBanCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempbanname", 2);
+    super(plugin, "tempbanname", true,2);
   }
 
   @Override

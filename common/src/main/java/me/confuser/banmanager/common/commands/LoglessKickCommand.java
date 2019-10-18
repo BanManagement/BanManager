@@ -8,7 +8,7 @@ import me.confuser.banmanager.common.util.Message;
 public class LoglessKickCommand extends CommonCommand {
 
   public LoglessKickCommand(BanManagerPlugin plugin) {
-    super(plugin, "nlkick");
+    super(plugin, "nlkick", true);
   }
 
   @Override

@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ActivityCommand extends CommonCommand {
 
   public ActivityCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmactivity");
+    super(plugin, "bmactivity", true);
   }
 
   @Override

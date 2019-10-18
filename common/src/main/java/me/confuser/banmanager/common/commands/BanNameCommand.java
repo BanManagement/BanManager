@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class BanNameCommand extends CommonCommand {
 
   public BanNameCommand(BanManagerPlugin plugin) {
-    super(plugin, "banname", 1);
+    super(plugin, "banname", true, 1);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class BanNameCommand extends CommonCommand {
         created = getPlugin().getNameBanStorage().ban(ban, isSilent);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banname.error.exists").set("name",
-                name));
+            name));
         return;
       }
 
@@ -77,9 +77,9 @@ public class BanNameCommand extends CommonCommand {
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("banname.name.kick")
-                                     .set("reason", ban.getReason())
-                                     .set("actor", actor.getName())
-                                     .set("name", name);
+            .set("reason", ban.getReason())
+            .set("actor", actor.getName())
+            .set("name", name);
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (onlinePlayer.getName().equalsIgnoreCase(name)) {

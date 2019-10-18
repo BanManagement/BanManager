@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class UnbanNameCommand extends CommonCommand {
 
   public UnbanNameCommand(BanManagerPlugin plugin) {
-    super(plugin, "unbanname");
+    super(plugin, "unbanname", true);
   }
 
   @Override

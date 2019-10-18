@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UnbanAllCommand extends CommonCommand {
 
   public UnbanAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "unbanall");
+    super(plugin, "unbanall", true);
   }
 
   @Override

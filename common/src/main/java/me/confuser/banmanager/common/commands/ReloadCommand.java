@@ -6,7 +6,7 @@ import me.confuser.banmanager.common.util.Message;
 public class ReloadCommand extends CommonCommand {
 
   public ReloadCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmreload");
+    super(plugin, "bmreload", false);
   }
 
   @Override

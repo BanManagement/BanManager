@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class UnbanIpRangeCommand extends CommonCommand {
 
   public UnbanIpRangeCommand(BanManagerPlugin plugin) {
-    super(plugin, "unbaniprange");
+    super(plugin, "unbaniprange", false);
   }
 
   @Override

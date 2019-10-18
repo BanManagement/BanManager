@@ -22,7 +22,7 @@ public class ExportCommand extends CommonCommand {
   private boolean inProgress = false;
 
   public ExportCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmexport");
+    super(plugin, "bmexport", false);
   }
 
   @Override

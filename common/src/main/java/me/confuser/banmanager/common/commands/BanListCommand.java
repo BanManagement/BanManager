@@ -10,7 +10,7 @@ import me.confuser.banmanager.common.util.Message;
 public class BanListCommand extends CommonCommand {
 
   public BanListCommand(BanManagerPlugin plugin) {
-    super(plugin, "banlist");
+    super(plugin, "banlist", false);
   }
 
   @Override

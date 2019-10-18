@@ -18,7 +18,7 @@ import java.util.UUID;
 public class TempWarnCommand extends CommonCommand {
 
   public TempWarnCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempwarn", WarnCommandParser.class, 2);
+    super(plugin, "tempwarn", true, WarnCommandParser.class, 2);
   }
 
   @Override

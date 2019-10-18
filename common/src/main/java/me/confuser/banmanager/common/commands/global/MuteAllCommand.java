@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class MuteAllCommand extends CommonCommand {
 
   public MuteAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "muteall");
+    super(plugin, "muteall", true);
   }
 
   @Override

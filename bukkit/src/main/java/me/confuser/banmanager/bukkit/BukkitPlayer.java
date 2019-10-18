@@ -90,6 +90,11 @@ public class BukkitPlayer implements CommonPlayer {
     return player.teleport(location);
   }
 
+  @Override
+  public boolean canSee(CommonPlayer player) {
+    return getPlayer().canSee(Bukkit.getPlayer(player.getUniqueId()));
+  }
+
   public boolean isOnline() {
     return getPlayer() != null;
   }

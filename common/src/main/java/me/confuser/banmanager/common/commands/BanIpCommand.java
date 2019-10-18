@@ -4,18 +4,16 @@ import com.google.common.net.InetAddresses;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.IpBanData;
-import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class BanIpCommand extends CommonCommand {
 
   public BanIpCommand(BanManagerPlugin plugin) {
-    super(plugin, "banip", 1);
+    super(plugin, "banip", false, 1);
   }
 
   @Override
@@ -51,7 +49,7 @@ public class BanIpCommand extends CommonCommand {
       CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(ipStr);
 
       if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.banip")
-              && onlinePlayer.hasPermission("bm.exempt.banip")) {
+          && onlinePlayer.hasPermission("bm.exempt.banip")) {
         Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
         return true;
       }
@@ -98,7 +96,7 @@ public class BanIpCommand extends CommonCommand {
         created = getPlugin().getIpBanStorage().ban(ban, isSilent);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
-                ipStr));
+            ipStr));
         return;
       }
 
@@ -108,8 +106,8 @@ public class BanIpCommand extends CommonCommand {
 
       getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("banip.ip.kick")
-                                     .set("reason", ban.getReason())
-                                     .set("actor", actor.getName());
+            .set("reason", ban.getReason())
+            .set("actor", actor.getName());
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {

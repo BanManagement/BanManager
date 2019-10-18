@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class NotesCommand extends CommonCommand {
 
   public NotesCommand(BanManagerPlugin plugin) {
-    super(plugin, "notes");
+    super(plugin, "notes", true);
   }
 
   @Override

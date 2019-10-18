@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class BanIpRangeCommand extends CommonCommand {
 
   public BanIpRangeCommand(BanManagerPlugin plugin) {
-    super(plugin,"baniprange", 1);
+    super(plugin, "baniprange", false, 1);
   }
 
   @Override
@@ -78,8 +78,8 @@ public class BanIpRangeCommand extends CommonCommand {
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("baniprange.ip.kick")
-                                     .set("reason", ban.getReason())
-                                     .set("actor", actor.getName());
+            .set("reason", ban.getReason())
+            .set("actor", actor.getName());
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (ban.inRange(IPUtils.toLong(onlinePlayer.getAddress()))) {

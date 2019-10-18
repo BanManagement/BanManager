@@ -27,7 +27,7 @@ public class InfoCommand extends CommonCommand {
   private static final FastDateFormat LAST_SEEN_COMMAND_FORMAT = FastDateFormat.getInstance("dd-MM-yyyy HH:mm:ss");
 
   public InfoCommand(BanManagerPlugin plugin) {
-    super(plugin, "bminfo", InfoCommandParser.class, 0);
+    super(plugin, "bminfo", true, InfoCommandParser.class, 0);
   }
 
   @Override

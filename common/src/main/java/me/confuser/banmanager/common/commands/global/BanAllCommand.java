@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class BanAllCommand extends CommonCommand {
 
   public BanAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "banall");
+    super(plugin, "banall", true);
   }
 
   @Override

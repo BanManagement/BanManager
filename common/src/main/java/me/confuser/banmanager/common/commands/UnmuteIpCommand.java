@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class UnmuteIpCommand extends CommonCommand {
 
   public UnmuteIpCommand(BanManagerPlugin plugin) {
-    super(plugin, "unmuteip");
+    super(plugin, "unmuteip", false);
   }
 
   @Override

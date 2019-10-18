@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.commands;
 import com.google.common.net.InetAddresses;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
@@ -12,6 +13,7 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,13 +28,16 @@ public abstract class CommonCommand {
   @Getter
   private final String commandName;
   @Getter
+  private boolean enableTabCompletion;
+  @Getter
   private final List<String> aliases;
   private Class parser;
   private Integer start = null;
 
-  public CommonCommand(BanManagerPlugin plugin, String commandName) {
+  public CommonCommand(BanManagerPlugin plugin, String commandName, boolean enableTabCompletion) {
     this.plugin = plugin;
     this.commandName = commandName;
+    this.enableTabCompletion = enableTabCompletion;
 
     PluginInfo.CommandInfo info = plugin.getConfig().getPluginInfo().getCommand(commandName);
 
@@ -42,15 +47,15 @@ public abstract class CommonCommand {
     this.parser = CommandParser.class;
   }
 
-  public CommonCommand(BanManagerPlugin plugin, String commandName, int start) {
-    this(plugin, commandName);
+  public CommonCommand(BanManagerPlugin plugin, String commandName, boolean enableTabCompletion, int start) {
+    this(plugin, commandName, enableTabCompletion);
 
     this.start = start;
   }
 
-  public CommonCommand(BanManagerPlugin plugin, String commandName, Class parser, int
-          start) {
-    this(plugin, commandName);
+  public CommonCommand(BanManagerPlugin plugin, String commandName, boolean enableTabCompletion, Class parser, int
+      start) {
+    this(plugin, commandName, enableTabCompletion);
 
     this.parser = parser;
     this.start = start;
@@ -119,15 +124,64 @@ public abstract class CommonCommand {
     return ip;
   }
 
+  public static boolean isValidNameDelimiter(String names) {
+    return names.contains("|") || names.contains(",");
+  }
+
+  public static String[] splitNameDelimiter(String str) {
+    String delimiter;
+
+    if (str.contains("|")) {
+      delimiter = "\\|";
+    } else {
+      delimiter = ",";
+    }
+
+    return str.split(delimiter);
+  }
+
   public CommandParser getParser(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
     if (start == null) {
       return (CommandParser) parser.getDeclaredConstructor(BanManagerPlugin.class, String[].class).newInstance(plugin,
-              args);
+          args);
     }
 
     return (CommandParser) parser.getDeclaredConstructor(BanManagerPlugin.class, String[].class, int.class)
-                                 .newInstance(plugin,
-                                         args, start);
+        .newInstance(plugin,
+            args, start);
+  }
+
+  public List<String> handlePlayerNameTabComplete(CommonSender sender, String[] args) {
+    ArrayList<String> mostLike = new ArrayList<>();
+
+    if (isValidNameDelimiter(args[0])) {
+      String[] names = splitNameDelimiter(args[0]);
+
+      String lookup = names[names.length - 1];
+
+      if (plugin.getConfig().isOfflineAutoComplete()) {
+        for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
+          mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+        }
+      }
+
+    } else if (plugin.getConfig().isOfflineAutoComplete()) {
+      for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
+        mostLike.add(charSequence.toString());
+      }
+    } else {
+      CommonPlayer senderPlayer = sender instanceof CommonPlayer ? (CommonPlayer) sender : null;
+      String lower = args[0].toLowerCase();
+      for (CommonPlayer player : plugin.getServer().getOnlinePlayers()) {
+        if ((senderPlayer == null || senderPlayer.canSee(player)) && player.getName().toLowerCase().startsWith(lower)) {
+          mostLike.add(player.getName());
+        }
+      }
+    }
+
+    if (mostLike.size() > 100) return mostLike.subList(0, 99);
+
+    return mostLike;
   }
 
   public abstract boolean onCommand(final CommonSender sender, CommandParser args);

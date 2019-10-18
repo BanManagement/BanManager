@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class DeleteLastWarningCommand extends CommonCommand {
 
   public DeleteLastWarningCommand(BanManagerPlugin plugin) {
-    super(plugin, "dwarn");
+    super(plugin, "dwarn", true);
   }
 
   @Override

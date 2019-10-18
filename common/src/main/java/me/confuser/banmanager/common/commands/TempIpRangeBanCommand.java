@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class TempIpRangeBanCommand extends CommonCommand {
 
   public TempIpRangeBanCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempbaniprange", 2);
+    super(plugin, "tempbaniprange", false, 2);
   }
 
   @Override

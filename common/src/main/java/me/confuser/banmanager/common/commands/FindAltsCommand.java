@@ -20,7 +20,7 @@ import java.util.List;
 public class FindAltsCommand extends CommonCommand {
 
   public FindAltsCommand(BanManagerPlugin plugin) {
-    super(plugin, "alts");
+    super(plugin, "alts", true);
   }
 
   @Override

@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class TempIpMuteCommand extends CommonCommand {
 
   public TempIpMuteCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempmuteip", 2);
+    super(plugin, "tempmuteip", false, 2);
   }
 
   @Override
@@ -53,7 +53,7 @@ public class TempIpMuteCommand extends CommonCommand {
       CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(ipStr);
 
       if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.muteip")
-              && onlinePlayer.hasPermission("bm.exempt.muteip")) {
+          && onlinePlayer.hasPermission("bm.exempt.muteip")) {
         Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
         return true;
       }
@@ -118,7 +118,7 @@ public class TempIpMuteCommand extends CommonCommand {
         created = getPlugin().getIpMuteStorage().mute(mute, isSilent);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("muteip.error.exists").set("ip",
-                ipStr));
+            ipStr));
         return;
       }
 
@@ -128,9 +128,9 @@ public class TempIpMuteCommand extends CommonCommand {
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
         Message message = Message.get("tempmuteip.ip.disallowed")
-                                 .set("reason", mute.getReason())
-                                 .set("actor", actor.getName())
-                                 .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+            .set("reason", mute.getReason())
+            .set("actor", actor.getName())
+            .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {

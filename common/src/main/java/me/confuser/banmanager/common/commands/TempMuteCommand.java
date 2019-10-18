@@ -15,7 +15,7 @@ import java.util.UUID;
 public class TempMuteCommand extends CommonCommand {
 
   public TempMuteCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempmute", 2);
+    super(plugin, "tempmute", true, 2);
   }
 
   @Override

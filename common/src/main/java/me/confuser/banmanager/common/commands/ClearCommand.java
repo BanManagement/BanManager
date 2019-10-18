@@ -3,12 +3,10 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.UUID;
 
 public class ClearCommand extends CommonCommand {
 
@@ -25,7 +23,7 @@ public class ClearCommand extends CommonCommand {
   };
 
   public ClearCommand(BanManagerPlugin plugin) {
-    super(plugin, "bmclear");
+    super(plugin, "bmclear", true);
   }
 
   @Override

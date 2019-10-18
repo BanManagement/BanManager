@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class TempIpBanCommand extends CommonCommand {
 
   public TempIpBanCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempbanip", 2);
+    super(plugin, "tempbanip", false, 2);
   }
 
   @Override
@@ -46,7 +46,7 @@ public class TempIpBanCommand extends CommonCommand {
       CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(ipStr);
 
       if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.banip")
-              && onlinePlayer.hasPermission("bm.exempt.banip")) {
+          && onlinePlayer.hasPermission("bm.exempt.banip")) {
         Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
         return true;
       }
@@ -115,7 +115,7 @@ public class TempIpBanCommand extends CommonCommand {
           created = getPlugin().getIpBanStorage().ban(ban, isSilent);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
-                  ipStr));
+              ipStr));
           return;
         }
 
@@ -126,7 +126,7 @@ public class TempIpBanCommand extends CommonCommand {
         // Find online players
         getPlugin().getScheduler().runAsync(() -> {
           Message kickMessage = Message.get("tempbanip.ip.kick").set("reason", ban.getReason()).set("actor", actor
-                  .getName());
+              .getName());
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {

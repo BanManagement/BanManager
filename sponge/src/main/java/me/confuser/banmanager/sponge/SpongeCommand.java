@@ -1,6 +1,5 @@
 package me.confuser.banmanager.sponge;
 
-import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.spongepowered.api.Sponge;
@@ -37,22 +36,12 @@ public class SpongeCommand implements CommandCallable {
 
   @Override
   public CommandResult process(CommandSource source, String arguments) {
-    if (source instanceof Player) {
-      CommonPlayer sender = new SpongePlayer((Player) source, CommonCommand.getPlugin().getConfig().isOnlineMode());
-      boolean result = execute(sender, arguments);
+    CommonSender sender = getSender(source);
+    boolean result = execute(sender, arguments);
 
-      if (!result) {
-        sender.sendMessage(command.getUsage());
-        return CommandResult.empty();
-      }
-    } else {
-      CommonSender sender = new SpongeSender(CommonCommand.getPlugin(), source);
-      boolean result = execute(sender, arguments);
-
-      if (!result) {
-        sender.sendMessage(command.getUsage());
-        return CommandResult.empty();
-      }
+    if (!result) {
+      sender.sendMessage(command.getUsage());
+      return CommandResult.empty();
     }
 
     return CommandResult.success();
@@ -70,7 +59,17 @@ public class SpongeCommand implements CommandCallable {
 
   @Override
   public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws CommandException {
-    return Collections.emptyList();
+    if (!command.isEnableTabCompletion()) return Collections.emptyList();
+
+    return command.handlePlayerNameTabComplete(getSender(source), arguments.split(" "));
+  }
+
+  private CommonSender getSender(CommandSource source) {
+    if (source instanceof Player) {
+      return new SpongePlayer((Player) source, CommonCommand.getPlugin().getConfig().isOnlineMode());
+    } else {
+      return new SpongeSender(CommonCommand.getPlugin(), source);
+    }
   }
 
   @Override
