@@ -24,7 +24,10 @@ public abstract class BasePluginDbTest {
     CommonLogger logger = new TestLogger();
     plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
 
-    plugin.enable();
+    try {
+      plugin.enable();
+    } catch (Exception e) {
+    }
 
     setupConfig();
 

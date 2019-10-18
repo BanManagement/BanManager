@@ -10,10 +10,13 @@ public abstract class BasePluginTest {
   protected BanManagerPlugin plugin;
 
   @Before
-  public void setup() throws Exception {
+  public void setup() {
     CommonLogger logger = new TestLogger();
     plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
 
-    plugin.enable();
+    try {
+      plugin.enable();
+    } catch (Exception e) {
+    }
   }
 }
