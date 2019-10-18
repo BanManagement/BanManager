@@ -7,6 +7,9 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
+import net.kyori.text.TextComponent;
+import net.kyori.text.event.ClickEvent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
@@ -54,9 +57,9 @@ public class NotesCommand extends CommonCommand {
             PlayerNoteData note = notesItr.next();
 
             Message noteMessage = Message.get("notes.note")
-                                         .set("player", note.getActor().getName())
-                                         .set("message", note.getMessage())
-                                         .set("created", dateFormatter.format(note.getCreated() * 1000L));
+                .set("player", note.getActor().getName())
+                .set("message", note.getMessage())
+                .set("created", dateFormatter.format(note.getCreated() * 1000L));
             notes.add(noteMessage);
           }
 
@@ -66,7 +69,7 @@ public class NotesCommand extends CommonCommand {
           }
 
           Message header = Message.get("notes.header")
-                                  .set("player", player.getName());
+              .set("player", player.getName());
 
           header.sendTo(sender);
 
@@ -96,11 +99,11 @@ public class NotesCommand extends CommonCommand {
 
           try {
             notesItr = getPlugin().getPlayerNoteStorage()
-                                  .queryBuilder()
-                                  .where()
-                                  .in("player_id", Arrays.stream(onlinePlayers).map(player -> UUIDUtils.toBytes(player
-                                          .getUniqueId())).collect(Collectors.toList()))
-                                  .iterator();
+                .queryBuilder()
+                .where()
+                .in("player_id", Arrays.stream(onlinePlayers).map(player -> UUIDUtils.toBytes(player
+                    .getUniqueId())).collect(Collectors.toList()))
+                .iterator();
             ArrayList<Message> notes = new ArrayList<>();
             String dateTimeFormat = Message.getString("notes.dateTimeFormat");
             FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
@@ -109,10 +112,10 @@ public class NotesCommand extends CommonCommand {
               PlayerNoteData note = notesItr.next();
 
               Message noteMessage = Message.get("notes.playerNote")
-                                           .set("player", note.getPlayer().getName())
-                                           .set("actor", note.getActor().getName())
-                                           .set("message", note.getMessage())
-                                           .set("created", dateFormatter.format(note.getCreated() * 1000L));
+                  .set("player", note.getPlayer().getName())
+                  .set("actor", note.getActor().getName())
+                  .set("message", note.getMessage())
+                  .set("created", dateFormatter.format(note.getCreated() * 1000L));
               notes.add(noteMessage);
             }
 
@@ -131,10 +134,15 @@ public class NotesCommand extends CommonCommand {
             if (notesItr != null) notesItr.closeQuietly();
           }
         }
-
       });
     }
 
     return true;
+  }
+
+  public static TextComponent notesAmountMessage(String playerName, Message text) {
+    return LegacyComponentSerializer.legacy().deserialize(
+        text.set("player", playerName).toString(), '&')
+        .clickEvent(ClickEvent.runCommand("/notes " + playerName));
   }
 }

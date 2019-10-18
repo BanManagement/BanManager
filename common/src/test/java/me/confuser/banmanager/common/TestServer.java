@@ -3,6 +3,7 @@ package me.confuser.banmanager.common;
 import com.github.javafaker.Faker;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
+import net.kyori.text.TextComponent;
 
 import java.util.UUID;
 
@@ -26,6 +27,10 @@ public class TestServer implements CommonServer {
 
   @Override
   public void broadcast(String message, String permission) {
+  }
+
+  @Override
+  public void broadcastJSON(TextComponent message, String permission) {
   }
 
   @Override

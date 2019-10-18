@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import net.kyori.text.event.ClickEvent;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang3.time.FastDateFormat;
 
@@ -52,10 +51,9 @@ public class ReportList {
         sender.sendMessage(message);
       } else {
         ((CommonPlayer) sender).sendJSONMessage(
-            GsonComponentSerializer.INSTANCE.serialize(
-                LegacyComponentSerializer.legacy().deserialize(
-                    message, '&').clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
-                ))));
+            LegacyComponentSerializer.legacy().deserialize(
+                message, '&').clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
+            )));
       }
     }
   }

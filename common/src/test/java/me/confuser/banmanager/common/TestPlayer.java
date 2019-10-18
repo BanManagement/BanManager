@@ -2,6 +2,7 @@ package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
+import net.kyori.text.TextComponent;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class TestPlayer implements CommonPlayer {
   }
 
   @Override
-  public void sendJSONMessage(String jsonString) {
+  public void sendJSONMessage(TextComponent jsonString) {
   }
 
   @Override

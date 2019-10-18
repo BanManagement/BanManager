@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
+import net.kyori.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -16,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,8 +54,8 @@ public class BukkitServer implements CommonServer {
   @Override
   public CommonPlayer[] getOnlinePlayers() {
     return Bukkit.getOnlinePlayers().stream()
-      .map(player -> new BukkitPlayer(player, plugin.getConfig().isOnlineMode()))
-      .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
+        .map(player -> new BukkitPlayer(player, plugin.getConfig().isOnlineMode()))
+        .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
   }
 
   @Override
@@ -62,11 +64,18 @@ public class BukkitServer implements CommonServer {
 
     for (Permissible permissible : permissibles) {
       if (!(permissible instanceof BlockCommandSender) && (permissible instanceof CommandSender) && permissible
-              .hasPermission(permission)) {
+          .hasPermission(permission)) {
         CommandSender user = (CommandSender) permissible;
         user.sendMessage(BukkitServer.formatMessage(message));
       }
     }
+  }
+
+  @Override
+  public void broadcastJSON(TextComponent message, String permission) {
+    Arrays.stream(getOnlinePlayers()).forEach(player -> {
+      if (player.hasPermission(permission)) player.sendJSONMessage(message);
+    });
   }
 
   @Override
@@ -78,7 +87,7 @@ public class BukkitServer implements CommonServer {
 
   public static String formatMessage(String message) {
     return ChatColor
-            .translateAlternateColorCodes('&', message.replace("\\n", "\n"));
+        .translateAlternateColorCodes('&', message.replace("\\n", "\n"));
   }
 
   @Override
@@ -206,7 +215,7 @@ public class BukkitServer implements CommonServer {
     Bukkit.getServer().getPluginManager().callEvent(event);
 
     if (event instanceof SilentCancellableEvent) {
-      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(),((SilentCancellableEvent) event).isSilent());
+      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(), ((SilentCancellableEvent) event).isSilent());
     } else if (event instanceof SilentEvent) {
       commonEvent = new CommonEvent(false, ((SilentEvent) event).isSilent());
     } else if (event instanceof CustomCancellableEvent) {

@@ -6,6 +6,8 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
+import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -48,8 +50,8 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   @Override
-  public void sendJSONMessage(String jsonString) {
-    getPlayer().sendMessage(TextSerializers.JSON.deserialize(jsonString));
+  public void sendJSONMessage(TextComponent jsonString) {
+    getPlayer().sendMessage(TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(jsonString)));
   }
 
   @Override

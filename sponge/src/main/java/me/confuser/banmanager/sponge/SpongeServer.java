@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.sponge.api.events.*;
+import net.kyori.text.TextComponent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -58,6 +59,13 @@ public class SpongeServer implements CommonServer {
     });
 
     Sponge.getServer().getConsole().sendMessage(Text.of(message));
+  }
+
+  @Override
+  public void broadcastJSON(TextComponent message, String permission) {
+    Arrays.stream(getOnlinePlayers()).forEach(player -> {
+      if (player.hasPermission(permission)) player.sendJSONMessage(message);
+    });
   }
 
   public void broadcast(String message, String permission, CommonSender sender) {

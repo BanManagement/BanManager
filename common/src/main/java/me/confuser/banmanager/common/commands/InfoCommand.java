@@ -6,11 +6,13 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
+import net.kyori.text.TextComponent;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.IOException;
@@ -253,7 +255,7 @@ public class InfoCommand extends CommonCommand {
         List<PlayerData> duplicatePlayers = getPlugin().getPlayerStorage().getDuplicates(player.getIp());
 
         if (!sender.isConsole()) {
-//          messages.add(JSONCommandUtils.alts(duplicatePlayers));
+          messages.add(FindAltsCommand.alts(duplicatePlayers));
         } else {
           StringBuilder duplicates = new StringBuilder();
 
@@ -357,9 +359,9 @@ public class InfoCommand extends CommonCommand {
     for (Object message : messages) {
       if (message instanceof String) {
         sender.sendMessage((String) message);
-      } //else if (message instanceof JSONMessage) {
-//        ((JSONMessage) message).send((Player) sender);
-      //}
+      } else if (message instanceof TextComponent) {
+        ((CommonPlayer) sender).sendJSONMessage((TextComponent) message);
+      }
     }
   }
 

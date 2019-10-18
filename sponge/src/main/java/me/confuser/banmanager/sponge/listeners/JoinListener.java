@@ -7,6 +7,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.commands.NotesCommand;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.*;
 import me.confuser.banmanager.sponge.SpongeServer;
@@ -272,8 +273,7 @@ public class JoinListener {
                                            .set("amount", notes.size())
                                            .set("player", player.getName());
 
-//          plugin.getServer().broadcast(JSONCommandUtils
-//                  .notesAmount(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+          plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
           String header = Message.get("notes.header")
                                  .set("player", player.getName())

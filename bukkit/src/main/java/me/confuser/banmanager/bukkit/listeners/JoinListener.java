@@ -8,6 +8,7 @@ import com.maxmind.geoip2.model.CountryResponse;
 import me.confuser.banmanager.bukkit.BukkitServer;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.commands.NotesCommand;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.*;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -268,8 +269,7 @@ public class JoinListener implements Listener {
                                            .set("amount", notes.size())
                                            .set("player", event.getPlayer().getName());
 
-//          plugin.getServer().broadcast(JSONCommandUtils
-//                  .notesAmount(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+          plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
           String header = Message.get("notes.header")
                                  .set("player", event.getPlayer().getName())
