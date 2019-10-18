@@ -7,8 +7,8 @@ import me.confuser.banmanager.common.util.Message;
 public class SyncCommand extends CommonCommand {
 
   private final String[] localSync = new String[] { "playerBans", "playerMutes", "ipBans", "ipRangeBans", "expiresCheck" };
-  private final String[] globalSync = new String[] { "globalPlayerBans", "globalPlayerMutes", "globalPlayerNotes",
-          "globalIpBans" };
+  private final String[] globalSync = new String[] { "externalPlayerBans", "externalPlayerMutes", "externalPlayerNotes",
+          "externalIpBans" };
 
   public SyncCommand(BanManagerPlugin plugin) {
     super(plugin, "bmsync");
