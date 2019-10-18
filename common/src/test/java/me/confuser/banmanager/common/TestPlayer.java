@@ -42,17 +42,17 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public PlayerData getData() {
-    return null;
+    return BanManagerPlugin.getInstance().getPlayerStorage().retrieve(this.name, false);
   }
 
   @Override
   public boolean isOnlineMode() {
-    return true;
+    return this.onlineMode;
   }
 
   @Override
   public boolean isOnline() {
-    return false;
+    return true;
   }
 
   @Override
@@ -62,12 +62,12 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public String getDisplayName() {
-    return null;
+    return this.name;
   }
 
   @Override
   public String getName() {
-    return null;
+    return this.name;
   }
 
   @Override
@@ -77,7 +77,7 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public UUID getUniqueId() {
-    return null;
+    return this.uuid;
   }
 
   @Override

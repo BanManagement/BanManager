@@ -1,7 +1,9 @@
 package me.confuser.banmanager.common;
 
 import ch.vorburger.mariadb4j.junit.MariaDB4jRule;
+import com.github.javafaker.Faker;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -12,24 +14,32 @@ import java.nio.file.Path;
 import java.util.List;
 
 public abstract class BasePluginDbTest {
-
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  @Rule
-  public MariaDB4jRule dbRule = new MariaDB4jRule(0); //port 0 means select random available port
+  @ClassRule
+  public static MariaDB4jRule dbRule = new MariaDB4jRule(0); //port 0 means select random available port
   protected BanManagerPlugin plugin;
+  protected Faker faker = new Faker();
+  protected TestUtils testUtils;
+  private boolean configSetup = false;
 
   @Before
   public void setup() throws Exception {
+    TestServer server = new TestServer();
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
+    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), server);
 
-    try {
-      plugin.enable();
-    } catch (Exception e) {
+    testUtils = new TestUtils(plugin, faker);
+    server.enable(plugin);
+
+    if (!configSetup) {
+      try {
+        plugin.enable();
+      } catch (Exception e) {
+      }
+
+      setupConfig();
     }
-
-    setupConfig();
 
     plugin.enable();
   }
@@ -46,5 +56,7 @@ public abstract class BasePluginDbTest {
     lines.set(11, "    password: ''");
 
     Files.write(configFile, lines, StandardCharsets.UTF_8);
+
+    configSetup = true;
   }
 }

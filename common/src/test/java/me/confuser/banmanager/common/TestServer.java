@@ -1,23 +1,39 @@
 package me.confuser.banmanager.common;
 
-import com.github.javafaker.Faker;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import net.kyori.text.TextComponent;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class TestServer implements CommonServer {
-  private Faker faker = new Faker();
+  private BanManagerPlugin plugin;
 
   @Override
   public CommonPlayer getPlayer(UUID uniqueId) {
-    return new TestPlayer(uniqueId, faker.name().username(), true);
+    try {
+      PlayerData player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uniqueId));
+
+      if (player == null) return null;
+
+      return new TestPlayer(uniqueId, player.getName(), true);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 
   @Override
   public CommonPlayer getPlayer(String name) {
-    return new TestPlayer(UUID.fromString(faker.internet().uuid()), name, true);
+    PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
+
+    if (player == null) return null;
+
+    return new TestPlayer(player.getUUID(), player.getName(), true);
   }
 
   @Override
@@ -39,7 +55,9 @@ public class TestServer implements CommonServer {
 
   @Override
   public CommonSender getConsoleSender() {
-    return null;
+    PlayerData console = plugin.getPlayerStorage().getConsole();
+
+    return new TestSender(console.getUUID(), console.getName(), true);
   }
 
   @Override
@@ -49,11 +67,15 @@ public class TestServer implements CommonServer {
 
   @Override
   public CommonWorld getWorld(String name) {
-    return null;
+    return new CommonWorld(name);
   }
 
   @Override
   public CommonEvent callEvent(String name, Object... args) {
     return new CommonEvent(false, false);
+  }
+
+  public void enable(BanManagerPlugin plugin) {
+    this.plugin = plugin;
   }
 }
