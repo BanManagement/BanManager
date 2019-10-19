@@ -4,21 +4,48 @@ import lombok.Getter;
 import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
+import me.confuser.banmanager.common.configs.PluginInfo;
+import me.confuser.banmanager.common.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 public class BMBukkitPlugin extends JavaPlugin {
 
   @Getter
   private BanManagerPlugin plugin;
 
+  private String[] configs = new String[]{
+      "config.yml",
+      "console.yml",
+      "exemptions.yml",
+      "geoip.yml",
+      "messages.yml",
+      "reasons.yml",
+      "schedules.yml"
+  };
+
   @Override
   public void onEnable() {
     BukkitServer server = new BukkitServer();
-    plugin = new BanManagerPlugin(new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server);
+    PluginInfo pluginInfo;
+    try {
+      pluginInfo = setupConfigs();
+    } catch (IOException e) {
+      getPluginLoader().disablePlugin(this);
+      e.printStackTrace();
+      return;
+    }
+
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server);
 
     server.enable(plugin);
 
@@ -42,6 +69,37 @@ public class BMBukkitPlugin extends JavaPlugin {
     plugin.disable();
   }
 
+  private PluginInfo setupConfigs() throws IOException {
+    for (String name : configs) {
+      if (!new File(getDataFolder(), name).exists()) {
+        this.saveResource(name, false);
+      } else {
+        File file = new File(getDataFolder(), name);
+        Reader defConfigStream = new InputStreamReader(getResource(file.getName()), "UTF8");
+
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+        conf.setDefaults(defConfig);
+        conf.options().copyDefaults(true);
+        conf.save(file);
+      }
+    }
+
+    // Load plugin.yml
+    PluginInfo pluginInfo = new PluginInfo();
+    Reader defConfigStream = new InputStreamReader(getResource("plugin.yml"), "UTF8");
+    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+    ConfigurationSection commands = conf.getConfigurationSection("commands");
+
+    for (String command : commands.getKeys(false)) {
+      ConfigurationSection cmd = commands.getConfigurationSection(command);
+
+      pluginInfo.setCommand( new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+    }
+
+    return pluginInfo;
+  }
+
   public void setupListeners() {
     registerEvent(new JoinListener(plugin));
     registerEvent(new LeaveListener(plugin));
@@ -52,10 +110,10 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     // Set custom priority
     getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(plugin.getConfig().getChatPriority()),
-      (listener, event) -> {
-        ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
-        ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
-      }, this);
+        (listener, event) -> {
+          ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
+          ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
+        }, this);
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
@@ -86,11 +144,11 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     if (plugin.getGlobalConn() == null) {
       syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
+          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
     } else {
       syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-              new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
-              new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
+          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
+          new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
     }
 
     plugin.setSyncRunner(syncRunner);
@@ -102,7 +160,7 @@ public class BMBukkitPlugin extends JavaPlugin {
      * above.
      */
     setupAsyncRunnable((plugin.getSchedulesConfig()
-                              .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
+        .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
 
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));

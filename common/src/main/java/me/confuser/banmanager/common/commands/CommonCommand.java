@@ -39,7 +39,7 @@ public abstract class CommonCommand {
     this.commandName = commandName;
     this.enableTabCompletion = enableTabCompletion;
 
-    PluginInfo.CommandInfo info = plugin.getConfig().getPluginInfo().getCommand(commandName);
+    PluginInfo.CommandInfo info = plugin.getPluginInfo().getCommand(commandName);
 
     this.usage = info.getUsage();
     this.permission = info.getPermission();

@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common;
 
+import me.confuser.banmanager.common.configs.PluginInfo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class PluginTest {
   @Before
   public void setup() {
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
+    plugin = new BanManagerPlugin(new PluginInfo(), logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
 
     try {
       plugin.enable();
