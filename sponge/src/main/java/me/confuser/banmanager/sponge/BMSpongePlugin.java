@@ -4,6 +4,9 @@ import com.google.inject.Inject;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.commands.CommonCommand;
+import me.confuser.banmanager.common.configs.PluginInfo;
+import me.confuser.banmanager.common.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
 import org.slf4j.Logger;
@@ -15,7 +18,12 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Path;
 
 @Plugin(
@@ -36,6 +44,19 @@ public class BMSpongePlugin {
   private Path dataFolder;
 
   @Inject
+  private PluginContainer pluginContainer;
+
+  private String[] configs = new String[]{
+      "config.yml",
+      "console.yml",
+      "exemptions.yml",
+      "geoip.yml",
+      "messages.yml",
+      "reasons.yml",
+      "schedules.yml"
+  };
+
+  @Inject
   public BMSpongePlugin(Logger logger) {
     this.logger = new PluginLogger(logger);
   }
@@ -50,8 +71,15 @@ public class BMSpongePlugin {
   @Listener
   public void onEnable(GamePreInitializationEvent event) {
     SpongeServer server = new SpongeServer();
+    PluginInfo pluginInfo;
+    try {
+      pluginInfo = setupConfigs();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
 
-    this.plugin = new BanManagerPlugin(this.logger, dataFolder.toFile(), new SpongeScheduler(this), server);
+    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), new SpongeScheduler(this), server);
 
     server.enable(plugin);
 
@@ -70,6 +98,38 @@ public class BMSpongePlugin {
 
   public CommonLogger getLogger() {
     return logger;
+  }
+
+  private PluginInfo setupConfigs() throws IOException {
+    for (String name : configs) {
+      File file = new File(dataFolder.toFile(), name);
+      if (file.exists()) {
+        // YAMLConfigurationLoader messes with format and makes it unreadable
+        Reader defConfigStream = new InputStreamReader(pluginContainer.getAsset(name).get().getUrl().openStream());
+
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+        conf.setDefaults(defConfig);
+        conf.options().copyDefaults(true);
+        conf.save(file);
+      } else {
+        pluginContainer.getAsset(name).get().copyToDirectory(dataFolder);
+      }
+    }
+
+    // Load plugin.yml
+    PluginInfo pluginInfo = new PluginInfo();
+    Reader defConfigStream = new InputStreamReader(pluginContainer.getAsset("plugin.yml").get().getUrl().openStream());
+    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+    ConfigurationSection commands = conf.getConfigurationSection("commands");
+
+    for (String command : commands.getKeys(false)) {
+      ConfigurationSection cmd = commands.getConfigurationSection(command);
+
+      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+    }
+
+    return pluginInfo;
   }
 
   public void setupListeners() {

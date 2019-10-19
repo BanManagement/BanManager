@@ -13,15 +13,7 @@
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>../common/src/main/resources/</directory>
-                <includes>
-                    <include>*.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
+                <targetPath>./assets/banmanager</targetPath>
                 <filtering>true</filtering>
                 <directory>../common/src/main/resources/</directory>
                 <includes>

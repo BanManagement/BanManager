@@ -19,14 +19,18 @@ public class ConsoleConfig extends Config {
 
   @Override
   public void afterLoad() {
+    boolean update = false;
     if (conf.getString("uuid", "0").equals("0")) {
       uuid = UUID.randomUUID();
-      save();
+      update = true;
     } else {
       uuid = UUID.fromString(conf.getString("uuid"));
     }
 
+
     name = conf.getString("name");
+
+    if (update) save();
   }
 
   @Override
