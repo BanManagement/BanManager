@@ -5,7 +5,6 @@ import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.runnables.*;
-import net.gravitydevelopment.updater.Updater;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -108,16 +107,16 @@ public class BMBukkitPlugin extends JavaPlugin {
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));
 
-    // TODO Refactor
-    if (!plugin.getConfig().isCheckForUpdates()) return;
-
-    plugin.getScheduler().runAsync(() -> {
-      Updater updater = new Updater(this, 41473, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-
-      if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
-        plugin.getScheduler().runSync(() -> registerEvent(new UpdateListener(plugin)));
-      }
-    });
+//    // TODO Refactor
+//    if (!plugin.getConfig().isCheckForUpdates()) return;
+//
+//    plugin.getScheduler().runAsync(() -> {
+//      Updater updater = new Updater(this, 41473, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+//
+//      if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
+//        plugin.getScheduler().runSync(() -> registerEvent(new UpdateListener(plugin)));
+//      }
+//    });
   }
 
   private void setupAsyncRunnable(long length, Runnable runnable) {

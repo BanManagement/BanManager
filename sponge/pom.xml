@@ -100,6 +100,10 @@
                                     <shadedPattern>me.confuser.banmanager.common.mysql</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.sl4j</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.googlecode.concurrenttrees</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.concurrenttrees</shadedPattern>
                                 </relocation>
@@ -117,7 +121,11 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.common</pattern>
-                                    <shadedPattern>me.confuser.banmanager.common.guava</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.common.google.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>google.protobuf</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.google.protobuf</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.sampullara.cli</pattern>
@@ -142,6 +150,18 @@
                                 <relocation>
                                     <pattern>javax.annotation</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.jaxax.annotation</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori.text</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.kyori.text</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.checkerframework</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.kyori.checkerframework</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.snakeyaml</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

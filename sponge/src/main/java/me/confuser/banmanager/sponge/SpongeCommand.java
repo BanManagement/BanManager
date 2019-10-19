@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -13,7 +12,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +57,7 @@ public class SpongeCommand implements CommandCallable {
   }
 
   @Override
-  public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws CommandException {
+  public List<String> getSuggestions(CommandSource source, String arguments, Location<World> targetPosition) {
     if (!command.isEnableTabCompletion()) return Collections.emptyList();
 
     return command.handlePlayerNameTabComplete(getSender(source), arguments.split(" "));

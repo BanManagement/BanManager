@@ -60,10 +60,6 @@
                             </filters>
                             <relocations>
                                 <relocation>
-                                    <pattern>net.gravitydevelopment.updater</pattern>
-                                    <shadedPattern>me.confuser.banmanager.updater</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.j256.ormlite</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.ormlite</shadedPattern>
                                 </relocation>
@@ -101,7 +97,11 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.common</pattern>
-                                    <shadedPattern>me.confuser.banmanager.common.guava</shadedPattern>
+                                    <shadedPattern>me.confuser.banmanager.common.google.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>google.protobuf</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.google.protobuf</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.sampullara.cli</pattern>
@@ -126,6 +126,18 @@
                                 <relocation>
                                     <pattern>javax.annotation</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.jaxax.annotation</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori.text</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.kyori.text</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.checkerframework</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.kyori.checkerframework</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.snakeyaml</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -158,11 +170,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timbru31</groupId>
-            <artifactId>updater</artifactId>
-            <version>master-updater-4.0.0-gb5d45c8-10</version>
         </dependency>
         <dependency>
             <groupId>me.confuser.banmanager</groupId>

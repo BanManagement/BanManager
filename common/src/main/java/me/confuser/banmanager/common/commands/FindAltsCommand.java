@@ -11,7 +11,6 @@ import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.format.TextColor;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -88,7 +87,7 @@ public class FindAltsCommand extends CommonCommand {
   }
 
   public static TextComponent alts(List<PlayerData> players) {
-    TextComponent.@NonNull Builder message = TextComponent.builder();
+    TextComponent.Builder message = TextComponent.builder();
     int index = 0;
 
     for (PlayerData player : players) {

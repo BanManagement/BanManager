@@ -1,7 +1,8 @@
-package me.confuser.banmanager.common;
+package me.confuser.banmanager.common.api;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.support.ConnectionSource;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
