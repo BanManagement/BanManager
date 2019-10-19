@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerHistoryData;
 
@@ -18,8 +19,8 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
   public PlayerHistoryStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerHistoryData>) plugin.getConfig()
-                                                                                .getLocalDb()
-                                                                                .getTable("playerHistory"));
+        .getLocalDb()
+        .getTable("playerHistory"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -36,9 +37,9 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
   public CloseableIterator<PlayerHistoryData> getSince(PlayerData player, long since, int page) throws SQLException {
     return queryBuilder().limit(10L).offset(10L * page)
-                         .orderBy("join", false)
-                         .where().ge("join", since).and().eq("player_id", player)
-                         .iterator();
+        .orderBy("join", false)
+        .where().ge("join", since).and().eq("player_id", player)
+        .iterator();
   }
 
   public void save() {
@@ -52,5 +53,18 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
         break; // Don't slow down shut down if problems with the connection
       }
     }
+  }
+
+  public void purge(CleanUp cleanup) throws SQLException {
+    if (cleanup.getDays() == 0) return;
+
+    String banTable = BanManagerPlugin.getInstance().getIpBanStorage()
+        .getTableInfo()
+        .getTableName();
+
+    updateRaw("DELETE ph FROM " + getTableInfo()
+        .getTableName() + " AS ph LEFT JOIN " + banTable + " b ON ph.ip = b.ip WHERE b.ip IS NULL AND ph.leave < " +
+        "UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL " + cleanup
+        .getDays() + " DAY))");
   }
 }

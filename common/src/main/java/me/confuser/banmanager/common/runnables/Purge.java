@@ -55,5 +55,10 @@ public class Purge implements Runnable {
       e.printStackTrace();
     }
 
+    try {
+      plugin.getPlayerHistoryStorage().purge(cleanUps.get("playerHistory"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 }
