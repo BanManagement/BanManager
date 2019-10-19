@@ -45,14 +45,12 @@ public class ExpiresSync extends BmRunnable {
     CloseableIterator<PlayerBanData> bans = null;
     try {
       bans = banStorage.queryBuilder().where().ne("expires", 0).and()
-                       .le("expires", now).iterator();
+          .le("expires", now).iterator();
 
       while (bans.hasNext()) {
         PlayerBanData ban = bans.next();
-        banRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
-        banStorage.removeBan(ban);
-        banStorage.delete(ban);
+        banStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "", true);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -66,10 +64,8 @@ public class ExpiresSync extends BmRunnable {
 
       while (mutes.hasNext()) {
         PlayerMuteData mute = mutes.next();
-        muteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole(), "");
 
-        muteStorage.removeMute(mute);
-        muteStorage.delete(mute);
+        muteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "", true);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -80,7 +76,7 @@ public class ExpiresSync extends BmRunnable {
     CloseableIterator<PlayerWarnData> warnings = null;
     try {
       warnings = warnStorage.queryBuilder().where().ne("expires", 0).and()
-                            .le("expires", now).iterator();
+          .le("expires", now).iterator();
 
       while (warnings.hasNext()) {
         PlayerWarnData warning = warnings.next();
@@ -96,14 +92,12 @@ public class ExpiresSync extends BmRunnable {
     CloseableIterator<IpBanData> ipBans = null;
     try {
       ipBans = ipBanStorage.queryBuilder().where().ne("expires", 0).and()
-                           .le("expires", now).iterator();
+          .le("expires", now).iterator();
 
       while (ipBans.hasNext()) {
         IpBanData ban = ipBans.next();
-        ipBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
-        ipBanStorage.removeBan(ban);
-        ipBanStorage.delete(ban);
+        ipBanStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -117,10 +111,8 @@ public class ExpiresSync extends BmRunnable {
 
       while (ipMutes.hasNext()) {
         IpMuteData mute = ipMutes.next();
-        ipMuteRecordStorage.addRecord(mute, plugin.getPlayerStorage().getConsole(), "");
 
-        ipMuteStorage.removeMute(mute);
-        ipMuteStorage.delete(mute);
+        ipMuteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -131,14 +123,12 @@ public class ExpiresSync extends BmRunnable {
     CloseableIterator<IpRangeBanData> ipRangeBans = null;
     try {
       ipRangeBans = ipRangeBanStorage.queryBuilder().where().ne("expires", 0).and()
-                                     .le("expires", now).iterator();
+          .le("expires", now).iterator();
 
       while (ipRangeBans.hasNext()) {
         IpRangeBanData ban = ipRangeBans.next();
-        ipRangeBanRecordStorage.addRecord(ban, plugin.getPlayerStorage().getConsole(), "");
 
-        ipRangeBanStorage.removeBan(ban);
-        ipRangeBanStorage.delete(ban);
+        ipRangeBanStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
       e.printStackTrace();
