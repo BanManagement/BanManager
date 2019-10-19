@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerBanRecord;
 import me.confuser.banmanager.common.storage.PlayerBanStorage;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -50,11 +51,20 @@ public class BanSync extends BmRunnable {
 
           if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
 
-          Message kickMessage = Message.get("ban.player.kick")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", ban.getPlayer().getName())
-                                       .set("reason", ban.getReason())
-                                       .set("actor", ban.getActor().getName());
+          Message kickMessage;
+
+          if (ban.getExpires() == 0) {
+            kickMessage = Message.get("ban.player.kick");
+          } else {
+            kickMessage = Message.get("tempban.player.kick");
+            kickMessage.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+          }
+
+          kickMessage
+              .set("displayName", bukkitPlayer.getDisplayName())
+              .set("player", ban.getPlayer().getName())
+              .set("reason", ban.getReason())
+              .set("actor", ban.getActor().getName());
 
           bukkitPlayer.kick(kickMessage.toString());
         });
