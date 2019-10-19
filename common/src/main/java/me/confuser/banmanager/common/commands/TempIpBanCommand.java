@@ -125,8 +125,10 @@ public class TempIpBanCommand extends CommonCommand {
 
         // Find online players
         getPlugin().getScheduler().runAsync(() -> {
-          Message kickMessage = Message.get("tempbanip.ip.kick").set("reason", ban.getReason()).set("actor", actor
-              .getName());
+          Message kickMessage = Message.get("tempbanip.ip.kick")
+              .set("reason", ban.getReason())
+              .set("actor", actor.getName())
+              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));;
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {
