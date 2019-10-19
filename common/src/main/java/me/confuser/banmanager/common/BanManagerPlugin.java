@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
+import me.confuser.banmanager.common.api.BmAPI;
 import me.confuser.banmanager.common.commands.*;
 import me.confuser.banmanager.common.commands.global.*;
 import me.confuser.banmanager.common.configs.*;
@@ -24,6 +25,15 @@ import static java.lang.Long.parseLong;
 
 public class BanManagerPlugin {
   private static BanManagerPlugin self;
+
+  /*
+   * This block prevents the Maven Shade plugin to remove the specified classes
+   */
+  static {
+    @SuppressWarnings ("unused") Class<?>[] classes = new Class<?>[] {
+        BmAPI.class,
+    };
+  }
 
   @Getter
   private final CommonLogger logger;
