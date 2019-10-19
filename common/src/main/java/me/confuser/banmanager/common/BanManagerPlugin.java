@@ -36,6 +36,8 @@ public class BanManagerPlugin {
   }
 
   @Getter
+  private PluginInfo pluginInfo;
+  @Getter
   private final CommonLogger logger;
 
   // Configs
@@ -138,7 +140,8 @@ public class BanManagerPlugin {
   @Getter
   private Runner syncRunner;
 
-  public BanManagerPlugin(CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
+  public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
+    this.pluginInfo = pluginInfo;
     this.logger = logger;
     this.dataFolder = dataFolder;
     this.server = server;

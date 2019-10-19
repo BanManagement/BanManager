@@ -68,8 +68,6 @@ public class DefaultConfig extends Config {
   private boolean logIpsEnabled = true;
   @Getter
   private String chatPriority;
-  @Getter
-  private PluginInfo pluginInfo;
 
   public DefaultConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "config.yml", logger);
@@ -121,8 +119,6 @@ public class DefaultConfig extends Config {
     softMutedBlacklistCommands = new HashSet<>();
 
     chatPriority = conf.getString("chatPriority", "NORMAL").toUpperCase();
-
-    pluginInfo = new PluginInfo();
 
     // Run this after startup to ensure all aliases are found
 //    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

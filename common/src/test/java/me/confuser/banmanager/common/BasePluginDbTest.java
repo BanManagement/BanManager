@@ -2,6 +2,7 @@ package me.confuser.banmanager.common;
 
 import ch.vorburger.mariadb4j.junit.MariaDB4jRule;
 import com.github.javafaker.Faker;
+import me.confuser.banmanager.common.configs.PluginInfo;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -27,7 +28,7 @@ public abstract class BasePluginDbTest {
   public void setup() throws Exception {
     TestServer server = new TestServer();
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(logger, temporaryFolder.getRoot(), new TestScheduler(), server);
+    plugin = new BanManagerPlugin(BasePluginTest.setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), server);
 
     testUtils = new TestUtils(plugin, faker);
     server.enable(plugin);
