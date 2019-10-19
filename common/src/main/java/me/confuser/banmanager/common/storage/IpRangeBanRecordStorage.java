@@ -1,0 +1,64 @@
+package me.confuser.banmanager.common.storage;
+
+import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.TableUtils;
+import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.data.IpRangeBanData;
+import me.confuser.banmanager.common.data.IpRangeBanRecord;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.DateUtils;
+
+import java.sql.SQLException;
+
+public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integer> {
+
+  public IpRangeBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
+    super(plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanRecord>) plugin.getConfig().getLocalDb()
+                                                                               .getTable("ipRangeBanRecords"));
+
+    if (!this.isTableExists()) {
+      TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      // Attempt to add new columns
+      try {
+        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
+        executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
+    }
+  }
+
+  public void addRecord(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
+    create(new IpRangeBanRecord(ban, actor, reason));
+  }
+
+  public CloseableIterator<IpRangeBanRecord> findUnbans(long fromTime) throws SQLException {
+    if (fromTime == 0) {
+      return iterator();
+    }
+
+    long checkTime = fromTime + DateUtils.getTimeDiff();
+
+    QueryBuilder<IpRangeBanRecord, Integer> query = queryBuilder();
+    Where<IpRangeBanRecord, Integer> where = query.where();
+
+    where.ge("created", checkTime);
+
+    query.setWhere(where);
+
+    return query.iterator();
+
+  }
+
+  public long getCount(long ip) throws SQLException {
+    return queryBuilder().where().eq("ip", ip).countOf();
+  }
+
+  public CloseableIterator<IpRangeBanRecord> getRecords(long ip) throws SQLException {
+    return queryBuilder().where().eq("ip", ip).iterator();
+  }
+}
