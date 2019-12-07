@@ -48,7 +48,12 @@ public class SpongeCommand implements CommandCallable {
 
   private boolean execute(CommonSender sender, String arguments) {
     try {
-      return this.command.onCommand(sender, this.command.getParser(arguments.split(" ")));
+      if(sender.hasPermission(command.getPermission())) {
+        return this.command.onCommand(sender, this.command.getParser(arguments.split(" ")));
+      } else {
+        sender.sendMessage("&cYou do not have permission to use this command");
+        return true;
+      }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       e.printStackTrace();
     }
