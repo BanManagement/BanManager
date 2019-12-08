@@ -71,6 +71,9 @@ messages:
     ip:
       started: '&aIP ban import started'
       finished: '&aIP ban import finished'
+    advancedban:
+      started: '&aAdvancedBan import started'
+      finished: '&aAdvancedBan import finished'
 
   info:
     error:
