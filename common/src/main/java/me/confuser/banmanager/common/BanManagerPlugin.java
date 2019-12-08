@@ -341,6 +341,7 @@ public class BanManagerPlugin {
             new ExportCommand(this),
             new FindAltsCommand(this),
             new InfoCommand(this),
+            new ImportCommand(this),
             new KickCommand(this),
             new LoglessKickCommand(this),
             new MuteCommand(this),

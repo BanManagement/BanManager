@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.storage.conversion.AdvancedBan;
 import me.confuser.banmanager.common.storage.conversion.SimpleWarnings;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -30,6 +31,7 @@ public class ImportCommand extends CommonCommand {
     add("ip");
     add("ips");
     add("simplewarnings");
+    add("advancedban");
   }};
 
   public ImportCommand(BanManagerPlugin plugin) {
@@ -38,7 +40,7 @@ public class ImportCommand extends CommonCommand {
 
   @Override
   public boolean onCommand(CommonSender sender, CommandParser parser) {
-    if (parser.args.length != 1) {
+    if (parser.args.length < 1) {
       return false;
     }
 
@@ -64,6 +66,16 @@ public class ImportCommand extends CommonCommand {
         importIps();
       } else if (parser.args[0].startsWith("simplew")) {
         new SimpleWarnings(getPlugin());
+      } else if (parser.args[0].startsWith("advancedb")) {
+        if (parser.args.length < 5) {
+          sender.sendMessage("/bmimport advancedban localhost 3306 databaseName username password");
+          return;
+        }
+
+        sender.sendMessage(Message.getString("import.advancedban.started"));
+        finishedMessage = Message.getString("import.advancedban.finished");
+
+        new AdvancedBan(getPlugin(), parser.args);
       }
 
       if (sender != null) {
