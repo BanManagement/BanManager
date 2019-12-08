@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common.util;
 
+import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonSender;
@@ -13,15 +14,30 @@ public class Message {
   private static HashMap<String, String> messages = new HashMap<>(10);
   private static CommonLogger logger;
 
+  @Getter
+  private String key;
   private String message;
 
   public Message(String key) {
+    this.key = key;
     this.message = messages.get(key);
 
     if (this.message == null) {
       logger.warning("Missing " + key + " message");
       this.message = "";
     }
+  }
+
+  public Message(String key, String message) {
+    if (messages.containsKey(key)) {
+      logger.warning(key + " message already exists");
+      return;
+    }
+
+    this.key = key;
+    this.message = message;
+    messages.put(key, message);
+
   }
 
   public static Message get(String key) {

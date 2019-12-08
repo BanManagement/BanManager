@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -120,6 +121,10 @@ public class BMBukkitPlugin extends JavaPlugin {
       registerEvent(new MuteListener(plugin));
       registerEvent(new NoteListener(plugin));
       registerEvent(new ReportListener(plugin));
+    }
+
+    if (plugin.getDiscordConfig().isEnabled() && Bukkit.getPluginManager().getPermission("DiscordSRV") != null) {
+      registerEvent(new DiscordListener(plugin));
     }
   }
 

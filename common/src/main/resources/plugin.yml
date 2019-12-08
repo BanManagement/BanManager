@@ -4,6 +4,8 @@ version: ${project.version}
 authors: [ confuser ]
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
 description: ${project.description}
+softdepend:
+  - DiscordSRV
 commands: 
   ban: 
     description: "ban a player"
