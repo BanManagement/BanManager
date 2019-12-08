@@ -163,6 +163,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>Scarsz-Nexus</id>
+            <url>https://nexus.scarsz.me/content/groups/public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -175,6 +179,12 @@
             <groupId>me.confuser.banmanager</groupId>
             <artifactId>BanManagerCommon</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.discordsrv</groupId>
+            <artifactId>discordsrv</artifactId>
+            <version>1.18.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
