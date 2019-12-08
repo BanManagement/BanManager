@@ -1,0 +1,18 @@
+# Requires DiscordSRV (Bukkit only)
+enabled: false
+punishments:
+  ban:
+    channel: 'replaceMe'
+    message: '&6[player] has been permanently banned by [actor] for &4[reason]'
+  tempban:
+    channel: 'replaceMe'
+    message: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
+  mute:
+    channel: 'replaceMe'
+    message: '&6[player] has been permanently muted by [actor] for &4[reason]'
+  tempmute:
+    channel: 'replaceMe'
+    message: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
+  warning:
+    channel: 'replaceMe'
+    message: '&6[player] has been warned by [actor] for &4[reason]'

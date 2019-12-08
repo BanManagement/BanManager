@@ -55,6 +55,8 @@ public class BanManagerPlugin {
   private ReasonsConfig reasonsConfig;
   @Getter
   private GeoIpConfig geoIpConfig;
+  @Getter
+  private DiscordConfig discordConfig;
 
   // Connections
   @Getter
@@ -226,6 +228,9 @@ public class BanManagerPlugin {
 
     geoIpConfig = new GeoIpConfig(dataFolder, logger);
     geoIpConfig.load();
+
+    discordConfig = new DiscordConfig(dataFolder, logger);
+    discordConfig.load();
   }
 
   private void disableDatabaseLogging() {
