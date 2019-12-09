@@ -49,6 +49,7 @@ public class BMSpongePlugin {
   private String[] configs = new String[]{
       "config.yml",
       "console.yml",
+      "discord.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
