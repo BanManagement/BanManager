@@ -27,6 +27,7 @@ public class BMBukkitPlugin extends JavaPlugin {
   private String[] configs = new String[]{
       "config.yml",
       "console.yml",
+      "discord.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
