@@ -15,11 +15,4 @@ public class UtilsCommand extends MultiCommonCommand {
   public void registerCommands() {
     registerCommonSubCommand(new MissingPlayersSubCommand(getPlugin()));
   }
-
-  @Override
-  public boolean onCommand(final CommonSender sender, CommandParser parser) {
-    if (parser.args.length == 0 && !sender.isConsole()) return getCommands().get("list").onCommand(sender, parser);
-
-    return super.onCommand(sender, parser);
-  }
 }
