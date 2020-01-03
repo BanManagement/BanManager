@@ -69,10 +69,10 @@ public class LoglessKickCommand extends CommonCommand {
               .set("actor", actor.getName());
 
       getPlugin().getScheduler().runSync((Runnable) () -> {
-        player.kick(kickMessage.toString());
-
         Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
         message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+
+        player.kick(kickMessage.toString());
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
