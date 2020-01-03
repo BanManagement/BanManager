@@ -53,7 +53,7 @@ public class KickCommand extends CommonCommand {
       return true;
     }
 
-    final String reason = parser != null ? parser.getReason().getMessage() : "";
+    final String reason = parser.args.length > 1 ? parser.getReason().getMessage() : "";
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData actor = sender.getData();
@@ -75,10 +75,10 @@ public class KickCommand extends CommonCommand {
               .set("actor", actor.getName());
 
       getPlugin().getScheduler().runSync(() -> {
-        player.kick(kickMessage.toString());
-
         Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
         message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
+
+        player.kick(kickMessage.toString());
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
