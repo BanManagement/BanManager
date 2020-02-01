@@ -12,11 +12,9 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * This is a static API for BanManager.
- * No methods are thread safe unless stated otherwise.
- * <p/>
- * Note: The API does not handle the notifications to players
- * nor permission checks for exemptions.
+ * This is a static API for BanManager
+ * No methods are thread safe unless stated otherwise
+ * Note: The API does not handle permission checks for exemptions
  *
  * @author James Mortemore
  */
@@ -25,7 +23,7 @@ public class BmAPI {
   private static BanManagerPlugin plugin = BanManagerPlugin.getInstance();
 
   /**
-   * @param uuid
+   * @param uuid Player UUID
    * @return PlayerData
    * @throws SQLException
    */
@@ -34,7 +32,7 @@ public class BmAPI {
   }
 
   /**
-   * @param name
+   * @param name Player name
    * @return PlayerData
    * @throws SQLException
    */
@@ -45,7 +43,7 @@ public class BmAPI {
   /**
    * Get the console for use as an actor
    *
-   * @return
+   * @return PlayerData
    */
   public static PlayerData getConsole() {
     return plugin.getPlayerStorage().getConsole();
@@ -54,8 +52,8 @@ public class BmAPI {
   /**
    * Convert an ip string of x.x.x.x to long
    *
-   * @param ip
-   * @return
+   * @param ip IPv4 in x.x.x.x format
+   * @return IPv4 in number format
    */
   public static long ipToStr(String ip) {
     return IPUtils.toLong(ip);
@@ -65,9 +63,10 @@ public class BmAPI {
    * Permanently ban a player.
    * You must handle kicking the player if they are online.
    *
-   * @param ban    - PlayerBanData
-   * @param silent
+   * @param ban PlayerBanData
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerBanData ban, boolean silent) throws SQLException {
     return plugin.getPlayerBanStorage().ban(ban, silent);
@@ -77,8 +76,9 @@ public class BmAPI {
    * Permanently ban a player.
    * You must handle kicking the player if they are online.
    *
-   * @param ban - PlayerBanData
+   * @param ban PlayerBanData
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerBanData ban) throws SQLException {
     return ban(ban, false);
@@ -88,10 +88,11 @@ public class BmAPI {
    * Permanently ban a player.
    * You must handle kicking the player if they are online.
    *
-   * @param player - Player to ban
-   * @param actor  - Who the ban is by
-   * @param reason - Why they are banned
+   * @param player Player to ban
+   * @param actor  Who the ban is by
+   * @param reason Why they are banned
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerData player, PlayerData actor, String reason) throws SQLException {
     return ban(new PlayerBanData(player, actor, reason));
@@ -101,11 +102,12 @@ public class BmAPI {
    * Permanently ban a player.
    * You must handle kicking the player if they are online.
    *
-   * @param player - Player to ban
-   * @param actor  - Who the ban is by
-   * @param reason - Why they are banned
-   * @param silent
+   * @param player Player to ban
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerData player, PlayerData actor, String reason, boolean silent) throws SQLException {
     return ban(new PlayerBanData(player, actor, reason), silent);
@@ -115,11 +117,12 @@ public class BmAPI {
    * Temporarily ban a player
    * You must handle kicking the player if they are online.
    *
-   * @param player  - Player to ban
-   * @param actor   - Who the ban is by
-   * @param reason  - Why they are banned
-   * @param expires - Unix Timestamp stating the time of when the ban ends
+   * @param player Player to ban
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param expires Unix Timestamp in seconds stating the time of when the ban ends
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerData player, PlayerData actor, String reason, long expires) throws SQLException {
     return ban(new PlayerBanData(player, actor, reason, expires));
@@ -129,12 +132,13 @@ public class BmAPI {
    * Temporarily ban a player
    * You must handle kicking the player if they are online.
    *
-   * @param player  - Player to ban
-   * @param actor   - Who the ban is by
-   * @param reason  - Why they are banned
-   * @param expires - Unix Timestamp stating the time of when the ban ends
-   * @param silent
+   * @param player Player to ban
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param expires Unix Timestamp in seconds stating the time of when the ban ends
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban successful
    */
   public static boolean ban(PlayerData player, PlayerData actor, String reason, long expires, boolean silent) throws
       SQLException {
@@ -142,9 +146,9 @@ public class BmAPI {
   }
 
   /**
-   * @param ban
-   * @param actor
-   * @return
+   * @param ban The ban (can be retrieved via getBan)
+   * @param actor Who is unbanning the player
+   * @return Returns true if the unban is successful
    * @throws SQLException
    */
   public static boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
@@ -154,8 +158,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param uuid
-   * @return
+   * @param uuid Player UUID
+   * @return Returns true if player is banned
    */
   public static boolean isBanned(UUID uuid) {
     return plugin.getPlayerBanStorage().isBanned(uuid);
@@ -164,8 +168,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param name
-   * @return
+   * @param name Player name
+   * @return Returns true if player is banned
    */
   public static boolean isBanned(String name) {
     return plugin.getPlayerBanStorage().isBanned(name);
@@ -175,8 +179,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param name
-   * @return
+   * @param name Player name
+   * @return Returns the active ban of a player; if the player is not banned this returns null
    */
   public static PlayerBanData getCurrentBan(String name) {
     return plugin.getPlayerBanStorage().getBan(name);
@@ -185,16 +189,16 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param uuid
-   * @return
+   * @param uuid Player UUID
+   * @return Returns the active ban of a player; if the player is not banned this returns null
    */
   public static PlayerBanData getCurrentBan(UUID uuid) {
     return plugin.getPlayerBanStorage().getBan(uuid);
   }
 
   /**
-   * @param player
-   * @return
+   * @param player BanManager's player record
+   * @return An iterator of ban records
    * @throws SQLException
    */
   public static CloseableIterator<PlayerBanRecord> getBanRecords(PlayerData player) throws SQLException {
@@ -205,7 +209,8 @@ public class BmAPI {
    * Permanently mute a player.
    * You must handle kicking the player if they are online.
    *
-   * @param mute - PlayerMuteData
+   * @param mute PlayerMuteData
+   * @return Returns true if the mute is successful
    * @throws SQLException
    */
   public static boolean mute(PlayerMuteData mute) throws SQLException {
@@ -216,9 +221,10 @@ public class BmAPI {
    * Permanently mute a player.
    * You must handle kicking the player if they are online.
    *
-   * @param mute   - PlayerMuteData
-   * @param silent
+   * @param mute PlayerMuteData
+   * @param silent Whether the mute should be broadcast
    * @throws SQLException
+   * @return Returns true if the mute is successful
    */
   public static boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {
     return plugin.getPlayerMuteStorage().mute(mute, silent);
@@ -228,9 +234,10 @@ public class BmAPI {
    * Permanently mute a player.
    * You must handle kicking the player if they are online.
    *
-   * @param player - Player to mute
-   * @param actor  - Who the mute is by
-   * @param reason - Why they are mutened
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are muted
+   * @return Returns true if the mute is successful
    * @throws SQLException
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason) throws SQLException {
@@ -241,11 +248,12 @@ public class BmAPI {
    * Permanently mute a player.
    * You must handle kicking the player if they are online.
    *
-   * @param player - Player to mute
-   * @param actor  - Who the mute is by
-   * @param reason - Why they are mutened
-   * @param silent
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are mutened
+   * @param silent Whether the mute should be broadcast
    * @throws SQLException
+   * @return Returns true if mute is successful
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent) throws SQLException {
     return mute(new PlayerMuteData(player, actor, reason, false), silent);
@@ -255,12 +263,13 @@ public class BmAPI {
    * Permanently mute a player.
    * You must handle kicking the player if they are online.
    *
-   * @param player - Player to mute
-   * @param actor  - Who the mute is by
-   * @param reason - Why they are mutened
-   * @param silent
-   * @param isSoft
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are mutened
+   * @param silent Whether the mute should be broadcast
+   * @param isSoft Whether the player should be aware they are muted; they will still see their own messages but nobody else will
    * @throws SQLException
+   * @return Returns true if the mute is successful
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, boolean silent, boolean isSoft) throws SQLException {
     return mute(new PlayerMuteData(player, actor, reason, isSoft), silent);
@@ -271,11 +280,12 @@ public class BmAPI {
    * Temporarily mute a player
    * You must handle kicking the player if they are online.
    *
-   * @param player  - Player to mute
-   * @param actor   - Who the mute is by
-   * @param reason  - Why they are mutened
-   * @param expires - Unix Timestamp stating the time of when the mute ends
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are mutened
+   * @param expires Unix Timestamp in seconds stating the time of when the mute ends
    * @throws SQLException
+   * @return Returns true if mute successful
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires) throws SQLException {
     return mute(new PlayerMuteData(player, actor, reason, false, expires));
@@ -285,12 +295,13 @@ public class BmAPI {
    * Temporarily mute a player
    * You must handle kicking the player if they are online.
    *
-   * @param player  - Player to mute
-   * @param actor   - Who the mute is by
-   * @param reason  - Why they are mutened
-   * @param expires - Unix Timestamp stating the time of when the mute ends
-   * @param silent
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are mutened
+   * @param expires Unix Timestamp stating the time of when the mute ends
+   * @param silent Whether the mute should be broadcast
    * @throws SQLException
+   * @return Returns true if mute successful
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent) throws
       SQLException {
@@ -301,12 +312,14 @@ public class BmAPI {
    * Temporarily mute a player
    * You must handle kicking the player if they are online.
    *
-   * @param player  - Player to mute
-   * @param actor   - Who the mute is by
-   * @param reason  - Why they are mutened
-   * @param expires - Unix Timestamp stating the time of when the mute ends
-   * @param silent
+   * @param player Player to mute
+   * @param actor Who the mute is by
+   * @param reason Why they are mutened
+   * @param expires Unix Timestamp stating the time of when the mute ends
+   * @param silent Whether the mute should be broadcast
+   * @param isSoft Whether the player should be aware they are muted; they will still see their own messages but nobody else will
    * @throws SQLException
+   * @return Returns true if mute successful
    */
   public static boolean mute(PlayerData player, PlayerData actor, String reason, long expires, boolean silent, boolean isSoft) throws
       SQLException {
@@ -315,9 +328,9 @@ public class BmAPI {
 
 
   /**
-   * @param mute
-   * @param actor
-   * @return
+   * @param mute PlayerMuteData
+   * @param actor Who unmuted the player
+   * @return Returns true if unmute successful
    * @throws SQLException
    */
   public static boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
@@ -327,8 +340,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param uuid
-   * @return
+   * @param uuid Player UUID
+   * @return Returns true if player muted
    */
   public static boolean isMuted(UUID uuid) {
     return plugin.getPlayerMuteStorage().isMuted(uuid);
@@ -337,8 +350,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param name
-   * @return
+   * @param name Player Name
+   * @return Returns true if player muted
    */
   public static boolean isMuted(String name) {
     return plugin.getPlayerMuteStorage().isMuted(name);
@@ -349,7 +362,7 @@ public class BmAPI {
    * Thread safe
    *
    * @param name
-   * @return
+   * @return Returns the active mute of a player; if the player is not muted this returns null
    */
   public static PlayerMuteData getCurrentMute(String name) {
     return plugin.getPlayerMuteStorage().getMute(name);
@@ -359,15 +372,15 @@ public class BmAPI {
    * Thread safe
    *
    * @param uuid
-   * @return
+   * @return Returns the active mute of a player; if the player is not muted this returns null
    */
   public static PlayerMuteData getCurrentMute(UUID uuid) {
     return plugin.getPlayerMuteStorage().getMute(uuid);
   }
 
   /**
-   * @param player
-   * @return
+   * @param player Player record
+   * @return Iterator of previous mutes
    * @throws SQLException
    */
   public static CloseableIterator<PlayerMuteRecord> getMuteRecords(PlayerData player) throws SQLException {
@@ -378,9 +391,10 @@ public class BmAPI {
    * Permanently ban an ip.
    * You must handle kicking the player if they are online.
    *
-   * @param ban    - IpBanData
-   * @param silent
+   * @param ban IpBanData
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(IpBanData ban, boolean silent) throws SQLException {
     return plugin.getIpBanStorage().ban(ban, silent);
@@ -390,8 +404,9 @@ public class BmAPI {
    * Permanently ban an ip.
    * You must handle kicking the player if they are online.
    *
-   * @param ban - IpBanData
+   * @param ban IpBanData
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(IpBanData ban) throws SQLException {
     return ban(ban, false);
@@ -401,10 +416,11 @@ public class BmAPI {
    * Permanently ban an ip.
    * You must handle kicking the player if they are online.
    *
-   * @param ip     - IP to ban, use ipToLong to convert x.x.x.x to Long
-   * @param actor  - Who the ban is by
-   * @param reason - Why they are banned
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(long ip, PlayerData actor, String reason) throws SQLException {
     return ban(new IpBanData(ip, actor, reason));
@@ -414,11 +430,12 @@ public class BmAPI {
    * Permanently ban an ip.
    * You must handle kicking the player if they are online.
    *
-   * @param ip     - IP to ban, use ipToLong to convert x.x.x.x to Long
-   * @param actor  - Who the ban is by
-   * @param reason - Why they are banned
-   * @param silent
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(long ip, PlayerData actor, String reason, boolean silent) throws SQLException {
     return ban(new IpBanData(ip, actor, reason), silent);
@@ -428,11 +445,12 @@ public class BmAPI {
    * Temporarily ban an ip
    * You must handle kicking the player if they are online.
    *
-   * @param ip      - IP to ban, use ipToLong to convert x.x.x.x to Long
-   * @param actor   - Who the ban is by
-   * @param reason  - Why they are banned
-   * @param expires - Unix Timestamp stating the time of when the ban ends
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param expires Unix Timestamp in seconds stating the time of when the ban ends
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(long ip, PlayerData actor, String reason, long expires) throws SQLException {
     return ban(new IpBanData(ip, actor, reason, expires));
@@ -442,12 +460,13 @@ public class BmAPI {
    * Temporarily ban an ip
    * You must handle kicking the player if they are online.
    *
-   * @param ip      - IP to ban, use ipToLong to convert x.x.x.x to Long
-   * @param actor   - Who the ban is by
-   * @param reason  - Why they are banned
-   * @param expires - Unix Timestamp stating the time of when the ban ends
-   * @param silent
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @param actor Who the ban is by
+   * @param reason Why they are banned
+   * @param expires Unix Timestamp in seconds stating the time of when the ban ends
+   * @param silent Whether the ban should be broadcast
    * @throws SQLException
+   * @return Returns true if ban is successful
    */
   public static boolean ban(long ip, PlayerData actor, String reason, long expires, boolean silent) throws
       SQLException {
@@ -455,9 +474,9 @@ public class BmAPI {
   }
 
   /**
-   * @param ban
-   * @param actor
-   * @return
+   * @param ban IP Ban record
+   * @param actor Who unbanned the ip
+   * @return Returns true if unban is successful
    * @throws SQLException
    */
   public static boolean unban(IpBanData ban, PlayerData actor) throws SQLException {
@@ -467,8 +486,8 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param ip - IP to ban, use ipToLong to convert x.x.x.x to Long
-   * @return
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @return Returns true if ip is banned
    */
   public static boolean isBanned(long ip) {
     return plugin.getIpBanStorage().isBanned(ip);
@@ -477,16 +496,16 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param ip
-   * @return
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @return Returns the active ban of an ip if the ip is not banned this returns null
    */
   public static IpBanData getCurrentBan(long ip) {
     return plugin.getIpBanStorage().getBan(ip);
   }
 
   /**
-   * @param ip
-   * @return
+   * @param ip IP to ban, use ipToLong to convert x.x.x.x to Long
+   * @return Returns previous bans of an ip
    * @throws SQLException
    */
   public static CloseableIterator<IpBanRecord> getBanRecords(long ip) throws SQLException {
@@ -497,60 +516,65 @@ public class BmAPI {
    * Warn a player.
    * You must handle the notification to the warned player yourself.
    *
-   * @param player
-   * @param actor
-   * @param reason
-   * @param read
+   * @param player Player record
+   * @param actor Player record of who warned the player
+   * @param reason What the player was warned for
+   * @param read Whether the player has already viewed the warning
    * @throws SQLException
+   * @return Returns true if warning is successful
    */
-  public static void warn(PlayerData player, PlayerData actor, String reason, boolean read) throws SQLException {
-    warn(new PlayerWarnData(player, actor, reason, 1, read));
+  public static boolean warn(PlayerData player, PlayerData actor, String reason, boolean read) throws SQLException {
+    return warn(new PlayerWarnData(player, actor, reason, 1, read));
   }
 
   /**
    * Warn a player.
    * You must handle the notification to the warned player yourself.
    *
-   * @param player
-   * @param actor
-   * @param reason
-   * @param read
-   * @param silent
+   * @param player Player record
+   * @param actor Player record of who warned the player
+   * @param reason What the player was warned for
+   * @param read Whether the player has already viewed the warning
+   * @param silent Whether the warning should be broadcast
    * @throws SQLException
+   * @return Returns true if warning is successful
    */
-  public static void warn(PlayerData player, PlayerData actor, String reason, boolean read, boolean silent) throws
+  public static boolean warn(PlayerData player, PlayerData actor, String reason, boolean read, boolean silent) throws
       SQLException {
-    warn(new PlayerWarnData(player, actor, reason, 1, read), silent);
+    return warn(new PlayerWarnData(player, actor, reason, 1, read), silent);
   }
 
   /**
    * Warn a player.
    * You must handle the notification to the warned player yourself.
    *
-   * @param data
+   * @param data PlayerWarnData
    * @throws SQLException
+   * @return Returns true if warning is successful
    */
-  public static void warn(PlayerWarnData data) throws SQLException {
-    warn(data, false);
+  public static boolean warn(PlayerWarnData data) throws SQLException {
+    return warn(data, false);
   }
 
   /**
    * Warn a player.
    * You must handle the notification to the warned player yourself.
    *
-   * @param data
+   * @param data PlayerWarnData
+   * @param silent Whether the warning should be broadcast
    * @throws SQLException
+   * @return Returns true if warning is successful
    */
-  public static void warn(PlayerWarnData data, boolean silent) throws SQLException {
-    plugin.getPlayerWarnStorage().addWarning(data, silent);
+  public static boolean warn(PlayerWarnData data, boolean silent) throws SQLException {
+    return plugin.getPlayerWarnStorage().addWarning(data, silent);
   }
 
   /**
    * Retrieve past warnings of a player.
    * This method is not thread safe and should not be called on the main thread.
    *
-   * @param player
-   * @return ArrayList containing data on all warnings
+   * @param player Player record
+   * @return Iterator containing previous player warningss
    * @throws SQLException
    */
   public static CloseableIterator<PlayerWarnData> getWarnings(PlayerData player) throws SQLException {
@@ -558,7 +582,7 @@ public class BmAPI {
   }
 
   /**
-   * @param key - The message config node
+   * @param key The message config node within messages.yml, e.g. "ban.notify"
    * @return String
    */
   public static Message getMessage(String key) {
