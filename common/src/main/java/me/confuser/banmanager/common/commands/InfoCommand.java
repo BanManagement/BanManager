@@ -244,6 +244,7 @@ public class InfoCommand extends CommonCommand {
           message.set("country", country)
                  .set("countryIso", countryIso)
                  .set("city", city);
+          messages.add(message);
         } catch (IOException | GeoIp2Exception ignored) {
         }
 

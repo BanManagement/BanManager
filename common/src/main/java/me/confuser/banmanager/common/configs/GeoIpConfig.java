@@ -4,6 +4,9 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.model.CountryResponse;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -33,10 +36,25 @@ public class GeoIpConfig extends Config {
 
     if (!enabled) return;
 
+    if (!conf.getString("download.country").contains("licenseKey") || !conf.getString("download.city").contains("licenseKey")) {
+      // Migrate to GeoIP2
+      conf.set("download.city", "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=[licenseKey]&suffix=tar.gz");
+      conf.set("download.country", "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=[licenseKey]&suffix=tar.gz");
+
+      save();
+    }
+
+    String licenseKey = conf.getString("download.licenseKey");
+
+    if (licenseKey == null || licenseKey.isEmpty()) {
+      logger.severe("Unable to enable geoip features due to missing licenseKey");
+      return;
+    }
+
+    String cityDownloadUrl = conf.getString("download.city").replace("[licenseKey]", licenseKey);
+    String countryDownloadUrl = conf.getString("download.country").replace("[licenseKey]", licenseKey);
     File cityFile = new File(dataFolder, "city.mmdb");
-    String cityDownloadUrl = conf.getString("download.city");
     File countryFile = new File(dataFolder, "country.mmdb");
-    String countryDownloadUrl = conf.getString("download.country");
 
     long lastUpdated = conf.getLong("download.lastUpdated");
     boolean outdated = (System.currentTimeMillis() - lastUpdated) > 2592000000L; // older than 30 days?
@@ -128,17 +146,22 @@ public class GeoIpConfig extends Config {
     con.connect();
 
     InputStream input = new GZIPInputStream(con.getInputStream());
+    TarArchiveInputStream inputStream = new TarArchiveInputStream(input);
 
-    OutputStream output = new FileOutputStream(location);
+    FileOutputStream outputStream = new FileOutputStream(location);
 
-    byte[] buffer = new byte[1024];
+    ArchiveEntry entry = null;
+    while ((entry = inputStream.getNextEntry()) != null) {
+      if (entry.isDirectory()) continue;
+      if (!entry.getName().endsWith(".mmdb")) continue;
 
-    int length;
-    while ((length = input.read(buffer)) > 0) {
-      output.write(buffer, 0, length);
+      IOUtils.copy(inputStream, outputStream);
+
+      break;
     }
 
-    output.close();
+    outputStream.close();
+    inputStream.close();
     input.close();
   }
 }
