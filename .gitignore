@@ -16,3 +16,6 @@ dependency-reduced-pom.xml
 *.war
 *.ear
 target
+
+.travis/*.key
+.travis/*.key.pub
