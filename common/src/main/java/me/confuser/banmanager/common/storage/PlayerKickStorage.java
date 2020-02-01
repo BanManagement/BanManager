@@ -12,18 +12,25 @@ import me.confuser.banmanager.common.data.PlayerKickData;
 import java.sql.SQLException;
 
 public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
+  private BanManagerPlugin plugin;
 
   public PlayerKickStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerKickData>) plugin.getConfig()
                                                                              .getLocalDb().getTable("playerKicks"));
+
+    this.plugin = plugin;
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     }
   }
 
-  public boolean addKick(PlayerKickData data) throws SQLException {
-    return create(data) == 1;
+  public boolean addKick(PlayerKickData data, boolean isSilent) throws SQLException {
+    if (create(data) != 1) return false;
+
+    plugin.getServer().callEvent("PlayerKickedEvent", data, isSilent);
+
+    return true;
   }
 
   public void purge(CleanUp cleanup) throws SQLException {

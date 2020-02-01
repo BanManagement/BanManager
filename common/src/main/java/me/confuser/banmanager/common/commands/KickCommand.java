@@ -97,7 +97,7 @@ public class KickCommand extends CommonCommand {
         boolean created;
 
         try {
-          created = getPlugin().getPlayerKickStorage().addKick(data);
+          created = getPlugin().getPlayerKickStorage().addKick(data, isSilent);
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
           e.printStackTrace();
