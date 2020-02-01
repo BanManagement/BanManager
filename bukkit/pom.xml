@@ -183,7 +183,7 @@
         <dependency>
             <groupId>com.discordsrv</groupId>
             <artifactId>discordsrv</artifactId>
-            <version>1.18.2</version>
+            <version>1.18.5-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
