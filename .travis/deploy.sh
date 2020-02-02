@@ -10,6 +10,7 @@ cd $HOME/javadoc-latest
 git init
 git remote add deploy dokku@$DEPLOY_SERVER:javadocs.banmanagement.com >/dev/null 2>&1
 git config --global push.default simple
+touch .static
 git add -f .
 git commit -m "update"
 git push -f deploy master >/dev/null 2>&1
