@@ -1,6 +1,9 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -35,7 +38,7 @@ public class UnbanIpCommand extends CommonCommand {
     final String reason = parser.args.length > 1 ? parser.getReason().getMessage() : "";
 
     getPlugin().getScheduler().runAsync(() -> {
-      final long ip;
+      final IPAddress ip;
 
       if (isName) {
         PlayerData player = getPlugin().getPlayerStorage().retrieve(ipStr, false);
@@ -47,7 +50,11 @@ public class UnbanIpCommand extends CommonCommand {
 
         ip = player.getIp();
       } else {
-        ip = IPUtils.toLong(ipStr);
+        try {
+          ip = new IPAddressString(ipStr).toAddress();
+        } catch (AddressStringException e) {
+          return;
+        }
       }
 
       if (!getPlugin().getIpBanStorage().isBanned(ip)) {

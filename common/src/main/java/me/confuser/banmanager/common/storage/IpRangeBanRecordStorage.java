@@ -6,11 +6,13 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.IpRangeBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 
@@ -29,6 +31,9 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "fromIp");
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "toIp");
     }
   }
 
@@ -54,11 +59,11 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
 
   }
 
-  public long getCount(long ip) throws SQLException {
+  public long getCount(IPAddress ip) throws SQLException {
     return queryBuilder().where().eq("ip", ip).countOf();
   }
 
-  public CloseableIterator<IpRangeBanRecord> getRecords(long ip) throws SQLException {
+  public CloseableIterator<IpRangeBanRecord> getRecords(IPAddress ip) throws SQLException {
     return queryBuilder().where().eq("ip", ip).iterator();
   }
 }

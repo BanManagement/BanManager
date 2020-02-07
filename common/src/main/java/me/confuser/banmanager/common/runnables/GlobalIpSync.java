@@ -49,7 +49,7 @@ public class GlobalIpSync extends BmRunnable {
         if (localBanStorage.retrieveBan(ban.getIp()) != null) {
           // Global ban overrides local
           localBanStorage
-                  .unban(localBan, ban.getActor(plugin));
+              .unban(localBan, ban.getActor(plugin));
         } else if (localBanStorage.isBanned(ban.getIp())) {
           localBanStorage.removeBan(ban.getIp());
         }
@@ -58,10 +58,10 @@ public class GlobalIpSync extends BmRunnable {
 
         plugin.getScheduler().runSync(() -> {
           Message kickMessage = Message.get("banip.ip.kick").set("reason", localBan.getReason())
-                                       .set("actor", localBan.getActor().getName());
+              .set("actor", localBan.getActor().getName());
 
           for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-            if (IPUtils.toLong(onlinePlayer.getAddress()) == localBan.getIp()) {
+            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(localBan.getIp())) {
               onlinePlayer.kick(kickMessage.toString());
             }
           }

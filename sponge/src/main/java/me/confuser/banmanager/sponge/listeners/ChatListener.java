@@ -67,12 +67,12 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
     event.setCancelled(true);
 
     Message broadcast = Message.get("mute.player.broadcast")
-                               .set("message", event.getMessage().toString())
-                               .set("displayName", commonPlayer.getDisplayName())
-                               .set("player", commonPlayer.getName())
-                               .set("playerId", uuid.toString())
-                               .set("reason", mute.getReason())
-                               .set("actor", mute.getActor().getName());
+        .set("message", event.getMessage().toString())
+        .set("displayName", commonPlayer.getDisplayName())
+        .set("player", commonPlayer.getName())
+        .set("playerId", uuid.toString())
+        .set("reason", mute.getReason())
+        .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.muted");
 
@@ -82,14 +82,14 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
       message = Message.get("mute.player.disallowed");
     } else {
       message = Message.get("tempmute.player.disallowed")
-                       .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+          .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
     }
 
     message.set("displayName", commonPlayer.getDisplayName())
-           .set("player", commonPlayer.getName())
-           .set("playerId", uuid.toString())
-           .set("reason", mute.getReason())
-           .set("actor", mute.getActor().getName());
+        .set("player", commonPlayer.getName())
+        .set("playerId", uuid.toString())
+        .set("reason", mute.getReason())
+        .set("actor", mute.getActor().getName());
 
     commonPlayer.sendMessage(message.toString());
   }
@@ -120,12 +120,12 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
     event.setCancelled(true);
 
     Message broadcast = Message.get("muteip.ip.broadcast")
-                               .set("message", event.getMessage().toString())
-                               .set("displayName", commonPlayer.getDisplayName())
-                               .set("player", commonPlayer.getName())
-                               .set("playerId", commonPlayer.getUniqueId().toString())
-                               .set("reason", mute.getReason())
-                               .set("actor", mute.getActor().getName());
+        .set("message", event.getMessage().toString())
+        .set("displayName", commonPlayer.getDisplayName())
+        .set("player", commonPlayer.getName())
+        .set("playerId", commonPlayer.getUniqueId().toString())
+        .set("reason", mute.getReason())
+        .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.mutedip");
 
@@ -135,15 +135,15 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
       message = Message.get("muteip.ip.disallowed");
     } else {
       message = Message.get("tempmuteip.ip.disallowed")
-                       .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+          .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
     }
 
     message.set("displayName", commonPlayer.getDisplayName())
-           .set("player", commonPlayer.getName())
-           .set("playerId", commonPlayer.getUniqueId().toString())
-           .set("reason", mute.getReason())
-           .set("actor", mute.getActor().getName())
-           .set("ip", IPUtils.toString(mute.getIp()));
+        .set("player", commonPlayer.getName())
+        .set("playerId", commonPlayer.getUniqueId().toString())
+        .set("reason", mute.getReason())
+        .set("actor", mute.getActor().getName())
+        .set("ip", mute.getIp().toString());
 
     message.sendTo(commonPlayer);
   }

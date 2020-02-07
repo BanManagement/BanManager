@@ -10,11 +10,13 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -30,7 +32,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
   public PlayerBanStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerBanData>) plugin.getConfig().getLocalDb()
-                                                                     .getTable("playerBans"));
+        .getTable("playerBans"));
 
     this.plugin = plugin;
 
@@ -71,7 +73,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
       this.getConnectionSource().releaseConnection(connection);
@@ -90,8 +92,8 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
         try {
           player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                  results.getLong(3),
-                  results.getLong(4));
+              IPUtils.toIPAddress(results.getBytes(3)),
+              results.getLong(4));
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing player for ban " + results.getInt(0) + ", ignored");
           continue;
@@ -101,15 +103,15 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
         try {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
-                  results.getLong(7),
-                  results.getLong(8));
+              IPUtils.toIPAddress(results.getBytes(7)),
+              results.getLong(8));
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing actor for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 
         PlayerBanData ban = new PlayerBanData(results.getInt(0), player, actor, results.getString(9), results.getLong(10),
-                results.getLong(11), results.getLong(12));
+            results.getLong(11), results.getLong(12));
 
         bans.put(ban.getPlayer().getUUID(), ban);
       }
@@ -184,6 +186,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     return true;
   }
+
   public boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
     return unban(ban, actor, "");
   }
@@ -217,9 +220,9 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     QueryBuilder<PlayerBanData, Integer> query = queryBuilder();
     Where<PlayerBanData, Integer> where = query.where();
     where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+        .ge("created", checkTime)
+        .or()
+        .ge("updated", checkTime);
 
     query.setWhere(where);
 
@@ -227,10 +230,10 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
   }
 
-  public List<PlayerData> getDuplicates(long ip) {
+  public List<PlayerData> getDuplicates(IPAddress ip) {
     ArrayList<PlayerData> players = new ArrayList<>();
 
-    if (plugin.getConfig().getBypassPlayerIps().contains(ip)) {
+    if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
       return players;
     }
 
@@ -260,7 +263,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     } finally {
       if (itr != null) itr.closeQuietly();
     }
-    
+
     return players;
   }
 }

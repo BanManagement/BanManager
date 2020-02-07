@@ -1,6 +1,9 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
@@ -40,20 +43,7 @@ public class FindAltsCommand extends CommonCommand {
     }
 
     getPlugin().getScheduler().runAsync(() -> {
-      final long ip;
-
-      if (isName) {
-        PlayerData srcPlayer = getPlugin().getPlayerStorage().retrieve(ipStr, false);
-        if (srcPlayer == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-          return;
-        }
-
-        ip = srcPlayer.getIp();
-      } else {
-        ip = IPUtils.toLong(ipStr);
-      }
-
+      final IPAddress ip = getIp(ipStr);
       List<PlayerData> players = getPlugin().getPlayerStorage().getDuplicates(ip);
 
       if (!sender.isConsole()) {

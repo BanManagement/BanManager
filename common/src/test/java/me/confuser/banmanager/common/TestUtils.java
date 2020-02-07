@@ -15,11 +15,15 @@ public class TestUtils {
 
   public PlayerData createRandomPlayer() {
     try {
-      return plugin.getPlayerStorage().createIfNotExists(UUID.fromString(faker.internet().uuid()), StringUtils.truncate(faker.name().username(), 16));
+      return plugin.getPlayerStorage().createIfNotExists(UUID.fromString(faker.internet().uuid()), createRandomPlayerName());
     } catch (SQLException e) {
       e.printStackTrace();
     }
 
     return null;
+  }
+
+  public String createRandomPlayerName() {
+    return StringUtils.truncate(faker.name().username(), 16);
   }
 }

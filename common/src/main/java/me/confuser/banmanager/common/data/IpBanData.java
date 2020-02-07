@@ -1,10 +1,12 @@
 package me.confuser.banmanager.common.data;
 
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 
 @DatabaseTable
 public class IpBanData {
@@ -13,8 +15,8 @@ public class IpBanData {
   @DatabaseField(generatedId = true)
   private int id;
   @Getter
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
-  private long ip;
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
+  private IPAddress ip;
   @Getter
   @DatabaseField(canBeNull = false)
   private String reason;
@@ -37,25 +39,25 @@ public class IpBanData {
 
   }
 
-  public IpBanData(long ip, PlayerData actor, String reason) {
+  public IpBanData(IPAddress ip, PlayerData actor, String reason) {
     this.ip = ip;
     this.reason = reason;
     this.actor = actor;
   }
 
-  public IpBanData(long ip, PlayerData actor, String reason, long expires) {
+  public IpBanData(IPAddress ip, PlayerData actor, String reason, long expires) {
     this(ip, actor, reason);
 
     this.expires = expires;
   }
 
-  public IpBanData(long ip, PlayerData actor, String reason, long expires, long created) {
+  public IpBanData(IPAddress ip, PlayerData actor, String reason, long expires, long created) {
     this(ip, actor, reason, expires);
 
     this.created = created;
   }
 
-  public IpBanData(int id, long ip, PlayerData actor, String reason, long expires, long created, long updated) {
+  public IpBanData(int id, IPAddress ip, PlayerData actor, String reason, long expires, long created, long updated) {
     this(ip, actor, reason, expires, created);
 
     this.id = id;

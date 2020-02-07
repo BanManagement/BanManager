@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.NotesCommand;
@@ -30,10 +31,10 @@ public class JoinListener {
 
   // Used for throttling attempted join messages
   Cache<String, Long> joinCache = CacheBuilder.newBuilder()
-                                              .expireAfterWrite(1, TimeUnit.MINUTES)
-                                              .concurrencyLevel(2)
-                                              .maximumSize(100)
-                                              .build();
+      .expireAfterWrite(1, TimeUnit.MINUTES)
+      .concurrencyLevel(2)
+      .maximumSize(100)
+      .build();
   private BanManagerPlugin plugin;
 
   public JoinListener(BanManagerPlugin plugin) {
@@ -47,7 +48,7 @@ public class JoinListener {
       // Check for new bans/mutes
       if (!plugin.getIpBanStorage().isBanned(address)) {
         try {
-          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toLong(address));
+          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toIPAddress(address));
 
           if (ban != null) plugin.getIpBanStorage().addBan(ban);
         } catch (SQLException e) {
@@ -226,7 +227,7 @@ public class JoinListener {
 
   @Listener(order = Order.LAST)
   public void onJoin(ClientConnectionEvent.Auth event) {
-    PlayerData player = new PlayerData(event.getProfile().getUniqueId(), event.getProfile().getName().get(), event.getConnection().getAddress().getAddress());
+    PlayerData player = new PlayerData(event.getProfile().getUniqueId(), event.getProfile().getName().get(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()));
 
     try {
       plugin.getPlayerStorage().createOrUpdate(player);
@@ -261,23 +262,23 @@ public class JoinListener {
           PlayerNoteData note = notesItr.next();
 
           Message noteMessage = Message.get("notes.note")
-                                       .set("player", note.getActor().getName())
-                                       .set("message", note.getMessage())
-                                       .set("created", dateFormatter.format(note.getCreated() * 1000L));
+              .set("player", note.getActor().getName())
+              .set("message", note.getMessage())
+              .set("created", dateFormatter.format(note.getCreated() * 1000L));
 
           notes.add(noteMessage.toString());
         }
 
         if (notes.size() != 0) {
           Message noteJoinMessage = Message.get("notes.joinAmount")
-                                           .set("amount", notes.size())
-                                           .set("player", player.getName());
+              .set("amount", notes.size())
+              .set("player", player.getName());
 
           plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
           String header = Message.get("notes.header")
-                                 .set("player", player.getName())
-                                 .toString();
+              .set("player", player.getName())
+              .toString();
 
           plugin.getServer().broadcast(header, "bm.notify.notes.join");
 
@@ -300,11 +301,11 @@ public class JoinListener {
           PlayerWarnData warning = warnings.next();
 
           Message.get("warn.player.warned")
-                 .set("displayName", player.getDisplayNameData().displayName().get().toString())
-                 .set("player", player.getName())
-                 .set("reason", warning.getReason())
-                 .set("actor", warning.getActor().getName())
-                 .sendTo(plugin.getServer().getPlayer(player.getUniqueId()));
+              .set("displayName", player.getDisplayNameData().displayName().get().toString())
+              .set("player", player.getName())
+              .set("reason", warning.getReason())
+              .set("actor", warning.getActor().getName())
+              .sendTo(plugin.getServer().getPlayer(player.getUniqueId()));
 
           warning.setRead(true);
           // TODO Move to one update query to set all warnings for player to read
@@ -346,14 +347,16 @@ public class JoinListener {
   @Listener(order = Order.LAST)
   public void onPlayerLogin(final ClientConnectionEvent.Login event) {
     User user = event.getTargetUser();
+    final IPAddress ip = IPUtils.toIPAddress(event.getConnection().getAddress().getAddress());
+
     if (plugin.getGeoIpConfig().isEnabled() && !user.hasPermission("bm.exempt.country")) {
       try {
         CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(event.getConnection().getAddress().getAddress());
 
         if (!plugin.getGeoIpConfig().isCountryAllowed(countryResponse)) {
           Message message = Message.get("deniedCountry")
-                                   .set("country", countryResponse.getCountry().getName())
-                                   .set("countryIso", countryResponse.getCountry().getIsoCode());
+              .set("country", countryResponse.getCountry().getName())
+              .set("countryIso", countryResponse.getCountry().getIsoCode());
           event.setMessage(SpongeServer.formatMessage(message.toString()));
           event.setCancelled(true);
           return;
@@ -364,11 +367,10 @@ public class JoinListener {
     }
 
     if (plugin.getConfig().getMaxOnlinePerIp() > 0) {
-      long ip = IPUtils.toLong(event.getConnection().getAddress().getAddress());
       int count = 0;
 
       for (CommonPlayer player : plugin.getServer().getOnlinePlayers()) {
-        if (IPUtils.toLong(player.getAddress()) == ip) count++;
+        if (IPUtils.toIPAddress(player.getAddress()).equals(ip)) count++;
       }
 
       if (count >= plugin.getConfig().getMaxOnlinePerIp()) {
@@ -379,7 +381,6 @@ public class JoinListener {
     }
 
     if (plugin.getConfig().getMaxMultiaccountsRecently() > 0) {
-      long ip = IPUtils.toLong(event.getConnection().getAddress().getAddress());
       long timediff = plugin.getConfig().getMultiaccountsTime();
 
       List<PlayerData> multiaccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timediff);
@@ -398,7 +399,6 @@ public class JoinListener {
     if (user.hasPermission("bm.exempt.alts")) return;
 
     plugin.getScheduler().runAsyncLater(() -> {
-      final long ip = IPUtils.toLong(event.getConnection().getAddress().getAddress());
       final UUID uuid = user.getUniqueId();
       List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 
@@ -455,9 +455,9 @@ public class JoinListener {
         CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(uuid);
 
         Message kickMessage = Message.get("denyalts.player.disallowed")
-                                     .set("player", player.getName())
-                                     .set("reason", ban.getReason())
-                                     .set("actor", ban.getActor().getName());
+            .set("player", player.getName())
+            .set("reason", ban.getReason())
+            .set("actor", ban.getActor().getName());
 
         bukkitPlayer.kick(kickMessage.toString());
       });
@@ -479,9 +479,9 @@ public class JoinListener {
         if (ban.hasExpired()) continue;
 
         final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-                , plugin.getPlayerStorage().getConsole()
-                , ban.getReason()
-                , ban.getExpires());
+            , plugin.getPlayerStorage().getConsole()
+            , ban.getReason()
+            , ban.getExpires());
 
         plugin.getPlayerBanStorage().ban(newBan, false);
 
@@ -489,10 +489,10 @@ public class JoinListener {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
 
           Message kickMessage = Message.get("ban.player.kick")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", newBan.getPlayer().getName())
-                                       .set("reason", newBan.getReason())
-                                       .set("actor", newBan.getActor().getName());
+              .set("displayName", bukkitPlayer.getDisplayName())
+              .set("player", newBan.getPlayer().getName())
+              .set("reason", newBan.getReason())
+              .set("actor", newBan.getActor().getName());
 
           bukkitPlayer.kick(kickMessage.toString());
         });
@@ -510,10 +510,10 @@ public class JoinListener {
         if (mute.hasExpired()) continue;
 
         PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-                , plugin.getPlayerStorage().getConsole()
-                , mute.getReason()
-                , mute.isSoft()
-                , mute.getExpires());
+            , plugin.getPlayerStorage().getConsole()
+            , mute.getReason()
+            , mute.isSoft()
+            , mute.getExpires());
 
         plugin.getPlayerMuteStorage().mute(newMute, false);
       }

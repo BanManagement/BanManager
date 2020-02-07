@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -34,7 +35,7 @@ public class UnmuteIpCommand extends CommonCommand {
     final String reason = parser.args.length > 1 ? parser.getReason(1).getMessage() : "";
 
     getPlugin().getScheduler().runAsync(() -> {
-      final Long ip = getIp(ipStr);
+      final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
         sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
@@ -71,9 +72,9 @@ public class UnmuteIpCommand extends CommonCommand {
 
       Message message = Message.get("unmuteip.notify");
       message
-              .set("ip", ipStr)
-              .set("actor", actor.getName())
-              .set("reason", reason);
+          .set("ip", ipStr)
+          .set("actor", actor.getName())
+          .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unmuteip")) {
         message.sendTo(sender);

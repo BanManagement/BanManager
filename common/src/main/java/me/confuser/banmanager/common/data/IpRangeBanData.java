@@ -3,8 +3,11 @@ package me.confuser.banmanager.common.data;
 import com.google.common.collect.Range;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
+import me.confuser.banmanager.common.util.IPUtils;
 
 @DatabaseTable
 public class IpRangeBanData {
@@ -14,12 +17,12 @@ public class IpRangeBanData {
   private int id;
 
   @Getter
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL", index = true)
-  private long fromIp;
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
+  private IPAddress fromIp;
 
   @Getter
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL", index = true)
-  private long toIp;
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
+  private IPAddress toIp;
 
   @Getter
   @DatabaseField(canBeNull = false)
@@ -44,26 +47,26 @@ public class IpRangeBanData {
 
   }
 
-  public IpRangeBanData(long fromIp, long toIp, PlayerData actor, String reason) {
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason) {
     this.fromIp = fromIp;
     this.toIp = toIp;
     this.reason = reason;
     this.actor = actor;
   }
 
-  public IpRangeBanData(long fromIp, long toIp, PlayerData actor, String reason, long expires) {
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires) {
     this(fromIp, toIp, actor, reason);
 
     this.expires = expires;
   }
 
-  public IpRangeBanData(long fromIp, long toIp, PlayerData actor, String reason, long expires, long created) {
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires, long created) {
     this(fromIp, toIp, actor, reason, expires);
 
     this.created = created;
   }
 
-  public IpRangeBanData(int id, long fromIp, long toIp, PlayerData actor, String reason, long expires, long created, long updated) {
+  public IpRangeBanData(int id, IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires, long created, long updated) {
     this(fromIp, toIp, actor, reason, expires, created);
 
     this.id = id;
@@ -74,8 +77,8 @@ public class IpRangeBanData {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
 
-  public boolean inRange(long ip) {
-    return ip > fromIp && ip < toIp;
+  public boolean inRange(IPAddress ip) {
+    return IPUtils.isInRange(fromIp, toIp, ip);
   }
 
   public Range getRange() {

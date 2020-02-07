@@ -15,6 +15,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
   public PlayerMuteStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerMuteData>) plugin.getConfig()
-                                                                             .getLocalDb().getTable("playerMutes"));
+        .getLocalDb().getTable("playerMutes"));
     this.plugin = plugin;
 
     if (!this.isTableExists()) {
@@ -38,14 +39,14 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       // Attempt to add new columns
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
-                " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
+            .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
+            " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD UNIQUE KEY `" + tableConfig.getTableName() + "_player_idx` (`player_id`)";
+            .getTableName() + " ADD UNIQUE KEY `" + tableConfig.getTableName() + "_player_idx` (`player_id`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -83,7 +84,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
@@ -102,8 +103,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
         try {
           player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                  results.getLong(3),
-                  results.getLong(4));
+              IPUtils.toIPAddress(results.getBytes(3)),
+              results.getLong(4));
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing player for mute " + results.getInt(0) + ", ignored");
           continue;
@@ -113,16 +114,16 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
         try {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
-                  results.getLong(7),
-                  results.getLong(8));
+              IPUtils.toIPAddress(results.getBytes(7)),
+              results.getLong(8));
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing actor for mute " + results.getInt(0) + ", ignored");
           continue;
         }
 
         PlayerMuteData mute = new PlayerMuteData(results.getInt(0), player, actor, results.getString(9), results
-                .getBoolean(10), results.getLong(11),
-                results.getLong(12), results.getLong(13));
+            .getBoolean(10), results.getLong(11),
+            results.getLong(12), results.getLong(13));
 
         mutes.put(mute.getPlayer().getUUID(), mute);
       }
@@ -237,9 +238,9 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     QueryBuilder<PlayerMuteData, Integer> query = queryBuilder();
     Where<PlayerMuteData, Integer> where = query.where();
     where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+        .ge("created", checkTime)
+        .or()
+        .ge("updated", checkTime);
 
     query.setWhere(where);
 

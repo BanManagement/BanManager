@@ -45,9 +45,9 @@ public class BanListCommand extends CommonCommand {
       }
 
       for (IpRangeBanData ban : getPlugin().getIpRangeBanStorage().getBans().values()) {
-        list.append(IPUtils.toString(ban.getFromIp()));
+        list.append(ban.getFromIp().toString());
         list.append(" - ");
-        list.append(IPUtils.toString(ban.getToIp()));
+        list.append(ban.getToIp().toString());
         list.append(", ");
 
         total++;
@@ -59,7 +59,7 @@ public class BanListCommand extends CommonCommand {
       }
 
       for (IpBanData ban : getPlugin().getIpBanStorage().getBans().values()) {
-        list.append(IPUtils.toString(ban.getIp()));
+        list.append(ban.getIp().toString());
         list.append(", ");
 
         total++;

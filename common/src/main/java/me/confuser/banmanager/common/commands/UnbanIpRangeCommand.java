@@ -1,6 +1,9 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressSeqRange;
+import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -21,69 +24,52 @@ public class UnbanIpRangeCommand extends CommonCommand {
       return false;
     }
 
-    final String ipStr = parser.args[0];
-    long[] range = new long[2];
+    IPAddressString ip = new IPAddressString(parser.args[0]);
     final boolean isName;
 
-    if (ipStr.contains("*")) {
-      // Simple wildcard logic
-      range = IPUtils.getRangeFromWildcard(ipStr);
-      isName = false;
-    } else if (ipStr.contains("/")) {
-      // cidr notation
-      range = IPUtils.getRangeFromCidrNotation(ipStr);
-      isName = false;
-    } else if (InetAddresses.isInetAddress(ipStr)) {
-      range[0] = IPUtils.toLong(ipStr);
-      range[1] = range[0];
-      isName = false;
-    } else if (ipStr.length() <= 16) {
+    if (!ip.isSequential()) {
       isName = true;
     } else {
-      Message message = Message.get("sender.error.invalidIp");
-      message.set("ip", ipStr);
-
-      sender.sendMessage(message.toString());
-      return true;
+      isName = false;
     }
+
+    IPAddressSeqRange range = ip.getSequentialRange();
 
     if (!isName && range == null) {
       Message.get("baniprange.error.invalid").sendTo(sender);
       return true;
     }
 
-    final long[] ranges = range;
     final String reason = parser.args.length > 1 ? parser.getReason().getMessage() : "";
 
     getPlugin().getScheduler().runAsync(() -> {
-      long[] range1 = new long[2];
+      IPAddress fromIp = range.getLower();
+      IPAddress toIp = range.getUpper();
 
       if (isName) {
-        PlayerData player = getPlugin().getPlayerStorage().retrieve(ipStr, false);
+        PlayerData player = getPlugin().getPlayerStorage().retrieve(parser.args[0], false);
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr)
-                                    .toString());
+          sender.sendMessage(Message.get("sender.error.notFound").set("player", parser.args[0])
+              .toString());
           return;
         }
 
-        range1[0] = player.getIp();
-        range1[1] = player.getIp();
-      } else {
-        range1 = ranges;
+        fromIp = player.getIp();
+        toIp = player.getIp();
       }
 
-      if (!getPlugin().getIpRangeBanStorage().isBanned(range1[0]) && !getPlugin().getIpRangeBanStorage()
-                                                                                 .isBanned(range1[1])) {
+      if (!getPlugin().getIpRangeBanStorage().isBanned(fromIp) && !getPlugin().getIpRangeBanStorage()
+          .isBanned(toIp)) {
         Message message = Message.get("unbanip.error.noExists");
-        message.set("ip", ipStr);
+        message.set("ip", parser.args[0]);
 
         sender.sendMessage(message.toString());
         return;
       }
 
-      IpRangeBanData ban = getPlugin().getIpRangeBanStorage().getBan(range1[0]);
+      IpRangeBanData ban = getPlugin().getIpRangeBanStorage().getBan(fromIp);
 
-      if (ban == null) ban = getPlugin().getIpRangeBanStorage().getBan(range1[1]);
+      if (ban == null) ban = getPlugin().getIpRangeBanStorage().getBan(toIp);
 
       PlayerData actor = sender.getData();
 
@@ -103,10 +89,10 @@ public class UnbanIpRangeCommand extends CommonCommand {
 
       Message message = Message.get("unbaniprange.notify");
       message
-              .set("from", IPUtils.toString(ban.getFromIp()))
-              .set("to", IPUtils.toString(ban.getToIp()))
-              .set("actor", actor.getName())
-              .set("reason", reason);
+          .set("from", ban.getFromIp().toString())
+          .set("to", ban.getToIp().toString())
+          .set("actor", actor.getName())
+          .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unbaniprange")) {
         message.sendTo(sender);

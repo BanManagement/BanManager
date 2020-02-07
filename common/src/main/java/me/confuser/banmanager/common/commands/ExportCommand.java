@@ -89,7 +89,7 @@ public class ExportCommand extends CommonCommand {
     }
 
     JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")
-                                                                                                     .newEncoder()));
+        .newEncoder()));
 
     jsonWriter.beginArray();
     jsonWriter.setIndent("  ");
@@ -101,7 +101,7 @@ public class ExportCommand extends CommonCommand {
 
       jsonWriter.beginObject();
 
-      jsonWriter.name("ip").value(IPUtils.toString(next.getIp()));
+      jsonWriter.name("ip").value(next.getIp().toString());
       jsonWriter.name("created").value(EXPORT_FORMAT.format(next.getCreated() * 1000L));
       jsonWriter.name("source").value(next.getActor().getName());
       jsonWriter.name("expires");
@@ -133,7 +133,7 @@ public class ExportCommand extends CommonCommand {
     }
 
     JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")
-                                                                                                     .newEncoder()));
+        .newEncoder()));
     jsonWriter.beginArray();
     jsonWriter.setIndent("  ");
 

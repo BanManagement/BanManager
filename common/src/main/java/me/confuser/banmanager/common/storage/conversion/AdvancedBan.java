@@ -5,6 +5,7 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.BanIpCommand;
 import me.confuser.banmanager.common.data.*;
@@ -122,7 +123,7 @@ public class AdvancedBan implements IConverter {
             plugin.getPlayerMuteStorage().mute(data, true);
           }
         } else if (type.equalsIgnoreCase("IP_BAN") || type.equalsIgnoreCase("TEMP_IP_BAN")) {
-          Long ip = BanIpCommand.getIp(uuid);
+          IPAddress ip = BanIpCommand.getIp(uuid);
 
           if (ip == null) {
             plugin.getLogger().severe(name + " ip ban creation failed, invalid ip");

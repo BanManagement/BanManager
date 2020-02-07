@@ -10,32 +10,39 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.IPAddress;
+import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
   private BanManagerPlugin plugin;
-  private ConcurrentHashMap<Long, IpBanData> bans = new ConcurrentHashMap<>();
+  @Getter
+  private ConcurrentHashMap<String, IpBanData> bans = new ConcurrentHashMap<>();
 
   public IpBanStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<IpBanData>) plugin.getConfig().getLocalDb()
-                                                                        .getTable("ipBans"));
+        .getTable("ipBans"));
 
     this.plugin = plugin;
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
 
     loadAll();
@@ -67,7 +74,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
@@ -85,20 +92,20 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
         PlayerData actor;
         try {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                  results.getLong(3),
-                  results.getLong(4));
+              IPUtils.toIPAddress(results.getBytes(3)),
+              results.getLong(4));
 
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing actor for ip ban " + results.getInt(0) + ", ignored");
           continue;
         }
 
-        IpBanData ban = new IpBanData(results.getInt(0), results.getLong(5), actor, results.getString(6),
-                results.getLong(7),
-                results.getLong(8),
-                results.getLong(9));
+        IpBanData ban = new IpBanData(results.getInt(0), IPUtils.toIPAddress(results.getBytes(5)), actor, results.getString(6),
+            results.getLong(7),
+            results.getLong(8),
+            results.getLong(9));
 
-        bans.put(ban.getIp(), ban);
+        bans.put(ban.getIp().toString(), ban);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -109,19 +116,15 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     }
   }
 
-  public ConcurrentHashMap<Long, IpBanData> getBans() {
-    return bans;
-  }
-
-  public boolean isBanned(long ip) {
-    return bans.get(ip) != null;
+  public boolean isBanned(IPAddress ip) {
+    return bans.get(ip.toString()) != null;
   }
 
   public boolean isBanned(InetAddress address) {
-    return isBanned(IPUtils.toLong(address));
+    return isBanned(IPUtils.toIPAddress(address));
   }
 
-  public IpBanData retrieveBan(long ip) throws SQLException {
+  public IpBanData retrieveBan(IPAddress ip) throws SQLException {
     List<IpBanData> bans = queryForEq("ip", ip);
 
     if (bans.isEmpty()) return null;
@@ -129,16 +132,16 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     return bans.get(0);
   }
 
-  public IpBanData getBan(long ip) {
-    return bans.get(ip);
+  public IpBanData getBan(IPAddress ip) {
+    return bans.get(ip.toString());
   }
 
   public IpBanData getBan(InetAddress address) {
-    return getBan(IPUtils.toLong(address));
+    return getBan(Objects.requireNonNull(IPUtils.toIPAddress(address)));
   }
 
   public void addBan(IpBanData ban) {
-    bans.put(ban.getIp(), ban);
+    bans.put(ban.getIp().toString(), ban);
 
     plugin.getServer().callEvent("IpBannedEvent", ban, plugin.getConfig().isBroadcastOnSync());
   }
@@ -147,8 +150,8 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     removeBan(ban.getIp());
   }
 
-  public void removeBan(long ip) {
-    bans.remove(ip);
+  public void removeBan(IPAddress ip) {
+    bans.remove(ip.toString());
   }
 
   public boolean ban(IpBanData ban, boolean isSilent) throws SQLException {
@@ -159,7 +162,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     }
 
     create(ban);
-    bans.put(ban.getIp(), ban);
+    bans.put(ban.getIp().toString(), ban);
 
     plugin.getServer().callEvent("IpBannedEvent", ban, event.isSilent());
 
@@ -195,13 +198,12 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     QueryBuilder<IpBanData, Integer> query = queryBuilder();
     Where<IpBanData, Integer> where = query.where();
     where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+        .ge("created", checkTime)
+        .or()
+        .ge("updated", checkTime);
 
     query.setWhere(where);
 
     return query.iterator();
   }
-
 }
