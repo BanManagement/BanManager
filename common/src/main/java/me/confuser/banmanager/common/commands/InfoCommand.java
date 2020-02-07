@@ -84,7 +84,7 @@ public class InfoCommand extends CommonCommand {
   }
 
   public void playerInfo(CommonSender sender, String name, Integer index, InfoCommandParser parser) throws
-          SQLException {
+      SQLException {
     List<PlayerData> players = getPlugin().getPlayerStorage().retrieve(name);
 
     if (players == null || players.size() == 0) {
@@ -94,19 +94,19 @@ public class InfoCommand extends CommonCommand {
 
     if (players.size() > 1 && (index == null || index > players.size() || index < 1)) {
       Message.get("info.error.indexRequired")
-             .set("size", players.size())
-             .set("name", name)
-             .sendTo(sender);
+          .set("size", players.size())
+          .set("name", name)
+          .sendTo(sender);
 
       int i = 0;
       for (PlayerData player : players) {
         i++;
 
         Message.get("info.error.index")
-               .set("index", i)
-               .set("uuid", player.getUUID().toString())
-               .set("name", player.getName())
-               .sendTo(sender);
+            .set("index", i)
+            .set("uuid", player.getUUID().toString())
+            .set("name", player.getName())
+            .sendTo(sender);
       }
 
       return;
@@ -119,7 +119,7 @@ public class InfoCommand extends CommonCommand {
     ArrayList<Object> messages = new ArrayList<>();
 
     boolean hasFlags = parser.isBans() || parser.isKicks() || parser.isMutes() || parser.isNotes() || parser
-            .isWarnings() || parser.getIps() != null;
+        .isWarnings() || parser.getIps() != null;
 
     if (hasFlags) {
       long since = 0;
@@ -188,13 +188,13 @@ public class InfoCommand extends CommonCommand {
 
         for (HashMap<String, Object> result : results) {
           Message message = Message.get("info.history.row")
-                                   .set("id", (int) result.get("id"))
-                                   .set("reason", (String) result.get("reason"))
-                                   .set("type", (String) result.get("type"))
-                                   .set("created", dateFormatter
-                                           .format((long) result.get("created") * 1000L))
-                                   .set("actor", (String) result.get("actor"))
-                                   .set("meta", (String) result.get("meta"));
+              .set("id", (int) result.get("id"))
+              .set("reason", (String) result.get("reason"))
+              .set("type", (String) result.get("type"))
+              .set("created", dateFormatter
+                  .format((long) result.get("created") * 1000L))
+              .set("actor", (String) result.get("actor"))
+              .set("meta", (String) result.get("meta"));
 
           messages.add(message.toString());
         }
@@ -210,29 +210,29 @@ public class InfoCommand extends CommonCommand {
         long kickTotal = getPlugin().getPlayerKickStorage().getCount(player);
 
         messages.add(Message.get("info.stats.player")
-                            .set("player", player.getName())
-                            .set("playerId", player.getUUID().toString())
-                            .set("bans", Long.toString(banTotal))
-                            .set("mutes", Long.toString(muteTotal))
-                            .set("warns", Long.toString(warnTotal))
-                            .set("warnPoints", warnPointsTotal)
-                            .set("kicks", Long.toString(kickTotal))
-                            .toString());
+            .set("player", player.getName())
+            .set("playerId", player.getUUID().toString())
+            .set("bans", Long.toString(banTotal))
+            .set("mutes", Long.toString(muteTotal))
+            .set("warns", Long.toString(warnTotal))
+            .set("warnPoints", warnPointsTotal)
+            .set("kicks", Long.toString(kickTotal))
+            .toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.connection")) {
         messages.add(Message.get("info.connection")
-                            .set("ip", IPUtils.toString(player.getIp()))
-                            .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
-                                    .format(player.getLastSeen() * 1000L))
-                            .toString());
+            .set("ip", player.getIp().toString())
+            .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
+                .format(player.getLastSeen() * 1000L))
+            .toString());
       }
 
       if (getPlugin().getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
         Message message = Message.get("info.geoip");
 
         try {
-          InetAddress ip = IPUtils.toInetAddress(player.getIp());
+          InetAddress ip = player.getIp().toInetAddress();
 
           CountryResponse countryResponse = getPlugin().getGeoIpConfig().getCountryDatabase().country(ip);
           String country = countryResponse.getCountry().getName();
@@ -242,8 +242,8 @@ public class InfoCommand extends CommonCommand {
           String city = cityResponse.getCity().getName();
 
           message.set("country", country)
-                 .set("countryIso", countryIso)
-                 .set("city", city);
+              .set("countryIso", countryIso)
+              .set("city", city);
           messages.add(message);
         } catch (IOException | GeoIp2Exception ignored) {
         }
@@ -275,8 +275,8 @@ public class InfoCommand extends CommonCommand {
         long ipBanTotal = getPlugin().getIpBanRecordStorage().getCount(player.getIp());
 
         messages.add(Message.get("info.stats.ip")
-                            .set("bans", Long.toString(ipBanTotal))
-                            .toString());
+            .set("bans", Long.toString(ipBanTotal))
+            .toString());
 
         if (getPlugin().getIpBanStorage().isBanned(player.getIp())) {
           IpBanData ban = getPlugin().getIpBanStorage().getBan(player.getIp());
@@ -293,11 +293,11 @@ public class InfoCommand extends CommonCommand {
           String dateTimeFormat = Message.getString("info.ipban.dateTimeFormat");
 
           messages.add(message
-                  .set("reason", ban.getReason())
-                  .set("actor", ban.getActor().getName())
-                  .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                                                .format(ban.getCreated() * 1000L))
-                  .toString());
+              .set("reason", ban.getReason())
+              .set("actor", ban.getActor().getName())
+              .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                  .format(ban.getCreated() * 1000L))
+              .toString());
         }
       }
 
@@ -316,12 +316,12 @@ public class InfoCommand extends CommonCommand {
         String dateTimeFormat = Message.getString("info.ban.dateTimeFormat");
 
         messages.add(message
-                .set("player", player.getName())
-                .set("reason", ban.getReason())
-                .set("actor", ban.getActor().getName())
-                .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                                              .format(ban.getCreated() * 1000L))
-                .toString());
+            .set("player", player.getName())
+            .set("reason", ban.getReason())
+            .set("actor", ban.getActor().getName())
+            .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                .format(ban.getCreated() * 1000L))
+            .toString());
       }
 
       if (getPlugin().getPlayerMuteStorage().isMuted(player.getUUID())) {
@@ -339,20 +339,20 @@ public class InfoCommand extends CommonCommand {
         String dateTimeFormat = Message.getString("info.mute.dateTimeFormat");
 
         messages.add(message
-                .set("player", player.getName())
-                .set("reason", mute.getReason())
-                .set("actor", mute.getActor().getName())
-                .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                                              .format(mute.getCreated() * 1000L))
-                .toString());
+            .set("player", player.getName())
+            .set("reason", mute.getReason())
+            .set("actor", mute.getActor().getName())
+            .set("created", FastDateFormat.getInstance(dateTimeFormat)
+                .format(mute.getCreated() * 1000L))
+            .toString());
       }
 
       if (sender.hasPermission("bm.command.bminfo.website")) {
         messages.add(Message.get("info.website.player")
-                            .set("player", player.getName())
-                            .set("uuid", player.getUUID().toString())
-                            .set("playerId", player.getUUID().toString())
-                            .toString());
+            .set("player", player.getName())
+            .set("uuid", player.getUUID().toString())
+            .set("playerId", player.getUUID().toString())
+            .toString());
       }
     }
 
@@ -377,12 +377,12 @@ public class InfoCommand extends CommonCommand {
         PlayerHistoryData data = iterator.next();
 
         messages.add(Message.get("info.ips.row")
-                            .set("join", FastDateFormat.getInstance(dateTimeFormat)
-                                                       .format(data.getJoin() * 1000L))
-                            .set("leave", FastDateFormat.getInstance(dateTimeFormat)
-                                                        .format(data.getLeave() * 1000L))
-                            .set("ip", IPUtils.toString(data.getIp()))
-                            .toString());
+            .set("join", FastDateFormat.getInstance(dateTimeFormat)
+                .format(data.getJoin() * 1000L))
+            .set("leave", FastDateFormat.getInstance(dateTimeFormat)
+                .format(data.getLeave() * 1000L))
+            .set("ip", data.getIp().toString())
+            .toString());
       }
     } catch (SQLException e) {
       e.printStackTrace();

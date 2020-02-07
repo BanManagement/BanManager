@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.commands.global;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -38,19 +39,7 @@ public class UnbanIpAllCommand extends CommonCommand {
     }
 
     getPlugin().getScheduler().runAsync(() -> {
-      final long ip;
-
-      if (isName) {
-        PlayerData player = getPlugin().getPlayerStorage().retrieve(ipStr, false);
-        if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-          return;
-        }
-
-        ip = player.getIp();
-      } else {
-        ip = IPUtils.toLong(ipStr);
-      }
+      final IPAddress ip = getIp(ipStr);
 
       IpBanData ban = getPlugin().getIpBanStorage().getBan(ip);
 
@@ -80,9 +69,9 @@ public class UnbanIpAllCommand extends CommonCommand {
       }
 
       Message.get("unbanipall.notify")
-             .set("actor", actor.getName())
-             .set("ip", ban.getIp())
-             .sendTo(sender);
+          .set("actor", actor.getName())
+          .set("ip", ban.getIp().toString())
+          .sendTo(sender);
     });
 
     return true;

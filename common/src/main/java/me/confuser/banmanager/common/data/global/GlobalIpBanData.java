@@ -1,11 +1,13 @@
 package me.confuser.banmanager.common.data.global;
 
 import com.j256.ormlite.field.DatabaseField;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -18,8 +20,8 @@ public class GlobalIpBanData {
   private int id;
 
   @Getter
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
-  private long ip;
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
+  private IPAddress ip;
 
   @DatabaseField(canBeNull = false)
   @Getter
@@ -47,14 +49,14 @@ public class GlobalIpBanData {
 
   }
 
-  public GlobalIpBanData(long ip, PlayerData actor, String reason) {
+  public GlobalIpBanData(IPAddress ip, PlayerData actor, String reason) {
     this.ip = ip;
     this.reason = reason;
     this.actorUuidBytes = actor.getId();
     this.actorName = actor.getName();
   }
 
-  public GlobalIpBanData(long ip, PlayerData actor, String reason, long expires) {
+  public GlobalIpBanData(IPAddress ip, PlayerData actor, String reason, long expires) {
     this(ip, actor, reason);
 
     this.expires = expires;

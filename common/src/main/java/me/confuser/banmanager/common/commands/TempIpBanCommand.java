@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.configs.TimeLimitType;
@@ -73,7 +74,7 @@ public class TempIpBanCommand extends CommonCommand {
 
       @Override
       public void run() {
-        final Long ip = getIp(ipStr);
+        final IPAddress ip = getIp(ipStr);
 
         if (ip == null) {
           sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
@@ -128,10 +129,10 @@ public class TempIpBanCommand extends CommonCommand {
           Message kickMessage = Message.get("tempbanip.ip.kick")
               .set("reason", ban.getReason())
               .set("actor", actor.getName())
-              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));;
+              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
-            if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {
+            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
               onlinePlayer.kick(kickMessage.toString());
             }
           }

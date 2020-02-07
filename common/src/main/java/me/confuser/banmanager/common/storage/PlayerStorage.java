@@ -11,9 +11,11 @@ import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.UUIDProfile;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -35,12 +37,14 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   public PlayerStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerData>) plugin.getConfig().getLocalDb()
-                                                                         .getTable("players"));
+        .getTable("players"));
 
     this.plugin = plugin;
 
     if (!isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip", "bytes");
     }
 
     setupConsole();
@@ -101,7 +105,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     if (!plugin.getConfig().isOnlineMode()) {
       plugin.getLogger()
-            .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
+          .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
       return status;
     }
 
@@ -115,7 +119,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         newName = UUIDUtils.getCurrentName(plugin, player.getUUID());
       } catch (Exception e) {
         plugin.getLogger()
-              .warning("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
+            .warning("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
         continue;
       }
 
@@ -186,10 +190,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return null;
   }
 
-  public List<PlayerData> getDuplicates(long ip) {
+  public List<PlayerData> getDuplicates(IPAddress ip) {
     ArrayList<PlayerData> players = new ArrayList<>();
 
-    if (plugin.getConfig().getBypassPlayerIps().contains(ip)) {
+    if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
       return players;
     }
 
@@ -227,11 +231,11 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return players;
   }
 
-  public List<PlayerData> getDuplicatesInTime(long ip, long timediff) {
+  public List<PlayerData> getDuplicatesInTime(IPAddress ip, long timeDiff) {
     ArrayList<PlayerData> players = new ArrayList<>();
     long currentTime = System.currentTimeMillis() / 1000L;
 
-    if (plugin.getConfig().getBypassPlayerIps().contains(ip)) {
+    if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
       return players;
     }
 
@@ -241,7 +245,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
       Where<PlayerData, byte[]> where = query.where();
 
-      where.eq("ip", ip).and().ge("lastSeen", (currentTime - timediff));
+      where.eq("ip", ip).and().ge("lastSeen", (currentTime - timeDiff));
 
       query.setWhere(where);
     } catch (SQLException e) {

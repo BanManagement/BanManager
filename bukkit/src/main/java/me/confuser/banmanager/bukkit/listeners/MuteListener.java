@@ -42,9 +42,9 @@ public class MuteListener implements Listener {
     }
 
     message.set("player", mute.getPlayer().getName())
-           .set("playerId", mute.getPlayer().getUUID().toString())
-           .set("actor", mute.getActor().getName())
-           .set("reason", mute.getReason());
+        .set("playerId", mute.getPlayer().getUUID().toString())
+        .set("actor", mute.getActor().getName())
+        .set("reason", mute.getReason());
 
     if (!event.isSilent()) {
       plugin.getServer().broadcast(message.toString(), broadcastPermission);
@@ -90,10 +90,10 @@ public class MuteListener implements Listener {
     if (playerNames.length() == 0) return;
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
-    message.set("ip", IPUtils.toString(mute.getIp()))
-           .set("actor", mute.getActor().getName())
-           .set("reason", mute.getReason())
-           .set("players", playerNames.toString());
+    message.set("ip", mute.getIp().toString())
+        .set("actor", mute.getActor().getName())
+        .set("reason", mute.getReason())
+        .set("players", playerNames.toString());
 
     if (!event.isSilent()) {
       plugin.getServer().broadcast(message.toString(), broadcastPermission);

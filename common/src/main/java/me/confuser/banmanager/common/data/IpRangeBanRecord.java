@@ -3,8 +3,10 @@ package me.confuser.banmanager.common.data;
 import com.google.common.collect.Range;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 
 @DatabaseTable
 public class IpRangeBanRecord {
@@ -13,13 +15,13 @@ public class IpRangeBanRecord {
   @Getter
   private int id;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL", index = true)
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL", index = true)
   @Getter
-  private long fromIp;
+  private IPAddress fromIp;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL", index = true)
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL", index = true)
   @Getter
-  private long toIp;
+  private IPAddress toIp;
 
   @DatabaseField(canBeNull = false)
   @Getter

@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.configs.TimeLimitType;
@@ -77,7 +78,7 @@ public class TempIpMuteCommand extends CommonCommand {
     final String reason = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
-      final Long ip = getIp(ipStr);
+      final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
         sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
@@ -133,7 +134,7 @@ public class TempIpMuteCommand extends CommonCommand {
             .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
-          if (IPUtils.toLong(onlinePlayer.getAddress()) == ip) {
+          if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
             onlinePlayer.sendMessage(message);
           }
         }

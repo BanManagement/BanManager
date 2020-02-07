@@ -1,5 +1,8 @@
 package me.confuser.banmanager.common.commands;
 
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressSeqRange;
+import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.IpRangeBanData;
@@ -28,29 +31,17 @@ public class BanIpRangeCommand extends CommonCommand {
       return false;
     }
 
-    String ipStr = parser.args[0];
-    long[] range = null;
+    IPAddressString ip = new IPAddressString(parser.args[0]);
 
-    if (ipStr.contains("*")) {
-      // Simple wildcard logic
-      range = IPUtils.getRangeFromWildcard(ipStr);
-    } else if (ipStr.contains("/")) {
-      // cidr notation
-      range = IPUtils.getRangeFromCidrNotation(ipStr);
-    }
-
-    if (range == null) {
+    if (!ip.isSequential()) {
       Message.get("baniprange.error.invalid").sendTo(sender);
       return true;
     }
 
-    final long fromIp = range[0];
-    final long toIp = range[1];
+    IPAddressSeqRange range = ip.getSequentialRange();
 
-    if (fromIp > toIp) {
-      Message.get("baniprange.error.minMax").sendTo(sender);
-      return true;
-    }
+    final IPAddress fromIp = range.getLower();
+    final IPAddress toIp = range.getUpper();
 
     if (getPlugin().getIpRangeBanStorage().isBanned(fromIp) || getPlugin().getIpRangeBanStorage().isBanned(toIp)) {
       Message.get("baniprange.error.exists").sendTo(sender);
@@ -82,7 +73,7 @@ public class BanIpRangeCommand extends CommonCommand {
             .set("actor", actor.getName());
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
-          if (ban.inRange(IPUtils.toLong(onlinePlayer.getAddress()))) {
+          if (ban.inRange(IPUtils.toIPAddress(onlinePlayer.getAddress()))) {
             onlinePlayer.kick(kickMessage.toString());
           }
         }

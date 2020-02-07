@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.bukkit.BukkitServer;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
@@ -44,9 +45,9 @@ public class JoinListener implements Listener {
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
     if (plugin.getConfig().isCheckOnJoin()) {
       // Check for new bans/mutes
-      if (!plugin.getIpBanStorage().isBanned(event.getAddress())) {
+      if (!plugin.getIpBanStorage().isBanned(IPUtils.toIPAddress(event.getAddress()))) {
         try {
-          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toLong(event.getAddress()));
+          IpBanData ban = plugin.getIpBanStorage().retrieveBan(IPUtils.toIPAddress(event.getAddress()));
 
           if (ban != null) plugin.getIpBanStorage().addBan(ban);
         } catch (SQLException e) {
@@ -223,7 +224,7 @@ public class JoinListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(AsyncPlayerPreLoginEvent event) {
-    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), event.getAddress());
+    PlayerData player = new PlayerData(event.getUniqueId(), event.getName(), IPUtils.toIPAddress(event.getAddress()));
 
     try {
       plugin.getPlayerStorage().createOrUpdate(player);
@@ -361,12 +362,13 @@ public class JoinListener implements Listener {
       }
     }
 
+    final IPAddress ip = IPUtils.toIPAddress(event.getAddress());
+
     if (plugin.getConfig().getMaxOnlinePerIp() > 0) {
-      long ip = IPUtils.toLong(event.getAddress());
       int count = 0;
 
       for (CommonPlayer player : plugin.getServer().getOnlinePlayers()) {
-        if (IPUtils.toLong(player.getAddress()) == ip) count++;
+        if (IPUtils.toIPAddress(player.getAddress()).equals(ip)) count++;
       }
 
       if (count >= plugin.getConfig().getMaxOnlinePerIp()) {
@@ -377,7 +379,6 @@ public class JoinListener implements Listener {
     }
 
     if (plugin.getConfig().getMaxMultiaccountsRecently() > 0) {
-      long ip = IPUtils.toLong(event.getAddress());
       long timediff = plugin.getConfig().getMultiaccountsTime();
 
       List<PlayerData> multiaccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timediff);
@@ -396,7 +397,6 @@ public class JoinListener implements Listener {
     if (event.getPlayer().hasPermission("bm.exempt.alts")) return;
 
     plugin.getScheduler().runAsyncLater(() -> {
-      final long ip = IPUtils.toLong(event.getAddress());
       final UUID uuid = event.getPlayer().getUniqueId();
       List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 

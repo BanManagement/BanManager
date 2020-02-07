@@ -2,8 +2,10 @@ package me.confuser.banmanager.common.data;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 
 @DatabaseTable
 public class IpBanRecord {
@@ -12,9 +14,9 @@ public class IpBanRecord {
   @Getter
   private int id;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
+  @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
   @Getter
-  private long ip;
+  private IPAddress ip;
 
   @DatabaseField(canBeNull = false)
   @Getter
