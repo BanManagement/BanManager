@@ -2,9 +2,11 @@ package me.confuser.banmanager.common.data;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import lombok.Setter;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 
 @DatabaseTable
 public class PlayerHistoryData {
@@ -16,8 +18,8 @@ public class PlayerHistoryData {
   @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData player;
   @Getter
-  @DatabaseField(index = true, canBeNull = false, columnDefinition = "INT UNSIGNED NOT NULL")
-  private long ip;
+  @DatabaseField(index = true, persisterClass = IpAddress.class, canBeNull = false, columnDefinition = "VARBINARY(16) NOT NULL")
+  private IPAddress ip;
 
   // Should always be database time
   @Getter

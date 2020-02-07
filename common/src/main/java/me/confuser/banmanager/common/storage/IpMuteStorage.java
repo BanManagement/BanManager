@@ -10,12 +10,14 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.net.InetAddress;
@@ -26,16 +28,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
 
   private BanManagerPlugin plugin;
-  private ConcurrentHashMap<Long, IpMuteData> mutes = new ConcurrentHashMap<>();
+  private ConcurrentHashMap<String, IpMuteData> mutes = new ConcurrentHashMap<>();
 
   public IpMuteStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<IpMuteData>) plugin.getConfig().getLocalDb()
-                                                                         .getTable("ipMutes"));
+        .getTable("ipMutes"));
 
     this.plugin = plugin;
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
 
     loadAll();
@@ -67,7 +71,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
@@ -83,15 +87,15 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
 
       while (results.next()) {
         PlayerData actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-                results.getLong(3),
-                results.getLong(4));
-        IpMuteData mute = new IpMuteData(results.getInt(0), results.getLong(5), actor, results.getString(6),
-                results.getBoolean(7),
-                results.getLong(8),
-                results.getLong(9),
-                results.getLong(10));
+            IPUtils.toIPAddress(results.getBytes(3)),
+            results.getLong(4));
+        IpMuteData mute = new IpMuteData(results.getInt(0), IPUtils.toIPAddress(results.getBytes(5)), actor, results.getString(6),
+            results.getBoolean(7),
+            results.getLong(8),
+            results.getLong(9),
+            results.getLong(10));
 
-        mutes.put(mute.getIp(), mute);
+        mutes.put(mute.getIp().toString(), mute);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -102,19 +106,19 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     }
   }
 
-  public ConcurrentHashMap<Long, IpMuteData> getMutes() {
+  public ConcurrentHashMap<String, IpMuteData> getMutes() {
     return mutes;
   }
 
-  public boolean isMuted(long ip) {
-    return mutes.get(ip) != null;
+  public boolean isMuted(IPAddress ip) {
+    return mutes.get(ip.toString()) != null;
   }
 
   public boolean isMuted(InetAddress address) {
-    return isMuted(IPUtils.toLong(address));
+    return isMuted(IPUtils.toIPAddress(address));
   }
 
-  public IpMuteData retrieveMute(long ip) throws SQLException {
+  public IpMuteData retrieveMute(IPAddress ip) throws SQLException {
     List<IpMuteData> mutes = queryForEq("ip", ip);
 
     if (mutes.isEmpty()) return null;
@@ -122,16 +126,16 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     return mutes.get(0);
   }
 
-  public IpMuteData getMute(long ip) {
-    return mutes.get(ip);
+  public IpMuteData getMute(IPAddress ip) {
+    return mutes.get(ip.toString());
   }
 
   public IpMuteData getMute(InetAddress address) {
-    return getMute(IPUtils.toLong(address));
+    return getMute(IPUtils.toIPAddress(address));
   }
 
   public void addMute(IpMuteData mute) {
-    mutes.put(mute.getIp(), mute);
+    mutes.put(mute.getIp().toString(), mute);
 
     plugin.getServer().callEvent("IpMutedEvent", mute, plugin.getConfig().isBroadcastOnSync());
   }
@@ -140,7 +144,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     removeMute(mute.getIp());
   }
 
-  public void removeMute(long ip) {
+  public void removeMute(IPAddress ip) {
     mutes.remove(ip);
   }
 
@@ -152,7 +156,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     }
 
     create(mute);
-    mutes.put(mute.getIp(), mute);
+    mutes.put(mute.getIp().toString(), mute);
 
     plugin.getServer().callEvent("IpMutedEvent", mute, event.isSilent());
 
@@ -171,7 +175,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     }
 
     delete(mute);
-    mutes.remove(mute.getIp());
+    mutes.remove(mute.getIp().toString());
 
     plugin.getIpMuteRecordStorage().addRecord(mute, actor, reason);
 
@@ -188,9 +192,9 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     QueryBuilder<IpMuteData, Integer> query = queryBuilder();
     Where<IpMuteData, Integer> where = query.where();
     where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+        .ge("created", checkTime)
+        .or()
+        .ge("updated", checkTime);
 
     query.setWhere(where);
 

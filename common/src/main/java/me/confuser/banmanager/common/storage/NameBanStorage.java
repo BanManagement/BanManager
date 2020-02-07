@@ -15,6 +15,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
 
   public NameBanStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<NameBanData>) plugin.getConfig().getLocalDb()
-                                                                          .getTable("nameBans"));
+        .getTable("nameBans"));
 
     this.plugin = plugin;
 
@@ -65,7 +66,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
 
     try {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
-              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
       e.printStackTrace();
       getConnectionSource().releaseConnection(connection);
@@ -84,15 +85,15 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
 
         try {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(2)), results.getString(3),
-                  results.getLong(4),
-                  results.getLong(5));
+              IPUtils.toIPAddress(results.getBytes(4)),
+              results.getLong(5));
         } catch (NullPointerException e) {
           plugin.getLogger().warning("Missing actor for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 
         NameBanData ban = new NameBanData(results.getInt(0), results.getString(1), actor, results.getString(6), results
-                .getLong(7), results.getLong(8), results.getLong(9));
+            .getLong(7), results.getLong(8), results.getLong(9));
 
         bans.put(ban.getName().toLowerCase(), ban);
       }
@@ -177,9 +178,9 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
     QueryBuilder<NameBanData, Integer> query = queryBuilder();
     Where<NameBanData, Integer> where = query.where();
     where
-            .ge("created", checkTime)
-            .or()
-            .ge("updated", checkTime);
+        .ge("created", checkTime)
+        .or()
+        .ge("updated", checkTime);
 
     query.setWhere(where);
 

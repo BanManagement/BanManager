@@ -23,7 +23,7 @@ public class DefaultConfig extends Config {
   @Getter
   private boolean duplicateIpCheckEnabled = true;
   @Getter
-  private HashSet<Long> bypassPlayerIps;
+  private HashSet<String> bypassPlayerIps;
   @Getter
   private boolean kickLoggingEnabled = false;
   @Getter
@@ -85,9 +85,7 @@ public class DefaultConfig extends Config {
     offlineAutoComplete = conf.getBoolean("offlineAutoComplete", true);
 
     bypassPlayerIps = new HashSet<>();
-    for (String ip : conf.getStringList("bypassDuplicateChecks")) {
-      bypassPlayerIps.add(IPUtils.toLong(ip));
-    }
+    bypassPlayerIps.addAll(conf.getStringList("bypassDuplicateChecks"));
 
     reportCooldown = conf.getLong("reportCooldown", 0);
     warningCooldown = conf.getLong("warningCooldown", 0);

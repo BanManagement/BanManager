@@ -90,7 +90,7 @@ public class BanListener implements Listener {
     if (playerNames.length() == 0) return;
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
-    message.set("ip", IPUtils.toString(ban.getIp())).set("actor", ban.getActor().getName())
+    message.set("ip", ban.getIp().toString()).set("actor", ban.getActor().getName())
            .set("reason", ban.getReason())
            .set("players", playerNames.toString());
 
@@ -127,8 +127,8 @@ public class BanListener implements Listener {
       message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
     }
 
-    message.set("from", IPUtils.toString(ban.getFromIp()))
-           .set("to", IPUtils.toString(ban.getToIp()))
+    message.set("from", ban.getFromIp().toString())
+           .set("to", ban.getToIp().toString())
            .set("actor", ban.getActor().getName())
            .set("reason", ban.getReason());
 

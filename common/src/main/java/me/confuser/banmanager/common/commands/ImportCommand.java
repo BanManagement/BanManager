@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.commands;
 
 import com.google.common.net.InetAddresses;
 import com.google.gson.stream.JsonReader;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerBanData;
@@ -279,7 +280,7 @@ public class ImportCommand extends CommonCommand {
           continue;
         }
 
-        long ip = IPUtils.toLong(ipStr);
+        IPAddress ip = getIp(ipStr);
 
         if (getPlugin().getIpBanStorage().isBanned(ip)) {
           continue;

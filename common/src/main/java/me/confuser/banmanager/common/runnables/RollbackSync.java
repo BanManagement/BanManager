@@ -29,38 +29,38 @@ public class RollbackSync extends BmRunnable {
           // @TODO Refactor/Clean up
           case "bans":
             for (Iterator<Map.Entry<UUID, PlayerBanData>> it = plugin.getPlayerBanStorage().getBans().entrySet()
-                                                                     .iterator(); it.hasNext(); ) {
+                .iterator(); it.hasNext(); ) {
               Map.Entry<UUID, PlayerBanData> entry = it.next();
 
               if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
               if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                      .getExpires())) continue;
+                  .getExpires())) continue;
 
               it.remove();
             }
             break;
 
           case "ipbans":
-            for (Iterator<Map.Entry<Long, IpBanData>> it = plugin.getIpBanStorage().getBans().entrySet().iterator(); it
-                    .hasNext(); ) {
-              Map.Entry<Long, IpBanData> entry = it.next();
+            for (Iterator<Map.Entry<String, IpBanData>> it = plugin.getIpBanStorage().getBans().entrySet().iterator(); it
+                .hasNext(); ) {
+              Map.Entry<String, IpBanData> entry = it.next();
 
               if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
               if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                      .getExpires())) continue;
+                  .getExpires())) continue;
 
               it.remove();
             }
             break;
 
           case "ipmutes":
-            for (Iterator<Map.Entry<Long, IpMuteData>> it = plugin.getIpMuteStorage().getMutes().entrySet()
-                                                                  .iterator(); it.hasNext(); ) {
-              Map.Entry<Long, IpMuteData> entry = it.next();
+            for (Iterator<Map.Entry<String, IpMuteData>> it = plugin.getIpMuteStorage().getMutes().entrySet()
+                .iterator(); it.hasNext(); ) {
+              Map.Entry<String, IpMuteData> entry = it.next();
 
               if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
               if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                      .getExpires())) continue;
+                  .getExpires())) continue;
 
               it.remove();
             }
@@ -68,12 +68,12 @@ public class RollbackSync extends BmRunnable {
 
           case "mutes":
             for (Iterator<Map.Entry<UUID, PlayerMuteData>> it = plugin.getPlayerMuteStorage().getMutes().entrySet()
-                                                                      .iterator(); it.hasNext(); ) {
+                .iterator(); it.hasNext(); ) {
               Map.Entry<UUID, PlayerMuteData> entry = it.next();
 
               if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
               if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                      .getExpires())) continue;
+                  .getExpires())) continue;
 
               it.remove();
             }

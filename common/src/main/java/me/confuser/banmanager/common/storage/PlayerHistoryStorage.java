@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerHistoryData;
+import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -24,6 +25,8 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
   }
 

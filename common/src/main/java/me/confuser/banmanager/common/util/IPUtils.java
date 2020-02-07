@@ -1,80 +1,53 @@
 package me.confuser.banmanager.common.util;
 
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressNetwork;
+import inet.ipaddr.IPAddressString;
+import inet.ipaddr.ipv4.IPv4AddressSeqRange;
+import inet.ipaddr.ipv6.IPv6AddressSeqRange;
+import me.confuser.banmanager.common.CommonPlayer;
 import org.apache.commons.net.util.SubnetUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IPUtils {
 
-  public static String getIP(InetAddress ip) {
-    return ip.getHostAddress().replace("/", "");
+  public static byte[] toBytes(String ip) {
+    return toIPAddress(ip).getBytes();
   }
 
-  public static long toLong(String ip) {
-    String[] addressArray = ip.split("\\.");
-    long result = 0;
+  public static String toString(byte[] ip) {
+    return new IPAddressNetwork.IPAddressGenerator().from(ip).getLower().toString();
+  }
 
-    for (int i = 0; i < addressArray.length; i++) {
-      int power = 3 - i;
+  public static boolean isInRange(IPAddress fromIp, IPAddress toIp, IPAddress ip) {
+    if (!fromIp.getIPVersion().equals(toIp.getIPVersion())) return false;
+    if (!fromIp.getIPVersion().equals(ip.getIPVersion())) return false;
 
-      result += ((Integer.parseInt(addressArray[i]) % 256 * Math.pow(256, power)));
+    if (ip.isIPv4()) {
+      return new IPv4AddressSeqRange(fromIp.toIPv4(), toIp.toIPv4()).contains(ip);
+    } else {
+      return new IPv6AddressSeqRange(fromIp.toIPv6(), toIp.toIPv6()).contains(ip);
     }
-
-    return result;
   }
 
-  public static long toLong(InetAddress ip) {
-    return toLong(getIP(ip));
+  public static IPAddress toIPAddress(InetAddress address) {
+    return new IPAddressNetwork.IPAddressGenerator().from(address).getLower();
   }
 
-  public static String toString(long ip) {
-    return ((ip >> 24) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + (ip & 0xFF);
+  public static IPAddress toIPAddress(byte[] bytes) {
+    return new IPAddressNetwork.IPAddressGenerator().from(bytes).getLower();
   }
 
-  public static InetAddress toInetAddress(long ip) throws UnknownHostException {
-    return InetAddress.getByName(toString(ip));
-  }
-
-  public static long[] getRangeFromCidrNotation(String ipStr) {
-    SubnetUtils.SubnetInfo info;
+  public static IPAddress toIPAddress(String ip) {
     try {
-      info = new SubnetUtils(ipStr).getInfo();
-    } catch (IllegalArgumentException e) {
+      return new IPAddressString(ip).toAddress().getLower();
+    } catch (AddressStringException e) {
       return null;
     }
-
-    return new long[] { IPUtils.toLong(info.getLowAddress()), IPUtils.toLong(info.getHighAddress()) };
   }
-
-  public static long[] getRangeFromWildcard(String ipStr) {
-    String[] ocelots = ipStr.split("\\.");
-
-    if (ocelots.length != 4) return null;
-
-    String[] fromIp = new String[4];
-    String[] toIp = new String[4];
-
-    for (int i = 0; i < ocelots.length; i++) {
-      if (ocelots[i].equals("*")) {
-        fromIp[i] = "0";
-      } else {
-        fromIp[i] = ocelots[i];
-      }
-    }
-
-    for (int i = 0; i < ocelots.length; i++) {
-      if (ocelots[i].equals("*")) {
-        toIp[i] = "255";
-      } else {
-        toIp[i] = ocelots[i];
-      }
-    }
-
-    long fromIpAddress = IPUtils.toLong(String.join(".", fromIp));
-    long toIpAddress = IPUtils.toLong(String.join(".", toIp));
-
-    return new long[] { fromIpAddress, toIpAddress };
-  }
-
 }
