@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,6 +35,7 @@ public class BMBukkitPlugin extends JavaPlugin {
       "reasons.yml",
       "schedules.yml"
   };
+  private Metrics metrics;
 
   @Override
   public void onEnable() {
@@ -47,7 +49,8 @@ public class BMBukkitPlugin extends JavaPlugin {
       return;
     }
 
-    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server);
+    metrics = new Metrics(this, 6455);
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server, new BukkitMetrics(metrics));
 
     server.enable(plugin);
 
@@ -96,7 +99,7 @@ public class BMBukkitPlugin extends JavaPlugin {
     for (String command : commands.getKeys(false)) {
       ConfigurationSection cmd = commands.getConfigurationSection(command);
 
-      pluginInfo.setCommand( new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
     }
 
     return pluginInfo;
