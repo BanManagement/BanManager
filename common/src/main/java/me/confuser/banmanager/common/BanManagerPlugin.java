@@ -30,7 +30,7 @@ public class BanManagerPlugin {
    * This block prevents the Maven Shade plugin to remove the specified classes
    */
   static {
-    @SuppressWarnings ("unused") Class<?>[] classes = new Class<?>[] {
+    @SuppressWarnings("unused") Class<?>[] classes = new Class<?>[]{
         BmAPI.class,
     };
   }
@@ -39,6 +39,8 @@ public class BanManagerPlugin {
   private PluginInfo pluginInfo;
   @Getter
   private final CommonLogger logger;
+  @Getter
+  private final CommonMetrics metrics;
 
   // Configs
   @Getter
@@ -142,12 +144,13 @@ public class BanManagerPlugin {
   @Getter
   private Runner syncRunner;
 
-  public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server) {
+  public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
     this.logger = logger;
     this.dataFolder = dataFolder;
     this.server = server;
     this.scheduler = scheduler;
+    this.metrics = metrics;
     self = this;
   }
 
@@ -172,7 +175,7 @@ public class BanManagerPlugin {
     String query = "SELECT UNIX_TIMESTAMP() - ? as mysqlTime";
 
     GenericRawResults<String[]> results = playerStorage
-            .queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000L));
+        .queryRaw(query, String.valueOf(System.currentTimeMillis() / 1000L));
 
     String result = results.getFirstResult()[0];
 
@@ -189,8 +192,20 @@ public class BanManagerPlugin {
 
     if (timeDiff > 1) {
       logger
-              .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
+          .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
     }
+
+    metrics.submitStorageType(config.getLocalDb().getStorageType());
+    metrics.submitDiscordMode(discordConfig.isEnabled());
+    metrics.submitGeoMode(geoIpConfig.isEnabled());
+    metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
+    metrics.submitOnlineMode(config.isOnlineMode());
+
+    // Get database version
+    GenericRawResults<String[]> results2 = playerStorage
+        .queryRaw("SELECT VERSION()");
+
+    metrics.submitStorageVersion(results2.getFirstResult()[0]);
   }
 
   public final void disable() {
@@ -332,62 +347,62 @@ public class BanManagerPlugin {
   }
 
   public CommonCommand[] getCommands() {
-    return new CommonCommand[] {
-            new ActivityCommand(this),
-            new AddNoteCommand(this),
-            new BanCommand(this),
-            new BanIpCommand(this),
-            new BanIpRangeCommand(this),
-            new BanListCommand(this),
-            new BanNameCommand(this),
-            new ClearCommand(this),
-            new DeleteCommand(this),
-            new DeleteLastWarningCommand(this),
-            new ExportCommand(this),
-            new FindAltsCommand(this),
-            new InfoCommand(this),
-            new ImportCommand(this),
-            new KickCommand(this),
-            new LoglessKickCommand(this),
-            new MuteCommand(this),
-            new MuteIpCommand(this),
-            new NotesCommand(this),
-            new ReasonsCommand(this),
-            new ReloadCommand(this),
-            new ReportCommand(this),
-            new ReportsCommand(this),
-            new RollbackCommand(this),
-            new SyncCommand(this),
-            new TempBanCommand(this),
-            new TempIpBanCommand(this),
-            new TempIpMuteCommand(this),
-            new TempIpRangeBanCommand(this),
-            new TempMuteCommand(this),
-            new TempNameBanCommand(this),
-            new TempWarnCommand(this),
-            new UnbanCommand(this),
-            new UnbanIpCommand(this),
-            new UnbanIpRangeCommand(this),
-            new UnbanNameCommand(this),
-            new UnmuteCommand(this),
-            new UnmuteIpCommand(this),
-            new UtilsCommand(this),
-            new WarnCommand(this)
+    return new CommonCommand[]{
+        new ActivityCommand(this),
+        new AddNoteCommand(this),
+        new BanCommand(this),
+        new BanIpCommand(this),
+        new BanIpRangeCommand(this),
+        new BanListCommand(this),
+        new BanNameCommand(this),
+        new ClearCommand(this),
+        new DeleteCommand(this),
+        new DeleteLastWarningCommand(this),
+        new ExportCommand(this),
+        new FindAltsCommand(this),
+        new InfoCommand(this),
+        new ImportCommand(this),
+        new KickCommand(this),
+        new LoglessKickCommand(this),
+        new MuteCommand(this),
+        new MuteIpCommand(this),
+        new NotesCommand(this),
+        new ReasonsCommand(this),
+        new ReloadCommand(this),
+        new ReportCommand(this),
+        new ReportsCommand(this),
+        new RollbackCommand(this),
+        new SyncCommand(this),
+        new TempBanCommand(this),
+        new TempIpBanCommand(this),
+        new TempIpMuteCommand(this),
+        new TempIpRangeBanCommand(this),
+        new TempMuteCommand(this),
+        new TempNameBanCommand(this),
+        new TempWarnCommand(this),
+        new UnbanCommand(this),
+        new UnbanIpCommand(this),
+        new UnbanIpRangeCommand(this),
+        new UnbanNameCommand(this),
+        new UnmuteCommand(this),
+        new UnmuteIpCommand(this),
+        new UtilsCommand(this),
+        new WarnCommand(this)
     };
   }
 
   public CommonCommand[] getGlobalCommands() {
-    return new CommonCommand[] {
-            new AddNoteAllCommand(this),
-            new BanAllCommand(this),
-            new BanIpAllCommand(this),
-            new MuteAllCommand(this),
-            new TempBanAllCommand(this),
-            new TempBanIpAllCommand(this),
-            new TempMuteAllCommand(this),
-            new UnbanAllCommand(this),
-            new UnbanIpAllCommand(this),
-            new UnmuteAllCommand(this)
+    return new CommonCommand[]{
+        new AddNoteAllCommand(this),
+        new BanAllCommand(this),
+        new BanIpAllCommand(this),
+        new MuteAllCommand(this),
+        new TempBanAllCommand(this),
+        new TempBanIpAllCommand(this),
+        new TempMuteAllCommand(this),
+        new UnbanAllCommand(this),
+        new UnbanIpAllCommand(this),
+        new UnmuteAllCommand(this)
     };
   }
 

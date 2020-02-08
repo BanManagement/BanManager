@@ -17,7 +17,7 @@ public abstract class BasePluginTest {
   @Before
   public void setup() {
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer());
+    plugin = new BanManagerPlugin(setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer(), new TestMetrics());
 
     try {
       plugin.enable();
