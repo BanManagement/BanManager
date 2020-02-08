@@ -151,6 +151,10 @@
                                     <pattern>org.yaml.snakeyaml</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.snakeyaml</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>inet.ipaddr</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.ipaddr</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
