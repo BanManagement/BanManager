@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
+import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -38,6 +39,7 @@ public class BMSpongePlugin {
 
   private CommonLogger logger;
   private BanManagerPlugin plugin;
+  private final Metrics2 metrics;
 
   @Inject
   @ConfigDir(sharedRoot = false)
@@ -58,8 +60,9 @@ public class BMSpongePlugin {
   };
 
   @Inject
-  public BMSpongePlugin(Logger logger) {
+  public BMSpongePlugin(Logger logger, Metrics2.Factory metricsFactory) {
     this.logger = new PluginLogger(logger);
+    metrics = metricsFactory.make(6413);
   }
 
   @Listener
@@ -80,7 +83,7 @@ public class BMSpongePlugin {
       return;
     }
 
-    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), new SpongeScheduler(this), server);
+    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), new SpongeScheduler(this), server, new SpongeMetrics(metrics));
 
     server.enable(plugin);
 
@@ -91,6 +94,8 @@ public class BMSpongePlugin {
       e.printStackTrace();
       return;
     }
+
+
 
     setupListeners();
     setupCommands();
