@@ -179,7 +179,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-    plugin.getServer().callEvent("PlayerMutedEvent", mute, plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("PlayerMutedEvent", mute, !plugin.getConfig().isBroadcastOnSync());
   }
 
   public boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {

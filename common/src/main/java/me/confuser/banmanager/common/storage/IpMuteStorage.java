@@ -137,7 +137,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   public void addMute(IpMuteData mute) {
     mutes.put(mute.getIp().toString(), mute);
 
-    plugin.getServer().callEvent("IpMutedEvent", mute, plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("IpMutedEvent", mute, !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeMute(IpMuteData mute) {
