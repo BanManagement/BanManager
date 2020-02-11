@@ -143,7 +143,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   public void addBan(IpBanData ban) {
     bans.put(ban.getIp().toString(), ban);
 
-    plugin.getServer().callEvent("IpBannedEvent", ban, plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("IpBannedEvent", ban, !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(IpBanData ban) {
