@@ -75,6 +75,6 @@ public class GlobalIpBanData {
   }
 
   public IpBanData toLocal(BanManagerPlugin plugin) throws SQLException {
-    return new IpBanData(ip, getActor(plugin), reason, expires, created);
+    return new IpBanData(ip, getActor(plugin), reason, false, expires, created);
   }
 }

@@ -54,7 +54,7 @@ public class GlobalIpSync extends BmRunnable {
           localBanStorage.removeBan(ban.getIp());
         }
 
-        localBanStorage.ban(localBan, false);
+        localBanStorage.ban(localBan);
 
         plugin.getScheduler().runSync(() -> {
           Message kickMessage = Message.get("banip.ip.kick").set("reason", localBan.getReason())
