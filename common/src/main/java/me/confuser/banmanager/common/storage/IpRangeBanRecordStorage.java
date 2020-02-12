@@ -20,7 +20,7 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
 
   public IpRangeBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanRecord>) plugin.getConfig().getLocalDb()
-                                                                               .getTable("ipRangeBanRecords"));
+        .getTable("ipRangeBanRecords"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -34,6 +34,11 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
 
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "fromIp");
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "toIp");
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
   }
 
