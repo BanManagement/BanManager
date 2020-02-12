@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.commands;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
+import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.util.IPUtils;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
@@ -52,7 +54,7 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     String[] args = new String[]{ip.toString(), "test"};
 
-    assert plugin.getIpRangeBanStorage().ban(new IpRangeBanData(ip.getLower(), ip.getUpper(), sender.getData(), args[1]), true);
+    assert plugin.getIpRangeBanStorage().ban(new IpRangeBanData(ip.getLower(), ip.getUpper(), sender.getData(), args[1], true));
 
     when(sender.hasPermission(cmd.getPermission() + ".override")).thenReturn(false);
 
@@ -70,7 +72,7 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldBanPlayer() {
+  public void shouldBanRange() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Cidr());
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
@@ -79,5 +81,12 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
     await().until(() -> plugin.getIpRangeBanStorage().isBanned(ip.getUpper()));
+    IpRangeBanData ban = plugin.getIpRangeBanStorage().getBan(ip.getUpper());
+
+    assertEquals(ip.getLower(), ban.getFromIp());
+    assertEquals(ip.getUpper(), ban.getToIp());
+    assertEquals("test", ban.getReason());
+    assertEquals(sender.getName(), ban.getActor().getName());
+    assertFalse(ban.isSilent());
   }
 }

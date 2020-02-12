@@ -20,8 +20,8 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
 
   public PlayerMuteRecordStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerMuteRecord>) plugin.getConfig()
-                                                                               .getLocalDb()
-                                                                               .getTable("playerMuteRecords"));
+        .getLocalDb()
+        .getTable("playerMuteRecords"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -29,9 +29,13 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
       // Attempt to add new columns
       try {
         String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255), "
-                + " ADD COLUMN `soft` TINYINT(1)," +
-                " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
+            + " ADD COLUMN `soft` TINYINT(1)," +
+            " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
         executeRawNoArgs(update);
+      } catch (SQLException e) {
+      }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
       } catch (SQLException e) {
       }
     }
@@ -71,7 +75,7 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
     if (cleanup.getDays() == 0) return;
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-            "INTERVAL " + cleanup.getDays() + " DAY))");
+        "INTERVAL " + cleanup.getDays() + " DAY))");
   }
 
   public int deleteAll(PlayerData player) throws SQLException {

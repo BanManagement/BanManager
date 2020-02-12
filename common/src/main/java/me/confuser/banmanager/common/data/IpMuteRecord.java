@@ -50,6 +50,10 @@ public class IpMuteRecord {
   @Getter
   private boolean soft = false;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   IpMuteRecord() {
 
   }
@@ -60,6 +64,7 @@ public class IpMuteRecord {
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
     createdReason = reason;
+    silent = mute.isSilent();
     soft = mute.isSoft();
 
     this.reason = mute.getReason();
@@ -72,6 +77,7 @@ public class IpMuteRecord {
     expired = mute.getExpires();
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
+    silent = mute.isSilent();
 
     this.actor = actor;
     this.created = created;

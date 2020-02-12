@@ -21,12 +21,17 @@ public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
 
   public IpMuteRecordStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<IpMuteRecord>) plugin.getConfig().getLocalDb()
-                                                                           .getTable("ipMuteRecords"));
+        .getTable("ipMuteRecords"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
   }
 
@@ -64,6 +69,6 @@ public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
     if (cleanup.getDays() == 0) return;
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-            "INTERVAL " + cleanup.getDays() + " DAY))");
+        "INTERVAL " + cleanup.getDays() + " DAY))");
   }
 }

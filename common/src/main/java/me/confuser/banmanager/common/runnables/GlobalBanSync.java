@@ -53,7 +53,7 @@ public class GlobalBanSync extends BmRunnable {
           localBanStorage.removeBan(ban.getUUID());
         }
 
-        localBanStorage.ban(localBan, false);
+        localBanStorage.ban(localBan);
 
         plugin.getScheduler().runSync(() -> {
           // TODO move into a listener

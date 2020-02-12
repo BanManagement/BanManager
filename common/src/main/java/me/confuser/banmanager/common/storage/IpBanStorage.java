@@ -43,6 +43,11 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
       TableUtils.createTable(connectionSource, tableConfig);
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -63,7 +68,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, a.id, a.name, a.ip, a.lastSeen, t.ip, t.reason,");
-    sql.append(" t.expires, t.created, t.updated");
+    sql.append(" t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -101,6 +106,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
         }
 
         IpBanData ban = new IpBanData(results.getInt(0), IPUtils.toIPAddress(results.getBytes(5)), actor, results.getString(6),
+            results.getBoolean(10),
             results.getLong(7),
             results.getLong(8),
             results.getLong(9));
@@ -143,7 +149,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   public void addBan(IpBanData ban) {
     bans.put(ban.getIp().toString(), ban);
 
-    plugin.getServer().callEvent("IpBannedEvent", ban, !plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("IpBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(IpBanData ban) {
@@ -154,8 +160,8 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     bans.remove(ip.toString());
   }
 
-  public boolean ban(IpBanData ban, boolean isSilent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpBanEvent", ban, isSilent);
+  public boolean ban(IpBanData ban) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("IpBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
       return false;

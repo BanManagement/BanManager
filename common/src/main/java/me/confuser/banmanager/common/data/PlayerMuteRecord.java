@@ -48,6 +48,10 @@ public class PlayerMuteRecord {
   @Getter
   private boolean soft = false;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   PlayerMuteRecord() {
 
   }
@@ -58,6 +62,7 @@ public class PlayerMuteRecord {
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
     createdReason = reason;
+    silent = mute.isSilent();
     soft = mute.isSoft();
 
     this.reason = mute.getReason();
@@ -70,6 +75,7 @@ public class PlayerMuteRecord {
     expired = mute.getExpires();
     pastActor = mute.getActor();
     pastCreated = mute.getCreated();
+    silent = mute.isSilent();
     soft = mute.isSoft();
 
     this.actor = actor;

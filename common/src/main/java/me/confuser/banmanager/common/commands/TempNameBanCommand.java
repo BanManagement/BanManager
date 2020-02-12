@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class TempNameBanCommand extends CommonCommand {
 
   public TempNameBanCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempbanname", true,2);
+    super(plugin, "tempbanname", true, 2);
   }
 
   @Override
@@ -80,14 +80,14 @@ public class TempNameBanCommand extends CommonCommand {
           }
         }
 
-        final NameBanData ban = new NameBanData(name, actor, reason, expires);
+        final NameBanData ban = new NameBanData(name, actor, reason, isSilent, expires);
         boolean created;
 
         try {
-          created = getPlugin().getNameBanStorage().ban(ban, isSilent);
+          created = getPlugin().getNameBanStorage().ban(ban);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("banname.error.exists").set("player",
-                  name));
+              name));
           return;
         }
 
@@ -98,9 +98,9 @@ public class TempNameBanCommand extends CommonCommand {
         // Find online players
         getPlugin().getScheduler().runSync(() -> {
           Message kickMessage = Message.get("tempbanname.name.kick")
-                                       .set("reason", ban.getReason())
-                                       .set("name", name)
-                                       .set("actor", actor.getName());
+              .set("reason", ban.getReason())
+              .set("name", name)
+              .set("actor", actor.getName());
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(name)) {

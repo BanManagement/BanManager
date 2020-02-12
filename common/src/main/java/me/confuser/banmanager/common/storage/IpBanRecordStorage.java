@@ -32,6 +32,10 @@ public class IpBanRecordStorage extends BaseDaoImpl<IpBanRecord, Integer> {
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
 
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }

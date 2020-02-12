@@ -47,6 +47,11 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "fromIp");
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "toIp");
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -67,7 +72,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, a.id, a.name, a.ip, a.lastSeen, t.fromIp, t.toIp, t.reason,");
-    sql.append(" t.expires, t.created, t.updated");
+    sql.append(" t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -109,6 +114,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
             IPUtils.toIPAddress(results.getBytes(6)),
             actor,
             results.getString(7),
+            results.getBoolean(11),
             results.getLong(8),
             results.getLong(9),
             results.getLong(10));
@@ -184,7 +190,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     ranges.add(range);
     bans.put(range, ban);
 
-    plugin.getServer().callEvent("IpRangeBannedEvent", ban, !plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("IpRangeBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(IpRangeBanData ban) {
@@ -196,8 +202,8 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     bans.remove(range);
   }
 
-  public boolean ban(IpRangeBanData ban, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban, silent);
+  public boolean ban(IpRangeBanData ban) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban.isSilent());
 
     if (event.isCancelled()) {
       return false;

@@ -1,13 +1,12 @@
 package me.confuser.banmanager.common.commands;
 
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.configs.ExemptionsConfig;
-import me.confuser.banmanager.common.data.IpBanData;
+import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.util.IPUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,17 +14,16 @@ import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class BanIpCommandTest extends BasePluginDbTest {
-  private BanIpCommand cmd;
+public class MuteCommandTest extends BasePluginDbTest {
+  private MuteCommand cmd;
 
   @Before
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
-      if (cmd.getCommandName().equals("banip")) {
-        this.cmd = (BanIpCommand) cmd;
+      if (cmd.getCommandName().equals("mute")) {
+        this.cmd = (MuteCommand) cmd;
         break;
       }
     }
@@ -34,7 +32,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfNoReasonGiven() {
     CommonSender sender = plugin.getServer().getConsoleSender();
-    String[] args = new String[]{faker.internet().ipV6Address()};
+    String[] args = new String[]{"confuser"};
 
     assertFalse(cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
   }
@@ -42,7 +40,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfNoSilentPermission() {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
-    String[] args = new String[]{"-s", faker.internet().ipV6Address(), "test"};
+    String[] args = new String[]{"-s", "confuser", "test"};
 
     when(sender.hasPermission(cmd.getPermission() + ".silent")).thenReturn(false);
 
@@ -60,17 +58,28 @@ public class BanIpCommandTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldFailIfAlreadyBanned() throws SQLException {
-    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
+  public void shouldFailIfAlreadyMuted() throws SQLException {
+    PlayerData player = testUtils.createRandomPlayer();
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
-    String[] args = new String[]{ip.toString(), "test"};
+    String[] args = new String[]{player.getName(), "test"};
 
-    assert plugin.getIpBanStorage().ban(new IpBanData(ip, sender.getData(), args[1], true));
+    assert plugin.getPlayerMuteStorage().mute(new PlayerMuteData(player, sender.getData(), args[1], true, false));
 
     when(sender.hasPermission(cmd.getPermission() + ".override")).thenReturn(false);
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
-    verify(sender).sendMessage("&c" + ip.toString() + " is already banned");
+    verify(sender).sendMessage("&c" + player.getName() + " is already muted");
+  }
+
+  @Test
+  public void shouldFailIfOffline() {
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    String[] args = new String[]{StringUtils.truncate(faker.name().username(), 16), "test"};
+
+    when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
+
+    assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+    verify(sender).sendMessage("&cYou are not allowed to perform this action on an offline player");
   }
 
   @Test
@@ -81,8 +90,8 @@ public class BanIpCommandTest extends BasePluginDbTest {
     CommonPlayer commonPlayer = spy(server.getPlayer(player.getName()));
     String[] args = new String[]{player.getName(), "test"};
 
-    when(sender.hasPermission("bm.exempt.override.banip")).thenReturn(false);
-    when(commonPlayer.hasPermission("bm.exempt.banip")).thenReturn(true);
+    when(sender.hasPermission("bm.exempt.override.mute")).thenReturn(false);
+    when(commonPlayer.hasPermission("bm.exempt.mute")).thenReturn(true);
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
     verify(sender).sendMessage("&c" + player.getName() + " is exempt from that action");
@@ -91,7 +100,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfNotFound() {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
-    String[] args = new String[]{testUtils.createRandomPlayerName(), "test"};
+    String[] args = new String[]{faker.internet().uuid(), "test"};
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
     verify(sender).sendMessage("&c" + args[0] + " not found, are you sure they exist?");
@@ -105,42 +114,61 @@ public class BanIpCommandTest extends BasePluginDbTest {
     ExemptionsConfig config = spy(plugin.getExemptionsConfig());
     String[] args = new String[]{player.getName(), "test"};
 
-    when(sender.hasPermission("bm.exempt.override.banip")).thenReturn(false);
-    when(config.isExempt(player, "ban")).thenReturn(true);
+    when(sender.hasPermission("bm.exempt.override.mute")).thenReturn(false);
+    when(config.isExempt(player, "mute")).thenReturn(true);
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
     verify(sender).sendMessage("&c" + player.getName() + " is exempt from that action");
   }
 
   @Test
-  public void shouldBanIp() {
-    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
+  public void shouldMutePlayer() {
+    PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
-    String[] args = new String[]{ip.toString(), "test"};
+    String[] args = new String[]{player.getName(), "test"};
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
-    await().until(() -> plugin.getIpBanStorage().isBanned(ip));
-    IpBanData ban = plugin.getIpBanStorage().getBan(ip);
+    await().until(() -> plugin.getPlayerMuteStorage().isMuted(player.getUUID()));
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUUID());
 
-    assertEquals(ip, ban.getIp());
-    assertEquals("test", ban.getReason());
-    assertEquals(sender.getName(), ban.getActor().getName());
-    assertFalse(ban.isSilent());
+    assertEquals(player.getName(), mute.getPlayer().getName());
+    assertEquals("test", mute.getReason());
+    assertEquals(sender.getName(), mute.getActor().getName());
+    assertFalse(mute.isSilent());
   }
 
   @Test
-  public void shouldBanIpSilently() {
-    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
+  public void shouldMutePlayerSoftly() {
+    PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
-    String[] args = new String[]{ip.toString(), "test", "-s"};
+    String[] args = new String[]{player.getName(), "test", "-st"};
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
-    await().until(() -> plugin.getIpBanStorage().isBanned(ip));
+    await().until(() -> plugin.getPlayerMuteStorage().isMuted(player.getUUID()));
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUUID());
 
-    assertTrue(plugin.getIpBanStorage().getBan(ip).isSilent());
+    assertEquals(player.getName(), mute.getPlayer().getName());
+    assertEquals("test", mute.getReason());
+    assertEquals(sender.getName(), mute.getActor().getName());
+    assertFalse(mute.isSilent());
+    assertTrue(mute.isSoft());
+  }
+
+  @Test
+  public void shouldMutePlayerSilently() {
+    PlayerData player = testUtils.createRandomPlayer();
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+    String[] args = new String[]{player.getName(), "test", "-s"};
+
+    assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+
+    await().until(() -> plugin.getPlayerMuteStorage().isMuted(player.getUUID()));
+
+    assertTrue(plugin.getPlayerMuteStorage().getMute(player.getUUID()).isSilent());
   }
 }

@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class BanCommandTest extends BasePluginDbTest {
@@ -63,7 +63,7 @@ public class BanCommandTest extends BasePluginDbTest {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     String[] args = new String[]{player.getName(), "test"};
 
-    assert plugin.getPlayerBanStorage().ban(new PlayerBanData(player, sender.getData(), args[1]), true);
+    assert plugin.getPlayerBanStorage().ban(new PlayerBanData(player, sender.getData(), args[1], true));
 
     when(sender.hasPermission(cmd.getPermission() + ".override")).thenReturn(false);
 
@@ -131,5 +131,25 @@ public class BanCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
     await().until(() -> plugin.getPlayerBanStorage().isBanned(player.getUUID()));
+    PlayerBanData ban = plugin.getPlayerBanStorage().getBan(player.getUUID());
+
+    assertEquals(player.getName(), ban.getPlayer().getName());
+    assertEquals("test", ban.getReason());
+    assertEquals(sender.getName(), ban.getActor().getName());
+    assertFalse(ban.isSilent());
+  }
+
+  @Test
+  public void shouldBanPlayerSilently() {
+    PlayerData player = testUtils.createRandomPlayer();
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+    String[] args = new String[]{player.getName(), "test", "-s"};
+
+    assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+
+    await().until(() -> plugin.getPlayerBanStorage().isBanned(player.getUUID()));
+
+    assertTrue(plugin.getPlayerBanStorage().getBan(player.getUUID()).isSilent());
   }
 }

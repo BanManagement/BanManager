@@ -40,6 +40,11 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       TableUtils.createTable(connectionSource, tableConfig);
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -60,7 +65,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, a.id, a.name, a.ip, a.lastSeen, t.ip, t.reason,");
-    sql.append(" t.soft, t.expires, t.created, t.updated");
+    sql.append(" t.soft, t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -90,6 +95,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
             IPUtils.toIPAddress(results.getBytes(3)),
             results.getLong(4));
         IpMuteData mute = new IpMuteData(results.getInt(0), IPUtils.toIPAddress(results.getBytes(5)), actor, results.getString(6),
+            results.getBoolean(11),
             results.getBoolean(7),
             results.getLong(8),
             results.getLong(9),
@@ -137,7 +143,7 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
   public void addMute(IpMuteData mute) {
     mutes.put(mute.getIp().toString(), mute);
 
-    plugin.getServer().callEvent("IpMutedEvent", mute, !plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("IpMutedEvent", mute, mute.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeMute(IpMuteData mute) {
@@ -148,8 +154,8 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     mutes.remove(ip);
   }
 
-  public boolean mute(IpMuteData mute, boolean isSilent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpMuteEvent", mute, isSilent);
+  public boolean mute(IpMuteData mute) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("IpMuteEvent", mute, mute.isSilent());
 
     if (event.isCancelled()) {
       return false;

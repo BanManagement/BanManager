@@ -50,6 +50,10 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -70,7 +74,7 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, p.id, p.name, p.ip, p.lastSeen, a.id, a.name, a.ip, a.lastSeen, t.reason,");
-    sql.append(" t.soft, t.expires, t.created, t.updated");
+    sql.append(" t.soft, t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -121,9 +125,13 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
           continue;
         }
 
-        PlayerMuteData mute = new PlayerMuteData(results.getInt(0), player, actor, results.getString(9), results
-            .getBoolean(10), results.getLong(11),
-            results.getLong(12), results.getLong(13));
+        PlayerMuteData mute = new PlayerMuteData(results.getInt(0), player, actor,
+            results.getString(9),
+            results.getBoolean(14),
+            results.getBoolean(10),
+            results.getLong(11),
+            results.getLong(12),
+            results.getLong(13));
 
         mutes.put(mute.getPlayer().getUUID(), mute);
       }
@@ -179,11 +187,11 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-    plugin.getServer().callEvent("PlayerMutedEvent", mute, !plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("PlayerMutedEvent", mute, mute.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
-  public boolean mute(PlayerMuteData mute, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, silent);
+  public boolean mute(PlayerMuteData mute) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, mute.isSilent());
 
     if (event.isCancelled()) {
       return false;
