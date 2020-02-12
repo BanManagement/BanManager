@@ -134,11 +134,11 @@ public class TempBanCommand extends CommonCommand {
           }
         }
 
-        final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage(), expires);
+        final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage(), isSilent, expires);
         boolean created;
 
         try {
-          created = getPlugin().getPlayerBanStorage().ban(ban, isSilent);
+          created = getPlugin().getPlayerBanStorage().ban(ban);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("ban.error.exists").set("player",
               playerName));

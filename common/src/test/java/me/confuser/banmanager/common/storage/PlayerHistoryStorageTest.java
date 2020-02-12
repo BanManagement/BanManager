@@ -56,7 +56,7 @@ public class PlayerHistoryStorageTest extends BasePluginDbTest {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerHistoryStorage storage = plugin.getPlayerHistoryStorage();
     PlayerHistoryData data = new PlayerHistoryData(player);
-    IpBanData banData = new IpBanData(player.getIp(), player, "test");
+    IpBanData banData = new IpBanData(player.getIp(), player, "test", false);
     long leaveTime = (System.currentTimeMillis() / 1000L) - (86401 * 30);
 
     data.setLeave(leaveTime);

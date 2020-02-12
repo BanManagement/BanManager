@@ -14,7 +14,8 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class BanIpCommandTest extends BasePluginDbTest {
@@ -64,7 +65,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     String[] args = new String[]{ip.toString(), "test"};
 
-    assert plugin.getIpBanStorage().ban(new IpBanData(ip, sender.getData(), args[1]), true);
+    assert plugin.getIpBanStorage().ban(new IpBanData(ip, sender.getData(), args[1], true));
 
     when(sender.hasPermission(cmd.getPermission() + ".override")).thenReturn(false);
 
@@ -112,7 +113,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldBanPlayer() {
+  public void shouldBanIp() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
@@ -121,5 +122,25 @@ public class BanIpCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
     await().until(() -> plugin.getIpBanStorage().isBanned(ip));
+    IpBanData ban = plugin.getIpBanStorage().getBan(ip);
+
+    assertEquals(ip, ban.getIp());
+    assertEquals("test", ban.getReason());
+    assertEquals(sender.getName(), ban.getActor().getName());
+    assertFalse(ban.isSilent());
+  }
+
+  @Test
+  public void shouldBanIpSilently() {
+    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+    String[] args = new String[]{ip.toString(), "test", "-s"};
+
+    assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+
+    await().until(() -> plugin.getIpBanStorage().isBanned(ip));
+
+    assertTrue(plugin.getIpBanStorage().getBan(ip).isSilent());
   }
 }

@@ -91,11 +91,11 @@ public class BanIpCommand extends CommonCommand {
         }
       }
 
-      final IpBanData ban = new IpBanData(ip, actor, parser.getReason().getMessage());
+      final IpBanData ban = new IpBanData(ip, actor, parser.getReason().getMessage(), isSilent);
       boolean created;
 
       try {
-        created = getPlugin().getIpBanStorage().ban(ban, isSilent);
+        created = getPlugin().getIpBanStorage().ban(ban);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
             ipStr));

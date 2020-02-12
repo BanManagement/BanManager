@@ -109,11 +109,11 @@ public class TempIpBanCommand extends CommonCommand {
           }
         }
 
-        final IpBanData ban = new IpBanData(ip, actor, reason, expires);
+        final IpBanData ban = new IpBanData(ip, actor, reason, isSilent, expires);
         boolean created;
 
         try {
-          created = getPlugin().getIpBanStorage().ban(ban, isSilent);
+          created = getPlugin().getIpBanStorage().ban(ban);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
               ipStr));

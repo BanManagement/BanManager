@@ -35,37 +35,42 @@ public class IpBanData {
   @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
   private long expires = 0;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   IpBanData() {
 
   }
 
-  public IpBanData(IPAddress ip, PlayerData actor, String reason) {
+  public IpBanData(IPAddress ip, PlayerData actor, String reason, boolean silent) {
     this.ip = ip;
     this.reason = reason;
     this.actor = actor;
+    this.silent = silent;
   }
 
-  public IpBanData(IPAddress ip, PlayerData actor, String reason, long expires) {
-    this(ip, actor, reason);
+  public IpBanData(IPAddress ip, PlayerData actor, String reason, boolean silent, long expires) {
+    this(ip, actor, reason, silent);
 
     this.expires = expires;
   }
 
-  public IpBanData(IPAddress ip, PlayerData actor, String reason, long expires, long created) {
-    this(ip, actor, reason, expires);
+  public IpBanData(IPAddress ip, PlayerData actor, String reason, boolean silent, long expires, long created) {
+    this(ip, actor, reason, silent, expires);
 
     this.created = created;
   }
 
-  public IpBanData(int id, IPAddress ip, PlayerData actor, String reason, long expires, long created, long updated) {
-    this(ip, actor, reason, expires, created);
+  public IpBanData(int id, IPAddress ip, PlayerData actor, String reason, boolean silent, long expires, long created, long updated) {
+    this(ip, actor, reason, silent, expires, created);
 
     this.id = id;
     this.updated = updated;
   }
 
   public IpBanData(IpBanRecord record) {
-    this(record.getIp(), record.getPastActor(), record.getReason(), record.getExpired(), record.getPastCreated());
+    this(record.getIp(), record.getPastActor(), record.getReason(), record.isSilent(), record.getExpired(), record.getPastCreated());
   }
 
   public boolean hasExpired() {

@@ -143,11 +143,11 @@ public class TempMuteCommand extends CommonCommand {
           }
         }
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSoft, expires);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, expires);
         boolean created;
 
         try {
-          created = getPlugin().getPlayerMuteStorage().mute(mute, isSilent);
+          created = getPlugin().getPlayerMuteStorage().mute(mute);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
                   playerName));
