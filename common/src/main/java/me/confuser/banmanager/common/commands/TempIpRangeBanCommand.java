@@ -70,11 +70,11 @@ public class TempIpRangeBanCommand extends CommonCommand {
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData actor = sender.getData();
-      final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason, expires);
+      final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason, isSilent, expires);
       boolean created;
 
       try {
-        created = getPlugin().getIpRangeBanStorage().ban(ban, isSilent);
+        created = getPlugin().getIpRangeBanStorage().ban(ban);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("baniprange.error.exists"));
         return;

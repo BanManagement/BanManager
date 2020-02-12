@@ -50,7 +50,7 @@ public class GlobalMuteSync extends BmRunnable {
           localMuteStorage.removeMute(mute.getUUID());
         }
 
-        localMuteStorage.mute(localMute, false);
+        localMuteStorage.mute(localMute);
 
       }
     } catch (SQLException e) {

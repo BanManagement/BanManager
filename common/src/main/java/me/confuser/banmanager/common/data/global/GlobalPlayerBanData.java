@@ -103,6 +103,6 @@ public class GlobalPlayerBanData {
   }
 
   public PlayerBanData toLocal(BanManagerPlugin plugin) throws SQLException {
-    return new PlayerBanData(getPlayer(plugin), getActor(plugin), reason, expires, created);
+    return new PlayerBanData(getPlayer(plugin), getActor(plugin), reason, false, expires, created);
   }
 }

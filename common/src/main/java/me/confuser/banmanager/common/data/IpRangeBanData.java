@@ -43,31 +43,36 @@ public class IpRangeBanData {
   @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
   private long expires = 0;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   IpRangeBanData() {
 
   }
 
-  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason) {
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, boolean silent) {
     this.fromIp = fromIp;
     this.toIp = toIp;
     this.reason = reason;
     this.actor = actor;
+    this.silent = silent;
   }
 
-  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires) {
-    this(fromIp, toIp, actor, reason);
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, boolean silent, long expires) {
+    this(fromIp, toIp, actor, reason, silent);
 
     this.expires = expires;
   }
 
-  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires, long created) {
-    this(fromIp, toIp, actor, reason, expires);
+  public IpRangeBanData(IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, boolean silent, long expires, long created) {
+    this(fromIp, toIp, actor, reason, silent, expires);
 
     this.created = created;
   }
 
-  public IpRangeBanData(int id, IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, long expires, long created, long updated) {
-    this(fromIp, toIp, actor, reason, expires, created);
+  public IpRangeBanData(int id, IPAddress fromIp, IPAddress toIp, PlayerData actor, String reason, boolean silent, long expires, long created, long updated) {
+    this(fromIp, toIp, actor, reason, silent, expires, created);
 
     this.id = id;
     this.updated = updated;

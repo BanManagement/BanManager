@@ -35,6 +35,11 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
       return;
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -55,7 +60,7 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, t.name, a.id, a.name, a.ip, a.lastSeen, t.reason,");
-    sql.append(" t.expires, t.created, t.updated");
+    sql.append(" t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -92,8 +97,14 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
           continue;
         }
 
-        NameBanData ban = new NameBanData(results.getInt(0), results.getString(1), actor, results.getString(6), results
-            .getLong(7), results.getLong(8), results.getLong(9));
+        NameBanData ban = new NameBanData(results.getInt(0),
+            results.getString(1),
+            actor,
+            results.getString(6),
+            results.getBoolean(10),
+            results.getLong(7),
+            results.getLong(8),
+            results.getLong(9));
 
         bans.put(ban.getName().toLowerCase(), ban);
       }
@@ -130,8 +141,8 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
     return bans.get(playerName.toLowerCase());
   }
 
-  public boolean ban(NameBanData ban, boolean isSilent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("NameBanEvent", ban, isSilent);
+  public boolean ban(NameBanData ban) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("NameBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
       return false;

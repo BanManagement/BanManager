@@ -478,12 +478,13 @@ public class JoinListener {
         if (ban == null) continue;
         if (ban.hasExpired()) continue;
 
-        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-            , plugin.getPlayerStorage().getConsole()
-            , ban.getReason()
-            , ban.getExpires());
+        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
+            plugin.getPlayerStorage().getConsole(),
+            ban.getReason(),
+            ban.isSilent(),
+            ban.getExpires());
 
-        plugin.getPlayerBanStorage().ban(newBan, false);
+        plugin.getPlayerBanStorage().ban(newBan);
 
         plugin.getScheduler().runSync(() -> {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
@@ -509,13 +510,14 @@ public class JoinListener {
         if (mute == null) continue;
         if (mute.hasExpired()) continue;
 
-        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-            , plugin.getPlayerStorage().getConsole()
-            , mute.getReason()
-            , mute.isSoft()
-            , mute.getExpires());
+        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
+            plugin.getPlayerStorage().getConsole(),
+            mute.getReason(),
+            mute.isSilent(),
+            mute.isSoft(),
+            mute.getExpires());
 
-        plugin.getPlayerMuteStorage().mute(newMute, false);
+        plugin.getPlayerMuteStorage().mute(newMute);
       }
     }
   }

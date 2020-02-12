@@ -31,10 +31,10 @@ public class JoinListener implements Listener {
 
   // Used for throttling attempted join messages
   Cache<String, Long> joinCache = CacheBuilder.newBuilder()
-                                              .expireAfterWrite(1, TimeUnit.MINUTES)
-                                              .concurrencyLevel(2)
-                                              .maximumSize(100)
-                                              .build();
+      .expireAfterWrite(1, TimeUnit.MINUTES)
+      .concurrencyLevel(2)
+      .maximumSize(100)
+      .build();
   private BanManagerPlugin plugin;
 
   public JoinListener(BanManagerPlugin plugin) {
@@ -258,23 +258,23 @@ public class JoinListener implements Listener {
           PlayerNoteData note = notesItr.next();
 
           Message noteMessage = Message.get("notes.note")
-                                       .set("player", note.getActor().getName())
-                                       .set("message", note.getMessage())
-                                       .set("created", dateFormatter.format(note.getCreated() * 1000L));
+              .set("player", note.getActor().getName())
+              .set("message", note.getMessage())
+              .set("created", dateFormatter.format(note.getCreated() * 1000L));
 
           notes.add(noteMessage.toString());
         }
 
         if (notes.size() != 0) {
           Message noteJoinMessage = Message.get("notes.joinAmount")
-                                           .set("amount", notes.size())
-                                           .set("player", event.getPlayer().getName());
+              .set("amount", notes.size())
+              .set("player", event.getPlayer().getName());
 
           plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(event.getPlayer().getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
           String header = Message.get("notes.header")
-                                 .set("player", event.getPlayer().getName())
-                                 .toString();
+              .set("player", event.getPlayer().getName())
+              .toString();
 
           plugin.getServer().broadcast(header, "bm.notify.notes.join");
 
@@ -297,11 +297,11 @@ public class JoinListener implements Listener {
           PlayerWarnData warning = warnings.next();
 
           Message.get("warn.player.warned")
-                 .set("displayName", event.getPlayer().getDisplayName())
-                 .set("player", event.getPlayer().getName())
-                 .set("reason", warning.getReason())
-                 .set("actor", warning.getActor().getName())
-                 .sendTo(plugin.getServer().getPlayer(event.getPlayer().getUniqueId()));
+              .set("displayName", event.getPlayer().getDisplayName())
+              .set("player", event.getPlayer().getName())
+              .set("reason", warning.getReason())
+              .set("actor", warning.getActor().getName())
+              .sendTo(plugin.getServer().getPlayer(event.getPlayer().getUniqueId()));
 
           warning.setRead(true);
           // TODO Move to one update query to set all warnings for player to read
@@ -352,8 +352,8 @@ public class JoinListener implements Listener {
 
         if (!plugin.getGeoIpConfig().isCountryAllowed(countryResponse)) {
           Message message = Message.get("deniedCountry")
-                                   .set("country", countryResponse.getCountry().getName())
-                                   .set("countryIso", countryResponse.getCountry().getIsoCode());
+              .set("country", countryResponse.getCountry().getName())
+              .set("countryIso", countryResponse.getCountry().getIsoCode());
           event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message.toString());
           return;
         }
@@ -453,9 +453,9 @@ public class JoinListener implements Listener {
         CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(uuid);
 
         Message kickMessage = Message.get("denyalts.player.disallowed")
-                                     .set("player", player.getName())
-                                     .set("reason", ban.getReason())
-                                     .set("actor", ban.getActor().getName());
+            .set("player", player.getName())
+            .set("reason", ban.getReason())
+            .set("actor", ban.getActor().getName());
 
         bukkitPlayer.kick(kickMessage.toString());
       });
@@ -476,21 +476,22 @@ public class JoinListener implements Listener {
         if (ban == null) continue;
         if (ban.hasExpired()) continue;
 
-        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-                , plugin.getPlayerStorage().getConsole()
-                , ban.getReason()
-                , ban.getExpires());
+        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
+            plugin.getPlayerStorage().getConsole(),
+            ban.getReason(),
+            ban.isSilent(),
+            ban.getExpires());
 
-        plugin.getPlayerBanStorage().ban(newBan, false);
+        plugin.getPlayerBanStorage().ban(newBan);
 
         plugin.getScheduler().runSync(() -> {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
 
           Message kickMessage = Message.get("ban.player.kick")
-                                       .set("displayName", bukkitPlayer.getDisplayName())
-                                       .set("player", newBan.getPlayer().getName())
-                                       .set("reason", newBan.getReason())
-                                       .set("actor", newBan.getActor().getName());
+              .set("displayName", bukkitPlayer.getDisplayName())
+              .set("player", newBan.getPlayer().getName())
+              .set("reason", newBan.getReason())
+              .set("actor", newBan.getActor().getName());
 
           bukkitPlayer.kick(kickMessage.toString());
         });
@@ -507,13 +508,14 @@ public class JoinListener implements Listener {
         if (mute == null) continue;
         if (mute.hasExpired()) continue;
 
-        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-                , plugin.getPlayerStorage().getConsole()
-                , mute.getReason()
-                , mute.isSoft()
-                , mute.getExpires());
+        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
+            plugin.getPlayerStorage().getConsole(),
+            mute.getReason(),
+            mute.isSilent(),
+            mute.isSoft(),
+            mute.getExpires());
 
-        plugin.getPlayerMuteStorage().mute(newMute, false);
+        plugin.getPlayerMuteStorage().mute(newMute);
       }
     }
   }

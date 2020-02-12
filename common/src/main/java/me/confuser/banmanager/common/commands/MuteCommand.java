@@ -122,11 +122,11 @@ public class MuteCommand extends CommonCommand {
           }
         }
 
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSoft);
+        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft);
         boolean created;
 
         try {
-          created = getPlugin().getPlayerMuteStorage().mute(mute, isSilent);
+          created = getPlugin().getPlayerMuteStorage().mute(mute);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
               playerName));
@@ -151,7 +151,6 @@ public class MuteCommand extends CommonCommand {
             .set("actor", actor.getName());
 
         commonPlayer.sendMessage(muteMessage.toString());
-
       }
 
     });

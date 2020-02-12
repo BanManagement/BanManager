@@ -37,31 +37,36 @@ public class NameBanData {
   @Getter
   private long expires = 0;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   NameBanData() {
 
   }
 
-  public NameBanData(String name, PlayerData actor, String reason) {
+  public NameBanData(String name, PlayerData actor, String reason, boolean silent) {
     this.name = name;
     this.reason = reason;
     this.actor = actor;
+    this.silent = silent;
   }
 
-  public NameBanData(String name, PlayerData actor, String reason, long expires) {
-    this(name, actor, reason);
+  public NameBanData(String name, PlayerData actor, String reason, boolean silent, long expires) {
+    this(name, actor, reason, silent);
 
     this.expires = expires;
   }
 
   // Only use for imports!
-  public NameBanData(String name, PlayerData actor, String reason, long expires, long created) {
-    this(name, actor, reason, expires);
+  public NameBanData(String name, PlayerData actor, String reason, boolean silent, long expires, long created) {
+    this(name, actor, reason, silent, expires);
 
     this.created = created;
   }
 
-  public NameBanData(int id, String name, PlayerData actor, String reason, long expires, long created, long updated) {
-    this(name, actor, reason, expires, created);
+  public NameBanData(int id, String name, PlayerData actor, String reason, boolean silent, long expires, long created, long updated) {
+    this(name, actor, reason, silent, expires, created);
 
     this.id = id;
     this.updated = updated;

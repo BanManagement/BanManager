@@ -37,6 +37,11 @@ public class MuteIpCommand extends CommonCommand {
       return false;
     }
 
+    if (parser.args[0].equalsIgnoreCase(sender.getName())) {
+      sender.sendMessage(Message.getString("sender.error.noSelf"));
+      return true;
+    }
+
     final String ipStr = parser.args[0];
     final boolean isName = !InetAddresses.isInetAddress(ipStr);
 
@@ -96,11 +101,11 @@ public class MuteIpCommand extends CommonCommand {
         }
       }
 
-      final IpMuteData mute = new IpMuteData(ip, actor, reason, isSoft);
+      final IpMuteData mute = new IpMuteData(ip, actor, reason, isSilent, isSoft);
       boolean created;
 
       try {
-        created = getPlugin().getIpMuteStorage().mute(mute, isSilent);
+        created = getPlugin().getIpMuteStorage().mute(mute);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("muteip.error.exists").set("ip",
             ipStr));

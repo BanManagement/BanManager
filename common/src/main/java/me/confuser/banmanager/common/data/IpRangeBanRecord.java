@@ -51,6 +51,10 @@ public class IpRangeBanRecord {
   @Getter
   private String createdReason;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   IpRangeBanRecord() {
 
   }
@@ -62,6 +66,7 @@ public class IpRangeBanRecord {
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
     createdReason = reason;
+    silent = ban.isSilent();
 
     this.reason = ban.getReason();
     this.actor = actor;

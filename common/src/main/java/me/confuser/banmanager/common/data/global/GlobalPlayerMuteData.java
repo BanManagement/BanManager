@@ -107,6 +107,6 @@ public class GlobalPlayerMuteData {
   }
 
   public PlayerMuteData toLocal(BanManagerPlugin plugin) throws SQLException {
-    return new PlayerMuteData(getPlayer(plugin), getActor(plugin), reason, soft, expires, created);
+    return new PlayerMuteData(getPlayer(plugin), getActor(plugin), reason, false, soft, expires, created);
   }
 }

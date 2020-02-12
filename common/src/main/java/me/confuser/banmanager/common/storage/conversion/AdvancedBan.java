@@ -104,10 +104,10 @@ public class AdvancedBan implements IConverter {
             continue;
           }
 
-          PlayerBanData data = new PlayerBanData(playerData, actor, reason, expires, created);
+          PlayerBanData data = new PlayerBanData(playerData, actor, reason, true, expires, created);
 
           if (!plugin.getPlayerBanStorage().isBanned(playerData.getUUID())) {
-            plugin.getPlayerBanStorage().ban(data, true);
+            plugin.getPlayerBanStorage().ban(data);
           }
         } else if (type.equalsIgnoreCase("MUTE") || type.equalsIgnoreCase("TEMP_MUTE")) {
           PlayerData playerData = plugin.getPlayerStorage().retrieve(name, true);
@@ -117,10 +117,10 @@ public class AdvancedBan implements IConverter {
             continue;
           }
 
-          PlayerMuteData data = new PlayerMuteData(playerData, actor, reason, false, expires, created);
+          PlayerMuteData data = new PlayerMuteData(playerData, actor, reason, true, false, expires, created);
 
           if (!plugin.getPlayerMuteStorage().isMuted(playerData.getUUID())) {
-            plugin.getPlayerMuteStorage().mute(data, true);
+            plugin.getPlayerMuteStorage().mute(data);
           }
         } else if (type.equalsIgnoreCase("IP_BAN") || type.equalsIgnoreCase("TEMP_IP_BAN")) {
           IPAddress ip = BanIpCommand.getIp(uuid);
@@ -130,10 +130,10 @@ public class AdvancedBan implements IConverter {
             continue;
           }
 
-          IpBanData data = new IpBanData(ip, actor, reason, expires, created);
+          IpBanData data = new IpBanData(ip, actor, reason, true, expires, created);
 
           if (!plugin.getIpBanStorage().isBanned(ip)) {
-            plugin.getIpBanStorage().ban(data, true);
+            plugin.getIpBanStorage().ban(data);
           }
         } else if (type.equalsIgnoreCase("WARNING") || type.equalsIgnoreCase("TEMP_WARNING")) {
           PlayerData playerData = plugin.getPlayerStorage().retrieve(name, true);

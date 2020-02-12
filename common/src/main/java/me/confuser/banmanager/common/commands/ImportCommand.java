@@ -182,7 +182,7 @@ public class ImportCommand extends CommonCommand {
           getPlugin().getPlayerStorage().create(player);
         }
 
-        PlayerBanData ban = new PlayerBanData(player, actor, reason, expires, created);
+        PlayerBanData ban = new PlayerBanData(player, actor, reason, false, expires, created);
         try {
           getPlugin().getPlayerBanStorage().create(ban);
         } catch (SQLException e) {
@@ -286,7 +286,7 @@ public class ImportCommand extends CommonCommand {
           continue;
         }
 
-        IpBanData ban = new IpBanData(ip, actor, reason, expires, created);
+        IpBanData ban = new IpBanData(ip, actor, reason, false, expires, created);
         try {
           getPlugin().getIpBanStorage().create(ban);
         } catch (SQLException e) {
