@@ -59,11 +59,11 @@ public class BanNameCommand extends CommonCommand {
         }
       }
 
-      final NameBanData ban = new NameBanData(name, actor, reason.getMessage());
+      final NameBanData ban = new NameBanData(name, actor, reason.getMessage(), isSilent);
       boolean created;
 
       try {
-        created = getPlugin().getNameBanStorage().ban(ban, isSilent);
+        created = getPlugin().getNameBanStorage().ban(ban);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banname.error.exists").set("name",
             name));

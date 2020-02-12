@@ -44,6 +44,10 @@ public class NameBanRecord {
   @Getter
   private String createdReason;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   NameBanRecord() {
 
   }
@@ -54,6 +58,7 @@ public class NameBanRecord {
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
     createdReason = reason;
+    silent = ban.isSilent();
 
     this.reason = ban.getReason();
     this.actor = actor;
@@ -66,15 +71,17 @@ public class NameBanRecord {
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
 
+    silent = ban.isSilent();
+
     this.actor = actor;
     this.created = created;
   }
 
   public boolean equalsBan(NameBanData ban) {
     return ban.getReason().equals(this.reason)
-            && ban.getExpires() == expired
-            && ban.getCreated() == this.pastCreated
-            && ban.getName().equals(this.getName())
-            && ban.getActor().getUUID().equals(this.pastActor.getUUID());
+        && ban.getExpires() == expired
+        && ban.getCreated() == this.pastCreated
+        && ban.getName().equals(this.getName())
+        && ban.getActor().getUUID().equals(this.pastActor.getUUID());
   }
 }
