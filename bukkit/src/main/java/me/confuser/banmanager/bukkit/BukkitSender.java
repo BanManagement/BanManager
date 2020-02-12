@@ -35,7 +35,7 @@ public class BukkitSender implements CommonSender {
 
   @Override
   public void sendMessage(Message message) {
-    sender.sendMessage(message.toString());
+    sendMessage(message.toString());
   }
 
   @Override
