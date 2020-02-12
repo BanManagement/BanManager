@@ -38,36 +38,41 @@ public class IpMuteData {
   @Getter
   private boolean soft = false;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   IpMuteData() {
 
   }
 
-  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean soft) {
+  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean silent, boolean soft) {
     this.ip = ip;
     this.actor = actor;
     this.reason = reason;
+    this.silent = silent;
     this.soft = soft;
   }
 
-  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean soft, long expires) {
-    this(ip, actor, reason, soft);
+  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean silent, boolean soft, long expires) {
+    this(ip, actor, reason, silent, soft);
     this.expires = expires;
   }
 
-  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean soft, long expires, long created) {
-    this(ip, actor, reason, soft, expires);
+  public IpMuteData(IPAddress ip, PlayerData actor, String reason, boolean silent, boolean soft, long expires, long created) {
+    this(ip, actor, reason, silent, soft, expires);
     this.created = created;
   }
 
-  public IpMuteData(int id, IPAddress ip, PlayerData actor, String reason, boolean soft, long expires, long created, long updated) {
-    this(ip, actor, reason, soft, expires, created);
+  public IpMuteData(int id, IPAddress ip, PlayerData actor, String reason, boolean silent, boolean soft, long expires, long created, long updated) {
+    this(ip, actor, reason, silent, soft, expires, created);
 
     this.id = id;
     this.updated = updated;
   }
 
   public IpMuteData(IpMuteRecord record) {
-    this(record.getIp(), record.getPastActor(), record.getReason(), record.isSoft(), record.getExpired(), record.getPastCreated());
+    this(record.getIp(), record.getPastActor(), record.getReason(), record.isSilent(), record.isSoft(), record.getExpired(), record.getPastCreated());
   }
 
   public boolean hasExpired() {
