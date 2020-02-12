@@ -39,6 +39,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
       return;
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -59,7 +64,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, p.id, p.name, p.ip, p.lastSeen, a.id, a.name, a.ip, a.lastSeen, t.reason,");
-    sql.append(" t.expires, t.created, t.updated");
+    sql.append(" t.expires, t.created, t.updated, t.silent");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -110,8 +115,12 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
           continue;
         }
 
-        PlayerBanData ban = new PlayerBanData(results.getInt(0), player, actor, results.getString(9), results.getLong(10),
-            results.getLong(11), results.getLong(12));
+        PlayerBanData ban = new PlayerBanData(results.getInt(0), player, actor,
+            results.getString(9),
+            results.getBoolean(13),
+            results.getLong(10),
+            results.getLong(11),
+            results.getLong(12));
 
         bans.put(ban.getPlayer().getUUID(), ban);
       }
@@ -151,7 +160,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
   public void addBan(PlayerBanData ban) {
     bans.put(ban.getPlayer().getUUID(), ban);
 
-    plugin.getServer().callEvent("PlayerBannedEvent", ban, !plugin.getConfig().isBroadcastOnSync());
+    plugin.getServer().callEvent("PlayerBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
   public void removeBan(PlayerBanData ban) {
@@ -172,8 +181,8 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     return null;
   }
 
-  public boolean ban(PlayerBanData ban, boolean isSilent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, isSilent);
+  public boolean ban(PlayerBanData ban) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
       return false;

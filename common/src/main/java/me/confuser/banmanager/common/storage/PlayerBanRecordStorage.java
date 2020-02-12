@@ -29,8 +29,8 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
     } else {
       // Attempt to add new columns
       try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
-        executeRawNoArgs(update);
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)");
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
       } catch (SQLException e) {
       }
     }

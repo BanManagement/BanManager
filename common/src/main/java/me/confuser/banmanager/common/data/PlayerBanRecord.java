@@ -44,6 +44,10 @@ public class PlayerBanRecord {
   @Getter
   private String createdReason;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   PlayerBanRecord() {
 
   }
@@ -54,6 +58,7 @@ public class PlayerBanRecord {
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
     createdReason = reason;
+    silent = ban.isSilent();
 
     this.reason = ban.getReason();
     this.actor = actor;
@@ -65,6 +70,7 @@ public class PlayerBanRecord {
     expired = ban.getExpires();
     pastActor = ban.getActor();
     pastCreated = ban.getCreated();
+    silent = ban.isSilent();
 
     this.actor = actor;
     this.created = created;
