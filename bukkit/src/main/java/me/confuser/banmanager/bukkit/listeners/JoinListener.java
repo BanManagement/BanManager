@@ -508,13 +508,14 @@ public class JoinListener implements Listener {
         if (mute == null) continue;
         if (mute.hasExpired()) continue;
 
-        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid))
-            , plugin.getPlayerStorage().getConsole()
-            , mute.getReason()
-            , mute.isSoft()
-            , mute.getExpires());
+        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
+            plugin.getPlayerStorage().getConsole(),
+            mute.getReason(),
+            mute.isSilent(),
+            mute.isSoft(),
+            mute.getExpires());
 
-        plugin.getPlayerMuteStorage().mute(newMute, false);
+        plugin.getPlayerMuteStorage().mute(newMute);
       }
     }
   }

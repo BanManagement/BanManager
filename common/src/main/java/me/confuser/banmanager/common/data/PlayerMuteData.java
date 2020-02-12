@@ -37,39 +37,44 @@ public class PlayerMuteData {
   @Getter
   private boolean soft = false;
 
+  @DatabaseField
+  @Getter
+  private boolean silent = false;
+
   PlayerMuteData() {
 
   }
 
-  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft) {
+  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean silent, boolean soft) {
     this.player = player;
     this.reason = reason;
     this.actor = actor;
+    this.silent = silent;
     this.soft = soft;
   }
 
-  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft, long expires) {
-    this(player, actor, reason, soft);
+  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean silent, boolean soft, long expires) {
+    this(player, actor, reason, silent, soft);
 
     this.expires = expires;
   }
 
   // Only use for imports!
-  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean soft, long expires, long created) {
-    this(player, actor, reason, soft, expires);
+  public PlayerMuteData(PlayerData player, PlayerData actor, String reason, boolean silent, boolean soft, long expires, long created) {
+    this(player, actor, reason, silent, soft, expires);
 
     this.created = created;
   }
 
-  public PlayerMuteData(int id, PlayerData player, PlayerData actor, String reason, boolean soft, long expires, long created, long updated) {
-    this(player, actor, reason, soft, expires, created);
+  public PlayerMuteData(int id, PlayerData player, PlayerData actor, String reason, boolean silent, boolean soft, long expires, long created, long updated) {
+    this(player, actor, reason, silent, soft, expires, created);
 
     this.id = id;
     this.updated = updated;
   }
 
   public PlayerMuteData(PlayerMuteRecord record) {
-    this(record.getPlayer(), record.getPastActor(), record.getReason(), record.isSoft(), record.getExpired(), record.getPastCreated());
+    this(record.getPlayer(), record.getPastActor(), record.getReason(), record.isSilent(), record.isSoft(), record.getExpired(), record.getPastCreated());
   }
 
   public boolean hasExpired() {

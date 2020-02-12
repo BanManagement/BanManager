@@ -20,8 +20,8 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
 
   public PlayerBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerBanRecord>) plugin.getConfig()
-                                                                              .getLocalDb()
-                                                                              .getTable("playerBanRecords"));
+        .getLocalDb()
+        .getTable("playerBanRecords"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -30,6 +30,9 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
       // Attempt to add new columns
       try {
         executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)");
+      } catch (SQLException e) {
+      }
+      try {
         executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
       } catch (SQLException e) {
       }
@@ -71,7 +74,7 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
     if (cleanup.getDays() == 0) return;
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-            "INTERVAL " + cleanup.getDays() + " DAY))");
+        "INTERVAL " + cleanup.getDays() + " DAY))");
   }
 
   public int deleteAll(PlayerData player) throws SQLException {
