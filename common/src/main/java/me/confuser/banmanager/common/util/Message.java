@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common.util;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
@@ -9,6 +10,7 @@ import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 
 import java.util.HashMap;
 
+@EqualsAndHashCode
 public class Message {
 
   private static HashMap<String, String> messages = new HashMap<>(10);
