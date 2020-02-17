@@ -44,7 +44,7 @@ public class JoinListener implements Listener {
       return;
     }
 
-    listener.onPlayerLogin(new BukkitPlayer(event.getPlayer(), plugin.getConfig().isOnlineMode()), new LoginHandler(event));
+    listener.onPlayerLogin(new BukkitPlayer(event.getPlayer(), plugin.getConfig().isOnlineMode(), event.getAddress()), new LoginHandler(event));
   }
 
   @RequiredArgsConstructor

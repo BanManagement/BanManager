@@ -10,6 +10,7 @@ import net.kyori.text.TextComponent;
 import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -19,19 +20,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SpongePlayer implements CommonPlayer {
-
+  private User user;
   private final UUID uuid;
-  private final String name;
   private final boolean onlineMode;
+  private InetAddress address;
 
   public SpongePlayer(UUID uuid, String name, boolean onlineMode) {
     this.uuid = uuid;
-    this.name = name;
     this.onlineMode = onlineMode;
   }
 
   public SpongePlayer(Player player, boolean onlineMode) {
     this(player.getUniqueId(), player.getName(), onlineMode);
+  }
+
+  public SpongePlayer(User user, boolean onlineMode, InetAddress address) {
+    this(user.getUniqueId(), user.getName(), onlineMode);
+
+    this.user = user;
+    this.address = address;
   }
 
   @Override
@@ -75,6 +82,8 @@ public class SpongePlayer implements CommonPlayer {
 
   @Override
   public boolean hasPermission(String permission) {
+    if (user != null) return user.hasPermission(permission);
+
     return getPlayer().hasPermission(permission);
   }
 
@@ -90,6 +99,7 @@ public class SpongePlayer implements CommonPlayer {
 
   @Override
   public InetAddress getAddress() {
+    if (address != null) return address;
     return getPlayer().getConnection().getAddress().getAddress();
   }
 

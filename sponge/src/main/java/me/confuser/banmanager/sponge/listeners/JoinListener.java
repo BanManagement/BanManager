@@ -61,7 +61,7 @@ public class JoinListener {
   @Listener(order = Order.LAST)
   public void onPlayerLogin(final ClientConnectionEvent.Login event) {
     User user = event.getTargetUser();
-    listener.onPlayerLogin(new SpongePlayer(user.getUniqueId(), user.getName(), plugin.getConfig().isOnlineMode()), new LoginHandler(event));
+    listener.onPlayerLogin(new SpongePlayer(user, plugin.getConfig().isOnlineMode(), event.getConnection().getAddress().getAddress()), new LoginHandler(event));
   }
 
   @RequiredArgsConstructor
