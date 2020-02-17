@@ -137,6 +137,10 @@ public class SpongeServer implements CommonServer {
         event = new IpUnmutedEvent((IpMuteData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
 
+      case "PlayerKickedEvent":
+        event = new PlayerKickedEvent((PlayerKickData) args[0], (boolean) args[1]);
+        break;
+
       case "PlayerNoteCreatedEvent":
         event = new PlayerNoteCreatedEvent((PlayerNoteData) args[0]);
         break;
