@@ -17,19 +17,26 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 public class BukkitPlayer implements CommonPlayer {
-
+  private Player player;
   private final UUID uuid;
-  private final String name;
+  private InetAddress address;
   private final boolean onlineMode;
 
   public BukkitPlayer(UUID uuid, String name, boolean onlineMode) {
     this.uuid = uuid;
-    this.name = name;
     this.onlineMode = onlineMode;
   }
 
   public BukkitPlayer(Player player, boolean onlineMode) {
     this(player.getUniqueId(), player.getName(), onlineMode);
+
+    this.player = player;
+  }
+
+  public BukkitPlayer(Player player, boolean onlineMode, InetAddress address) {
+    this(player, onlineMode);
+
+    this.address = address;
   }
 
   public void kick(String message) {
@@ -74,6 +81,7 @@ public class BukkitPlayer implements CommonPlayer {
   }
 
   public InetAddress getAddress() {
+    if (address != null) return address;
     return getPlayer().getAddress().getAddress();
   }
 
@@ -100,6 +108,7 @@ public class BukkitPlayer implements CommonPlayer {
   }
 
   private Player getPlayer() {
+    if (player != null) return player;
     if (isOnlineMode()) return Bukkit.getServer().getPlayer(uuid);
 
     for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
