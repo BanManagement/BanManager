@@ -31,7 +31,7 @@ public class CommonNoteListener {
     }
 
     if (!player.hasPermission("bm.notify.notes")) {
-      message.sendTo(player);
+      player.sendMessage(message);
     }
   }
 }
