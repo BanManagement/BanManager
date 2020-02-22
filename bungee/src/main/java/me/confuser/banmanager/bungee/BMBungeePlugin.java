@@ -2,14 +2,17 @@ package me.confuser.banmanager.bungee;
 
 import lombok.Getter;
 import me.confuser.banmanager.bungee.configs.BungeeConfig;
-import me.confuser.banmanager.bungee.listeners.JoinListener;
+import me.confuser.banmanager.bungee.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventPriority;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.*;
@@ -121,7 +124,20 @@ public class BMBungeePlugin extends Plugin {
   }
 
   public void setupListeners() {
-    getProxy().getPluginManager().registerListener(this, new JoinListener(plugin));
+    registerEvent(new JoinListener(this));
+    registerEvent(new LeaveListener(plugin));
+    registerEvent(new HookListener(plugin));
+    registerEvent(new JoinListener(this));
+
+    if (plugin.getConfig().isDisplayNotificationsEnabled()) {
+      registerEvent(new BanListener(plugin));
+      registerEvent(new MuteListener(plugin));
+      registerEvent(new NoteListener(plugin));
+    }
+  }
+
+  private void registerEvent(Listener listener) {
+    getProxy().getPluginManager().registerListener(this, listener);
   }
 
   public void setupRunnables() {
