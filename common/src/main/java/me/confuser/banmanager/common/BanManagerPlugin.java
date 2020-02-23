@@ -2,6 +2,7 @@ package me.confuser.banmanager.common;
 
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
+import com.j256.ormlite.db.H2DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
@@ -201,11 +202,13 @@ public class BanManagerPlugin {
     metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
     metrics.submitOnlineMode(config.isOnlineMode());
 
-    // Get database version
-    GenericRawResults<String[]> results2 = playerStorage
-        .queryRaw("SELECT VERSION()");
+    if (!config.getLocalDb().getStorageType().equals("h2")) {
+      // Get database version
+      GenericRawResults<String[]> results2 = playerStorage
+          .queryRaw("SELECT VERSION()");
 
-    metrics.submitStorageVersion(results2.getFirstResult()[0]);
+      metrics.submitStorageVersion(results2.getFirstResult()[0]);
+    }
   }
 
   public final void disable() {
@@ -270,11 +273,13 @@ public class BanManagerPlugin {
   private ConnectionSource createConnection(DatabaseConfig dbConfig, String type) throws SQLException {
     HikariDataSource ds = new HikariDataSource();
 
-    if (!dbConfig.getUser().isEmpty()) {
-      ds.setUsername(dbConfig.getUser());
-    }
-    if (!dbConfig.getPassword().isEmpty()) {
-      ds.setPassword(dbConfig.getPassword());
+    if (!dbConfig.getStorageType().equals("h2")) {
+      if (!dbConfig.getUser().isEmpty()) {
+        ds.setUsername(dbConfig.getUser());
+      }
+      if (!dbConfig.getPassword().isEmpty()) {
+        ds.setPassword(dbConfig.getPassword());
+      }
     }
 
     ds.setJdbcUrl(dbConfig.getJDBCUrl());
@@ -288,7 +293,7 @@ public class BanManagerPlugin {
 
     if (dbConfig.getStorageType().equals("mariadb")) {
       databaseType = new MariaDBDatabase();
-    } else {
+    } else if (dbConfig.getStorageType().equals("mysql")) {
       // Forcefully specify the newer driver
       ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
@@ -298,6 +303,8 @@ public class BanManagerPlugin {
       ds.addDataSourceProperty("prepStmtCacheSize", "250");
       ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
       ds.addDataSourceProperty("cachePrepStmts", "true");
+    } else {
+      databaseType = new H2DatabaseType();
     }
 
     return new DataSourceConnectionSource(ds, databaseType);

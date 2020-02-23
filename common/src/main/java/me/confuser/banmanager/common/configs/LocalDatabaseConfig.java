@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.configs;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class LocalDatabaseConfig extends DatabaseConfig {
@@ -45,8 +46,8 @@ public class LocalDatabaseConfig extends DatabaseConfig {
     put("nameBanRecords", NameBanRecord.class);
   }};
 
-  public LocalDatabaseConfig(ConfigurationSection conf) {
-    super(conf, types);
+  public LocalDatabaseConfig(File dataFolder, ConfigurationSection conf) {
+    super(dataFolder, conf, types);
   }
 
 }

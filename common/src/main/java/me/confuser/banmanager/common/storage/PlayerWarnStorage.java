@@ -4,9 +4,14 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -17,6 +22,7 @@ import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,14 +31,14 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
 
   private BanManagerPlugin plugin;
   private Cache<UUID, PlayerWarnData> muteWarnings = CacheBuilder.newBuilder()
-                                                                 .expireAfterWrite(1, TimeUnit.DAYS)
-                                                                 .concurrencyLevel(2)
-                                                                 .maximumSize(200)
-                                                                 .build();
+      .expireAfterWrite(1, TimeUnit.DAYS)
+      .concurrencyLevel(2)
+      .maximumSize(200)
+      .build();
 
   public PlayerWarnStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerWarnData>) plugin.getConfig()
-                                                                             .getLocalDb().getTable("playerWarnings"));
+        .getLocalDb().getTable("playerWarnings"));
 
     this.plugin = plugin;
 
@@ -42,21 +48,21 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
       // Attempt to add new columns
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD COLUMN `expires` INT(10) NOT NULL DEFAULT 0," +
-                " ADD KEY `" + tableConfig.getTableName() + "_expires_idx` (`expires`)";
+            .getTableName() + " ADD COLUMN `expires` INT(10) NOT NULL DEFAULT 0," +
+            " ADD KEY `" + tableConfig.getTableName() + "_expires_idx` (`expires`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD COLUMN `points` INT(10) NOT NULL DEFAULT 1," +
-                " ADD KEY `" + tableConfig.getTableName() + "_points_idx` (`points`)";
+            .getTableName() + " ADD COLUMN `points` INT(10) NOT NULL DEFAULT 1," +
+            " ADD KEY `" + tableConfig.getTableName() + "_points_idx` (`points`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " MODIFY COLUMN `points` DECIMAL(60,2) NOT NULL DEFAULT 1";
+            .getTableName() + " MODIFY COLUMN `points` DECIMAL(60,2) NOT NULL DEFAULT 1";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -108,8 +114,21 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
   }
 
   public double getPointsCount(PlayerData player) throws SQLException {
-    return queryRawValue("SELECT SUM(points) FROM " + getTableInfo().getTableName() + " WHERE player_id = UNHEX('" +
-            player.getUUID().toString().replace("-", "") + "')");
+    try (DatabaseConnection connection = connectionSource.getReadOnlyConnection(getTableName())) {
+      CompiledStatement statement = connection
+          .compileStatement("SELECT SUM(points) AS points FROM " + getTableName() + " WHERE player_id = ?", StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+              .DEFAULT_RESULT_FLAGS, false);
+
+      statement.setObject(0, player.getId(), SqlType.BYTE_ARRAY);
+
+      DatabaseResults results = statement.runQuery(null);
+
+      if (results.next()) return results.getDouble(0);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return 0;
   }
 
   public boolean isRecentlyWarned(PlayerData player) throws SQLException {
@@ -118,16 +137,16 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     }
 
     return queryBuilder().where()
-                         .eq("player_id", player).and()
-                         .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
-                                                                                     .getWarningCooldown())
-                         .countOf() > 0;
+        .eq("player_id", player).and()
+        .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
+            .getWarningCooldown())
+        .countOf() > 0;
   }
 
   public int deleteRecent(PlayerData player) throws SQLException {
     // TODO use a raw DELETE query to reduce to one query
     PlayerWarnData warning = queryBuilder().limit(1L).orderBy("created", false).where().eq("player_id", player)
-                                           .queryForFirst();
+        .queryForFirst();
 
     return delete(warning);
   }
@@ -136,7 +155,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     if (cleanup.getDays() == 0) return;
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-            "INTERVAL " + cleanup.getDays() + " DAY)) AND `read` = " + (read ? "1" : "0"));
+        "INTERVAL " + cleanup.getDays() + " DAY)) AND `read` = " + (read ? "1" : "0"));
   }
 
 
