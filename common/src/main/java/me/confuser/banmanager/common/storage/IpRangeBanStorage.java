@@ -203,7 +203,7 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   }
 
   public boolean ban(IpRangeBanData ban) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban.isSilent());
+    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
       return false;
