@@ -27,7 +27,7 @@ public class BMBungeePlugin extends Plugin {
 
   private String[] configs = new String[]{
       "config.yml",
-      "bungee.yml",
+      "bungeecord.yml",
       "console.yml",
       "discord.yml",
       "exemptions.yml",
@@ -63,6 +63,9 @@ public class BMBungeePlugin extends Plugin {
       return;
     }
 
+    bungeeConfig = new BungeeConfig(getDataFolder(), plugin.getLogger());
+    bungeeConfig.load();
+
     setupListeners();
 
     if (bungeeConfig.isCommandsEnabled()) setupCommands();
@@ -83,6 +86,8 @@ public class BMBungeePlugin extends Plugin {
         new BungeeCommand(cmd, this);
       }
     }
+
+    getLogger().info("Registered commands");
   }
 
   private PluginInfo setupConfigs() throws IOException {

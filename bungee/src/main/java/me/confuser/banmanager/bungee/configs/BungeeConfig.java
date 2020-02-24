@@ -15,7 +15,7 @@ public class BungeeConfig extends Config {
   private boolean blockMuted = false;
 
   public BungeeConfig(File dataFolder, CommonLogger logger) {
-    super(dataFolder, "bungee.yml", logger);
+    super(dataFolder, "bungeecord.yml", logger);
   }
 
   @Override

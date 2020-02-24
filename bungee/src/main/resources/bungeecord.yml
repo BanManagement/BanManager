@@ -1,0 +1,4 @@
+features:
+  commands: true
+  denyBanned: true
+  blockMuted: true

@@ -9,6 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>BanManagerSponge</artifactId>
+    <properties>
+        <plugin.main>me.confuser.banmanager.sponge.BMSpongePlugin</plugin.main>
+    </properties>
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
