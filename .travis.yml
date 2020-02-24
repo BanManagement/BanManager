@@ -8,13 +8,11 @@ env:
   - STORAGE_TYPE=mariadb
   - STORAGE_TYPE=h2
 before_install:
-#  - sudo apt-get update
-#  # workaround for missing ca certs in openjdk
-#  - sudo dpkg --purge --force-depends ca-certificates-java
-#  - sudo apt-get install ca-certificates-java
   - git config --global user.email "travis-ci@travis-ci.com"
   - git config --global user.name "Travis CI"
-
+cache:
+  directories:
+    - $HOME/.m2
 branches:
   only:
     - master
