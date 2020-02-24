@@ -6,6 +6,7 @@ import com.j256.ormlite.db.H2DatabaseType;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import static java.lang.Long.parseLong;
@@ -311,6 +313,15 @@ public class BanManagerPlugin {
   }
 
   public void setupStorage() throws SQLException {
+    // Setup h2 specific functions
+    if (config.getLocalDb().getStorageType().equals("h2")) {
+      try (DatabaseConnection conn = getLocalConn().getReadWriteConnection("")) {
+        conn.executeStatement("CREATE ALIAS IF NOT EXISTS INET6_NTOA FOR \"me.confuser.banmanager.common.util.IPUtils.toString\"", DatabaseConnection.DEFAULT_RESULT_FLAGS);
+      } catch (IOException | SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
     playerStorage = new PlayerStorage(this);
     playerBanStorage = new PlayerBanStorage(this);
     playerBanRecordStorage = new PlayerBanRecordStorage(this);
