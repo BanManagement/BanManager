@@ -66,6 +66,7 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
         .getTableInfo()
         .getTableName();
 
+    // H2 does not support DELETE FROM joins sadly
     CloseableIterator<String[]> results = queryRaw("SELECT ph.id FROM " + getTableInfo()
         .getTableName() + " AS ph LEFT JOIN " + banTable + " b ON ph.ip = b.ip WHERE b.ip IS NULL AND ph.leave < " +
         "UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)").closeableIterator();
