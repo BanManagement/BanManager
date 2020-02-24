@@ -37,7 +37,7 @@ messages:
       limit: '&cYou cannot perform this action for that length of time'
 
   none: 'none'
-# General command text
+  # General command text
   sender:
     error:
       notFound: '&c[player] not found, are you sure they exist?'
@@ -48,7 +48,7 @@ messages:
       offlinePermission: '&cYou are not allowed to perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
-# Commands
+  # Commands
   alts:
     header: 'Possible alts found:'
 
@@ -74,6 +74,9 @@ messages:
     advancedban:
       started: '&aAdvancedBan import started'
       finished: '&aAdvancedBan import finished'
+    h2:
+      started: '&aH2 import started'
+      finished: '&aH2 import finished, please restart the server'
 
   info:
     error:

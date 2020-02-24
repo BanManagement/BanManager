@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -23,6 +24,10 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     }
+  }
+
+  public PlayerKickStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerKickData>) table);
   }
 
   public boolean addKick(PlayerKickData data, boolean isSilent) throws SQLException {

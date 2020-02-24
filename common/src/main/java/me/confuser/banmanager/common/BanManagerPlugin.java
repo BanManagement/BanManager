@@ -276,7 +276,7 @@ public class BanManagerPlugin {
     return true;
   }
 
-  private ConnectionSource createConnection(DatabaseConfig dbConfig, String type) throws SQLException {
+  public ConnectionSource createConnection(DatabaseConfig dbConfig, String type) throws SQLException {
     HikariDataSource ds = new HikariDataSource();
 
     if (!dbConfig.getStorageType().equals("h2")) {

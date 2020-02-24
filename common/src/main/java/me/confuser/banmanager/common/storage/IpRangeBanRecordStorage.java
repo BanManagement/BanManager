@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import inet.ipaddr.IPAddress;
@@ -40,6 +41,10 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
       } catch (SQLException e) {
       }
     }
+  }
+
+  public IpRangeBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<IpRangeBanRecord>) table);
   }
 
   public void addRecord(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {

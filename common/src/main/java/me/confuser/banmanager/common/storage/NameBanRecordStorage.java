@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -18,12 +19,16 @@ public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
 
   public NameBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<NameBanRecord>) plugin.getConfig()
-                                                                            .getLocalDb().getTable("nameBanRecords"));
+        .getLocalDb().getTable("nameBanRecords"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
       return;
     }
+  }
+
+  public NameBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<NameBanRecord>) table);
   }
 
   public void addRecord(NameBanData ban, PlayerData actor, String reason) throws SQLException {

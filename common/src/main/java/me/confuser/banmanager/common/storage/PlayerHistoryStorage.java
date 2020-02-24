@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -29,6 +30,10 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
+  }
+
+  public PlayerHistoryStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerHistoryData>) table);
   }
 
   public void create(PlayerData player) {

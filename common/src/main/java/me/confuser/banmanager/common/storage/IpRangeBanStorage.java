@@ -10,6 +10,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -57,6 +58,10 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     loadAll();
 
     plugin.getLogger().info("Loaded " + bans.size() + " ip range bans into memory");
+  }
+
+  public IpRangeBanStorage(ConnectionSource connection, DatabaseTableConfig<?> ipRangeBans) throws SQLException {
+    super(connection, (DatabaseTableConfig<IpRangeBanData>) ipRangeBans);
   }
 
   private void loadAll() throws SQLException {

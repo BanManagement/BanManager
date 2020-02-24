@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -37,6 +38,10 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
       } catch (SQLException e) {
       }
     }
+  }
+
+  public PlayerBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerBanRecord>) table);
   }
 
   public void addRecord(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {

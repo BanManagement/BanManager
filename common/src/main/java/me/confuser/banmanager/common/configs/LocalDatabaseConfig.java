@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class LocalDatabaseConfig extends DatabaseConfig {
 
-  private static HashMap<String, Class> types = new HashMap<String, Class>() {{
+  public static HashMap<String, Class> types = new HashMap<String, Class>() {{
     put("players", PlayerData.class);
 
     put("playerBans", PlayerBanData.class);
