@@ -20,12 +20,18 @@ script: mvn compile test
 jobs:
   include:
     - jdk: openjdk11
+      env: STORAGE_TYPE=mariadb
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+    - jdk: openjdk11
+      env: STORAGE_TYPE=h2
       before_install:
         - rm "${JAVA_HOME}/lib/security/cacerts"
         - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
     - stage: deploy
       jdk: oraclejdk8
-      env: STORAGE_TYPE=h2
+      script: skip
       deploy:
         provider: script
         script: bash ./.travis/deploy.sh
