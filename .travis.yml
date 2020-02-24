@@ -32,6 +32,7 @@ jobs:
     - stage: deploy
       jdk: oraclejdk8
       script: skip
+      if: branch = master
       deploy:
         provider: script
         script: bash ./.travis/deploy.sh
