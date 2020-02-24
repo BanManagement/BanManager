@@ -15,9 +15,6 @@ before_install:
 #  - sudo apt-get install ca-certificates-java
   - git config --global user.email "travis-ci@travis-ci.com"
   - git config --global user.name "Travis CI"
-install:
-  - rm "${JAVA_HOME}/lib/security/cacerts"
-  - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
 
 branches:
   only:
@@ -25,6 +22,10 @@ branches:
 script: mvn compile test
 jobs:
   include:
+    - jdk: openjdk11
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
     - stage: deploy
       jdk: oraclejdk8
       env: STORAGE_TYPE=h2
