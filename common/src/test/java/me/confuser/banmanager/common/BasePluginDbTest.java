@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class BasePluginDbTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  protected static String storageType = System.getProperty("STORAGE_TYPE", "mariadb");
+  protected static String storageType = System.getenv("STORAGE_TYPE");
   protected BanManagerPlugin plugin;
   protected Faker faker = new Faker();
   protected TestUtils testUtils;
@@ -24,6 +24,8 @@ public abstract class BasePluginDbTest {
 
   @BeforeClass
   public static void dbSetup() throws ManagedProcessException {
+    if (storageType == null || storageType.isEmpty()) storageType = "mariadb";
+
     if (storageType.equals("mariadb")) {
       db = DB.newEmbeddedDB(0);
       db.start();
