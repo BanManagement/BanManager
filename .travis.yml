@@ -1,25 +1,38 @@
 language: java
-sudo: required
+sudo: false
 dist: trusty
 jdk:
   - oraclejdk8
   - openjdk8
-  - openjdk11
+env:
+  - STORAGE_TYPE=mariadb
+  - STORAGE_TYPE=h2
 before_install:
-  - sudo apt-get update
-  # workaround for missing ca certs in openjdk
-  - sudo dpkg --purge --force-depends ca-certificates-java
-  - sudo apt-get install ca-certificates-java
   - git config --global user.email "travis-ci@travis-ci.com"
   - git config --global user.name "Travis CI"
+cache:
+  directories:
+    - $HOME/.m2
 branches:
   only:
     - master
 script: mvn compile test
 jobs:
   include:
+    - jdk: openjdk11
+      env: STORAGE_TYPE=mariadb
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+    - jdk: openjdk11
+      env: STORAGE_TYPE=h2
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
     - stage: deploy
       jdk: oraclejdk8
+      script: skip
+      if: branch = master
       deploy:
         provider: script
         script: bash ./.travis/deploy.sh

@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -25,6 +26,10 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
     }
   }
 
+  public PlayerKickStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerKickData>) table);
+  }
+
   public boolean addKick(PlayerKickData data, boolean isSilent) throws SQLException {
     if (create(data) != 1) return false;
 
@@ -36,8 +41,7 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
   public void purge(CleanUp cleanup) throws SQLException {
     if (cleanup.getDays() == 0) return;
 
-    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-            "INTERVAL " + cleanup.getDays() + " DAY))");
+    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
   }
 
   public long getCount(PlayerData player) throws SQLException {

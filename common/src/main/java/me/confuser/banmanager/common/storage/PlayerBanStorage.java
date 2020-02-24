@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -49,6 +50,10 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
     loadAll();
 
     plugin.getLogger().info("Loaded " + bans.size() + " bans into memory");
+  }
+
+  public PlayerBanStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerBanData>) table);
   }
 
   private void loadAll() throws SQLException {

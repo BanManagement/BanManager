@@ -25,7 +25,7 @@ public class ActivityStorage {
     this.plugin = plugin;
 
     sinceSql = "SELECT  type, name, actor, created FROM" +
-            "  ( SELECT 'Ban' type, p.name AS name, actor.name AS actor, created" +
+            "  ( SELECT 'Ban' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerBanStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -34,7 +34,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, p.name AS name, actor.name AS actor, pastCreated as created" +
+            "    SELECT 'Ban' AS type, p.name AS name, actor.name AS actor, pastCreated as created" +
             "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -43,7 +43,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, p.name AS name, actor.name AS actor, created" +
+            "    SELECT 'Unban' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -52,7 +52,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Warning' type, p.name AS name, actor.name AS actor, created" +
+            "    SELECT 'Warning' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -61,7 +61,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' type, p.name AS name, actor.name AS actor, created" +
+            "    SELECT 'Mute' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerMuteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -70,7 +70,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' type, p.name AS name, actor.name AS actor, pastCreated as created" +
+            "    SELECT 'Mute' AS type, p.name AS name, actor.name AS actor, pastCreated as created" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -79,7 +79,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unmute' type, p.name AS name, actor.name AS actor, created" +
+            "    SELECT 'Unmute' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -88,7 +88,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Note' type, p.name AS name, actor.name AS actor, created" +
+            "    SELECT 'Note' AS type, p.name AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -97,7 +97,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, INET_NTOA(ib.ip) AS name, actor.name AS actor, created" +
+            "    SELECT 'Ban' AS type, INET6_NTOA(ib.ip) AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getIpBanStorage().getTableConfig().getTableName() + " ib" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -105,7 +105,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, INET_NTOA(ibr.ip) AS name, actor.name AS actor, pastCreated AS created" +
+            "    SELECT 'Ban' AS type, INET6_NTOA(ibr.ip) AS name, actor.name AS actor, pastCreated AS created" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -113,7 +113,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, INET_NTOA(ibr.ip) AS name, actor.name AS actor, created" +
+            "    SELECT 'Unban' AS type, INET6_NTOA(ibr.ip) AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -121,7 +121,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, actor.name AS actor, created" +
+            "    SELECT 'Ban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getIpRangeBanStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -129,7 +129,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, actor.name AS actor, pastCreated AS created" +
+            "    SELECT 'Ban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, actor.name AS actor, pastCreated AS created" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -137,107 +137,107 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, actor.name AS actor, created" +
+            "    SELECT 'Unban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, actor.name AS actor, created" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
             "    WHERE created >= ?" +
 
             "  ) subquery" +
-            " ORDER BY created DESC, FIELD(type, 'Ban', 'Unban', 'Warning', 'Mute', 'Unmute', 'Note')";
+            " ORDER BY created DESC";
     sincePlayerSql = "SELECT  type, name, created FROM" +
-            "  ( SELECT 'Ban' type, p.name AS name, created" +
+            "  ( SELECT 'Ban' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerBanStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, p.name AS name, pastCreated as created" +
+            "    SELECT 'Ban' AS type, p.name AS name, pastCreated as created" +
             "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, p.name AS name, created" +
+            "    SELECT 'Unban' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Warning' type, p.name AS name, created" +
+            "    SELECT 'Warning' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' type, p.name AS name, created" +
+            "    SELECT 'Mute' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerMuteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' type, p.name AS name, pastCreated as created" +
+            "    SELECT 'Mute' AS type, p.name AS name, pastCreated as created" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unmute' type, p.name AS name, created" +
+            "    SELECT 'Unmute' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Note' type, p.name AS name, created" +
+            "    SELECT 'Note' AS type, p.name AS name, created" +
             "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, INET_NTOA(ib.ip) AS name, created" +
+            "    SELECT 'Ban' AS type, INET6_NTOA(ib.ip) AS name, created" +
             "    FROM " + plugin.getIpBanStorage().getTableConfig().getTableName() + " ib" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, INET_NTOA(ibr.ip) AS name, pastCreated AS created" +
+            "    SELECT 'Ban' AS type, INET6_NTOA(ibr.ip) AS name, pastCreated AS created" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, INET_NTOA(ibr.ip) AS name, created" +
+            "    SELECT 'Unban' AS type, INET6_NTOA(ibr.ip) AS name, created" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, created" +
+            "    SELECT 'Ban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, created" +
             "    FROM " + plugin.getIpRangeBanStorage().getTableConfig().getTableName() +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, pastCreated AS created" +
+            "    SELECT 'Ban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, pastCreated AS created" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' type, CONCAT_WS(' - ', INET_NTOA(fromIp), INET_NTOA(toIp)) AS name, created" +
+            "    SELECT 'Unban' AS type, CONCAT_WS(' - ', INET6_NTOA(fromIp), INET6_NTOA(toIp)) AS name, created" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "  ) subquery" +
-            " ORDER BY created DESC, FIELD(type, 'Ban', 'Unban', 'Warning', 'Mute', 'Unmute', 'Note')";
+            " ORDER BY created DESC";
   }
 
   public List<Map<String, Object>> getSince(long since) {

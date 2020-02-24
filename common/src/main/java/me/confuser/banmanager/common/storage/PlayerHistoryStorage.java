@@ -2,6 +2,8 @@ package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -28,6 +30,10 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     } else {
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
+  }
+
+  public PlayerHistoryStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerHistoryData>) table);
   }
 
   public void create(PlayerData player) {
@@ -65,9 +71,17 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
         .getTableInfo()
         .getTableName();
 
-    updateRaw("DELETE ph FROM " + getTableInfo()
+    // H2 does not support DELETE FROM joins sadly
+    CloseableIterator<String[]> results = queryRaw("SELECT ph.id FROM " + getTableInfo()
         .getTableName() + " AS ph LEFT JOIN " + banTable + " b ON ph.ip = b.ip WHERE b.ip IS NULL AND ph.leave < " +
-        "UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL " + cleanup
-        .getDays() + " DAY))");
+        "UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)").closeableIterator();
+
+    while (results.hasNext()) {
+      int id = Integer.parseInt(results.next()[0]);
+
+      deleteById(id);
+    }
+
+    results.closeQuietly();
   }
 }

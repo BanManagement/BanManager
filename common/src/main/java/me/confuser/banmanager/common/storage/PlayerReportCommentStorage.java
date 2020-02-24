@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -12,12 +13,16 @@ public class PlayerReportCommentStorage extends BaseDaoImpl<PlayerReportCommentD
 
   public PlayerReportCommentStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerReportCommentData>) plugin.getConfig()
-                                                                                      .getLocalDb()
-                                                                                      .getTable("playerReportComments"));
+        .getLocalDb()
+        .getTable("playerReportComments"));
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     }
+  }
+
+  public PlayerReportCommentStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerReportCommentData>) table);
   }
 
   public PlayerReportCommentData getByReportId(int id) throws SQLException {

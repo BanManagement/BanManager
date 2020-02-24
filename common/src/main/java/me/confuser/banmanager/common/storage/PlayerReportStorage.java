@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -23,7 +24,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
   public PlayerReportStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerReportData>) plugin.getConfig()
-                                                                               .getLocalDb().getTable("playerReports"));
+        .getLocalDb().getTable("playerReports"));
 
     this.plugin = plugin;
 
@@ -32,10 +33,10 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     } else {
       try {
         String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD COLUMN `state_id` INT(11) NOT NULL DEFAULT 1," +
-                " ADD COLUMN `assignee_id` BINARY(16)," +
-                " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
-                " ADD KEY `" + tableConfig.getTableName() + "_assignee_id_idx` (`assignee_id`)";
+            .getTableName() + " ADD COLUMN `state_id` INT(11) NOT NULL DEFAULT 1," +
+            " ADD COLUMN `assignee_id` BINARY(16)," +
+            " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
+            " ADD KEY `" + tableConfig.getTableName() + "_assignee_id_idx` (`assignee_id`)";
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
@@ -45,6 +46,10 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
       } catch (SQLException e) {
       }
     }
+  }
+
+  public PlayerReportStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerReportData>) table);
   }
 
   public boolean report(PlayerReportData data, boolean isSilent) throws SQLException {
@@ -106,10 +111,10 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     }
 
     return queryBuilder().where()
-                         .eq("player_id", player).and()
-                         .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
-                                                                                     .getReportCooldown())
-                         .countOf() > 0;
+        .eq("player_id", player).and()
+        .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
+            .getReportCooldown())
+        .countOf() > 0;
   }
 
   public int deleteById(Integer id) throws SQLException {
