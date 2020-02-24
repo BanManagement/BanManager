@@ -182,6 +182,8 @@ public class BanManagerPlugin {
 
     String result = results.getFirstResult()[0];
 
+    results.close();
+
     long timeDiff;
 
     // Some drivers appear to return a decimal such as MariaDB e.g. 0.0
@@ -210,6 +212,8 @@ public class BanManagerPlugin {
           .queryRaw("SELECT VERSION()");
 
       metrics.submitStorageVersion(results2.getFirstResult()[0]);
+
+      results2.close();
     }
   }
 
