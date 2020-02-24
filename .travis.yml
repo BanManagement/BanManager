@@ -5,6 +5,9 @@ jdk:
   - oraclejdk8
   - openjdk8
   - openjdk11
+env:
+  - STORAGE_TYPE=mariadb
+  - STORAGE_TYPE=h2
 before_install:
   - sudo apt-get update
   # workaround for missing ca certs in openjdk
@@ -20,6 +23,7 @@ jobs:
   include:
     - stage: deploy
       jdk: oraclejdk8
+      env: STORAGE_TYPE=h2
       deploy:
         provider: script
         script: bash ./.travis/deploy.sh

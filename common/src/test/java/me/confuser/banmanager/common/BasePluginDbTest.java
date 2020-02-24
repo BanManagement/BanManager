@@ -1,10 +1,9 @@
 package me.confuser.banmanager.common;
 
-import ch.vorburger.mariadb4j.junit.MariaDB4jRule;
+import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.DB;
 import com.github.javafaker.Faker;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -16,12 +15,20 @@ import java.util.List;
 public abstract class BasePluginDbTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  @ClassRule
-  public static MariaDB4jRule dbRule = new MariaDB4jRule(0); //port 0 means select random available port
+  protected static String storageType = System.getProperty("STORAGE_TYPE", "mariadb");
   protected BanManagerPlugin plugin;
   protected Faker faker = new Faker();
   protected TestUtils testUtils;
   private boolean configSetup = false;
+  private static DB db;
+
+  @BeforeClass
+  public static void dbSetup() throws ManagedProcessException {
+    if (storageType.equals("mariadb")) {
+      db = DB.newEmbeddedDB(0);
+      db.start();
+    }
+  }
 
   @Before
   public void setup() throws Exception {
@@ -44,13 +51,24 @@ public abstract class BasePluginDbTest {
     plugin.enable();
   }
 
+  @AfterClass
+  public static void teardown() {
+    if (db == null) return;
+
+    try {
+      db.stop();
+    } catch (ManagedProcessException e) {
+      throw new AssertionError("db.stop() failed", e);
+    }
+  }
+
   private void setupConfig() throws Exception {
     Path configFile = new File(temporaryFolder.getRoot(), "config.yml").toPath();
     List<String> lines = Files.readAllLines(configFile, StandardCharsets.UTF_8);
     lines.set(5, "    enabled: true");
-    lines.set(6, "    storageType: mariadb");
+    lines.set(6, "    storageType: " + storageType);
     lines.set(7, "    host: localhost");
-    lines.set(8, "    port: " + dbRule.getDBConfiguration().getPort());
+    lines.set(8, "    port: " + (db != null ? db.getConfiguration().getPort() : ""));
     lines.set(9, "    name: test");
     lines.set(10, "    user: root");
     lines.set(11, "    password: ''");
