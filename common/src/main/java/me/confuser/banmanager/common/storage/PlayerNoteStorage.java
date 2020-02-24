@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.storage;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -20,13 +21,17 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
 
   public PlayerNoteStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerNoteData>) plugin.getConfig()
-                                                                             .getLocalDb().getTable("playerNotes"));
+        .getLocalDb().getTable("playerNotes"));
 
     this.plugin = plugin;
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     }
+  }
+
+  public PlayerNoteStorage(ConnectionSource connection, DatabaseTableConfig<?> playerNotes) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerNoteData>) playerNotes);
   }
 
   public boolean addNote(PlayerNoteData data) throws SQLException {

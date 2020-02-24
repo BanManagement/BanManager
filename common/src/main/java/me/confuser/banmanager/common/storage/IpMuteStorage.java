@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -50,6 +51,10 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     loadAll();
 
     plugin.getLogger().info("Loaded " + mutes.size() + " ip mutes into memory");
+  }
+
+  public IpMuteStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<IpMuteData>) table);
   }
 
   private void loadAll() throws SQLException {

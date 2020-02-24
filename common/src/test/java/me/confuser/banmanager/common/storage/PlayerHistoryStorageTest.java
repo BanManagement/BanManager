@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class PlayerHistoryStorageTest extends BasePluginDbTest {
   @After
   public void clear() throws SQLException {
-    plugin.getPlayerHistoryStorage().updateRaw("TRUNCATE " + plugin.getPlayerHistoryStorage().getTableName());
+    plugin.getPlayerHistoryStorage().updateRaw("TRUNCATE TABLE " + plugin.getPlayerHistoryStorage().getTableName());
   }
 
   @Test

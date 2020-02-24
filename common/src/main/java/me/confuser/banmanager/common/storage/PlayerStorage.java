@@ -9,6 +9,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import inet.ipaddr.IPAddress;
@@ -53,6 +54,10 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       // @TODO run in a separate thread to speed up start up
       setupAutoComplete();
     }
+  }
+
+  public PlayerStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerData>) table);
   }
 
   public void setupConsole() throws SQLException {
