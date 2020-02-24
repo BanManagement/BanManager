@@ -4,7 +4,6 @@ dist: trusty
 jdk:
   - oraclejdk8
   - openjdk8
-  - openjdk11
 env:
   - STORAGE_TYPE=mariadb
   - STORAGE_TYPE=h2
