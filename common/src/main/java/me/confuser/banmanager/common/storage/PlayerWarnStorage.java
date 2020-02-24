@@ -154,8 +154,7 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
   public void purge(CleanUp cleanup, boolean read) throws SQLException {
     if (cleanup.getDays() == 0) return;
 
-    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-        "INTERVAL " + cleanup.getDays() + " DAY)) AND `read` = " + (read ? "1" : "0"));
+    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
   }
 
 

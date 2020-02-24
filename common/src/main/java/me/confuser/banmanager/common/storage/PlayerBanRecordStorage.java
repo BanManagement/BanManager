@@ -73,8 +73,7 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
   public void purge(CleanUp cleanup) throws SQLException {
     if (cleanup.getDays() == 0) return;
 
-    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-        "INTERVAL " + cleanup.getDays() + " DAY))");
+    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
   }
 
   public int deleteAll(PlayerData player) throws SQLException {

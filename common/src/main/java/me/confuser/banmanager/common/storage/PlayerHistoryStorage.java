@@ -67,7 +67,6 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
     updateRaw("DELETE ph FROM " + getTableInfo()
         .getTableName() + " AS ph LEFT JOIN " + banTable + " b ON ph.ip = b.ip WHERE b.ip IS NULL AND ph.leave < " +
-        "UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL " + cleanup
-        .getDays() + " DAY))");
+        "UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
   }
 }
