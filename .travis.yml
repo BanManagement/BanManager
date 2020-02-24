@@ -1,5 +1,5 @@
 language: java
-sudo: required
+sudo: false
 dist: trusty
 jdk:
   - oraclejdk8
@@ -9,12 +9,16 @@ env:
   - STORAGE_TYPE=mariadb
   - STORAGE_TYPE=h2
 before_install:
-  - sudo apt-get update
-  # workaround for missing ca certs in openjdk
-  - sudo dpkg --purge --force-depends ca-certificates-java
-  - sudo apt-get install ca-certificates-java
+#  - sudo apt-get update
+#  # workaround for missing ca certs in openjdk
+#  - sudo dpkg --purge --force-depends ca-certificates-java
+#  - sudo apt-get install ca-certificates-java
   - git config --global user.email "travis-ci@travis-ci.com"
   - git config --global user.name "Travis CI"
+install:
+  - rm "${JAVA_HOME}/lib/security/cacerts"
+  - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+
 branches:
   only:
     - master
