@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.configs;
 import me.confuser.banmanager.common.data.global.*;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class GlobalDatabaseConfig extends DatabaseConfig {
@@ -20,8 +21,8 @@ public class GlobalDatabaseConfig extends DatabaseConfig {
     put("ipUnbans", GlobalIpBanRecordData.class);
   }};
 
-  public GlobalDatabaseConfig(ConfigurationSection conf) {
-    super(conf, types);
+  public GlobalDatabaseConfig(File dataFolder, ConfigurationSection conf) {
+    super(dataFolder, conf, types);
   }
 
 }

@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -59,6 +60,10 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     loadAll();
 
     plugin.getLogger().info("Loaded " + mutes.size() + " mutes into memory");
+  }
+
+  public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerMuteData>) table);
   }
 
   private void loadAll() throws SQLException {

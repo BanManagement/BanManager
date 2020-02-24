@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -45,6 +46,10 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
     loadAll();
 
     plugin.getLogger().info("Loaded " + bans.size() + " name bans into memory");
+  }
+
+  public NameBanStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<NameBanData>) table);
   }
 
   private void loadAll() throws SQLException {

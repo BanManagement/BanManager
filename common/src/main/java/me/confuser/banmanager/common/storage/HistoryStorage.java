@@ -18,7 +18,7 @@ public class HistoryStorage {
   private final String playerSql = "SELECT id, type, actor, created, reason, meta FROM" +
           "  ( {QUERIES}" +
           "  ) subquery" +
-          " ORDER BY created DESC, FIELD(type, 'Ban', 'Warning', 'Mute', 'Kick', 'Note')";
+          " ORDER BY created DESC";
   private BanManagerPlugin plugin;
   // Queries
   private final String banSql;
@@ -31,27 +31,27 @@ public class HistoryStorage {
   public HistoryStorage(BanManagerPlugin plugin) {
     this.plugin = plugin;
 
-    banSql = "SELECT t.id, 'Ban' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
+    banSql = "SELECT t.id, 'Ban' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
             "    FROM " + plugin.getPlayerBanRecordStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON pastActor_id = actor.id" +
             "    WHERE player_id = ?";
-    muteSql = "SELECT t.id, 'Mute' type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
+    muteSql = "SELECT t.id, 'Mute' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON pastActor_id = actor.id" +
             "    WHERE player_id = ?";
-    kickSql = "SELECT t.id, 'Kick' type, actor.name AS actor, created, reason, '' AS meta" +
+    kickSql = "SELECT t.id, 'Kick' AS type, actor.name AS actor, created, reason, '' AS meta" +
             "    FROM " + plugin.getPlayerKickStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
             "    WHERE player_id = ?";
-    warningSql = "SELECT t.id, 'Warning' type, actor.name AS actor, created, reason, points AS meta" +
+    warningSql = "SELECT t.id, 'Warning' AS type, actor.name AS actor, created, reason, points AS meta" +
             "    FROM " + plugin.getPlayerWarnStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
             "    WHERE player_id = ?";
-    noteSql = "SELECT t.id, 'Note' type, actor.name AS actor, created, message AS reason, '' AS meta" +
+    noteSql = "SELECT t.id, 'Note' AS type, actor.name AS actor, created, message AS reason, '' AS meta" +
             "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +

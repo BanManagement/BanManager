@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.storage.conversion.AdvancedBan;
+import me.confuser.banmanager.common.storage.conversion.H2;
 import me.confuser.banmanager.common.storage.conversion.SimpleWarnings;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -26,13 +27,14 @@ import java.util.UUID;
 
 public class ImportCommand extends CommonCommand {
   private boolean importInProgress = false;
-  private static HashSet<String> validConverters = new HashSet<String>(){{
+  private static HashSet<String> validConverters = new HashSet<String>() {{
     add("player");
     add("players");
     add("ip");
     add("ips");
     add("simplewarnings");
     add("advancedban");
+    add("h2");
   }};
 
   public ImportCommand(BanManagerPlugin plugin) {
@@ -69,7 +71,7 @@ public class ImportCommand extends CommonCommand {
         new SimpleWarnings(getPlugin());
       } else if (parser.args[0].startsWith("advancedb")) {
         if (parser.args.length < 5) {
-          sender.sendMessage("/bmimport advancedban localhost 3306 databaseName username password");
+          sender.sendMessage("/bmimport advancedban <host> <port> <databaseName> [username] [password]");
           return;
         }
 
@@ -77,6 +79,16 @@ public class ImportCommand extends CommonCommand {
         finishedMessage = Message.getString("import.advancedban.finished");
 
         new AdvancedBan(getPlugin(), parser.args);
+      } else if (parser.args[0].equals("h2")) {
+        if (parser.args.length < 2) {
+          sender.sendMessage("/bmimport h2 <fileName>");
+          return;
+        }
+
+        sender.sendMessage(Message.getString("import.h2.started"));
+        finishedMessage = Message.getString("import.h2.finished");
+
+        new H2(getPlugin(), parser.args[1]);
       }
 
       if (sender != null) {

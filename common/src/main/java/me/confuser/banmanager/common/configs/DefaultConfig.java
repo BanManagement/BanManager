@@ -75,9 +75,8 @@ public class DefaultConfig extends Config {
 
   @Override
   public void afterLoad() {
-    localDb = new LocalDatabaseConfig(conf.getConfigurationSection("databases.local"));
-
-    globalDb = new GlobalDatabaseConfig(conf.getConfigurationSection("databases.global"));
+    localDb = new LocalDatabaseConfig(dataFolder, conf.getConfigurationSection("databases.local"));
+    globalDb = new GlobalDatabaseConfig(dataFolder, conf.getConfigurationSection("databases.global"));
     timeLimits = new TimeLimitsConfig(conf.getConfigurationSection("timeLimits"), logger);
     duplicateIpCheckEnabled = conf.getBoolean("duplicateIpCheck", true);
     onlineMode = conf.getBoolean("onlineMode", true);

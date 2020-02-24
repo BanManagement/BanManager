@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import inet.ipaddr.IPAddress;
@@ -33,6 +34,10 @@ public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
       } catch (SQLException e) {
       }
     }
+  }
+
+  public IpMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<IpMuteRecord>) table);
   }
 
   public void addRecord(IpMuteData mute, PlayerData actor, String reason) throws SQLException {

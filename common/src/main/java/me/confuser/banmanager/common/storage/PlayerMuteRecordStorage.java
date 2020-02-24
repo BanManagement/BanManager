@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -41,6 +42,10 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
     }
   }
 
+  public PlayerMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(connection, (DatabaseTableConfig<PlayerMuteRecord>) table);
+  }
+
   public void addRecord(PlayerMuteData mute, PlayerData actor, String reason) throws SQLException {
     create(new PlayerMuteRecord(mute, actor, reason));
   }
@@ -74,8 +79,7 @@ public class PlayerMuteRecordStorage extends BaseDaoImpl<PlayerMuteRecord, Integ
   public void purge(CleanUp cleanup) throws SQLException {
     if (cleanup.getDays() == 0) return;
 
-    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(DATE_SUB(NOW(), " +
-        "INTERVAL " + cleanup.getDays() + " DAY))");
+    updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
   }
 
   public int deleteAll(PlayerData player) throws SQLException {
