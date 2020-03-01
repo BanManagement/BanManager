@@ -310,6 +310,8 @@ public class BanManagerPlugin {
       ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
       ds.addDataSourceProperty("cachePrepStmts", "true");
     } else {
+      ds.setDriverClassName("me.confuser.banmanager.common.h2.Driver");
+
       databaseType = new H2DatabaseType();
     }
 

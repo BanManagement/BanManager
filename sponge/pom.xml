@@ -72,6 +72,19 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
+                                <filter>
+                                    <artifact>com.h2database</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <!-- Sponge crashes if not excluded -->
+                                        <exclude>META-INF/versions/**</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
@@ -157,6 +170,10 @@
                                 <relocation>
                                     <pattern>inet.ipaddr</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.ipaddr</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.h2</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.h2</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
