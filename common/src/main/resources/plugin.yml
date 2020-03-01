@@ -1,4 +1,4 @@
-main: me.confuser.banmanager.bukkit.BMBukkitPlugin
+main: ${plugin.main}
 name: BanManager
 version: ${project.version}
 authors: [ confuser ]
