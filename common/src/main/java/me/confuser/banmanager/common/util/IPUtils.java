@@ -6,13 +6,8 @@ import inet.ipaddr.IPAddressNetwork;
 import inet.ipaddr.IPAddressString;
 import inet.ipaddr.ipv4.IPv4AddressSeqRange;
 import inet.ipaddr.ipv6.IPv6AddressSeqRange;
-import me.confuser.banmanager.common.CommonPlayer;
-import org.apache.commons.net.util.SubnetUtils;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class IPUtils {
 

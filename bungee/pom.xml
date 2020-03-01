@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>BanManager</artifactId>
@@ -8,17 +8,26 @@
         <version>7.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>BanManagerSponge</artifactId>
+
+    <artifactId>BanManagerBungeeCord</artifactId>
     <properties>
-        <plugin.main>me.confuser.banmanager.sponge.BMSpongePlugin</plugin.main>
+        <plugin.main>me.confuser.banmanager.bungee.BMBungeePlugin</plugin.main>
     </properties>
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <targetPath>./assets/banmanager</targetPath>
+                <targetPath>.</targetPath>
                 <filtering>true</filtering>
                 <directory>../common/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>*.yml</include>
                 </includes>
@@ -33,19 +42,6 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <id>filter-src</id>
-                        <goals>
-                            <goal>filter-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -72,12 +68,14 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
+                                <filter>
+                                    <artifact>com.h2database</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
                             </filters>
                             <relocations>
-                                <relocation>
-                                    <pattern>net.gravitydevelopment.updater</pattern>
-                                    <shadedPattern>me.confuser.banmanager.updater</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>com.j256.ormlite</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.ormlite</shadedPattern>
@@ -93,6 +91,10 @@
                                 <relocation>
                                     <pattern>com.mysql</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.mysql</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.sl4j</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.googlecode.concurrenttrees</pattern>
@@ -158,6 +160,14 @@
                                     <pattern>inet.ipaddr</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.ipaddr</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.h2</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.h2</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -165,10 +175,15 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
-            <id>sponge-repo</id>
-            <url>https://repo.spongepowered.org/maven</url>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>confuser-repo</id>
+            <url>https://ci.frostcast.net/plugin/repository/everything</url>
         </repository>
         <repository>
             <id>CodeMC</id>
@@ -177,24 +192,34 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>7.1.0</version>
-            <type>jar</type>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>me.confuser.banmanager</groupId>
             <artifactId>BanManagerCommon</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.14-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.14-SNAPSHOT</version>
+            <type>javadoc</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.bstats</groupId>
-            <artifactId>bstats-sponge</artifactId>
+            <artifactId>bstats-bungeecord</artifactId>
             <version>1.7</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
 </project>

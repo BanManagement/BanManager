@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>BanManagerBukkit</artifactId>
+    <properties>
+        <plugin.main>me.confuser.banmanager.bukkit.BMBukkitPlugin</plugin.main>
+    </properties>
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
