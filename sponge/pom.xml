@@ -191,6 +191,15 @@
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter-bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -211,6 +220,12 @@
             <artifactId>bstats-sponge</artifactId>
             <version>1.7</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Eufranio</groupId>
+            <artifactId>MagiBridge</artifactId>
+            <version>api-7-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
