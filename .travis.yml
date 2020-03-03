@@ -16,7 +16,7 @@ cache:
 branches:
   only:
     - master
-script: mvn compile test
+script: mvn -Dcom.j256.ormlite.logger.type=LOCAL compile test
 jobs:
   include:
     - jdk: openjdk11
