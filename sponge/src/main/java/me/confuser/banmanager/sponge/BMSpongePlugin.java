@@ -18,6 +18,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -33,7 +34,10 @@ import java.nio.file.Path;
     version = Version.VERSION,
     authors = "confuser",
     description = "A punishment plugin",
-    url = "https://banmanagement.com"
+    url = "https://banmanagement.com",
+    dependencies = {
+        @Dependency(id = "magibridge", optional = true),
+    }
 )
 public class BMSpongePlugin {
 
@@ -94,7 +98,6 @@ public class BMSpongePlugin {
       e.printStackTrace();
       return;
     }
-
 
 
     setupListeners();
@@ -158,6 +161,10 @@ public class BMSpongePlugin {
       registerEvent(new MuteListener(plugin));
       registerEvent(new NoteListener(plugin));
       registerEvent(new ReportListener(plugin));
+    }
+
+    if (plugin.getDiscordConfig().isEnabled() && Sponge.getPluginManager().getPlugin("magibridge").isPresent()) {
+      registerEvent(new DiscordListener(plugin));
     }
   }
 

@@ -1,4 +1,4 @@
-# Requires DiscordSRV (Bukkit only)
+# Requires DiscordSRV for Bukkit and MagiBridge for Sponge
 enabled: false
 punishments:
   ban:
