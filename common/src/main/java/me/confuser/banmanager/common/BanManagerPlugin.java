@@ -258,7 +258,7 @@ public class BanManagerPlugin {
   }
 
   private void disableDatabaseLogging() {
-    System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "INFO");
+    System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "WARNING");
   }
 
   public boolean setupConnections() throws SQLException {
