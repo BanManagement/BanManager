@@ -2,7 +2,7 @@ debug: false
 databases:
   # Local Database is always required. If not enabled, plugin will disable on startup.
   local:
-    enabled: false
+    enabled: true
     storageType: 'h2'
     host: 127.0.0.1
     port: 3306
