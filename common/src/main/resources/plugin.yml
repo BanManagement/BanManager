@@ -6,23 +6,23 @@ website: http://dev.bukkit.org/bukkit-plugins/ban-management/
 description: ${project.description}
 softdepend:
   - DiscordSRV
-commands: 
-  ban: 
+commands:
+  ban:
     description: "ban a player"
     usage: "/ban <player> <reason>"
     aliases: [bmban]
     permission: bm.command.ban
-  banall: 
+  banall:
     description: "ban a player across multiple servers"
     usage: "/banall <player> <reason>"
     aliases: [bmbanall]
     permission: bm.command.banall
-  tempban: 
+  tempban:
     description: "tempban a player"
     usage: "/tempban <player> <timeDiff> <reason>"
     aliases: [bmtempban]
     permission: bm.command.tempban
-  tempbanall: 
+  tempbanall:
     description: "tempban a player across multiple servers"
     usage: "/tempbanall <player> <timeDiff> <reason>"
     aliases: [bmtempbanall]
@@ -52,12 +52,12 @@ commands:
     usage: "/banipall <player || ip> <reason>"
     aliases: [bmbanipall]
     permission: bm.command.banipall
-  tempbanip: 
+  tempbanip:
     description: "tempban an ip"
     usage: "/tempbanip <player || ip> <timeDiff> <reason>"
     aliases: [bmtempbanip]
     permission: bm.command.tempbanip
-  tempbanipall: 
+  tempbanipall:
     description: "tempban an ip across multiple servers"
     usage: "/tempbanipall <player || ip> <timeDiff> <reason>"
     aliases: [bmtempbanipall]
@@ -260,6 +260,7 @@ permissions:
       bm.command.bminfo.others: true
       bm.command.bminfo.playerstats: true
       bm.command.bminfo.connection: true
+      bm.command.bminfo.geoip: true
       bm.command.bminfo.ipstats: true
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
@@ -327,6 +328,7 @@ permissions:
       bm.command.bminfo.others: true
       bm.command.bminfo.playerstats: true
       bm.command.bminfo.connection: true
+      bm.command.bminfo.geoip: true
       bm.command.bminfo.ipstats: true
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
@@ -478,6 +480,9 @@ permissions:
     default: op
   bm.command.bminfo.connection:
     description: Allows you to see connection information
+    default: op
+  bm.command.bminfo.geoip:
+    description: Allows you to see city and country information
     default: op
   bm.command.bminfo.alts:
     description: Allows you to see possible alts
