@@ -6,7 +6,6 @@ import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.configs.ExemptionsConfig;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,7 +73,7 @@ public class BanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfOffline() {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
-    String[] args = new String[]{StringUtils.truncate(faker.name().username(), 16), "test"};
+    String[] args = new String[]{testUtils.createRandomPlayerName(), "test"};
 
     when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
 

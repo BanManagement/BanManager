@@ -7,8 +7,8 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.data.PlayerReportLocationData;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
 
@@ -49,15 +49,14 @@ public class InfoSubCommand extends CommonSubCommand {
       }
 
       String dateTimeFormat = Message.getString("report.info.dateTimeFormat");
-      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
       Message.get("report.info.notify.report")
-             .set("id", data.getId())
-             .set("player", data.getPlayer().getName())
-             .set("actor", data.getActor().getName())
-             .set("reason", data.getReason())
-             .set("created", dateFormatter.format(data.getCreated() * 1000L))
-             .sendTo(sender);
+          .set("id", data.getId())
+          .set("player", data.getPlayer().getName())
+          .set("actor", data.getActor().getName())
+          .set("reason", data.getReason())
+          .set("created", DateUtils.format(dateTimeFormat, data.getCreated()))
+          .sendTo(sender);
 
       PlayerReportLocationData location;
 
@@ -72,11 +71,11 @@ public class InfoSubCommand extends CommonSubCommand {
       if (location == null) return;
 
       Message.get("report.info.notify.location")
-             .set("world", location.getWorld())
-             .set("x", location.getX())
-             .set("y", location.getY())
-             .set("z", location.getZ())
-             .sendTo(sender);
+          .set("world", location.getWorld())
+          .set("x", location.getX())
+          .set("y", location.getY())
+          .set("z", location.getZ())
+          .sendTo(sender);
 
     });
 

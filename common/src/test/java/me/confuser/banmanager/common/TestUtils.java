@@ -3,7 +3,6 @@ package me.confuser.banmanager.common;
 import com.github.javafaker.Faker;
 import lombok.AllArgsConstructor;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -24,6 +23,8 @@ public class TestUtils {
   }
 
   public String createRandomPlayerName() {
-    return StringUtils.truncate(faker.name().username(), 16);
+    String name = faker.name().username();
+
+    return name.substring(0, Math.min(name.length(), 16));
   }
 }

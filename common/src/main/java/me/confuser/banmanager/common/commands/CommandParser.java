@@ -4,11 +4,11 @@ import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import me.confuser.banmanager.common.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandParser {
@@ -41,16 +41,17 @@ public class CommandParser {
     this.plugin = plugin;
     this.args = args;
     reason = getReason(start);
-    String[] newArgs = reason.getMessage().split(" ");
+    ArrayList<String> newArgs = new ArrayList<>();
+    Collections.addAll(newArgs, reason.getMessage().split(" "));
 
     if (args.length > start) {
       // @TODO inefficient
       for (int i = start - 1; i >= 0; i--) {
-        newArgs = (String[]) ArrayUtils.add(newArgs, 0, args[i]);
+        newArgs.add(0, args[i]);
       }
     }
 
-    List<String> parsedArgs = Args.parse(this, newArgs, false);
+    List<String> parsedArgs = Args.parse(this, newArgs.toArray(new String[0]), false);
     this.args = parsedArgs.toArray(new String[parsedArgs.size()]);
 
     reason.setMessage(StringUtils.join(this.args, " ", start, this.args.length));

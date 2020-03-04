@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -71,14 +70,12 @@ public class ActivityCommand extends CommonCommand {
       }
 
       String dateTimeFormat = Message.getString("bmactivity.row.dateTimeFormat");
-      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
       for (Map<String, Object> result : results) {
         Message message = Message.get(messageType)
-                                 .set("player", (String) result.get("player"))
-                                 .set("type", (String) result.get("type"))
-                                 .set("created", dateFormatter
-                                         .format((long) result.get("created") * 1000L));
+            .set("player", (String) result.get("player"))
+            .set("type", (String) result.get("type"))
+            .set("created", DateUtils.format(dateTimeFormat, (long) result.get("created")));
 
         if (result.get("actor") != null) message.set("actor", (String) result.get("actor"));
 

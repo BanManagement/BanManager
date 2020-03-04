@@ -5,12 +5,12 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,7 +51,6 @@ public class NotesCommand extends CommonCommand {
           notesItr = getPlugin().getPlayerNoteStorage().getNotes(player.getUUID());
           ArrayList<Message> notes = new ArrayList<>();
           String dateTimeFormat = Message.getString("notes.dateTimeFormat");
-          FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
           while (notesItr.hasNext()) {
             PlayerNoteData note = notesItr.next();
@@ -59,7 +58,7 @@ public class NotesCommand extends CommonCommand {
             Message noteMessage = Message.get("notes.note")
                 .set("player", note.getActor().getName())
                 .set("message", note.getMessage())
-                .set("created", dateFormatter.format(note.getCreated() * 1000L));
+                .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
             notes.add(noteMessage);
           }
 
@@ -106,7 +105,6 @@ public class NotesCommand extends CommonCommand {
                 .iterator();
             ArrayList<Message> notes = new ArrayList<>();
             String dateTimeFormat = Message.getString("notes.dateTimeFormat");
-            FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
             while (notesItr.hasNext()) {
               PlayerNoteData note = notesItr.next();
@@ -115,7 +113,7 @@ public class NotesCommand extends CommonCommand {
                   .set("player", note.getPlayer().getName())
                   .set("actor", note.getActor().getName())
                   .set("message", note.getMessage())
-                  .set("created", dateFormatter.format(note.getCreated() * 1000L));
+                  .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
               notes.add(noteMessage);
             }
 
