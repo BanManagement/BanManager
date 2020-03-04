@@ -26,7 +26,7 @@ public class BanIpAllCommand extends CommonCommand {
     }
 
     final String ipStr = parser.getArgs()[0];
-    final boolean isName = IPUtils.isValid(ipStr);
+    final boolean isName = !IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("sender.error.invalidIp");
