@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.AddressValueException;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
@@ -96,9 +97,16 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       results = statement.runQuery(null);
 
       while (results.next()) {
-        PlayerData actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
-            IPUtils.toIPAddress(results.getBytes(3)),
-            results.getLong(4));
+        PlayerData actor;
+        try {
+          actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
+              IPUtils.toIPAddress(results.getBytes(3)),
+              results.getLong(4));
+        } catch (NullPointerException | AddressValueException e) {
+          plugin.getLogger().warning("Missing or invalid player for ip mute " + results.getInt(0) + ", ignored");
+          continue;
+        }
+
         IpMuteData mute = new IpMuteData(results.getInt(0), IPUtils.toIPAddress(results.getBytes(5)), actor, results.getString(6),
             results.getBoolean(11),
             results.getBoolean(7),
