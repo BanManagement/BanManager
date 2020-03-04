@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common.commands;
 
-import com.google.common.net.InetAddresses;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
@@ -48,7 +47,7 @@ public class InfoCommand extends CommonCommand {
     }
 
     final String search = parser.args.length > 0 ? parser.args[0] : sender.getName();
-    final boolean isName = !InetAddresses.isInetAddress(search);
+    final boolean isName = !IPUtils.isValid(search);
 
     if (isName && search.length() > 16) {
       sender.sendMessage(Message.getString("sender.error.invalidIp"));

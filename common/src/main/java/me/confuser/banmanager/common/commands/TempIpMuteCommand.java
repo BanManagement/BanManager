@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
@@ -45,7 +45,7 @@ public class TempIpMuteCommand extends CommonCommand {
     }
 
     final String ipStr = parser.args[0];
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = !IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("sender.error.invalidIp");

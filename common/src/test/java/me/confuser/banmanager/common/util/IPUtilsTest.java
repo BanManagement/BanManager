@@ -56,4 +56,16 @@ public class IPUtilsTest {
     assertEquals(ipv4, IPUtils.toIPAddress(ipv4).toString());
     assertEquals(ipv6, IPUtils.toIPAddress(ipv6).toString());
   }
+
+  @Test
+  public void isValid() {
+    assertTrue(IPUtils.isValid("127.0.0.1"));
+    assertTrue(IPUtils.isValid("::1"));
+
+    String ipv4 = faker.internet().ipV4Address();
+    String ipv6 = faker.internet().ipV6Address().replaceAll("0", "");
+
+    assertTrue(IPUtils.isValid(ipv4));
+    assertTrue(IPUtils.isValid(ipv6));
+  }
 }

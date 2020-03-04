@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands;
 
-import com.google.common.net.InetAddresses;
+
 import com.google.gson.stream.JsonReader;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -288,7 +288,7 @@ public class ImportCommand extends CommonCommand {
           continue;
         }
 
-        if (!InetAddresses.isInetAddress(ipStr)) {
+        if (!IPUtils.isValid(ipStr)) {
           continue;
         }
 

@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -25,7 +25,7 @@ public class UnbanIpCommand extends CommonCommand {
     }
 
     final String ipStr = parser.args[0];
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = !IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("sender.error.invalidIp");

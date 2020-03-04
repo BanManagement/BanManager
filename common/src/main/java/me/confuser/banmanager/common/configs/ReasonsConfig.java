@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common.configs;
 
-import com.google.common.base.CharMatcher;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 
@@ -28,7 +27,7 @@ public class ReasonsConfig extends Config {
     for (String reasonKey : keys) {
       String reason = conf.getString(reasonKey);
 
-      if (CharMatcher.WHITESPACE.matchesAnyOf(reasonKey)) continue;
+      if (reasonKey.chars().allMatch(Character::isWhitespace)) continue;
 
       reasons.put(reasonKey, reason);
     }

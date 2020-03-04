@@ -38,6 +38,10 @@ public class IPUtils {
     return new IPAddressNetwork.IPAddressGenerator().from(bytes).getLower();
   }
 
+  public static boolean isValid(String ip) {
+    return new IPAddressString(ip).isValid();
+  }
+
   public static IPAddress toIPAddress(String ip) {
     try {
       return new IPAddressString(ip).toAddress().getLower();

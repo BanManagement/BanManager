@@ -28,7 +28,7 @@ public class UnbanIpAllCommand extends CommonCommand {
 
     // Check if UUID vs name
     final String ipStr = parser.getArgs()[0];
-    final boolean isName = IPUtils.isValid(ipStr);
+    final boolean isName = !IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("invalidIp");

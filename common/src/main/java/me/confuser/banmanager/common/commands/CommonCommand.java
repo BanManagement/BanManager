@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import lombok.Getter;
@@ -9,8 +9,10 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -109,7 +111,7 @@ public abstract class CommonCommand {
   }
 
   public static IPAddress getIp(String ipStr) {
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = !IPUtils.isValid(ipStr);
     IPAddress ip = null;
 
     if (isName) {
