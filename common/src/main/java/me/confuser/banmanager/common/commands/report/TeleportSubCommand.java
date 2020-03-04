@@ -8,8 +8,8 @@ import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
 import me.confuser.banmanager.common.data.PlayerReportLocationData;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.SQLException;
 
@@ -57,29 +57,27 @@ public class TeleportSubCommand extends CommonSubCommand {
       }
 
       String dateTimeFormat = Message.getString("report.tp.dateTimeFormat");
-      FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
       Message.get("report.tp.notify.report")
-             .set("id", data.getReport().getId())
-             .set("player", data.getReport().getPlayer().getName())
-             .set("actor", data.getReport().getActor().getName())
-             .set("reason", data.getReport().getReason())
-             .set("created", dateFormatter
-                     .format(data.getReport().getCreated() * 1000L))
-             .sendTo(sender);
+          .set("id", data.getReport().getId())
+          .set("player", data.getReport().getPlayer().getName())
+          .set("actor", data.getReport().getActor().getName())
+          .set("reason", data.getReport().getReason())
+          .set("created", DateUtils.format(dateTimeFormat, data.getReport().getCreated()))
+          .sendTo(sender);
 
       Message.get("report.tp.notify.location")
-             .set("world", data.getWorld())
-             .set("x", data.getX())
-             .set("y", data.getY())
-             .set("z", data.getZ())
-             .sendTo(sender);
+          .set("world", data.getWorld())
+          .set("x", data.getX())
+          .set("y", data.getY())
+          .set("z", data.getZ())
+          .sendTo(sender);
 
       getPlugin().getScheduler().runSync(() -> {
         CommonPlayer player = getPlugin().getServer().getPlayer(sender.getName());
 
         player.teleport(world, data.getX(), data.getY(), data.getZ(), data.getYaw(), data
-                .getPitch());
+            .getPitch());
       });
     });
 

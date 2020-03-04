@@ -11,7 +11,6 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.NotesCommand;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.*;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -219,7 +218,6 @@ public class CommonJoinListener {
         notesItr = plugin.getPlayerNoteStorage().getNotes(id);
         ArrayList<String> notes = new ArrayList<>();
         String dateTimeFormat = Message.getString("notes.dateTimeFormat");
-        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
         while (notesItr != null && notesItr.hasNext()) {
           PlayerNoteData note = notesItr.next();
@@ -227,7 +225,7 @@ public class CommonJoinListener {
           Message noteMessage = Message.get("notes.note")
               .set("player", note.getActor().getName())
               .set("message", note.getMessage())
-              .set("created", dateFormatter.format(note.getCreated() * 1000L));
+              .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
 
           notes.add(noteMessage.toString());
         }

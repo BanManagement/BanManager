@@ -10,7 +10,7 @@ import me.confuser.banmanager.common.data.PlayerReportCommandData;
 import me.confuser.banmanager.common.data.PlayerReportCommentData;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.StringUtils;
+import me.confuser.banmanager.common.util.StringUtils;
 
 import java.sql.SQLException;
 

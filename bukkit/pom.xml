@@ -97,10 +97,6 @@
                                     <shadedPattern>me.confuser.banmanager.common.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.apache.commons.net</pattern>
-                                    <shadedPattern>me.confuser.banmanager.common.commons.net</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.apachecommons</shadedPattern>
                                 </relocation>

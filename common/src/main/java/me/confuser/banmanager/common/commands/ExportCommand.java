@@ -5,9 +5,8 @@ import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerBanData;
-import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,8 +16,8 @@ import java.nio.charset.Charset;
 
 public class ExportCommand extends CommonCommand {
 
-  private static final FastDateFormat BANNED_JSON_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss");
-  private static final FastDateFormat EXPORT_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss Z");
+  private static final String BANNED_JSON_TIME_FORMAT = "yyyy-MM-dd_HH-mm-ss";
+  private static final String EXPORT_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
   private boolean inProgress = false;
 
   public ExportCommand(BanManagerPlugin plugin) {
@@ -43,7 +42,7 @@ public class ExportCommand extends CommonCommand {
       if (parser.args[0].startsWith("play")) {
         sender.sendMessage(Message.getString("export.player.started"));
         finishedMessage = Message.get("export.player.finished");
-        fileName = "banned-players-" + BANNED_JSON_TIME_FORMAT.format(System.currentTimeMillis()) + ".json";
+        fileName = "banned-players-" + DateUtils.format(BANNED_JSON_TIME_FORMAT, System.currentTimeMillis() / 1000L) + ".json";
 
         finishedMessage.set("file", fileName);
 
@@ -58,7 +57,7 @@ public class ExportCommand extends CommonCommand {
         sender.sendMessage(Message.getString("export.ip.started"));
         finishedMessage = Message.get("export.player.finished");
 
-        fileName = "banned-ips-" + BANNED_JSON_TIME_FORMAT.format(System.currentTimeMillis()) + ".json";
+        fileName = "banned-ips-" + DateUtils.format(BANNED_JSON_TIME_FORMAT, System.currentTimeMillis() / 1000L) + ".json";
 
         finishedMessage.set("file", fileName);
 
@@ -102,14 +101,14 @@ public class ExportCommand extends CommonCommand {
       jsonWriter.beginObject();
 
       jsonWriter.name("ip").value(next.getIp().toString());
-      jsonWriter.name("created").value(EXPORT_FORMAT.format(next.getCreated() * 1000L));
+      jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
       jsonWriter.name("source").value(next.getActor().getName());
       jsonWriter.name("expires");
 
       if (next.getExpires() == 0) {
         jsonWriter.value("forever");
       } else {
-        jsonWriter.value(EXPORT_FORMAT.format(next.getExpires() * 1000L));
+        jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
       }
 
       jsonWriter.name("reason").value(next.getReason());
@@ -146,14 +145,14 @@ public class ExportCommand extends CommonCommand {
 
       jsonWriter.name("uuid").value(next.getPlayer().getUUID().toString());
       jsonWriter.name("name").value(next.getPlayer().getName());
-      jsonWriter.name("created").value(EXPORT_FORMAT.format(next.getCreated() * 1000L));
+      jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
       jsonWriter.name("source").value(next.getActor().getName());
       jsonWriter.name("expires");
 
       if (next.getExpires() == 0) {
         jsonWriter.value("forever");
       } else {
-        jsonWriter.value(EXPORT_FORMAT.format(next.getExpires() * 1000L));
+        jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
       }
 
       jsonWriter.name("reason").value(next.getReason());

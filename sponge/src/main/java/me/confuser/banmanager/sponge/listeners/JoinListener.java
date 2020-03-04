@@ -8,28 +8,17 @@ import com.maxmind.geoip2.model.CountryResponse;
 import inet.ipaddr.IPAddress;
 import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.commands.NotesCommand;
-import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
 import me.confuser.banmanager.common.util.*;
 import me.confuser.banmanager.sponge.SpongePlayer;
 import me.confuser.banmanager.sponge.SpongeServer;
-import org.apache.commons.lang3.time.FastDateFormat;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class JoinListener {
   private final CommonJoinListener listener;

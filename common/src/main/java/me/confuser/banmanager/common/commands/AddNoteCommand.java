@@ -4,7 +4,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.StringUtils;
+import me.confuser.banmanager.common.util.StringUtils;
 
 import java.sql.SQLException;
 

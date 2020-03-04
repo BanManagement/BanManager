@@ -12,7 +12,6 @@ import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 import net.kyori.text.TextComponent;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InfoCommand extends CommonCommand {
-
-  private static final FastDateFormat LAST_SEEN_COMMAND_FORMAT = FastDateFormat.getInstance("dd-MM-yyyy HH:mm:ss");
 
   public InfoCommand(BanManagerPlugin plugin) {
     super(plugin, "bminfo", true, InfoCommandParser.class, 0);
@@ -183,15 +180,14 @@ public class InfoCommand extends CommonCommand {
         }
 
         String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
-        FastDateFormat dateFormatter = FastDateFormat.getInstance(dateTimeFormat);
 
         for (HashMap<String, Object> result : results) {
           Message message = Message.get("info.history.row")
               .set("id", (int) result.get("id"))
               .set("reason", (String) result.get("reason"))
               .set("type", (String) result.get("type"))
-              .set("created", dateFormatter
-                  .format((long) result.get("created") * 1000L))
+              .set("created", DateUtils
+                  .format(dateTimeFormat, (long) result.get("created")))
               .set("actor", (String) result.get("actor"))
               .set("meta", (String) result.get("meta"));
 
@@ -222,8 +218,7 @@ public class InfoCommand extends CommonCommand {
       if (sender.hasPermission("bm.command.bminfo.connection")) {
         messages.add(Message.get("info.connection")
             .set("ip", player.getIp().toString())
-            .set("lastSeen", LAST_SEEN_COMMAND_FORMAT
-                .format(player.getLastSeen() * 1000L))
+            .set("lastSeen", DateUtils.format("dd-MM-yyyy HH:mm:ss", player.getLastSeen()))
             .toString());
       }
 
@@ -294,8 +289,7 @@ public class InfoCommand extends CommonCommand {
           messages.add(message
               .set("reason", ban.getReason())
               .set("actor", ban.getActor().getName())
-              .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                  .format(ban.getCreated() * 1000L))
+              .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
               .toString());
         }
       }
@@ -318,8 +312,7 @@ public class InfoCommand extends CommonCommand {
             .set("player", player.getName())
             .set("reason", ban.getReason())
             .set("actor", ban.getActor().getName())
-            .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                .format(ban.getCreated() * 1000L))
+            .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
             .toString());
       }
 
@@ -341,8 +334,7 @@ public class InfoCommand extends CommonCommand {
             .set("player", player.getName())
             .set("reason", mute.getReason())
             .set("actor", mute.getActor().getName())
-            .set("created", FastDateFormat.getInstance(dateTimeFormat)
-                .format(mute.getCreated() * 1000L))
+            .set("created", DateUtils.format(dateTimeFormat, mute.getCreated()))
             .toString());
       }
 
@@ -376,10 +368,8 @@ public class InfoCommand extends CommonCommand {
         PlayerHistoryData data = iterator.next();
 
         messages.add(Message.get("info.ips.row")
-            .set("join", FastDateFormat.getInstance(dateTimeFormat)
-                .format(data.getJoin() * 1000L))
-            .set("leave", FastDateFormat.getInstance(dateTimeFormat)
-                .format(data.getLeave() * 1000L))
+            .set("join", DateUtils.format(dateTimeFormat, data.getJoin()))
+            .set("leave", DateUtils.format(dateTimeFormat, data.getLeave()))
             .set("ip", data.getIp().toString())
             .toString());
       }

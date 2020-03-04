@@ -3,7 +3,7 @@ package me.confuser.banmanager.common.listeners;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.StringUtils;
+import me.confuser.banmanager.common.util.StringUtils;
 
 public class CommonCommandListener {
   private BanManagerPlugin plugin;

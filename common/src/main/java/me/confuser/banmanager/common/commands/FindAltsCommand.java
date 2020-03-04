@@ -1,9 +1,7 @@
 package me.confuser.banmanager.common.commands;
 
 
-import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
@@ -13,7 +11,6 @@ import me.confuser.banmanager.common.util.Message;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.format.TextColor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -69,7 +66,7 @@ public class FindAltsCommand extends CommonCommand {
           return;
         }
 
-        sender.sendMessage(StringUtils.join(names, ", "));
+        sender.sendMessage(String.join(", ", names));
       }
     });
 

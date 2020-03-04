@@ -2,6 +2,10 @@ package me.confuser.banmanager.common.util;
 
 import lombok.Getter;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -175,5 +179,11 @@ public class DateUtils {
       c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
     }
     return c.getTimeInMillis() / 1000L;
+  }
+
+  public static String format(String pattern, long timestamp) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+
+    return Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()).format(formatter);
   }
 }
