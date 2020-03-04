@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands.global;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class BanIpAllCommand extends CommonCommand {
 
   public BanIpAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "banipall", true);
+    super(plugin, "banipall", true, 1);
   }
 
   @Override
@@ -26,7 +26,7 @@ public class BanIpAllCommand extends CommonCommand {
     }
 
     final String ipStr = parser.getArgs()[0];
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("sender.error.invalidIp");

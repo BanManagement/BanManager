@@ -8,14 +8,13 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerBanData;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 
 public class BanAllCommand extends CommonCommand {
 
   public BanAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "banall", true);
+    super(plugin, "banall", true, 1);
   }
 
   @Override
@@ -31,7 +30,7 @@ public class BanAllCommand extends CommonCommand {
 
     // Check if UUID vs name
     final String playerName = parser.getArgs()[0];
-    final String reason = StringUtils.join(parser.getArgs(), " ", 1, parser.getArgs().length);
+    final String reason = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData player = getPlayer(sender, playerName, true);

@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands.global;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
@@ -28,7 +28,7 @@ public class UnbanIpAllCommand extends CommonCommand {
 
     // Check if UUID vs name
     final String ipStr = parser.getArgs()[0];
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("invalidIp");

@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.commands.global;
 
-import com.google.common.net.InetAddresses;
+
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class TempBanIpAllCommand extends CommonCommand {
 
   public TempBanIpAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempbanipall", true);
+    super(plugin, "tempbanipall", true, 2);
   }
 
   @Override
@@ -28,7 +28,7 @@ public class TempBanIpAllCommand extends CommonCommand {
     }
 
     final String ipStr = parser.getArgs()[0];
-    final boolean isName = !InetAddresses.isInetAddress(ipStr);
+    final boolean isName = IPUtils.isValid(ipStr);
 
     if (isName && ipStr.length() > 16) {
       Message message = Message.get("sender.error.invalidIp");
@@ -54,7 +54,7 @@ public class TempBanIpAllCommand extends CommonCommand {
 
     final long expires = expiresCheck;
 
-    final String reason = parser.getReason(2).getMessage();
+    final String reason = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
       final IPAddress ip = getIp(ipStr);
