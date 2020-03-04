@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.NameBanData;
@@ -97,8 +98,8 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(2)), results.getString(3),
               IPUtils.toIPAddress(results.getBytes(4)),
               results.getLong(5));
-        } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for ban " + results.getInt(0) + ", ignored");
+        } catch (NullPointerException | AddressValueException e) {
+          plugin.getLogger().warning("Missing or invalid actor for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

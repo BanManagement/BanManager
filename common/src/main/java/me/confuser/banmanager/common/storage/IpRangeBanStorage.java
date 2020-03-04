@@ -15,6 +15,7 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.AddressValueException;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
@@ -109,8 +110,8 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
               IPUtils.toIPAddress(results.getBytes(3)),
               results.getLong(4));
 
-        } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for ip ban " + results.getInt(0) + ", ignored");
+        } catch (NullPointerException | AddressValueException e) {
+          plugin.getLogger().warning("Missing or invalid actor for ip ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

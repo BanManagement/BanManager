@@ -106,7 +106,7 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
               IPUtils.toIPAddress(results.getBytes(3)),
               results.getLong(4));
         } catch (NullPointerException | AddressValueException e) {
-          plugin.getLogger().warning("Missing player for ban " + results.getInt(0) + ", ignored");
+          plugin.getLogger().warning("Missing or invalid player for ban " + results.getInt(0) + ", ignored");
           continue;
         }
 

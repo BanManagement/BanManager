@@ -20,7 +20,7 @@ public class StorageUtils {
   public static void convertIpColumn(BanManagerPlugin plugin, String table, String column, String idType) {
     try (DatabaseConnection connection = plugin.getLocalConn().getReadWriteConnection(table)) {
       if (connection.update("ALTER TABLE `" + table + "` CHANGE COLUMN `" + column + "` `" + column + "` VARBINARY(16) NOT NULL", null, null) != 0) {
-        plugin.getLogger().info("Converting " + table + " " + column + " data to support ipv6");
+          plugin.getLogger().info("Converting " + table + " " + column + " data to support ipv6");
 
         DatabaseResults results = connection
             .compileStatement("SELECT `id`, INET_NTOA(HEX(UNHEX(CAST(" + column + " AS UNSIGNED)))) FROM `" + table + "`", StatementBuilder

@@ -11,6 +11,7 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+import inet.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -114,8 +115,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
           player = new PlayerData(UUIDUtils.fromBytes(results.getBytes(1)), results.getString(2),
               IPUtils.toIPAddress(results.getBytes(3)),
               results.getLong(4));
-        } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing player for mute " + results.getInt(0) + ", ignored");
+        } catch (NullPointerException | AddressValueException e) {
+          plugin.getLogger().warning("Missing or invalid player for mute " + results.getInt(0) + ", ignored");
           continue;
         }
 
@@ -125,8 +126,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
           actor = new PlayerData(UUIDUtils.fromBytes(results.getBytes(5)), results.getString(6),
               IPUtils.toIPAddress(results.getBytes(7)),
               results.getLong(8));
-        } catch (NullPointerException e) {
-          plugin.getLogger().warning("Missing actor for mute " + results.getInt(0) + ", ignored");
+        } catch (NullPointerException | AddressValueException e) {
+          plugin.getLogger().warning("Missing or invalid actor for mute " + results.getInt(0) + ", ignored");
           continue;
         }
 
