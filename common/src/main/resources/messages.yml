@@ -369,7 +369,7 @@ messages:
         report: '&7#[id] &6[actor] reported [player] for &4[reason]&6 at [created]'
         location: '[world] - [x], [y], [z]'
 
-  adnoteall:
+  addnoteall:
     notify: '&c[player] will have a new attached by [actor]: [message]'
 
   banlist:
