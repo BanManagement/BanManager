@@ -3,8 +3,7 @@ package me.confuser.banmanager.common.listeners;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.j256.ormlite.dao.CloseableIterator;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
-import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.db.model.CountryResponse;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
@@ -308,7 +307,7 @@ public class CommonJoinListener {
   public void onPlayerLogin(final CommonPlayer player, CommonJoinHandler handler) {
     if (plugin.getGeoIpConfig().isEnabled() && !player.hasPermission("bm.exempt.country")) {
       try {
-        CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().country(player.getAddress());
+        CountryResponse countryResponse = plugin.getGeoIpConfig().getCountryDatabase().getCountry(player.getAddress());
 
         if (!plugin.getGeoIpConfig().isCountryAllowed(countryResponse)) {
           Message message = Message.get("deniedCountry")
@@ -318,7 +317,7 @@ public class CommonJoinListener {
           return;
         }
 
-      } catch (IOException | GeoIp2Exception e) {
+      } catch (IOException e) {
       }
     }
 

@@ -1,7 +1,10 @@
 package me.confuser.banmanager.common.configs;
 
-import com.maxmind.geoip2.DatabaseReader;
-import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.db.GeoIp2Provider;
+import com.maxmind.db.cache.CHMCache;
+import com.maxmind.db.Reader.FileMode;
+import com.maxmind.db.Reader;
+import com.maxmind.db.model.CountryResponse;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -19,9 +22,9 @@ public class GeoIpConfig extends Config {
   @Getter
   private boolean enabled = false;
   @Getter
-  private DatabaseReader cityDatabase;
+  private GeoIp2Provider cityDatabase;
   @Getter
-  private DatabaseReader countryDatabase;
+  private GeoIp2Provider countryDatabase;
   private HashSet<String> countries;
   @Getter
   private String type;
@@ -86,7 +89,7 @@ public class GeoIpConfig extends Config {
     if (cityFile.exists()) {
       logger.info("Loading city database");
       try {
-        cityDatabase = new DatabaseReader.Builder(cityFile).build();
+        cityDatabase =  new Reader(cityFile, FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
         logger.severe("Failed loading city database");
         enabled = false;
@@ -98,7 +101,7 @@ public class GeoIpConfig extends Config {
     if (countryFile.exists()) {
       logger.info("Loading country database");
       try {
-        countryDatabase = new DatabaseReader.Builder(countryFile).build();
+        countryDatabase = new Reader(cityFile, FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
         logger.severe("Failed loading country database");
         enabled = false;

@@ -1,11 +1,5 @@
 package me.confuser.banmanager.sponge.listeners;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.j256.ormlite.dao.CloseableIterator;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
-import com.maxmind.geoip2.model.CountryResponse;
-import inet.ipaddr.IPAddress;
 import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;

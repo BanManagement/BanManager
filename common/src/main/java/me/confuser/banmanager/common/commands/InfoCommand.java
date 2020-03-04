@@ -1,9 +1,8 @@
 package me.confuser.banmanager.common.commands;
 
+import com.google.gson.JsonElement;
 import com.j256.ormlite.dao.CloseableIterator;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
-import com.maxmind.geoip2.model.CityResponse;
-import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.db.model.CountryResponse;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
@@ -223,23 +222,29 @@ public class InfoCommand extends CommonCommand {
       }
 
       if (getPlugin().getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
-        Message message = Message.get("info.geoip");
 
         try {
           InetAddress ip = player.getIp().toInetAddress();
+          CountryResponse countryResponse = getPlugin().getGeoIpConfig().getCountryDatabase().getCountry(ip);
 
-          CountryResponse countryResponse = getPlugin().getGeoIpConfig().getCountryDatabase().country(ip);
-          String country = countryResponse.getCountry().getName();
-          String countryIso = countryResponse.getCountry().getIsoCode();
+          if (countryResponse != null) {
+            String country = countryResponse.getCountry().getName();
+            String countryIso = countryResponse.getCountry().getIsoCode();
+            String city = "";
+            JsonElement cityResponse = getPlugin().getGeoIpConfig().getCityDatabase().get(ip);
 
-          CityResponse cityResponse = getPlugin().getGeoIpConfig().getCityDatabase().city(ip);
-          String city = cityResponse.getCity().getName();
+            if (cityResponse != null && !cityResponse.isJsonNull()) {
+              city = cityResponse.getAsJsonObject().get("city").getAsJsonObject().get("names").getAsJsonObject().get("en").getAsString();
+            }
 
-          message.set("country", country)
-              .set("countryIso", countryIso)
-              .set("city", city);
-          messages.add(message);
-        } catch (IOException | GeoIp2Exception ignored) {
+            Message message = Message.get("info.geoip");
+
+            message.set("country", country)
+                .set("countryIso", countryIso)
+                .set("city", city);
+            messages.add(message.toString());
+          }
+        } catch (IOException e) {
         }
 
       }
@@ -353,6 +358,8 @@ public class InfoCommand extends CommonCommand {
         sender.sendMessage((String) message);
       } else if (message instanceof TextComponent) {
         ((CommonPlayer) sender).sendJSONMessage((TextComponent) message);
+      } else {
+        getPlugin().getLogger().warning("Invalid info message, please report the following as a bug: " + message.toString());
       }
     }
   }
