@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class TempMuteAllCommand extends CommonCommand {
 
   public TempMuteAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "tempmuteall", true);
+    super(plugin, "tempmuteall", true, 2);
   }
 
   @Override
@@ -55,7 +55,7 @@ public class TempMuteAllCommand extends CommonCommand {
 
     final long expires = expiresCheck;
 
-    final String reason = parser.getReason(2).getMessage();
+    final String reason = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData player = getPlayer(sender, playerName, true);

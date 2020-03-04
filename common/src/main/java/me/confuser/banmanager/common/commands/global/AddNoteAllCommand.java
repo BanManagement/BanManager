@@ -8,14 +8,13 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerNoteData;
 import me.confuser.banmanager.common.util.Message;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 
 public class AddNoteAllCommand extends CommonCommand {
 
   public AddNoteAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "addnoteall", true);
+    super(plugin, "addnoteall", true, 1);
   }
 
   @Override
@@ -31,7 +30,7 @@ public class AddNoteAllCommand extends CommonCommand {
 
     // Check if UUID vs name
     final String playerName = parser.getArgs()[0];
-    final String message = StringUtils.join(parser.getArgs(), " ", 1, parser.getArgs().length);
+    final String message = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData player = getPlayer(sender, playerName, true);
