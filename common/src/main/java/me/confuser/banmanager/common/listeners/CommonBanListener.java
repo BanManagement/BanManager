@@ -34,7 +34,7 @@ public class CommonBanListener {
         .set("actor", data.getActor().getName())
         .set("reason", data.getReason());
 
-    if (silent) {
+    if (!silent) {
       plugin.getServer().broadcast(message.toString(), broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
