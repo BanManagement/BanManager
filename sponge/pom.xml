@@ -116,8 +116,8 @@
                                     <shadedPattern>me.confuser.banmanager.common.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.apache.commons</pattern>
-                                    <shadedPattern>me.confuser.banmanager.common.apachecommons</shadedPattern>
+                                    <pattern>org.apache.commons.compress</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.apachecommons.compress</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.common</pattern>
@@ -214,7 +214,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-sponge</artifactId>
-            <version>1.7</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
