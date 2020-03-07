@@ -43,7 +43,8 @@ public class BMSpongePlugin {
 
   private CommonLogger logger;
   private BanManagerPlugin plugin;
-  private final Metrics2 metrics;
+  @Inject
+  private Metrics2 metrics;
 
   @Inject
   @ConfigDir(sharedRoot = false)
@@ -64,9 +65,8 @@ public class BMSpongePlugin {
   };
 
   @Inject
-  public BMSpongePlugin(Logger logger, Metrics2.Factory metricsFactory) {
+  public BMSpongePlugin(Logger logger) {
     this.logger = new PluginLogger(logger);
-    metrics = metricsFactory.make(6413);
   }
 
   @Listener
