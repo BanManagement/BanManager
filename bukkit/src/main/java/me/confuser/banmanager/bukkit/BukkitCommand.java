@@ -32,7 +32,7 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
       if (sender.hasPermission(this.command.getPermission())) {
         return this.command.onCommand(commonSender, this.command.getParser(args));
       } else {
-        sender.sendMessage("&cYou do not have permission to use this command");
+        commonSender.sendMessage("&cYou do not have permission to use this command");
         return true;
       }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
