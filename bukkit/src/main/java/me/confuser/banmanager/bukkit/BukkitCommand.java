@@ -29,7 +29,7 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
     CommonSender commonSender = getSender(sender);
 
     try {
-      if (sender.hasPermission(command.getPermission())) {
+      if (sender.hasPermission(this.command.getPermission())) {
         return this.command.onCommand(commonSender, this.command.getParser(args));
       } else {
         sender.sendMessage("&cYou do not have permission to use this command");
