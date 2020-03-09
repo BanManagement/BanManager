@@ -29,7 +29,12 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
     CommonSender commonSender = getSender(sender);
 
     try {
-      return this.command.onCommand(commonSender, this.command.getParser(args));
+      if (sender.hasPermission(command.getPermission())) {
+        return this.command.onCommand(commonSender, this.command.getParser(args));
+      } else {
+        sender.sendMessage("&cYou do not have permission to use this command");
+        return true;
+      }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       e.printStackTrace();
     }
@@ -53,6 +58,6 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
   public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
     if (!this.command.isEnableTabCompletion()) return Collections.emptyList();
 
-    return this.command.handlePlayerNameTabComplete(getSender(commandSender),args);
+    return this.command.handlePlayerNameTabComplete(getSender(commandSender), args);
   }
 }
