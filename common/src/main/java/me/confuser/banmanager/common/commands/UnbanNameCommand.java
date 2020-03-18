@@ -20,7 +20,19 @@ public class UnbanNameCommand extends CommonCommand {
     }
 
     final String name = parser.args[0];
-    final String reason = parser.args.length > 1 ? parser.getReason(1).getMessage() : "";
+    final String reason;
+
+    if(parser.args.length > 1) {
+      if(parser.isInvalidReason()) {
+        Message.get("sender.error.invalidReason")
+                .set("reason", parser.getReason().getMessage())
+                .sendTo(sender);
+        return true;
+      }
+      reason = parser.getReason(1).getMessage();
+    } else {
+      reason = "";
+    }
 
     getPlugin().getScheduler().runAsync(() -> {
       if (!getPlugin().getNameBanStorage().isBanned(name)) {
