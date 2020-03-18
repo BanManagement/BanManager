@@ -74,7 +74,15 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     } else if (!console.getName().equals(name)) {
       console.setName(name);
       plugin.getLogger().info("Console name change detected, updating database");
-      update(console);
+
+      // Confirm player with name does not already exist
+      PlayerData data = retrieve(name, false);
+
+      if (data != null && data.getName().equals(name)) {
+        plugin.getLogger().severe("Unable to update Console name as a player already exists with this name");
+      } else {
+        update(console);
+      }
     }
   }
 
