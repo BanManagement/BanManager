@@ -1,12 +1,14 @@
 package me.confuser.banmanager.sponge;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+
+import java.sql.SQLException;
 
 public class SpongeSender implements CommonSender {
 
@@ -47,6 +49,12 @@ public class SpongeSender implements CommonSender {
   public PlayerData getData() {
     if (isConsole()) return plugin.getPlayerStorage().getConsole();
 
-    return CommonCommand.getPlayer(this, getName(), false);
+    try {
+      return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(((Player) sender).getUniqueId()));
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sender.sendMessage(SpongeServer.formatMessage(Message.get("sender.error.exception").toString()));
+      return null;
+    }
   }
 }
