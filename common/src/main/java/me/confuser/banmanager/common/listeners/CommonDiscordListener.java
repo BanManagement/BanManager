@@ -1,9 +1,7 @@
 package me.confuser.banmanager.common.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.data.PlayerBanData;
-import me.confuser.banmanager.common.data.PlayerMuteData;
-import me.confuser.banmanager.common.data.PlayerWarnData;
+import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
@@ -31,6 +29,38 @@ public class CommonDiscordListener {
         .set("playerId", ban.getPlayer().getUUID().toString())
         .set("actor", ban.getActor().getName())
         .set("reason", ban.getReason());
+
+    return new Object[]{channelName, message};
+  }
+
+  public Object[] notifyOnBan(IpBanData ban) {
+    String channelName;
+    Message message;
+
+    if (ban.getExpires() == 0) {
+      channelName = plugin.getDiscordConfig().getType("banip").getChannel();
+      message = plugin.getDiscordConfig().getType("banip").getMessage();
+    } else {
+      channelName = plugin.getDiscordConfig().getType("tempbanip").getChannel();
+      message = plugin.getDiscordConfig().getType("tempbanip").getMessage();
+      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
+
+    message.set("ip", ban.getIp().toString())
+        .set("actor", ban.getActor().getName())
+        .set("reason", ban.getReason());
+
+    return new Object[]{channelName, message};
+  }
+
+  public Object[] notifyOnKick(PlayerKickData kick) {
+    String channelName = plugin.getDiscordConfig().getType("kick").getChannel();
+    Message message = plugin.getDiscordConfig().getType("kick").getMessage();
+
+    message.set("player", kick.getPlayer().getName())
+        .set("playerId", kick.getPlayer().getUUID().toString())
+        .set("actor", kick.getActor().getName())
+        .set("reason", kick.getReason());
 
     return new Object[]{channelName, message};
   }

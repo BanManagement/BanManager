@@ -7,6 +7,15 @@ punishments:
   tempban:
     channel: 'replaceMe'
     message: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
+  banip:
+    channel: 'replaceMe'
+    message: '&6[ip] has been permanently banned by [actor] for &4[reason]'
+  tempbanip:
+    channel: 'replaceMe'
+    message: '&6[ip] has been temporarily banned for [expires] by [actor] for &4[reason]'
+  kick:
+    channel: 'replaceMe'
+    message: '&6[player] has been kicked by [actor] for &4[reason]'
   mute:
     channel: 'replaceMe'
     message: '&6[player] has been permanently muted by [actor] for &4[reason]'
