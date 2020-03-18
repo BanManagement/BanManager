@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public abstract class CommonCommand {
 
@@ -155,29 +156,38 @@ public abstract class CommonCommand {
 
   public List<String> handlePlayerNameTabComplete(CommonSender sender, String[] args) {
     ArrayList<String> mostLike = new ArrayList<>();
+    if(args.length == 1) {
+      if (isValidNameDelimiter(args[0])) {
+        String[] names = splitNameDelimiter(args[0]);
 
-    if (isValidNameDelimiter(args[0])) {
-      String[] names = splitNameDelimiter(args[0]);
+        String lookup = names[names.length - 1];
 
-      String lookup = names[names.length - 1];
-
-      if (plugin.getConfig().isOfflineAutoComplete()) {
-        for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
-          mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+        if (plugin.getConfig().isOfflineAutoComplete()) {
+          for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(lookup)) {
+            mostLike.add(args[0] + charSequence.toString().substring(lookup.length()));
+          }
+        }
+      } else if (plugin.getConfig().isOfflineAutoComplete()) {
+        for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
+          mostLike.add(charSequence.toString());
+        }
+      } else {
+        CommonPlayer senderPlayer = sender instanceof CommonPlayer ? (CommonPlayer) sender : null;
+        String lower = args[0].toLowerCase();
+        for (CommonPlayer player : plugin.getServer().getOnlinePlayers()) {
+          if ((senderPlayer == null || senderPlayer.canSee(player)) && player.getName().toLowerCase().startsWith(lower)) {
+            mostLike.add(player.getName());
+          }
         }
       }
-
-    } else if (plugin.getConfig().isOfflineAutoComplete()) {
-      for (CharSequence charSequence : plugin.getPlayerStorage().getAutoCompleteTree().getKeysStartingWith(args[0])) {
-        mostLike.add(charSequence.toString());
-      }
-    } else {
-      CommonPlayer senderPlayer = sender instanceof CommonPlayer ? (CommonPlayer) sender : null;
-      String lower = args[0].toLowerCase();
-      for (CommonPlayer player : plugin.getServer().getOnlinePlayers()) {
-        if ((senderPlayer == null || senderPlayer.canSee(player)) && player.getName().toLowerCase().startsWith(lower)) {
-          mostLike.add(player.getName());
-        }
+    }
+    if(args.length == 2) {
+      // Reasons?
+      // TODO: Only allow reasons for valid commands.
+      String lookup = args[1];
+      if(lookup.startsWith("#")) {
+        return plugin.getReasonsConfig().getReasons().keySet().stream().map(k -> "#" + k)
+                .filter(k -> k.startsWith(lookup)).collect(Collectors.toList());
       }
     }
 
