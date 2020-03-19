@@ -78,7 +78,11 @@ public class CommandParser {
       String replace = plugin.getReasonsConfig().getReason(key);
 
       if (replace != null) reason = reason.replace("#" + key, replace);
-      else if(plugin.getConfig().isBlockInvalidReasons()) invalidReason = true;
+      if (replace != null) {
+        reason = reason.replace("#" + key, replace);
+      } else if(plugin.getConfig().isBlockInvalidReasons()) {
+        invalidReason = true;
+      }
     }
 
     for (String note : notes) {
