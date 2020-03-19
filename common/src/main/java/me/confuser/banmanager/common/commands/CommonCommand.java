@@ -181,7 +181,7 @@ public abstract class CommonCommand {
         }
       }
     }
-    if(args.length == 2) {
+    if(args.length > 1) {
       // Reasons?
       // TODO: Only allow reasons for valid commands.
       String lookup = args[1];
