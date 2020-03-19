@@ -1,5 +1,6 @@
 package me.confuser.banmanager.bukkit;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -14,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class BukkitPlayer implements CommonPlayer {
@@ -61,7 +63,13 @@ public class BukkitPlayer implements CommonPlayer {
   }
 
   public PlayerData getData() {
-    return CommonCommand.getPlayer(this, getName(), false);
+    try {
+      return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(Message.get("sender.error.exception").toString());
+      return null;
+    }
   }
 
   public boolean isOnlineMode() {
