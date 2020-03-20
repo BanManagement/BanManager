@@ -27,6 +27,13 @@ public class BanNameCommand extends CommonCommand {
       return false;
     }
 
+    if (parser.isInvalidReason()) {
+      Message.get("sender.error.invalidReason")
+              .set("reason", parser.getReason().getMessage())
+              .sendTo(sender);
+      return true;
+    }
+
     final String name = parser.args[0];
     final Reason reason = parser.getReason();
 

@@ -33,6 +33,13 @@ public class TempIpRangeBanCommand extends CommonCommand {
       return false;
     }
 
+    if (parser.isInvalidReason()) {
+      Message.get("sender.error.invalidReason")
+              .set("reason", parser.getReason().getMessage())
+              .sendTo(sender);
+      return true;
+    }
+
     IPAddressString ip = new IPAddressString(parser.args[0]);
 
     if (!ip.isSequential()) {

@@ -98,6 +98,10 @@ public class CloseSubCommand extends CommonSubCommand {
 
         getPlugin().getServer().broadcast(message, "bm.notify.report.closed", sender);
       } else {
+        if(parser.isInvalidReason()) {
+          sender.sendMessage(Message.getString("ban.error.invalidReason"));
+          return;
+        }
         String comment = parser.getReason(1).getMessage();
         PlayerReportCommentData commentData = new PlayerReportCommentData(data, actor, comment);
 

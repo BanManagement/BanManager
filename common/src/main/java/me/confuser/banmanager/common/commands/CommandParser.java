@@ -29,6 +29,9 @@ public class CommandParser {
   @Getter
   private Reason reason;
 
+  @Getter
+  private boolean invalidReason = false;
+
 
   public CommandParser(BanManagerPlugin plugin, String[] args) {
     this.plugin = plugin;
@@ -75,6 +78,11 @@ public class CommandParser {
       String replace = plugin.getReasonsConfig().getReason(key);
 
       if (replace != null) reason = reason.replace("#" + key, replace);
+      if (replace != null) {
+        reason = reason.replace("#" + key, replace);
+      } else if(plugin.getConfig().isBlockInvalidReasons()) {
+        invalidReason = true;
+      }
     }
 
     for (String note : notes) {

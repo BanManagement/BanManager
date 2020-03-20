@@ -48,6 +48,7 @@ messages:
       offlinePermission: '&cYou are not allowed to perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
+      invalidReason: '&c[reason] is no valid reason.'
   # Commands
   alts:
     header: 'Possible alts found:'

@@ -21,6 +21,13 @@ public class KickCommand extends CommonCommand {
     if (parser.getArgs().length != 1) {
       parser = new CommandParser(getPlugin(), parser.getArgs(), 1);
       isSilent = parser.isSilent();
+
+      if (parser.isInvalidReason()) {
+        Message.get("sender.error.invalidReason")
+                .set("reason", parser.getReason().getMessage())
+                .sendTo(sender);
+        return true;
+      }
     } else {
       isSilent = false;
     }
