@@ -8,10 +8,13 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
 
-public class BungeeCommand extends Command {
+public class BungeeCommand extends Command implements TabExecutor {
   private CommonCommand command;
   private BMBungeePlugin plugin;
 
@@ -49,5 +52,12 @@ public class BungeeCommand extends Command {
 
   public void register() {
     ProxyServer.getInstance().getPluginManager().registerCommand(plugin, this);
+  }
+
+  @Override
+  public Iterable<String> onTabComplete(CommandSender commandSender, String[] args) {
+    if (!this.command.isEnableTabCompletion()) return Collections.emptyList();
+
+    return this.command.handlePlayerNameTabComplete(getSender(commandSender), args);
   }
 }

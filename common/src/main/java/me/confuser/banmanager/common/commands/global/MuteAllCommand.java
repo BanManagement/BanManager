@@ -30,6 +30,13 @@ public class MuteAllCommand extends CommonCommand {
       return false;
     }
 
+    if (parser.isInvalidReason()) {
+      Message.get("sender.error.invalidReason")
+              .set("reason", parser.getReason().getMessage())
+              .sendTo(sender);
+      return true;
+    }
+
     if (parser.getArgs()[0].equalsIgnoreCase(sender.getName())) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;

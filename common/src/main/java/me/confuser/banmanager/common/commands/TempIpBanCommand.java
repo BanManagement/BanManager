@@ -32,6 +32,13 @@ public class TempIpBanCommand extends CommonCommand {
       return false;
     }
 
+    if (parser.isInvalidReason()) {
+      Message.get("sender.error.invalidReason")
+              .set("reason", parser.getReason().getMessage())
+              .sendTo(sender);
+      return true;
+    }
+
     final String ipStr = parser.args[0];
     final boolean isName = !IPUtils.isValid(ipStr);
 
