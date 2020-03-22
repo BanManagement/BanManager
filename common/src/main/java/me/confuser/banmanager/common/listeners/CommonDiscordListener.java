@@ -5,6 +5,8 @@ import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
+import java.util.List;
+
 public class CommonDiscordListener {
   private BanManagerPlugin plugin;
 
@@ -34,6 +36,16 @@ public class CommonDiscordListener {
   }
 
   public Object[] notifyOnBan(IpBanData ban) {
+    List<PlayerData> players = plugin.getPlayerStorage().getDuplicates(ban.getIp());
+    StringBuilder playerNames = new StringBuilder();
+
+    for (PlayerData player : players) {
+      playerNames.append(player.getName());
+      playerNames.append(", ");
+    }
+
+    if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
+
     String channelName;
     Message message;
 
@@ -48,7 +60,8 @@ public class CommonDiscordListener {
 
     message.set("ip", ban.getIp().toString())
         .set("actor", ban.getActor().getName())
-        .set("reason", ban.getReason());
+        .set("reason", ban.getReason())
+        .set("players", playerNames.toString());
 
     return new Object[]{channelName, message};
   }
