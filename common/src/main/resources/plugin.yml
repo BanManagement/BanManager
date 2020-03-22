@@ -575,7 +575,7 @@ permissions:
     description: Allows you to clear a player's ban records
     default: op
   bm.command.clear.baniprecords:
-    description: Allows you to clear an ip's ban records
+    description: Allows you to clear a player's ip ban records
     default: op
   bm.command.clear.kicks:
     description: Allows you to clear a player's kick records
