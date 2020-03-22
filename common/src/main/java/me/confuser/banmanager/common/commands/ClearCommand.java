@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ public class ClearCommand extends CommonCommand {
 
     {
       add("banrecords");
+      add("baniprecords");
       add("kicks");
       add("muterecords");
       add("notes");
@@ -32,7 +34,6 @@ public class ClearCommand extends CommonCommand {
 
     // Check if UUID vs name
     final String playerName = parser.args[0];
-    final boolean isUUID = playerName.length() > 16;
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData player = getPlayer(sender, playerName, true);
@@ -69,6 +70,10 @@ public class ClearCommand extends CommonCommand {
           switch (type) {
             case "banrecords":
               getPlugin().getPlayerBanRecordStorage().deleteAll(player);
+              break;
+
+            case "baniprecords":
+              getPlugin().getIpBanRecordStorage().deleteAll(player.getIp());
               break;
 
             case "kicks":

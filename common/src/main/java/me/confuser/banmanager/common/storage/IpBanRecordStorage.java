@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -80,5 +81,13 @@ public class IpBanRecordStorage extends BaseDaoImpl<IpBanRecord, Integer> {
     if (cleanup.getDays() == 0) return;
 
     updateRaw("DELETE FROM " + getTableInfo().getTableName() + " WHERE created < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL '" + cleanup.getDays() + "' DAY)");
+  }
+
+  public int deleteAll(IPAddress ip) throws SQLException {
+    DeleteBuilder<IpBanRecord, Integer> builder = deleteBuilder();
+
+    builder.where().eq("ip", ip);
+
+    return builder.delete();
   }
 }
