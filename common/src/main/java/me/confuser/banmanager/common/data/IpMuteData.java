@@ -83,7 +83,7 @@ public class IpMuteData {
     return mute.getReason().equals(this.reason)
         && mute.getExpires() == expires
         && mute.getCreated() == this.created
-        && mute.getIp() == this.ip
+        && mute.getIp().equals(this.ip)
         && mute.getActor().getUUID().equals(this.actor.getUUID());
   }
 }

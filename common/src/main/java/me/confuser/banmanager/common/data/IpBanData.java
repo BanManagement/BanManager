@@ -81,7 +81,7 @@ public class IpBanData {
     return ban.getReason().equals(this.reason)
             && ban.getExpires() == expires
             && ban.getCreated() == this.created
-            && ban.getIp() == this.ip
+            && ban.getIp().equals(this.ip)
             && ban.getActor().getUUID().equals(this.actor.getUUID());
   }
 }
