@@ -238,6 +238,17 @@ public class BmAPI {
   }
 
   /**
+   * Mute an IP.
+   *
+   * @param mute   IpMuteData
+   * @return Returns true if the mute is successful
+   * @throws SQLException
+   */
+  public static boolean mute(IpMuteData mute) throws SQLException {
+    return plugin.getIpMuteStorage().mute(mute);
+  }
+
+  /**
    * @param mute  PlayerMuteData
    * @param actor Who unmuted the player
    * @return Returns true if unmute successful
@@ -245,6 +256,16 @@ public class BmAPI {
    */
   public static boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
     return plugin.getPlayerMuteStorage().unmute(mute, actor);
+  }
+
+  /**
+   * @param mute   IP Mute record
+   * @param actor Who unmuted the ip
+   * @return Returns true if unmute is successful
+   * @throws SQLException
+   */
+  public static boolean unmute(IpMuteData mute, PlayerData actor) throws SQLException {
+    return plugin.getIpMuteStorage().unmute(mute, actor);
   }
 
   /**
@@ -267,6 +288,15 @@ public class BmAPI {
     return plugin.getPlayerMuteStorage().isMuted(name);
   }
 
+  /**
+   * Thread safe
+   *
+   * @param ip IP address
+   * @return Returns true if IP address muted
+   */
+  public static boolean isMuted(IPAddress ip) {
+    return plugin.getIpMuteStorage().isMuted(ip);
+  }
 
   /**
    * Thread safe

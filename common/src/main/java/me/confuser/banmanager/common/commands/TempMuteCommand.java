@@ -169,7 +169,7 @@ public class TempMuteCommand extends CommonCommand {
 
         CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(player.getUUID());
 
-        if (isSoft || !onlinePlayer.isOnline()) return;
+        if (isSoft || onlinePlayer == null) return;
 
         Message muteMessage = Message.get("tempmute.player.disallowed")
                                      .set("displayName", onlinePlayer.getDisplayName())
