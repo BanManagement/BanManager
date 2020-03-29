@@ -184,7 +184,7 @@ public abstract class CommonCommand {
     if(args.length > 1) {
       // Reasons?
       // TODO: Only allow reasons for valid commands.
-      String lookup = args[1];
+      String lookup = args[args.length - 1];
       if(lookup.startsWith("#")) {
         return plugin.getReasonsConfig().getReasons().keySet().stream().map(k -> "#" + k)
                 .filter(k -> k.startsWith(lookup)).collect(Collectors.toList());
