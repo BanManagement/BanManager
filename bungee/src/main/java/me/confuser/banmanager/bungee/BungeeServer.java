@@ -1,10 +1,7 @@
 package me.confuser.banmanager.bungee;
 
 import me.confuser.banmanager.bungee.api.events.*;
-import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
@@ -15,8 +12,11 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.chat.ComponentSerializer;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -215,4 +215,20 @@ public class BungeeServer implements CommonServer {
   public static BaseComponent[] formatMessage(TextComponent message) {
     return ComponentSerializer.parse(GsonComponentSerializer.INSTANCE.serialize(message));
   }
+
+  @Override
+  public CommonExternalCommand getPluginCommand(String commandName) {
+    // @TODO Seems like BungeeCord doesn't expose an easy way to retrieve a command by name?
+    Map.Entry<String, Command> command = ProxyServer.getInstance().getPluginManager().getCommands().stream()
+        .filter(cmd -> cmd.getValue().getName().equals(commandName))
+        .findFirst()
+        .orElse(null);
+
+    if (command == null) return null;
+
+    return new CommonExternalCommand(null, command.getValue().getName(), Arrays.asList(command.getValue().getAliases()));
+  }
 }
+
+
+

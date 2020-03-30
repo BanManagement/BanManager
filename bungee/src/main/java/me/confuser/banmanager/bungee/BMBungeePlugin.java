@@ -71,6 +71,19 @@ public class BMBungeePlugin extends Plugin {
     if (bungeeConfig.isCommandsEnabled()) setupCommands();
 
     setupRunnables();
+
+    plugin.getLogger().info("The following commands are blocked whilst muted:");
+    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getMutedBlacklistCommands());
+
+    plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
+  }
+
+  @Override
+  public void onDisable() {
+    getProxy().getScheduler().cancel(this);
+
+    plugin.disable();
   }
 
   private void setupCommands() {

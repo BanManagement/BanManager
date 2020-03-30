@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.api.events.CommonEvent;
+import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import net.kyori.text.TextComponent;
 
@@ -26,4 +27,6 @@ public interface CommonServer {
   CommonWorld getWorld(String name);
 
   CommonEvent callEvent(String name, Object... args);
+
+  CommonExternalCommand getPluginCommand(String commandName);
 }
