@@ -15,6 +15,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -103,6 +104,15 @@ public class BMSpongePlugin {
     setupListeners();
     setupCommands();
     setupRunnables();
+  }
+
+  @Listener
+  public void onStart(GameLoadCompleteEvent event) {
+    plugin.getLogger().info("The following commands are blocked whilst muted:");
+    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getMutedBlacklistCommands());
+
+    plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
   }
 
   public CommonLogger getLogger() {

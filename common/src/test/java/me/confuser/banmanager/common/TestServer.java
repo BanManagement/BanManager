@@ -78,4 +78,9 @@ public class TestServer implements CommonServer {
   public void enable(BanManagerPlugin plugin) {
     this.plugin = plugin;
   }
+
+  @Override
+  public CommonExternalCommand getPluginCommand(String commandName) {
+    return null;
+  }
 }

@@ -102,6 +102,14 @@ public class BMBukkitPlugin extends JavaPlugin {
       pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
     }
 
+    Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+      plugin.getLogger().info("The following commands are blocked whilst muted:");
+      plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getMutedBlacklistCommands());
+
+      plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+      plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
+    });
+
     return pluginInfo;
   }
 

@@ -1,23 +1,19 @@
 package me.confuser.banmanager.sponge;
 
-import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.sponge.api.events.*;
 import net.kyori.text.TextComponent;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SpongeServer implements CommonServer {
@@ -210,5 +206,16 @@ public class SpongeServer implements CommonServer {
     }
 
     return commonEvent;
+  }
+
+  @Override
+  public CommonExternalCommand getPluginCommand(String commandName) {
+    Optional<? extends CommandMapping> commandMapping = Sponge.getCommandManager().get(commandName);
+
+    if (!commandMapping.isPresent()) return null;
+
+    CommandMapping cmd = commandMapping.get();
+
+    return new CommonExternalCommand(null, cmd.getPrimaryAlias(), new ArrayList<>(cmd.getAllAliases()));
   }
 }

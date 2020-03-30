@@ -1,10 +1,14 @@
 package me.confuser.banmanager.common.configs;
 
 import lombok.Getter;
+import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.CommonExternalCommand;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -114,57 +118,76 @@ public class DefaultConfig extends Config {
     warningMutesEnabled = conf.getBoolean("warningMute", true);
     logIpsEnabled = conf.getBoolean("logIps", true);
 
-    mutedBlacklistCommands = new HashSet<>();
-    softMutedBlacklistCommands = new HashSet<>();
-
     chatPriority = conf.getString("chatPriority", "NORMAL").toUpperCase();
 
     blockInvalidReasons = conf.getBoolean("blockInvalidReasons", false);
 
-    // Run this after startup to ensure all aliases are found
-//    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//
-//      @Override
-//      public void run() {
-//        plugin.getLogger().info("The following commands are blocked whilst muted:");
-//        handleBlockedCommands(conf.getStringList("mutedCommandBlacklist"), mutedBlacklistCommands);
-//
-//        plugin.getLogger().info("The following commands are blocked whilst soft muted:");
-//        handleBlockedCommands(conf.getStringList("softMutedCommandBlacklist"), softMutedBlacklistCommands);
-//      }
-//
-//    });
+    mutedBlacklistCommands = new HashSet<>(conf.getStringList("mutedCommandBlacklist"));
+    softMutedBlacklistCommands = new HashSet<>(conf.getStringList("softMutedCommandBlacklist"));
   }
 
-//  private void handleBlockedCommands(List<String> blocked, HashSet<String> set) {
-//    for (String cmd : blocked) {
-//      set.add(cmd);
-//      StringBuilder infoBuilder = new StringBuilder(cmd);
-//
-//      // Check for aliases
-//      PluginCommand command = plugin.getServer().getPluginCommand(cmd);
-//      if (command == null) {
-//        plugin.getLogger().info(cmd);
-//        continue;
-//      }
-//
-//      infoBuilder.append(" - ");
-//
-//      if (!set.contains(command.getName())) {
-//        set.add(command.getName());
-//        infoBuilder.append(command.getName()).append(' ');
-//      }
-//
-//      for (String aliasCmd : command.getAliases()) {
-//        infoBuilder.append(aliasCmd).append(' ');
-//        set.add(aliasCmd);
-//        // Block the annoying /plugin:cmd too
-//        set.add(command.getPlugin().getDescription().getName().toLowerCase() + ":" + aliasCmd);
-//      }
-//
-//      plugin.getLogger().info(infoBuilder.toString());
-//    }
-//  }
+  public void handleBlockedCommands(BanManagerPlugin plugin, HashSet<String> set) {
+    for (String cmd : new ArrayList<>(set)) {
+      CommonExternalCommand command;
+      String[] cmdArgs = null;
+
+      if (cmd.contains(" ")) {
+        cmdArgs = cmd.split(" ");
+        command = plugin.getServer().getPluginCommand(cmdArgs[0]);
+      } else {
+        command = plugin.getServer().getPluginCommand(cmd);
+      }
+      if (command == null) {
+        plugin.getLogger().info(cmd);
+        continue;
+      }
+
+      if (command.getPluginName() != null) {
+        set.add(command.getPluginName() + ":" + cmd);
+      }
+
+      StringBuilder infoBuilder = new StringBuilder(cmd).append(" - ");
+
+      if (cmdArgs != null) {
+        String args = StringUtils.join(cmdArgs, " ", 1, cmdArgs.length);
+        String fullCmd = command.getName() + " " + args;
+
+        if (!set.contains(fullCmd)) {
+          set.add(fullCmd);
+          infoBuilder.append(fullCmd).append(' ');
+        }
+
+        for (String aliasCmd : command.getAliases()) {
+          String fullAliasCmd = aliasCmd + " " + args;
+
+          set.add(fullAliasCmd);
+          infoBuilder.append(fullAliasCmd).append(' ');
+
+          // Block the annoying /plugin:cmd too
+          if (command.getPluginName() != null) {
+            set.add(command.getPluginName() + ":" + fullAliasCmd);
+          }
+        }
+      } else {
+        if (!set.contains(command.getName())) {
+          set.add(command.getName());
+          infoBuilder.append(command.getName()).append(' ');
+        }
+
+        for (String aliasCmd : command.getAliases()) {
+          set.add(aliasCmd);
+          infoBuilder.append(aliasCmd).append(' ');
+
+          // Block the annoying /plugin:cmd too
+          if (command.getPluginName() != null) {
+            set.add(command.getPluginName() + ":" + aliasCmd);
+          }
+        }
+      }
+
+      plugin.getLogger().info(infoBuilder.toString());
+    }
+  }
 
   @Override
   public void onSave() {

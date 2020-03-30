@@ -1,11 +1,10 @@
 package me.confuser.banmanager.bukkit;
 
 import me.confuser.banmanager.bukkit.api.events.*;
-import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
+import me.confuser.banmanager.common.commands.CommandParser;
+import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import net.kyori.text.TextComponent;
@@ -14,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
@@ -227,5 +227,14 @@ public class BukkitServer implements CommonServer {
     }
 
     return commonEvent;
+  }
+
+  @Override
+  public CommonExternalCommand getPluginCommand(String commandName) {
+    PluginCommand pluginCommand = Bukkit.getServer().getPluginCommand(commandName);
+
+    if (pluginCommand == null) return null;
+
+    return new CommonExternalCommand(pluginCommand.getPlugin().getDescription().getName().toLowerCase(), pluginCommand.getName(), pluginCommand.getAliases());
   }
 }

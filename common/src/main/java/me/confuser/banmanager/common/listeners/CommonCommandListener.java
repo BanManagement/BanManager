@@ -17,14 +17,20 @@ public class CommonCommandListener {
       return false;
     }
 
+    int startIndex = 0;
+
+    if (args[0].equals(cmd)) {
+      startIndex = 1;
+    }
+
     boolean isSoft = plugin.getPlayerMuteStorage().getMute(player.getUniqueId()).isSoft();
     boolean deepCheck = isSoft ? !plugin.getConfig().isSoftBlockedCommand(cmd) : !plugin.getConfig().isBlockedCommand(cmd);
 
     if (deepCheck) {
       // Check if arguments blocked
       boolean shouldCancel = false;
-      for (int i = 1; i < args.length; i++) {
-        String check = cmd + " " + StringUtils.join(args, " ", 1, i + 1);
+      for (int i = startIndex; i < args.length; i++) {
+        String check = cmd + " " + StringUtils.join(args, " ", startIndex, i + 1);
 
         if ((isSoft && plugin.getConfig().isSoftBlockedCommand(check)) || plugin.getConfig().isBlockedCommand(check)) {
           shouldCancel = true;
