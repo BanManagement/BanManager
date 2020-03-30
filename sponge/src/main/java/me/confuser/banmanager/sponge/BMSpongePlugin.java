@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.data.global.*;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
 import org.bstats.sponge.Metrics2;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 @Plugin(
     id = "banmanager",
@@ -159,12 +161,19 @@ public class BMSpongePlugin {
 
     ChatListener chatListener = new ChatListener(plugin);
 
-    // Set custom priority
-    String priority = plugin.getConfig().getChatPriority();
+    // Map Bukkit EventPriority to Sponge Order
+    HashMap<String, Order> orders = new HashMap<String, Order>() {{
+      put("LOWEST", Order.FIRST);
+      put("LOW", Order.EARLY);
+      put("NORMAL", Order.DEFAULT);
+      put("HIGH", Order.LATE);
+      put("HIGHEST", Order.LATE);
+      put("MONITOR", Order.LAST);
+    }};
 
-    if (priority.equals("NORMAL")) priority = "DEFAULT";
+    Order priority = orders.getOrDefault(plugin.getConfig().getChatPriority(), Order.DEFAULT);
 
-    Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, Order.valueOf(priority), chatListener);
+    Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, priority, chatListener);
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
