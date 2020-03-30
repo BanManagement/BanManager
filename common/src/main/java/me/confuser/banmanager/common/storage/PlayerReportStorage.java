@@ -85,8 +85,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     long offset = (page - 1) * pageSize;
 
     query.reset();
-
-    query.offset(offset).limit(pageSize);
+    query.orderBy("created", false).offset(offset).limit(pageSize);
 
     return new ReportList(query.query(), count, maxPage);
   }
