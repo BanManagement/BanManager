@@ -21,9 +21,7 @@ import me.confuser.banmanager.common.util.UUIDProfile;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
@@ -242,6 +240,29 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     return players;
+  }
+
+  public HashMap<String, Map.Entry<Integer, List<PlayerData>>> getDuplicateNames() {
+    HashMap<String, Map.Entry<Integer, List<PlayerData>>> duplicates = new HashMap<>();
+    CloseableIterator<String[]> itr = null;
+
+    try {
+      itr = queryRaw("SELECT name, COUNT(name) FROM " + getTableName() + " GROUP BY name HAVING COUNT(name) > 1 ORDER BY name ASC LIMIT 10").closeableIterator();
+
+      while (itr.hasNext()) {
+        String[] values = itr.next();
+
+        List<PlayerData> results = queryForEq("name", new SelectArg(values[0]));
+
+        duplicates.put(values[0], new AbstractMap.SimpleEntry(Integer.parseInt(values[1]), results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      if (itr != null) itr.closeQuietly();
+    }
+
+    return duplicates;
   }
 
   public List<PlayerData> getDuplicatesInTime(IPAddress ip, long timeDiff) {
