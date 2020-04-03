@@ -313,6 +313,7 @@ permissions:
       bm.command.unbanname: true
       bm.command.bmutils: true
       bm.command.bmutils.missingplayers: true
+      bm.command.bmutils.duplicates: true
   bm.*:
     description: Gives access to all BanManager commands
     children:
@@ -386,6 +387,7 @@ permissions:
       bm.command.unbanname: true
       bm.command.bmutils: true
       bm.command.bmutils.missingplayers: true
+      bm.command.bmutils.duplicates: true
   bm.notify.*:
     description: Players with this permission will be notified of bans
     default: op
@@ -678,4 +680,7 @@ bm.command.bmutils:
   default: op
 bm.command.bmutils.missingplayers:
   description: Allows resolving missing players
+  default: op
+bm.command.bmutils.duplicates:
+  description: Allows resolving duplicate player names
   default: op

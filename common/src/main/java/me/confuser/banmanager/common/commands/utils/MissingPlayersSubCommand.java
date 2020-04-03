@@ -119,7 +119,7 @@ public class MissingPlayersSubCommand extends CommonSubCommand {
 
   @Override
   public String getHelp() {
-    return null;
+    return "/bmutils missingplayers";
   }
 
   @Override

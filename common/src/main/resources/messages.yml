@@ -306,6 +306,13 @@ messages:
       error:
         failedLookup: '&cFailed to lookup player [uuid], check server logs'
       complete: '&a[amount] players resolved, please restart your server for failed punishments to take affect'
+    duplicates:
+      lookup:
+        notFound: '&aNo duplicate player names found'
+      error:
+        invalidName: '&cInvalid name, must be 16 characters or less and contain only letters, numbers and an underscore'
+        nameExists: '&cA player with that name already exists'
+      success: '&aPlayer name set to [player] successfully'
 
   bmrollback:
     notify: '&c[player] has had their [type] actions undone'
