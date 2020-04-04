@@ -116,7 +116,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     if (!plugin.getConfig().isOnlineMode()) {
       plugin.getLogger()
-          .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually");
+          .warning("Duplicates found for " + data.getName() + ", as you are in offline mode, please fix manually https://banmanagement.com/faq#duplicate-issues");
       return status;
     }
 
@@ -130,7 +130,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         newName = UUIDUtils.getCurrentName(plugin, player.getUUID());
       } catch (Exception e) {
         plugin.getLogger()
-            .warning("Duplicates found for " + data.getName() + ", was unable to contact Mojang for updated names");
+            .warning("Duplicates found for " + data.getName() + ", unable to contact Mojang for updated names https://banmanagement.com/faq#duplicate-issues");
         continue;
       }
 
