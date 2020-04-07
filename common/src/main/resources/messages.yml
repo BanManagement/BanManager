@@ -355,6 +355,8 @@ messages:
       dispatch: 'Executing command [command]'
     list:
       noResults: '&cNo reports found'
+      error:
+        invalidState: '&cReport state [state] not found'
       row:
         dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
         header: '&e-- Reports ([count]) -- Page ([page]/[maxPage])'
