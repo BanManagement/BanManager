@@ -50,7 +50,11 @@ public class SpongePlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(String message) {
-    getPlayer().sendMessage(SpongeServer.formatMessage(message));
+    if(Message.isJSONMessage(message)) {
+      sendJSONMessage(message);
+    } else {
+      getPlayer().sendMessage(SpongeServer.formatMessage(message));
+    }
   }
 
   @Override
@@ -61,6 +65,11 @@ public class SpongePlayer implements CommonPlayer {
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
     getPlayer().sendMessage(TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(jsonString)));
+  }
+
+  @Override
+  public void sendJSONMessage(String jsonString) {
+    getPlayer().sendMessage(TextSerializers.JSON.deserialize(jsonString));
   }
 
   @Override

@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import net.kyori.text.TextComponent;
 import net.kyori.text.serializer.gson.GsonComponentSerializer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,7 +47,11 @@ public class BukkitPlayer implements CommonPlayer {
   }
 
   public void sendMessage(String message) {
-    getPlayer().sendMessage(BukkitServer.formatMessage(message));
+    if(Message.isJSONMessage(message)) {
+      sendJSONMessage(message);
+    } else {
+      getPlayer().sendMessage(BukkitServer.formatMessage(message));
+    }
   }
 
   public void sendMessage(Message message) {
@@ -56,6 +61,11 @@ public class BukkitPlayer implements CommonPlayer {
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
     getPlayer().spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.INSTANCE.serialize(jsonString)));
+  }
+
+  @Override
+  public void sendJSONMessage(String message) {
+    player.spigot().sendMessage(ComponentSerializer.parse(message));
   }
 
   public boolean isConsole() {

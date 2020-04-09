@@ -36,6 +36,10 @@ public class TestPlayer implements CommonPlayer {
   }
 
   @Override
+  public void sendJSONMessage(String jsonString) {
+  }
+
+  @Override
   public boolean isConsole() {
     return false;
   }
