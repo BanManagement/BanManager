@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -182,8 +183,12 @@ public class DateUtils {
   }
 
   public static String format(String pattern, long timestamp) {
+    return format(pattern, timestamp, ZoneId.systemDefault());
+  }
+
+  public static String format(String pattern, long timestamp, ZoneId zoneId) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 
-    return Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()).format(formatter);
+    return Instant.ofEpochSecond(timestamp).atZone(zoneId).format(formatter);
   }
 }
