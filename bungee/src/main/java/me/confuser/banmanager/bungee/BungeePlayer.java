@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.util.Message;
 import net.kyori.text.TextComponent;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -28,7 +29,11 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(String message) {
-    getPlayer().sendMessage(message);
+    if(Message.isJSONMessage(message)) {
+      sendJSONMessage(message);
+    } else {
+      getPlayer().sendMessage(message);
+    }
   }
 
   @Override
@@ -39,6 +44,11 @@ public class BungeePlayer implements CommonPlayer {
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
     getPlayer().sendMessage(BungeeServer.formatMessage(jsonString));
+  }
+
+  @Override
+  public void sendJSONMessage(String jsonString) {
+    getPlayer().sendMessage(ComponentSerializer.parse(jsonString));
   }
 
   @Override

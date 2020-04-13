@@ -106,6 +106,10 @@ public class Message {
     return true;
   }
 
+  public static boolean isJSONMessage(String message) {
+    return message.startsWith("{") && message.endsWith("}") || message.startsWith("[") && message.endsWith("]");
+  }
+
   @Override
   public String toString() {
     return message;
