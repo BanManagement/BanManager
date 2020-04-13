@@ -65,7 +65,7 @@ public class BukkitPlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(String message) {
-    player.spigot().sendMessage(ComponentSerializer.parse(message));
+    getPlayer().spigot().sendMessage(ComponentSerializer.parse(message));
   }
 
   public boolean isConsole() {
