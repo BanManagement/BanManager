@@ -102,13 +102,33 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   }
 
-  @Override
-  public CreateOrUpdateStatus createOrUpdate(PlayerData data) throws SQLException {
-    CreateOrUpdateStatus status = super.createOrUpdate(data);
+  public CreateOrUpdateStatus upsert(PlayerData data) throws SQLException {
+    if(data == null) return new CreateOrUpdateStatus(false, false, 0);
 
-    if (status.isCreated() && plugin.getConfig().isOfflineAutoComplete()) {
+    PlayerData existingData = queryForSameId(data);
+    if(existingData == null) {
+      int rows = create(data);
+
+      if(plugin.getConfig().isOfflineAutoComplete()) {
+        autoCompleteTree.put(data.getName(), VoidValue.SINGLETON);
+      }
+
+      return new CreateOrUpdateStatus(true, false, rows);
+    }
+
+    int rows = update(data);
+
+    if(plugin.getConfig().isOfflineAutoComplete()) {
+      autoCompleteTree.remove(existingData.getName());
       autoCompleteTree.put(data.getName(), VoidValue.SINGLETON);
     }
+
+    return new CreateOrUpdateStatus(false, true, rows);
+  }
+
+  @Override
+  public CreateOrUpdateStatus createOrUpdate(PlayerData data) throws SQLException {
+    CreateOrUpdateStatus status = upsert(data);
 
     // Check for duplicates
     List<PlayerData> results = queryForEq("name", new SelectArg(data.getName()));
@@ -181,7 +201,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       // Lets store for caching
       PlayerData data = new PlayerData(player.getUuid(), player.getName());
 
-      super.createOrUpdate(data);
+      upsert(data);
 
       return data;
     } catch (Exception e) {
