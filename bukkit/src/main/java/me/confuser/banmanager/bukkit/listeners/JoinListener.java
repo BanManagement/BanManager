@@ -30,6 +30,10 @@ public class JoinListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(AsyncPlayerPreLoginEvent event) {
+    if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+      return;
+    }
+
     listener.onPreJoin(event.getUniqueId(), event.getName(), IPUtils.toIPAddress(event.getAddress()));
   }
 
