@@ -33,6 +33,8 @@ public class JoinListener {
 
   @Listener(order = Order.LAST)
   public void onJoin(ClientConnectionEvent.Auth event) {
+    if (event.isCancelled()) return;
+
     this.listener.onPreJoin(event.getProfile().getUniqueId(), event.getProfile().getName().get(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()));
   }
 
