@@ -114,7 +114,7 @@ public class UnmuteCommand extends CommonCommand {
         getPlugin().getScheduler().runSync(() -> {
           CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(mute.getPlayer().getUUID());
 
-         if (onlinePlayer == null) return;
+          if (onlinePlayer == null || mute.isSoft()) return;
           if (onlinePlayer.hasPermission("bm.notify.unmute")) return;
 
           Message.get("unmute.player")
