@@ -147,7 +147,7 @@ public class BMBukkitPlugin extends JavaPlugin {
   public void setupCommands() {
     for (CommonCommand cmd : plugin.getCommands()) {
       try {
-        new BukkitCommand(cmd);
+        getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(cmd));
       } catch (NullPointerException e) {
         plugin.getLogger().severe("Failed to register /" + cmd.getCommandName() + " command");
       }
@@ -156,7 +156,7 @@ public class BMBukkitPlugin extends JavaPlugin {
     if (plugin.getGlobalConn() != null) {
       for (CommonCommand cmd : plugin.getGlobalCommands()) {
         try {
-          new BukkitCommand(cmd);
+          getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(cmd));
         } catch (NullPointerException e) {
           plugin.getLogger().severe("Failed to register /" + cmd.getCommandName() + " command");
         }

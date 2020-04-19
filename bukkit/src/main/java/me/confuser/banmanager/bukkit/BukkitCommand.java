@@ -20,8 +20,6 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
 
   public BukkitCommand(CommonCommand command) {
     this.command = command;
-
-    register();
   }
 
   @Override
@@ -48,10 +46,6 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
     } else {
       return new BukkitSender(BanManagerPlugin.getInstance(), source);
     }
-  }
-
-  public void register() {
-    Bukkit.getPluginCommand(command.getCommandName()).setExecutor(this);
   }
 
   @Override
