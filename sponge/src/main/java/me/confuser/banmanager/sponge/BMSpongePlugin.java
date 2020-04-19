@@ -76,7 +76,7 @@ public class BMSpongePlugin {
   public void onDisable(GameStoppingServerEvent event) {
     // @TODO Disable scheduled tasks somehow
 
-    this.plugin.disable();
+    if (plugin != null) plugin.disable();
   }
 
   @Listener
