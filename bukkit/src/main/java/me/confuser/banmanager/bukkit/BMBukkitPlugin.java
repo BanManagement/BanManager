@@ -71,7 +71,7 @@ public class BMBukkitPlugin extends JavaPlugin {
   public void onDisable() {
     getServer().getScheduler().cancelTasks(this);
 
-    plugin.disable();
+    if (plugin != null) plugin.disable();
   }
 
   private PluginInfo setupConfigs() throws IOException {

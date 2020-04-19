@@ -83,7 +83,7 @@ public class BMBungeePlugin extends Plugin {
   public void onDisable() {
     getProxy().getScheduler().cancel(this);
 
-    plugin.disable();
+    if (plugin != null) plugin.disable();
   }
 
   private void setupCommands() {
