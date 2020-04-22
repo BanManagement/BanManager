@@ -87,7 +87,7 @@ messages:
       index: '&7#[index] - &6[name] - &4[uuid]'
     stats:
       player: '&6[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
-      times ([warnPoints] Points)'
+      times ([warnPoints] Points) and has [notes] notes'
       ip: '&6This ip has been banned [bans] times'
     connection: '&6Their last connection was with [ip] on [lastSeen]'
     geoip: 'Country: [country] City: [city]'

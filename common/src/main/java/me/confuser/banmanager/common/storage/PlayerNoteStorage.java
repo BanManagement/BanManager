@@ -51,4 +51,8 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
 
     return builder.delete();
   }
+
+  public long getCount(PlayerData player) throws SQLException {
+    return queryBuilder().where().eq("player_id", player).countOf();
+  }
 }
