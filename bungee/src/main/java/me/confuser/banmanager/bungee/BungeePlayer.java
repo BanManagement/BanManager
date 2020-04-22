@@ -32,7 +32,7 @@ public class BungeePlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      getPlayer().sendMessage(message);
+      getPlayer().sendMessage(BungeeServer.formatMessage(message));
     }
   }
 
