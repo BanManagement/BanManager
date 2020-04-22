@@ -105,7 +105,11 @@ public class FindAltsCommand extends CommonCommand {
         }
       }
 
-      message.append(player.getName()).color(colour).clickEvent(ClickEvent.runCommand("/bminfo " + player.getName()));
+      message
+          .append(
+              TextComponent.builder(player.getName())
+                  .color(colour)
+                  .clickEvent(ClickEvent.runCommand("/bminfo " + player.getName())));
 
       if (index != players.size() - 1) {
         message.append(", ");
