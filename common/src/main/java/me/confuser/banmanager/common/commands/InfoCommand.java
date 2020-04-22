@@ -202,11 +202,13 @@ public class InfoCommand extends CommonCommand {
         long warnTotal = getPlugin().getPlayerWarnStorage().getCount(player);
         double warnPointsTotal = getPlugin().getPlayerWarnStorage().getPointsCount(player);
         long kickTotal = getPlugin().getPlayerKickStorage().getCount(player);
+        long noteTotal = getPlugin().getPlayerNoteStorage().getCount(player);
 
         messages.add(Message.get("info.stats.player")
             .set("player", player.getName())
             .set("playerId", player.getUUID().toString())
             .set("bans", Long.toString(banTotal))
+            .set("notes", Long.toString(noteTotal))
             .set("mutes", Long.toString(muteTotal))
             .set("warns", Long.toString(warnTotal))
             .set("warnPoints", warnPointsTotal)
