@@ -145,7 +145,6 @@ public class BMBungeePlugin extends Plugin {
     registerEvent(new JoinListener(this));
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
-    registerEvent(new JoinListener(this));
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
