@@ -41,6 +41,13 @@ public class FindAltsCommand extends CommonCommand {
 
     getPlugin().getScheduler().runAsync(() -> {
       final IPAddress ip = getIp(ipStr);
+
+      if (ip == null) {
+        sender.sendMessage(Message.get("alts.header"));
+        sender.sendMessage(Message.get("none").toString());
+        return;
+      }
+
       List<PlayerData> players = getPlugin().getPlayerStorage().getDuplicates(ip);
 
       if (!sender.isConsole()) {
