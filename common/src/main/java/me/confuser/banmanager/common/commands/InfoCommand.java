@@ -218,6 +218,7 @@ public class InfoCommand extends CommonCommand {
 
       if (sender.hasPermission("bm.command.bminfo.connection")) {
         messages.add(Message.get("info.connection")
+            .set("player", player.getName())
             .set("ip", player.getIp().toString())
             .set("lastSeen", DateUtils.format("dd-MM-yyyy HH:mm:ss", player.getLastSeen()))
             .toString());
