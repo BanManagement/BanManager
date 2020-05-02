@@ -87,4 +87,14 @@ public class HookListener {
   public void onNote(final PlayerNoteCreatedEvent event) {
     listener.onNote(event.getNote());
   }
+
+  @Listener(order = Order.POST)
+  public void onReport(final PlayerReportEvent event) {
+    listener.onReport(event.getReport(), true);
+  }
+
+  @Listener(order = Order.POST)
+  public void onReport(final PlayerReportedEvent event) {
+    listener.onReport(event.getReport(), false);
+  }
 }

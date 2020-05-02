@@ -136,7 +136,7 @@ warningMute: false
 hooks:
   enabled: false
   # Can use ban, tempban, unban, mute, tempmute, unmute, warn, tempwarn, ipban, tempipban, unbanip, iprangeban,
-  # tempiprangeban, unbaniprange, note
+  # tempiprangeban, unbaniprange, note, report
   events:
 #   ban:
 #     pre:

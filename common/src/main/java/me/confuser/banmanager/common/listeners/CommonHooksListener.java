@@ -195,6 +195,25 @@ public class CommonHooksListener {
     }
   }
 
+  public void onReport(PlayerReportData data, boolean pre) {
+    HooksConfig config = plugin.getConfig().getHooksConfig();
+    final Hook hook = config.getHook("report");
+
+    if (hook == null) return;
+
+    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+
+    if (hook.getPost().size() != 0) {
+      executeCommands(commands, ImmutableMap.of(
+          "id", String.valueOf(data.getId()),
+          "player", data.getPlayer().getName()
+          , "playerId", data.getPlayer().getUUID().toString()
+          , "actor", data.getActor().getName()
+          , "message", data.getReason()
+      ));
+    }
+  }
+
   private void executeCommands(List<ActionCommand> commands, final Map<String, String> messages) {
     for (final ActionCommand command : commands) {
       plugin.getScheduler().runSyncLater(() -> {
