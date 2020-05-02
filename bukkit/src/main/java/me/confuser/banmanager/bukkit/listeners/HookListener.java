@@ -88,4 +88,14 @@ public class HookListener implements Listener {
   public void onNote(final PlayerNoteCreatedEvent event) {
     listener.onNote(event.getNote());
   }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onReport(final PlayerReportEvent event) {
+    listener.onReport(event.getReport(), true);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onReport(final PlayerReportedEvent event) {
+    listener.onReport(event.getReport(), false);
+  }
 }

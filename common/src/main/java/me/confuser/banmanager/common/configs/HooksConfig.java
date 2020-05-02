@@ -26,6 +26,7 @@ public class HooksConfig {
       add("note");
       add("warn");
       add("tempwarn");
+      add("report");
     }
   };
 
