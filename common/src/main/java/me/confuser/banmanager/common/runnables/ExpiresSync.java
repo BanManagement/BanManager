@@ -50,7 +50,7 @@ public class ExpiresSync extends BmRunnable {
       while (bans.hasNext()) {
         PlayerBanData ban = bans.next();
 
-        banStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "", true);
+        banStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -65,7 +65,7 @@ public class ExpiresSync extends BmRunnable {
       while (mutes.hasNext()) {
         PlayerMuteData mute = mutes.next();
 
-        muteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "", true);
+        muteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
       e.printStackTrace();
