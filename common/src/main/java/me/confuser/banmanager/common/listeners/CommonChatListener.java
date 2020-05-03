@@ -48,11 +48,6 @@ public class CommonChatListener {
       return false;
     }
 
-    if (mute.isSoft()) {
-      handler.handleSoftMute();
-      return false;
-    }
-
     Message broadcast = Message.get("mute.player.broadcast")
         .set("message", chatMessage)
         .set("displayName", player.getDisplayName())
@@ -62,6 +57,11 @@ public class CommonChatListener {
         .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.muted");
+
+    if (mute.isSoft()) {
+      handler.handleSoftMute();
+      return false;
+    }
 
     Message message;
 
@@ -100,11 +100,6 @@ public class CommonChatListener {
       return false;
     }
 
-    if (mute.isSoft()) {
-      handler.handleSoftMute();
-      return false;
-    }
-
     Message broadcast = Message.get("muteip.ip.broadcast")
         .set("message", chatMessage)
         .set("displayName", player.getDisplayName())
@@ -114,6 +109,11 @@ public class CommonChatListener {
         .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.mutedip");
+
+    if (mute.isSoft()) {
+      handler.handleSoftMute();
+      return false;
+    }
 
     Message message;
 
