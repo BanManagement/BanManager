@@ -43,9 +43,9 @@ public class GlobalBanSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerBanData ban = itr.next();
 
-        final PlayerBanData localBan = ban.toLocal(plugin);
+        final PlayerBanData localBan = localBanStorage.retrieveBan(ban.getUUID());
 
-        if (localBanStorage.retrieveBan(ban.getUUID()) != null) {
+        if (localBan != null) {
           // Global ban overrides local
           localBanStorage
                   .unban(localBan, ban.getActor(plugin));
@@ -53,7 +53,7 @@ public class GlobalBanSync extends BmRunnable {
           localBanStorage.removeBan(ban.getUUID());
         }
 
-        localBanStorage.ban(localBan);
+        localBanStorage.ban(ban.toLocal(plugin));
 
         plugin.getScheduler().runSync(() -> {
           // TODO move into a listener
