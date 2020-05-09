@@ -13,7 +13,7 @@ import java.util.UUID;
 public class UnbanCommand extends CommonCommand {
 
   public UnbanCommand(BanManagerPlugin plugin) {
-    super(plugin, "unban", true, UnbanCommandParser.class, 0);
+    super(plugin, "unban", true, UnbanCommandParser.class, 1);
   }
 
   @Override
