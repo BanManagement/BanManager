@@ -45,7 +45,11 @@ public class CommandParser {
     this.args = args;
     reason = getReason(start);
     ArrayList<String> newArgs = new ArrayList<>();
-    Collections.addAll(newArgs, reason.getMessage().split(" "));
+    String[] reasonArgs = reason.getMessage().split(" ");
+
+    if (reasonArgs.length > 0 && !reasonArgs[0].isEmpty()) {
+      Collections.addAll(newArgs, reasonArgs);
+    }
 
     if (args.length > start) {
       // @TODO inefficient
