@@ -3,14 +3,12 @@ package me.confuser.banmanager.common.storage.mysql;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.field.types.ByteArrayType;
-import com.j256.ormlite.support.DatabaseResults;
+import inet.ipaddr.AddressValueException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressNetwork;
-import inet.ipaddr.IPAddressString;
 import lombok.SneakyThrows;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.util.IPUtils;
-
-import java.sql.SQLException;
 
 public class IpAddress extends ByteArrayType {
 
@@ -36,7 +34,12 @@ public class IpAddress extends ByteArrayType {
 
     byte[] value = (byte[]) sqlArg;
 
-    return new IPAddressNetwork.IPAddressGenerator().from(value).getLower();
+    try {
+      return new IPAddressNetwork.IPAddressGenerator().from(value).getLower();
+    } catch (AddressValueException e) {
+      return IPUtils.toIPAddress("127.0.0.1");
+    }
+
   }
 
   /* This cannot be lombok. */
