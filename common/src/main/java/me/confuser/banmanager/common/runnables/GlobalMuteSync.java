@@ -40,9 +40,9 @@ public class GlobalMuteSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerMuteData mute = itr.next();
 
-        final PlayerMuteData localMute = mute.toLocal(plugin);
+        PlayerMuteData localMute =  localMuteStorage.retrieveMute(mute.getUUID());
 
-        if (localMuteStorage.retrieveMute(mute.getUUID()) != null) {
+        if (localMute != null) {
           // Global mute overrides local
           localMuteStorage
                   .unmute(localMute, mute.getActor(plugin));
@@ -50,7 +50,7 @@ public class GlobalMuteSync extends BmRunnable {
           localMuteStorage.removeMute(mute.getUUID());
         }
 
-        localMuteStorage.mute(localMute);
+        localMuteStorage.mute(mute.toLocal(plugin));
 
       }
     } catch (SQLException e) {
