@@ -129,6 +129,7 @@ messages:
     notify: '&6[player] has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already banned'
+      cooldown: '&cThis player was banned too recently, try again later'
 
   banall:
     notify: '&6[player] will be permanently banned by [actor] for &4[reason]'
@@ -159,6 +160,7 @@ messages:
     notify: '&6[player] has been permanently muted by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
+      cooldown: '&cThis player was muted too recently, try again later'
 
   muteip:
     ip:
@@ -230,6 +232,7 @@ messages:
     notify: '&6[ip] ([players]) has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[ip] is already banned'
+      cooldown: '&cThis ip was banned too recently, try again later'
 
   baniprange:
     error:

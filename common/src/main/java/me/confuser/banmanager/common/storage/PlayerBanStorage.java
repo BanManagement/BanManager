@@ -281,4 +281,15 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
 
     return players;
   }
+
+  public boolean isRecentlyBanned(PlayerData player, long cooldown) throws SQLException {
+    if (cooldown == 0) {
+      return false;
+    }
+
+    return queryBuilder().where()
+        .eq("player_id", player).and()
+        .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
+        .countOf() > 0;
+  }
 }

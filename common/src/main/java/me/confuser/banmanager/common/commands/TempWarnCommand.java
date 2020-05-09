@@ -111,7 +111,7 @@ public class TempWarnCommand extends CommonCommand {
       }
 
       try {
-        if (getPlugin().getPlayerWarnStorage().isRecentlyWarned(player)) {
+        if (getPlugin().getPlayerWarnStorage().isRecentlyWarned(player, getCooldown())) {
           Message.get("warn.error.cooldown").sendTo(sender);
           return;
         }

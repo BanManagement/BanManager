@@ -117,6 +117,17 @@ public class TempBanCommand extends CommonCommand {
           return;
         }
 
+        try {
+          if (getPlugin().getPlayerBanStorage().isRecentlyBanned(player, getCooldown())) {
+            Message.get("ban.error.cooldown").sendTo(sender);
+            return;
+          }
+        } catch (SQLException e) {
+          sender.sendMessage(Message.get("sender.error.exception").toString());
+          e.printStackTrace();
+          return;
+        }
+
         final PlayerData actor = sender.getData();
 
         if (actor == null) return;

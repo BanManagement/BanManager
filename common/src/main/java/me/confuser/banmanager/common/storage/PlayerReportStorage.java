@@ -108,15 +108,14 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     return reports.size();
   }
 
-  public boolean isRecentlyReported(PlayerData player) throws SQLException {
-    if (plugin.getConfig().getReportCooldown() == 0) {
+  public boolean isRecentlyReported(PlayerData player, long cooldown) throws SQLException {
+    if (cooldown == 0) {
       return false;
     }
 
     return queryBuilder().where()
         .eq("player_id", player).and()
-        .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
-            .getReportCooldown())
+        .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
         .countOf() > 0;
   }
 

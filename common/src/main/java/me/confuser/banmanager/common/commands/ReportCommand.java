@@ -78,7 +78,7 @@ public class ReportCommand extends CommonCommand {
       }
 
       try {
-        if (getPlugin().getPlayerReportStorage().isRecentlyReported(player)) {
+        if (getPlugin().getPlayerReportStorage().isRecentlyReported(player, getCooldown())) {
           Message.get("report.error.cooldown").sendTo(sender);
           return;
         }

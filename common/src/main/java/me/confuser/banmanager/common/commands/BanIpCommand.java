@@ -80,6 +80,17 @@ public class BanIpCommand extends CommonCommand {
         return;
       }
 
+      try {
+        if (getPlugin().getIpBanStorage().isRecentlyBanned(ip, getCooldown())) {
+          Message.get("banip.error.cooldown").sendTo(sender);
+          return;
+        }
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+        return;
+      }
+
       final PlayerData actor = sender.getData();
 
       if (isBanned) {

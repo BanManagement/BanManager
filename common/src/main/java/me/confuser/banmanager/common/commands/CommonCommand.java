@@ -196,5 +196,9 @@ public abstract class CommonCommand {
     return mostLike;
   }
 
+  public long getCooldown() {
+    return plugin.getConfig().getCooldownsConfig().getCommand(getCommandName());
+  }
+
   public abstract boolean onCommand(final CommonSender sender, CommandParser args);
 }
