@@ -110,9 +110,18 @@ timeLimits:
   nameBans:
 #    Moderator: 1d
 
-# To prevent duplicate reports you can set a cooldown to limit the amount in seconds before a player can be reported again
+# To prevent duplicate punishments you can set a cooldown to limit the amount in seconds before a player can be punished again
 # Set to 0 to disable
-reportCooldown: 10
+cooldowns:
+  ban: 10
+  tempban: 10
+  mute: 10
+  tempmute: 10
+  banip: 10
+  tempbanip: 10
+  warn: 10
+  tempwarn: 10
+  report: 10
 
 # To prevent duplicate warnings you can set a cooldown to limit the amount in seconds before a player can be warned again
 # Set to 0 to disable

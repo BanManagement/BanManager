@@ -136,15 +136,14 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     return 0;
   }
 
-  public boolean isRecentlyWarned(PlayerData player) throws SQLException {
-    if (plugin.getConfig().getWarningCooldown() == 0) {
+  public boolean isRecentlyWarned(PlayerData player, long cooldown) throws SQLException {
+    if (cooldown == 0) {
       return false;
     }
 
     return queryBuilder().where()
         .eq("player_id", player).and()
-        .ge("created", (System.currentTimeMillis() / 1000L) - plugin.getConfig()
-            .getWarningCooldown())
+        .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
         .countOf() > 0;
   }
 

@@ -33,10 +33,6 @@ public class DefaultConfig extends Config {
   @Getter
   private boolean debugEnabled = false;
   @Getter
-  private long warningCooldown;
-  @Getter
-  private long reportCooldown;
-  @Getter
   private WarningActionsConfig warningActions;
   @Getter
   private boolean displayNotificationsEnabled = true;
@@ -74,6 +70,8 @@ public class DefaultConfig extends Config {
   private String chatPriority;
   @Getter
   private boolean blockInvalidReasons = false;
+  @Getter
+  private CooldownsConfig cooldownsConfig;
 
   public DefaultConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "config.yml", logger);
@@ -92,8 +90,6 @@ public class DefaultConfig extends Config {
     bypassPlayerIps = new HashSet<>();
     bypassPlayerIps.addAll(conf.getStringList("bypassDuplicateChecks"));
 
-    reportCooldown = conf.getLong("reportCooldown", 0);
-    warningCooldown = conf.getLong("warningCooldown", 0);
     warningActions = new WarningActionsConfig(conf.getConfigurationSection("warningActions"), logger);
     kickLoggingEnabled = conf.getBoolean("logKicks", false);
     debugEnabled = conf.getBoolean("debug", false);
@@ -124,6 +120,8 @@ public class DefaultConfig extends Config {
 
     mutedBlacklistCommands = new HashSet<>(conf.getStringList("mutedCommandBlacklist"));
     softMutedBlacklistCommands = new HashSet<>(conf.getStringList("softMutedCommandBlacklist"));
+
+    cooldownsConfig = new CooldownsConfig(conf.getConfigurationSection("cooldowns"), logger);
   }
 
   public void handleBlockedCommands(BanManagerPlugin plugin, HashSet<String> set) {

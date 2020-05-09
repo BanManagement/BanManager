@@ -260,4 +260,15 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
 
     return query.iterator();
   }
+
+  public boolean isRecentlyMuted(PlayerData player, long cooldown) throws SQLException {
+    if (cooldown == 0) {
+      return false;
+    }
+
+    return queryBuilder().where()
+        .eq("player_id", player).and()
+        .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
+        .countOf() > 0;
+  }
 }

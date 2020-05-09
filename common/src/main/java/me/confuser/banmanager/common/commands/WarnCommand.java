@@ -40,8 +40,8 @@ public class WarnCommand extends CommonCommand {
 
     if (parser.isInvalidReason()) {
       Message.get("sender.error.invalidReason")
-              .set("reason", parser.getReason().getMessage())
-              .sendTo(sender);
+          .set("reason", parser.getReason().getMessage())
+          .sendTo(sender);
       return true;
     }
 
@@ -92,7 +92,7 @@ public class WarnCommand extends CommonCommand {
       }
 
       try {
-        if (getPlugin().getPlayerWarnStorage().isRecentlyWarned(player)) {
+        if (getPlugin().getPlayerWarnStorage().isRecentlyWarned(player, getCooldown())) {
           Message.get("warn.error.cooldown").sendTo(sender);
           return;
         }

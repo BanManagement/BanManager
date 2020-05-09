@@ -110,78 +110,84 @@ public class TempMuteCommand extends CommonCommand {
     final long expires = expiresCheck;
     final Reason reason = parser.getReason();
 
-    getPlugin().getScheduler().runAsync(new Runnable() {
+    getPlugin().getScheduler().runAsync(() -> {
+      final PlayerData player = getPlayer(sender, playerName, true);
 
-      @Override
-      public void run() {
-        final PlayerData player = getPlayer(sender, playerName, true);
-
-        if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
-          return;
-        }
-
-        if (getPlugin().getExemptionsConfig().isExempt(player, "tempmute")) {
-          sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
-          return;
-        }
-
-        final PlayerData actor = sender.getData();
-
-        if (actor == null) return;
-
-        if (isMuted) {
-          PlayerMuteData mute;
-
-          if (isUUID) {
-            mute = getPlugin().getPlayerMuteStorage().getMute(UUID.fromString(playerName));
-          } else {
-            mute = getPlugin().getPlayerMuteStorage().getMute(playerName);
-          }
-
-          if (mute != null) {
-            try {
-              getPlugin().getPlayerMuteStorage().unmute(mute, actor);
-            } catch (SQLException e) {
-              sender.sendMessage(Message.get("sender.error.exception").toString());
-              e.printStackTrace();
-              return;
-            }
-          }
-        }
-
-        PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, expires);
-        boolean created;
-
-        try {
-          created = getPlugin().getPlayerMuteStorage().mute(mute);
-        } catch (SQLException e) {
-          handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
-                  playerName));
-          return;
-        }
-
-        if (!created) {
-          return;
-        }
-
-        handlePrivateNotes(player, actor, reason);
-
-        CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(player.getUUID());
-
-        if (isSoft || onlinePlayer == null) return;
-
-        Message muteMessage = Message.get("tempmute.player.disallowed")
-                                     .set("displayName", onlinePlayer.getDisplayName())
-                                     .set("player", player.getName())
-                                     .set("playerId", player.getUUID().toString())
-                                     .set("reason", mute.getReason())
-                                     .set("actor", actor.getName())
-                                     .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
-
-        onlinePlayer.sendMessage(muteMessage.toString());
-
+      if (player == null) {
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        return;
       }
+
+      if (getPlugin().getExemptionsConfig().isExempt(player, "tempmute")) {
+        sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+        return;
+      }
+
+      try {
+        if (getPlugin().getPlayerMuteStorage().isRecentlyMuted(player, getCooldown())) {
+          Message.get("mute.error.cooldown").sendTo(sender);
+          return;
+        }
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+        return;
+      }
+
+      final PlayerData actor = sender.getData();
+
+      if (actor == null) return;
+
+      if (isMuted) {
+        PlayerMuteData mute;
+
+        if (isUUID) {
+          mute = getPlugin().getPlayerMuteStorage().getMute(UUID.fromString(playerName));
+        } else {
+          mute = getPlugin().getPlayerMuteStorage().getMute(playerName);
+        }
+
+        if (mute != null) {
+          try {
+            getPlugin().getPlayerMuteStorage().unmute(mute, actor);
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
+        }
+      }
+
+      PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, expires);
+      boolean created;
+
+      try {
+        created = getPlugin().getPlayerMuteStorage().mute(mute);
+      } catch (SQLException e) {
+        handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
+                playerName));
+        return;
+      }
+
+      if (!created) {
+        return;
+      }
+
+      handlePrivateNotes(player, actor, reason);
+
+      CommonPlayer onlinePlayer1 = getPlugin().getServer().getPlayer(player.getUUID());
+
+      if (isSoft || onlinePlayer1 == null) return;
+
+      Message muteMessage = Message.get("tempmute.player.disallowed")
+                                   .set("displayName", onlinePlayer1.getDisplayName())
+                                   .set("player", player.getName())
+                                   .set("playerId", player.getUUID().toString())
+                                   .set("reason", mute.getReason())
+                                   .set("actor", actor.getName())
+                                   .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+
+      onlinePlayer1.sendMessage(muteMessage.toString());
 
     });
 

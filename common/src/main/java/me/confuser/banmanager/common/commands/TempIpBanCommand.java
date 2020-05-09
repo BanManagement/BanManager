@@ -77,75 +77,81 @@ public class TempIpBanCommand extends CommonCommand {
     final long expires = expiresCheck;
     final String reason = parser.getReason().getMessage();
 
-    getPlugin().getScheduler().runAsync(new Runnable() {
+    getPlugin().getScheduler().runAsync(() -> {
+      final IPAddress ip = getIp(ipStr);
 
-      @Override
-      public void run() {
-        final IPAddress ip = getIp(ipStr);
-
-        if (ip == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
-          return;
-        }
-
-        final boolean isBanned = getPlugin().getIpBanStorage().isBanned(ip);
-
-        if (isBanned && !sender.hasPermission("bm.command.tempbanip.override")) {
-          Message message = Message.get("banip.error.exists");
-          message.set("ip", ipStr);
-
-          sender.sendMessage(message.toString());
-          return;
-        }
-
-        final PlayerData actor = sender.getData();
-
-        if (actor == null) return;
-
-        if (isBanned) {
-          IpBanData ban = getPlugin().getIpBanStorage().getBan(ip);
-
-          if (ban != null) {
-            try {
-              getPlugin().getIpBanStorage().unban(ban, actor);
-            } catch (SQLException e) {
-              sender.sendMessage(Message.get("sender.error.exception").toString());
-              e.printStackTrace();
-              return;
-            }
-          }
-        }
-
-        final IpBanData ban = new IpBanData(ip, actor, reason, isSilent, expires);
-        boolean created;
-
-        try {
-          created = getPlugin().getIpBanStorage().ban(ban);
-        } catch (SQLException e) {
-          handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
-              ipStr));
-          return;
-        }
-
-        if (!created) {
-          return;
-        }
-
-        // Find online players
-        getPlugin().getScheduler().runAsync(() -> {
-          Message kickMessage = Message.get("tempbanip.ip.kick")
-              .set("reason", ban.getReason())
-              .set("actor", actor.getName())
-              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-
-          for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
-            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
-              onlinePlayer.kick(kickMessage.toString());
-            }
-          }
-        });
-
+      if (ip == null) {
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        return;
       }
+
+      final boolean isBanned = getPlugin().getIpBanStorage().isBanned(ip);
+
+      if (isBanned && !sender.hasPermission("bm.command.tempbanip.override")) {
+        Message message = Message.get("banip.error.exists");
+        message.set("ip", ipStr);
+
+        sender.sendMessage(message.toString());
+        return;
+      }
+
+      try {
+        if (getPlugin().getIpBanStorage().isRecentlyBanned(ip, getCooldown())) {
+          Message.get("banip.error.cooldown").sendTo(sender);
+          return;
+        }
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        e.printStackTrace();
+        return;
+      }
+
+      final PlayerData actor = sender.getData();
+
+      if (actor == null) return;
+
+      if (isBanned) {
+        IpBanData ban = getPlugin().getIpBanStorage().getBan(ip);
+
+        if (ban != null) {
+          try {
+            getPlugin().getIpBanStorage().unban(ban, actor);
+          } catch (SQLException e) {
+            sender.sendMessage(Message.get("sender.error.exception").toString());
+            e.printStackTrace();
+            return;
+          }
+        }
+      }
+
+      final IpBanData ban = new IpBanData(ip, actor, reason, isSilent, expires);
+      boolean created;
+
+      try {
+        created = getPlugin().getIpBanStorage().ban(ban);
+      } catch (SQLException e) {
+        handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
+            ipStr));
+        return;
+      }
+
+      if (!created) {
+        return;
+      }
+
+      // Find online players
+      getPlugin().getScheduler().runAsync(() -> {
+        Message kickMessage = Message.get("tempbanip.ip.kick")
+            .set("reason", ban.getReason())
+            .set("actor", actor.getName())
+            .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+
+        for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
+          if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
+            onlinePlayer.kick(kickMessage.toString());
+          }
+        }
+      });
 
     });
 

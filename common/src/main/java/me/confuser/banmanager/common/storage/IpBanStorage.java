@@ -218,4 +218,15 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
 
     return query.iterator();
   }
+
+  public boolean isRecentlyBanned(IPAddress ip, long cooldown) throws SQLException {
+    if (cooldown == 0) {
+      return false;
+    }
+
+    return queryBuilder().where()
+        .eq("ip", ip).and()
+        .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
+        .countOf() > 0;
+  }
 }
