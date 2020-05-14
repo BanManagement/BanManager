@@ -140,7 +140,7 @@ public class TempIpBanCommand extends CommonCommand {
       }
 
       // Find online players
-      getPlugin().getScheduler().runAsync(() -> {
+      getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("tempbanip.ip.kick")
             .set("reason", ban.getReason())
             .set("actor", actor.getName())
