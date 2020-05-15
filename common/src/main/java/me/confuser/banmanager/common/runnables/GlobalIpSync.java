@@ -54,14 +54,16 @@ public class GlobalIpSync extends BmRunnable {
           localBanStorage.removeBan(ban.getIp());
         }
 
-        localBanStorage.ban(ban.toLocal(plugin));
+        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
+
+        final IpBanData globalBan = localBanStorage.getBan(ban.getIp());
 
         plugin.getScheduler().runSync(() -> {
-          Message kickMessage = Message.get("banip.ip.kick").set("reason", localBan.getReason())
-              .set("actor", localBan.getActor().getName());
+          Message kickMessage = Message.get("banip.ip.kick").set("reason", globalBan.getReason())
+              .set("actor", globalBan.getActor().getName());
 
           for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(localBan.getIp())) {
+            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(globalBan.getIp())) {
               onlinePlayer.kick(kickMessage.toString());
             }
           }
