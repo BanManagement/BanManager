@@ -193,7 +193,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     }
 
     delete(ban);
-    bans.remove(ban.getIp());
+    bans.remove(ban.getIp().toString());
 
     plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
 
