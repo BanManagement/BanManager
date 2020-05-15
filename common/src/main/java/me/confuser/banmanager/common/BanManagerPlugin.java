@@ -218,6 +218,10 @@ public class BanManagerPlugin {
   }
 
   public final void disable() {
+    if (getSchedulesConfig() != null) {
+      getSchedulesConfig().save();
+    }
+
     if (localConn != null) {
       // Save all player histories
       if (config.isLogIpsEnabled() && playerHistoryStorage != null) {
