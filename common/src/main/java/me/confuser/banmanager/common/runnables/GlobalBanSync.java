@@ -53,17 +53,19 @@ public class GlobalBanSync extends BmRunnable {
           localBanStorage.removeBan(ban.getUUID());
         }
 
-        localBanStorage.ban(ban.toLocal(plugin));
+        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
+
+        final PlayerBanData globalBan = localBanStorage.getBan(ban.getUUID());
 
         plugin.getScheduler().runSync(() -> {
           // TODO move into a listener
-          CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(localBan.getPlayer().getUUID());
+          CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(globalBan.getPlayer().getUUID());
 
           if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
 
           Message kickMessage;
 
-          if (localBan.getExpires() == 0) {
+          if (globalBan.getExpires() == 0) {
             kickMessage = Message.get("ban.player.kick");
           } else {
             kickMessage = Message.get("tempban.player.kick");
@@ -72,9 +74,9 @@ public class GlobalBanSync extends BmRunnable {
 
           kickMessage
                   .set("displayName", bukkitPlayer.getDisplayName())
-                  .set("player", localBan.getPlayer().getName())
-                  .set("reason", localBan.getReason())
-                  .set("actor", localBan.getActor().getName());
+                  .set("player", globalBan.getPlayer().getName())
+                  .set("reason", globalBan.getReason())
+                  .set("actor", globalBan.getActor().getName());
 
           bukkitPlayer.kick(kickMessage.toString());
         });
