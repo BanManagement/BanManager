@@ -5,7 +5,7 @@
     <parent>
         <artifactId>BanManager</artifactId>
         <groupId>me.confuser.banmanager</groupId>
-        <version>7.2.1-SNAPSHOT</version>
+        <version>7.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
