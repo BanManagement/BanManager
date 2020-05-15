@@ -14,7 +14,7 @@ import java.util.UUID;
 public class UnmuteCommand extends CommonCommand {
 
   public UnmuteCommand(BanManagerPlugin plugin) {
-    super(plugin, "unmute", true, UnbanCommandParser.class, 1);
+    super(plugin, "unmute", true, UnbanCommandParser.class, 0);
   }
 
   @Override
