@@ -69,7 +69,7 @@ public class GlobalBanSync extends BmRunnable {
             kickMessage = Message.get("ban.player.kick");
           } else {
             kickMessage = Message.get("tempban.player.kick");
-            kickMessage.set("expires", DateUtils.getDifferenceFormat(localBan.getExpires()));
+            kickMessage.set("expires", DateUtils.getDifferenceFormat(globalBan.getExpires()));
           }
 
           kickMessage
