@@ -100,8 +100,8 @@ public class CommonDiscordListener {
   }
 
   public Object[] notifyOnWarn(PlayerWarnData ban) {
-    String channelName = plugin.getDiscordConfig().getType("warn").getChannel();
-    Message message = plugin.getDiscordConfig().getType("warn").getMessage();
+    String channelName = plugin.getDiscordConfig().getType("warning").getChannel();
+    Message message = plugin.getDiscordConfig().getType("warning").getMessage();
 
     message.set("player", ban.getPlayer().getName())
         .set("playerId", ban.getPlayer().getUUID().toString())
