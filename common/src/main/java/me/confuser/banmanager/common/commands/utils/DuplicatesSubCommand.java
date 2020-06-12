@@ -116,7 +116,7 @@ public class DuplicatesSubCommand extends CommonSubCommand {
 
   @Override
   public String getHelp() {
-    return "/bmutils duplicates [UUID] [newName]";
+    return "duplicates [UUID] [newName]";
   }
 
   @Override
