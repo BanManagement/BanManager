@@ -80,7 +80,7 @@ public class DuplicatesSubCommand extends CommonSubCommand {
         UUID id = UUID.fromString(parser.getArgs()[0]);
         String newName = parser.getArgs()[1];
 
-        if (!newName.matches("/[^a-z0-9_]{2,16}/i")) {
+        if (!newName.toLowerCase().matches("^[a-z0-9_]{2,16}")) {
           Message.get("bmutils.duplicates.error.invalidName").sendTo(sender);
           return;
         }
