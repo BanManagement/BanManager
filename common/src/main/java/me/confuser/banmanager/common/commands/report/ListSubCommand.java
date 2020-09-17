@@ -20,7 +20,7 @@ public class ListSubCommand extends CommonSubCommand {
 
   @Override
   public boolean onCommand(final CommonSender sender, final CommandParser parser) {
-    getPlugin().getScheduler().runSync(() -> {
+    getPlugin().getScheduler().runAsync(() -> {
       int page = 1;
       Integer state = null;
 
