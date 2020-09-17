@@ -2,12 +2,13 @@ package me.confuser.banmanager.bukkit;
 
 import me.confuser.banmanager.common.CommonScheduler;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class BukkitScheduler implements CommonScheduler {
 
-  private BMBukkitPlugin plugin;
+  private JavaPlugin plugin;
 
-  public BukkitScheduler(BMBukkitPlugin plugin) {
+  public BukkitScheduler(JavaPlugin plugin) {
     this.plugin = plugin;
   }
 

@@ -50,6 +50,19 @@ public abstract class CommonCommand {
     this.parser = CommandParser.class;
   }
 
+  public CommonCommand(BanManagerPlugin plugin, String commandName, boolean enableTabCompletion, PluginInfo pluginInfo) {
+    this.plugin = plugin;
+    this.commandName = commandName;
+    this.enableTabCompletion = enableTabCompletion;
+
+    PluginInfo.CommandInfo info = pluginInfo.getCommand(commandName);
+
+    this.usage = info.getUsage();
+    this.permission = info.getPermission();
+    this.aliases = info.getAliases();
+    this.parser = CommandParser.class;
+  }
+
   public CommonCommand(BanManagerPlugin plugin, String commandName, boolean enableTabCompletion, int start) {
     this(plugin, commandName, enableTabCompletion);
 
