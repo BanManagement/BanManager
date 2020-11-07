@@ -95,7 +95,7 @@ public class RollbackCommand extends CommonCommand {
 
       for (String type : types) {
         if (!RollbackCommand.types.contains(type)) {
-          Message.get("bmrollback.error.invalid").set("type", type).sendTo(sender);
+          Message.get("bmrollback.error.invalid").set("type", type).set("types", String.join(",", types)).sendTo(sender);
           return;
         } else if (sender.hasPermission("bm.command.bmrollback." + type)) {
           try {
