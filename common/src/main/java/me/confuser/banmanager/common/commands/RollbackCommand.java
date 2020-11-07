@@ -81,7 +81,7 @@ public class RollbackCommand extends CommonCommand {
         types.addAll(RollbackCommand.types);
       } else {
         for (int i = 2; i < parser.args.length; i++) {
-          String type = parser.args[1].toLowerCase();
+          String type = parser.args[2].toLowerCase();
 
           if (type.contains(",")) {
             types.addAll(Arrays.asList(type.split(",")));
