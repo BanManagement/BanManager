@@ -320,7 +320,7 @@ messages:
   bmrollback:
     notify: '&c[player] has had their [type] actions undone'
     error:
-      invalid: '&cInvalid type, please choose between bans, banrecords, mutes, muterecords, kicks, notes or warnings'
+      invalid: '&cInvalid type [type], please choose between [types]'
 
   sync:
     player:
