@@ -58,7 +58,7 @@ public class H2 implements IConverter {
       tables.put(entry.getKey(), new DatabaseTableConfig<>(entry.getValue(), plugin.getConfig().getLocalDb().getTable(entry.getKey()).getTableName(), null));
     }
 
-    H2Config config = new H2Config("h2", "", 0, fileName, "", "", false, false, true, 5, 0, tables, plugin.getDataFolder());
+    H2Config config = new H2Config("h2", "", 0, fileName, "", "", false, false, true, 5, 0, 1800000, 30000, tables, plugin.getDataFolder());
 
     ConnectionSource connection;
     try {
@@ -558,8 +558,8 @@ public class H2 implements IConverter {
   }
 
   class H2Config extends DatabaseConfig {
-    public H2Config(String storageType, String host, int port, String name, String user, String password, boolean useSSL, boolean verifyServerCertificate, boolean isEnabled, int maxConnections, int leakDetection, HashMap<String, DatabaseTableConfig<?>> tables, File dataFolder) {
-      super(storageType, host, port, name, user, password, useSSL, verifyServerCertificate, isEnabled, maxConnections, leakDetection, tables, dataFolder);
+    public H2Config(String storageType, String host, int port, String name, String user, String password, boolean useSSL, boolean verifyServerCertificate, boolean isEnabled, int maxConnections, int leakDetection, int maxLifetime, int connectionTimeout, HashMap<String, DatabaseTableConfig<?>> tables, File dataFolder) {
+      super(storageType, host, port, name, user, password, useSSL, verifyServerCertificate, isEnabled, maxConnections, leakDetection, maxLifetime, connectionTimeout, tables, dataFolder);
     }
   }
 }
