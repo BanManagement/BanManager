@@ -35,6 +35,10 @@ public abstract class DatabaseConfig {
   @Getter
   private int leakDetection;
   @Getter
+  private int maxLifetime;
+  @Getter
+  private int connectionTimeout;
+  @Getter
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
   private File dataFolder;
@@ -53,6 +57,8 @@ public abstract class DatabaseConfig {
     leakDetection = conf.getInt("leakDetection", 0);
     useSSL = conf.getBoolean("useSSL", false);
     verifyServerCertificate = conf.getBoolean("verifyServerCertificate", false);
+    maxLifetime = conf.getInt("maxLifetime", 1800000);
+    connectionTimeout = conf.getInt("connectionTimeout", 30000);
 
     if (maxConnections > 30) maxConnections = 30;
   }

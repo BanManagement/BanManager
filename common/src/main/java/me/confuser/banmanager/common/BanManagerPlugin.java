@@ -296,6 +296,8 @@ public class BanManagerPlugin {
     ds.setMaximumPoolSize(dbConfig.getMaxConnections());
     ds.setMinimumIdle(2);
     ds.setPoolName(type);
+    ds.setConnectionTimeout(dbConfig.getConnectionTimeout());
+    ds.setMaxLifetime(dbConfig.getMaxLifetime());
 
     if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
 
