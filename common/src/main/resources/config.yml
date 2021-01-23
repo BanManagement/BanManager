@@ -14,6 +14,8 @@ databases:
     verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
+    maxLifetime: 1800000
+    connectionTimeout: 30000
     tables:
       players: bm_players
       playerBans: bm_player_bans
@@ -54,6 +56,8 @@ databases:
     verifyServerCertificate: false
     # Used to detect slow running queries/unclosed resources
     leakDetection: 3000
+    maxLifetime: 1800000
+    connectionTimeout: 30000
     tables:
       playerBans: bm_player_ban_all
       playerUnbans: bm_player_unban_all
