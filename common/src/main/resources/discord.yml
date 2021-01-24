@@ -3,25 +3,34 @@ enabled: false
 punishments:
   ban:
     channel: 'replaceMe'
-    message: '&6[player] has been permanently banned by [actor] for &4[reason]'
+    message: '[player] has been permanently banned by [actor] for [reason]'
   tempban:
     channel: 'replaceMe'
-    message: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
+    message: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+  unban:
+    channel: 'replaceMe'
+    message: '[player] has been unbanned by [actor] for [reason]'
   banip:
     channel: 'replaceMe'
-    message: '&6[ip] has been permanently banned by [actor] for &4[reason]'
+    message: '[ip] has been permanently banned by [actor] for [reason]'
   tempbanip:
     channel: 'replaceMe'
-    message: '&6[ip] has been temporarily banned for [expires] by [actor] for &4[reason]'
+    message: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
+  unbanip:
+    channel: 'replaceMe'
+    message: '[ip] has been unbanned by [actor] for [reason]'
   kick:
     channel: 'replaceMe'
-    message: '&6[player] has been kicked by [actor] for &4[reason]'
+    message: '[player] has been kicked by [actor] for [reason]'
   mute:
     channel: 'replaceMe'
-    message: '&6[player] has been permanently muted by [actor] for &4[reason]'
+    message: '[player] has been permanently muted by [actor] for [reason]'
   tempmute:
     channel: 'replaceMe'
-    message: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
+    message: '[player] has been temporarily muted for [expires] by [actor] for [reason]'
+  unmute:
+    channel: 'replaceMe'
+    message: '[player] has been unmuted by [actor] for [reason]'
   warning:
     channel: 'replaceMe'
-    message: '&6[player] has been warned by [actor] for &4[reason]'
+    message: '[player] has been warned by [actor] for [reason]'

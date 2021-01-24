@@ -110,4 +110,39 @@ public class CommonDiscordListener {
 
     return new Object[]{channelName, message};
   }
+
+  public Object[] notifyOnUnban(PlayerBanData ban, PlayerData actor, String reason) {
+    String channelName = plugin.getDiscordConfig().getType("unban").getChannel();
+    Message message = plugin.getDiscordConfig().getType("unban").getMessage();
+
+    message.set("player", ban.getPlayer().getName())
+        .set("playerId", ban.getPlayer().getUUID().toString())
+        .set("actor", actor.getName())
+        .set("reason", reason);
+
+    return new Object[]{channelName, message};
+  }
+
+  public Object[] notifyOnUnban(IpBanData ban, PlayerData actor, String reason) {
+    String channelName = plugin.getDiscordConfig().getType("unbanip").getChannel();
+    Message message = plugin.getDiscordConfig().getType("unbanip").getMessage();
+
+    message.set("ip", ban.getIp().toString())
+        .set("actor", actor.getName())
+        .set("reason", reason);
+
+    return new Object[]{channelName, message};
+  }
+
+  public Object[] notifyOnUnmute(PlayerMuteData mute, PlayerData actor, String reason) {
+    String channelName = plugin.getDiscordConfig().getType("unmute").getChannel();
+    Message message = plugin.getDiscordConfig().getType("unmute").getMessage();
+
+    message.set("player", mute.getPlayer().getName())
+        .set("playerId", mute.getPlayer().getUUID().toString())
+        .set("actor", actor.getName())
+        .set("reason", reason);
+
+    return new Object[]{channelName, message};
+  }
 }
