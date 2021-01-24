@@ -60,4 +60,25 @@ public class DiscordListener implements Listener {
 
     DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
   }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void notifyOnUnban(PlayerUnbanEvent event) {
+    Object[] data = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
+
+    DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void notifyOnUnban(IpUnbanEvent event) {
+    Object[] data = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
+
+    DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void notifyOnUnmute(PlayerUnmuteEvent event) {
+    Object[] data = listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason());
+
+    DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
+  }
 }

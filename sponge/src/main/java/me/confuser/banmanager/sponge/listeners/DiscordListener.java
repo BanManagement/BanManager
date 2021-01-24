@@ -57,6 +57,24 @@ public class DiscordListener {
     send(listener.notifyOnKick(event.getKick()));
   }
 
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnUnban(PlayerUnbanEvent event) {
+    send(listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason()));
+  }
+
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnUnban(IpUnbanEvent event) {
+    send(listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason()));
+  }
+
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnUnmute(PlayerUnmuteEvent event) {
+    send(listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason()));
+  }
+
   private void send(Object[] data) {
     FormatType formatType = FormatType.of(() -> data[1].toString());
     DiscordMessageBuilder
