@@ -83,7 +83,7 @@ public class InfoCommand extends CommonCommand {
           return;
         }
       } else {
-          sender.sendMessage("Fetching information by IP address is currently unsupported.");
+          sender.sendMessage(Message.getString("sender.error.ipNotSupported"));
       }
           /*
                        TODO
