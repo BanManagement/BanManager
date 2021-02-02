@@ -43,9 +43,23 @@ public class InfoCommand extends CommonCommand {
     }
 
     final String search = parser.args.length > 0 ? parser.args[0] : sender.getName();
-    final boolean isName = !IPUtils.isValid(search);
 
-    if (isName && search.length() > 16) {
+    // validate username
+    boolean isName = (search.length() <= 16);
+    if (isName) {
+        for (char ch : search.toCharArray()) {
+            if (ch >= 'A' && ch <= 'Z') continue;
+            if (ch >= 'a' && ch <= 'z') continue;
+            if (ch >= '0' && ch <= '9') continue;
+            if (ch == '_') continue;
+            isName = false;
+            break;
+        }
+    }
+
+    final boolean isValidName = isName;
+
+    if (!isName && !IPUtils.isValid(search)) {
       sender.sendMessage(Message.getString("sender.error.invalidIp"));
       return true;
     }
@@ -60,7 +74,7 @@ public class InfoCommand extends CommonCommand {
     }
 
     getPlugin().getScheduler().runAsync(() -> {
-      if (isName) {
+      if (isValidName) {
         try {
           playerInfo(sender, search, index, parser);
         } catch (SQLException e) {
@@ -68,7 +82,10 @@ public class InfoCommand extends CommonCommand {
           e.printStackTrace();
           return;
         }
-      }/* else {
+      } else {
+          sender.sendMessage(Message.getString("sender.error.ipNotSupported"));
+      }
+          /*
                        TODO
                        ipInfo(sender, search);
                        }*/
