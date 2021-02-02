@@ -45,6 +45,7 @@ messages:
       noSelf: '&cYou cannot perform that action on yourself!'
       exception: '&cAn error occured whilst attempting to perform this command. Please check the console for further details.'
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
+      ipNotSupported: '&cFetching information by IP address is currently unsupported.'
       offlinePermission: '&cYou are not allowed to perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
