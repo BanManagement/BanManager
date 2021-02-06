@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.3.1</version>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
