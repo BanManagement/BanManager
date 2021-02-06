@@ -68,11 +68,13 @@ public class UnbanNameCommand extends CommonCommand {
               .set("actor", actor.getName())
               .set("reason", reason);
 
-      if (!sender.hasPermission("bm.notify.unbanname")) {
+      if (!sender.hasPermission("bm.notify.unbanname") || parser.isSilent()) {
         message.sendTo(sender);
       }
 
-      getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanname");
+      if (!parser.isSilent()) {
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanname");
+      }
     });
 
     return true;

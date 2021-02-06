@@ -100,11 +100,13 @@ public class UnbanCommand extends CommonCommand {
               .set("actor", actor.getName())
               .set("reason", reason);
 
-      if (!sender.hasPermission("bm.notify.unban")) {
+      if (!sender.hasPermission("bm.notify.unban") || parser.isSilent()) {
         message.sendTo(sender);
       }
 
-      getPlugin().getServer().broadcast(message.toString(), "bm.notify.unban");
+      if (!parser.isSilent()) {
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unban");
+      }
     });
 
     return true;
