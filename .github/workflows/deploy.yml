@@ -1,0 +1,55 @@
+---
+name: 'deploy'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # third-party action that cancels previous runs
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Generate Docs
+        run: javadoc -d $HOME/javadoc-latest common/src/main/java/me/confuser/banmanager/common/api/BmAPI.java common/src/main/java/me/confuser/banmanager/common/data/*.java bukkit/src/main/java/me/confuser/banmanager/bukkit/api/events/*.java sponge/src/main/java/me/confuser/banmanager/sponge/api/events/*.java
+
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_DOKKU_KEY }}
+
+      - name: Deploy
+        run: |
+          cd $HOME/javadoc-latest
+          ssh-keyscan ${{ secrets.DOKKU_HOST }} >> ~/.ssh/known_hosts
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions"
+          git config --global push.default simple
+          git init
+          git remote add deploy dokku@${{ secrets.DOKKU_HOST }}:javadocs.banmanagement.com >/dev/null 2>&1
+          touch .static
+          git add -f .
+          git commit -m "update"
+          git push -f deploy master >/dev/null 2>&1
