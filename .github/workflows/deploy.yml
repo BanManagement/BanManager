@@ -36,8 +36,14 @@ jobs:
       - name: Generate Docs
         run: javadoc -d $HOME/javadoc-latest common/src/main/java/me/confuser/banmanager/common/api/BmAPI.java common/src/main/java/me/confuser/banmanager/common/data/*.java bukkit/src/main/java/me/confuser/banmanager/bukkit/api/events/*.java sponge/src/main/java/me/confuser/banmanager/sponge/api/events/*.java
 
-      - name: Prepare deployment
+      - name: Deploy
         run: |
+          mkdir -p ~/.ssh
+          eval `ssh-agent -s`
+          ssh-add - <<< ${{ secrets.SSH_DOKKU_KEY }}
+          ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+          ssh-keyscan ${{ secrets.DOKKU_HOST }} >> ~/.ssh/known_hosts
+          chown 400 ~/.ssh/id_rsa
           cd $HOME/javadoc-latest
           git init
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,10 +51,11 @@ jobs:
           touch .static
           git add -f .
           git commit -m "update"
+          git remote add deploy dokku@${{ secrets.DOKKU_HOST }}:javadocs.banmanagement.com >/dev/null 2>&1
+          git push -f deploy master >/dev/null 2>&1
 
-      - name: Push to dokku
-        uses: dokku/github-action@master
-        with:
-          git_push_flags: '--force'
-          git_remote_url: 'ssh://dokku@${{ secrets.DOKKU_HOST }}:22/javadocs.banmanagement.com'
-          ssh_private_key: ${{ secrets.SSH_DOKKU_KEY }}
+#        uses: dokku/github-action@master
+#        with:
+#          git_push_flags: '--force'
+#          git_remote_url: 'ssh://dokku@${{ secrets.DOKKU_HOST }}:22/javadocs.banmanagement.com'
+#          ssh_private_key: ${{ secrets.SSH_DOKKU_KEY }}
