@@ -311,10 +311,18 @@ public class BanManagerPlugin {
 
       databaseType = new MySQLDatabase();
 
-      ds.addDataSourceProperty("useServerPrepStmts", "true");
+      ds.addDataSourceProperty("cachePrepStmts", "true");
       ds.addDataSourceProperty("prepStmtCacheSize", "250");
       ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-      ds.addDataSourceProperty("cachePrepStmts", "true");
+      ds.addDataSourceProperty("useServerPrepStmts", "true");
+      ds.addDataSourceProperty("useLocalSessionState", "true");
+      ds.addDataSourceProperty("rewriteBatchedStatements", "true");
+      ds.addDataSourceProperty("cacheResultSetMetadata", "true");
+      ds.addDataSourceProperty("cacheServerConfiguration", "true");
+      ds.addDataSourceProperty("elideSetAutoCommits", "true");
+      ds.addDataSourceProperty("maintainTimeStats", "false");
+      ds.addDataSourceProperty("alwaysSendSetIsolation", "false");
+      ds.addDataSourceProperty("cacheCallableStmts", "true");
     } else {
       try {
         // Force usage of BM H2 in server implementations with differing versions
