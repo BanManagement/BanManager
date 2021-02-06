@@ -11,6 +11,7 @@ import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 import net.kyori.text.TextComponent;
+import net.kyori.text.event.ClickEvent;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -364,11 +365,21 @@ public class InfoCommand extends CommonCommand {
       }
 
       if (sender.hasPermission("bm.command.bminfo.website")) {
-        messages.add(Message.get("info.website.player")
+        String websiteMsg = Message.get("info.website.player")
             .set("player", player.getName())
             .set("uuid", player.getUUID().toString())
             .set("playerId", player.getUUID().toString())
-            .toString());
+            .toString();
+
+        if (sender.isConsole()) {
+          messages.add(websiteMsg);
+        } else {
+          TextComponent.Builder message = TextComponent.builder(websiteMsg);
+
+          message.clickEvent(ClickEvent.openUrl(websiteMsg));
+
+          messages.add(message.build());
+        }
       }
     }
 
