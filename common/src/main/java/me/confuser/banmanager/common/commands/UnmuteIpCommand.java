@@ -88,11 +88,13 @@ public class UnmuteIpCommand extends CommonCommand {
           .set("actor", actor.getName())
           .set("reason", reason);
 
-      if (!sender.hasPermission("bm.notify.unmuteip")) {
+      if (!sender.hasPermission("bm.notify.unmuteip") || parser.isSilent()) {
         message.sendTo(sender);
       }
 
-      getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmuteip");
+      if (!parser.isSilent()) {
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmuteip");
+      }
     });
 
     return true;

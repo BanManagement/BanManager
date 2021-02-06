@@ -94,11 +94,13 @@ public class UnbanIpRangeCommand extends CommonCommand {
           .set("actor", actor.getName())
           .set("reason", reason);
 
-      if (!sender.hasPermission("bm.notify.unbaniprange")) {
+      if (!sender.hasPermission("bm.notify.unbaniprange") || parser.isSilent()) {
         message.sendTo(sender);
       }
 
-      getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbaniprange");
+      if (!parser.isSilent()) {
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbaniprange");
+      }
     });
 
     return true;

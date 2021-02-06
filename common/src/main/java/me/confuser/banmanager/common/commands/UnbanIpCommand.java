@@ -88,11 +88,13 @@ public class UnbanIpCommand extends CommonCommand {
               .set("actor", actor.getName())
               .set("reason", reason);
 
-      if (!sender.hasPermission("bm.notify.unbanip")) {
+      if (!sender.hasPermission("bm.notify.unbanip") || parser.isSilent()) {
         message.sendTo(sender);
       }
 
-      getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanip");
+      if (!parser.isSilent()) {
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanip");
+      }
     });
 
     return true;

@@ -105,11 +105,13 @@ public class UnmuteCommand extends CommonCommand {
                 .set("actor", actor.getName())
                 .set("reason", reason);
 
-        if (!sender.hasPermission("bm.notify.unmute")) {
+        if (!sender.hasPermission("bm.notify.unmute") || parser.isSilent()) {
           message.sendTo(sender);
         }
 
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmute");
+        if (!parser.isSilent()) {
+          getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmute");
+        }
 
         getPlugin().getScheduler().runSync(() -> {
           CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(mute.getPlayer().getUUID());
