@@ -3,8 +3,8 @@ name: 'deploy'
 
 on:
   push:
-#    branches:
-#      - master
+    branches:
+      - master
 
 jobs:
   deploy:
@@ -53,9 +53,3 @@ jobs:
           git add -f .
           git commit -m "update"
           git push -f deploy master >/dev/null 2>&1
-
-#        uses: dokku/github-action@master
-#        with:
-#          git_push_flags: '--force'
-#          git_remote_url: 'ssh://dokku@${{ secrets.DOKKU_HOST }}:22/javadocs.banmanagement.com'
-#          ssh_private_key: ${{ secrets.SSH_DOKKU_KEY }}
