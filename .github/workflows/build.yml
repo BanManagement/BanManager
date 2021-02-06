@@ -1,0 +1,42 @@
+name: Java CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Java ${{ matrix.java }} - ${{ matrix.storageType }}
+    strategy:
+      matrix:
+        include:
+          - storageType: mariadb
+            java: 8
+          - storageType: h2
+            java: 8
+          - storageType: mariadb
+            java: 11
+          - storageType: h2
+            java: 11
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and Test
+        env:
+          STORAGE_TYPE: ${{ matrix.storageType }}
+        run: mvn -Dcom.j256.ormlite.logger.type=LOCAL compile test
