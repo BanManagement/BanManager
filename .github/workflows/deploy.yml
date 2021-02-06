@@ -43,6 +43,7 @@ jobs:
       - name: Deploy
         run: |
           cd $HOME/javadoc-latest
+          ssh-keyscan ${{ secrets.DOKKU_HOST }} >> ~/.ssh/known_hosts
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions"
           git config --global push.default simple
@@ -51,7 +52,7 @@ jobs:
           touch .static
           git add -f .
           git commit -m "update"
-          git push -f deploy master
+          git push -f deploy master >/dev/null 2>&1
 
 #        uses: dokku/github-action@master
 #        with:
