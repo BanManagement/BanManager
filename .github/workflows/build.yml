@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Java ${{ matrix.java }}
+    name: Java ${{ matrix.java }} - ${{ matrix.storageType }}
     strategy:
       matrix:
         include:
