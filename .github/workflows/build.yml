@@ -14,10 +14,15 @@ jobs:
     name: Java ${{ matrix.java }}
     strategy:
       matrix:
-        java: [8, 11]
         include:
           - storageType: mariadb
+            java: 8
           - storageType: h2
+            java: 8
+          - storageType: mariadb
+            java: 11
+          - storageType: h2
+            java: 11
 
     steps:
       - uses: actions/checkout@v2
