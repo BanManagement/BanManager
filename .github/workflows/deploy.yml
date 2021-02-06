@@ -37,7 +37,14 @@ jobs:
         run: javadoc -d $HOME/javadoc-latest common/src/main/java/me/confuser/banmanager/common/api/BmAPI.java common/src/main/java/me/confuser/banmanager/common/data/*.java bukkit/src/main/java/me/confuser/banmanager/bukkit/api/events/*.java sponge/src/main/java/me/confuser/banmanager/sponge/api/events/*.java
 
       - name: Prepare deployment
-        run: cd $HOME/javadoc-latest && git init && touch .static && git add -f . && git commit -m "update"
+        run: |
+          cd $HOME/javadoc-latest
+          git init
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions"
+          touch .static
+          git add -f .
+          git commit -m "update"
 
       - name: Push to dokku
         uses: dokku/github-action@master
