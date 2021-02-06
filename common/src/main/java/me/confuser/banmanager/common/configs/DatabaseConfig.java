@@ -29,6 +29,8 @@ public abstract class DatabaseConfig {
   @Getter
   private final boolean verifyServerCertificate;
   @Getter
+  private final boolean allowPublicKeyRetrieval;
+  @Getter
   private final boolean isEnabled;
   @Getter
   private int maxConnections;
@@ -56,6 +58,7 @@ public abstract class DatabaseConfig {
     maxConnections = conf.getInt("maxConnections", 10);
     leakDetection = conf.getInt("leakDetection", 0);
     useSSL = conf.getBoolean("useSSL", false);
+    allowPublicKeyRetrieval = conf.getBoolean("allowPublicKeyRetrieval", false);
     verifyServerCertificate = conf.getBoolean("verifyServerCertificate", false);
     maxLifetime = conf.getInt("maxLifetime", 1800000);
     connectionTimeout = conf.getInt("connectionTimeout", 30000);
@@ -79,6 +82,7 @@ public abstract class DatabaseConfig {
         "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
         "&serverTimezone=UTC" +
         "&useSSL=" + useSSL +
+        "&allowPublicKeyRetrieval=" + allowPublicKeyRetrieval +
         "&verifyServerCertificate=" + verifyServerCertificate;
 
     if (!storageType.equals("mariadb")) {
