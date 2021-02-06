@@ -12,8 +12,6 @@ databases:
     maxConnections: 10
     useSSL: false
     verifyServerCertificate: false
-    # Used to detect slow running queries/unclosed resources
-    leakDetection: 3000
     maxLifetime: 1800000
     connectionTimeout: 30000
     tables:
