@@ -51,7 +51,7 @@ jobs:
           touch .static
           git add -f .
           git commit -m "update"
-          git push -f deploy master >/dev/null 2>&1
+          git push -f deploy master
 
 #        uses: dokku/github-action@master
 #        with:
