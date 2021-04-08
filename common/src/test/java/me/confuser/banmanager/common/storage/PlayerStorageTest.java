@@ -39,4 +39,21 @@ public class PlayerStorageTest extends BasePluginDbTest {
     assertNull(playerStorage.getAutoCompleteTree().getValueForExactKey("Name 1"));
     assertNotNull(playerStorage.getAutoCompleteTree().getValueForExactKey("Name 2"));
   }
+
+  @Test
+  public void shouldRetrievePlayerData() throws SQLException {
+    PlayerStorage playerStorage = plugin.getPlayerStorage();
+
+    UUID uuid = UUID.randomUUID();
+
+    PlayerData data = new PlayerData(uuid, "PlaYer 1");
+    CreateOrUpdateStatus status = playerStorage.upsert(data);
+    assertTrue(status.isCreated());
+    assertFalse(status.isUpdated());
+
+    data = playerStorage.retrieve("player 1", false);
+
+    assertEquals(data.getUUID(), uuid);
+    assertEquals(data.getName(), "PlaYer 1");
+  }
 }
