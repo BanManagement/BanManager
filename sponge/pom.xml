@@ -220,7 +220,7 @@
         <dependency>
             <groupId>com.github.Eufranio</groupId>
             <artifactId>MagiBridge</artifactId>
-            <version>api-7-SNAPSHOT</version>
+            <version>api-7-6ec024d1be-1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
