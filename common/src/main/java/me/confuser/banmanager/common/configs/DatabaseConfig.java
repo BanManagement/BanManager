@@ -76,7 +76,7 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    if (storageType.equals("h2")) return "jdbc:h2:file:" + new File(dataFolder, name).getAbsolutePath() + ";mode=MySQL;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO";
+    if (storageType.equals("h2")) return "jdbc:h2:file:" + new File(dataFolder, name).getAbsolutePath() + ";mode=MySQL;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;IGNORECASE=TRUE";
 
     String url = "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
         "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
