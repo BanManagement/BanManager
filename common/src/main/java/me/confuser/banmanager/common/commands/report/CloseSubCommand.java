@@ -60,7 +60,7 @@ public class CloseSubCommand extends CommonSubCommand {
 
       if (parser.getArgs().length == 1) {
         String message = Message.get("report.close.notify.closed")
-                                .set("actor", data.getActor().getName())
+                                .set("actor", sender.getName())
                                 .set("id", data.getId())
                                 .toString();
 
@@ -91,7 +91,7 @@ public class CloseSubCommand extends CommonSubCommand {
         }
 
         String message = Message.get("report.close.notify.command")
-                                .set("actor", data.getActor().getName())
+                                .set("actor", sender.getName())
                                 .set("id", data.getId())
                                 .set("command", command)
                                 .toString();
@@ -114,7 +114,7 @@ public class CloseSubCommand extends CommonSubCommand {
         }
 
         String message = Message.get("report.close.notify.comment")
-                                .set("actor", data.getActor().getName())
+                                .set("actor", sender.getName())
                                 .set("id", data.getId())
                                 .set("comment", comment)
                                 .toString();
