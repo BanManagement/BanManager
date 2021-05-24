@@ -5,6 +5,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
@@ -488,6 +489,10 @@ public class BmAPI {
 
   public static ConnectionSource getLocalConnection() {
     return plugin.getLocalConn();
+  }
+
+  public static long toTimestamp(String time, boolean future) throws Exception {
+    return DateUtils.parseDateDiff(time, future);
   }
 }
 
