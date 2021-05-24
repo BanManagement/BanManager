@@ -10,7 +10,7 @@ import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.data.global.*;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
-import org.bstats.sponge.Metrics2;
+import org.bstats.sponge.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -47,7 +47,7 @@ public class BMSpongePlugin {
   private CommonLogger logger;
   private BanManagerPlugin plugin;
   @Inject
-  private Metrics2 metrics;
+  private Metrics metrics;
 
   @Inject
   @ConfigDir(sharedRoot = false)
