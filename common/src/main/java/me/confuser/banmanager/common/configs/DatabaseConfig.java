@@ -48,7 +48,7 @@ public abstract class DatabaseConfig {
   private DatabaseConfig(File dataFolder, ConfigurationSection conf) {
     this.dataFolder = dataFolder;
 
-    storageType = conf.getString("storageType", "mysql");
+    storageType = conf.getString("storageType", "mysql").toLowerCase();
     host = conf.getString("host");
     port = conf.getInt("port", 3306);
     name = conf.getString("name");
