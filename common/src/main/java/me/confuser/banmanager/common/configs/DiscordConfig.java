@@ -29,7 +29,8 @@ public class DiscordConfig extends Config {
     for (String type : punishments.getKeys(false)) {
       types.put(type, new DiscordPunishmentConfig(
           punishments.getString(type + ".channel"),
-          new Message("discord." + type, punishments.getString(type + ".message"))
+          new Message("discord." + type, punishments.getString(type + ".message")),
+          punishments.getBoolean(".ignoreSilent", true)
       ));
     }
   }
@@ -48,6 +49,8 @@ public class DiscordConfig extends Config {
     @Getter
     private String channel;
     private Message message;
+    @Getter
+    private boolean ignoreSilent;
 
     public Message getMessage() {
       return Message.get(message.getKey());
