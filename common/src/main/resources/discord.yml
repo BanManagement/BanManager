@@ -4,33 +4,41 @@ punishments:
   ban:
     channel: 'replaceMe'
     message: '[player] has been permanently banned by [actor] for [reason]'
+    ignoreSilent: true
   tempban:
     channel: 'replaceMe'
     message: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
+    ignoreSilent: true
   unban:
     channel: 'replaceMe'
     message: '[player] has been unbanned by [actor] for [reason]'
   banip:
     channel: 'replaceMe'
     message: '[ip] has been permanently banned by [actor] for [reason]'
+    ignoreSilent: true
   tempbanip:
     channel: 'replaceMe'
     message: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
+    ignoreSilent: true
   unbanip:
     channel: 'replaceMe'
     message: '[ip] has been unbanned by [actor] for [reason]'
   kick:
     channel: 'replaceMe'
     message: '[player] has been kicked by [actor] for [reason]'
+    ignoreSilent: true
   mute:
     channel: 'replaceMe'
     message: '[player] has been permanently muted by [actor] for [reason]'
+    ignoreSilent: true
   tempmute:
     channel: 'replaceMe'
     message: '[player] has been temporarily muted for [expires] by [actor] for [reason]'
+    ignoreSilent: true
   unmute:
     channel: 'replaceMe'
     message: '[player] has been unmuted by [actor] for [reason]'
   warning:
     channel: 'replaceMe'
     message: '[player] has been warned by [actor] for [reason]'
+    ignoreSilent: true

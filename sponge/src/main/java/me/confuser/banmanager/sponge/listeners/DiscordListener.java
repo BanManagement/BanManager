@@ -21,41 +21,51 @@ public class DiscordListener {
   @IsCancelled(Tristate.UNDEFINED)
   @Listener(order = Order.POST)
   public void notifyOnBan(PlayerBannedEvent event) {
-    if (event.isSilent()) return;
+    Object[] data = listener.notifyOnBan(event.getBan());
 
-    send(listener.notifyOnBan(event.getBan()), event.getBan().getActor());
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getBan().getActor());
   }
 
   @IsCancelled(Tristate.UNDEFINED)
   @Listener(order = Order.POST)
   public void notifyOnMute(PlayerMutedEvent event) {
-    if (event.isSilent()) return;
+    Object[] data = listener.notifyOnMute(event.getMute());
 
-    send(listener.notifyOnMute(event.getMute()), event.getMute().getActor());
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getMute().getActor());
   }
 
   @IsCancelled(Tristate.UNDEFINED)
   @Listener(order = Order.POST)
   public void notifyOnWarn(PlayerWarnedEvent event) {
-    if (event.isSilent()) return;
+    Object[] data = listener.notifyOnWarn(event.getWarning());
 
-    send(listener.notifyOnWarn(event.getWarning()), event.getWarning().getActor());
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getWarning().getActor());
   }
 
   @IsCancelled(Tristate.UNDEFINED)
   @Listener(order = Order.POST)
   public void notifyOnBan(IpBannedEvent event) {
-    if (event.isSilent()) return;
+    Object[] data = listener.notifyOnBan(event.getBan());
 
-    send(listener.notifyOnBan(event.getBan()), event.getBan().getActor());
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getBan().getActor());
   }
 
   @IsCancelled(Tristate.UNDEFINED)
   @Listener(order = Order.POST)
   public void notifyOnKick(PlayerKickedEvent event) {
-    if (event.isSilent()) return;
+    Object[] data = listener.notifyOnKick(event.getKick());
 
-    send(listener.notifyOnKick(event.getKick()), event.getKick().getActor());
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getKick().getActor());
   }
 
   @IsCancelled(Tristate.UNDEFINED)

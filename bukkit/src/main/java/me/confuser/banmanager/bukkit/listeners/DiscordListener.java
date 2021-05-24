@@ -23,45 +23,45 @@ public class DiscordListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void notifyOnBan(PlayerBannedEvent event) {
-    if (event.isSilent()) return;
-
     Object[] data = listener.notifyOnBan(event.getBan());
+
+    if (event.isSilent() && (boolean) data[2]) return;
 
     send(data, Bukkit.getPlayer(event.getBan().getActor().getUUID()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void notifyOnMute(PlayerMutedEvent event) {
-    if (event.isSilent()) return;
-
     Object[] data = listener.notifyOnMute(event.getMute());
+
+    if (event.isSilent() && (boolean) data[2]) return;
 
     send(data, Bukkit.getPlayer(event.getMute().getActor().getUUID()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void notifyOnBan(IpBannedEvent event) {
-    if (event.isSilent()) return;
-
     Object[] data = listener.notifyOnBan(event.getBan());
+
+    if (event.isSilent() && (boolean) data[2]) return;
 
     send(data, Bukkit.getPlayer(event.getBan().getActor().getUUID()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void notifyOnKick(PlayerKickedEvent event) {
-    if (event.isSilent()) return;
-
     Object[] data = listener.notifyOnKick(event.getKick());
+
+    if (event.isSilent() && (boolean) data[2]) return;
 
     send(data, Bukkit.getPlayer(event.getKick().getActor().getUUID()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void notifyOnWarn(PlayerWarnedEvent event) {
-    if (event.isSilent()) return;
-
     Object[] data = listener.notifyOnWarn(event.getWarning());
+
+    if (event.isSilent() && (boolean) data[2]) return;
 
     send(data, Bukkit.getPlayer(event.getWarning().getActor().getUUID()));
   }
