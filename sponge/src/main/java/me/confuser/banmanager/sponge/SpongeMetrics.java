@@ -1,31 +1,33 @@
 package me.confuser.banmanager.sponge;
 
 import me.confuser.banmanager.common.CommonMetrics;
-import org.bstats.sponge.Metrics2;
+import org.bstats.charts.DrilldownPie;
+import org.bstats.charts.SimplePie;
+import org.bstats.sponge.Metrics;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SpongeMetrics implements CommonMetrics {
-  private final Metrics2 metrics;
+  private final Metrics metrics;
 
-  public SpongeMetrics(Metrics2 metrics) {
+  public SpongeMetrics(Metrics metrics) {
     this.metrics = metrics;
   }
 
   @Override
   public void submitOnlineMode(boolean online) {
-    metrics.addCustomChart((new Metrics2.SimplePie("banmanagerMode", () -> online ? "online" : "offline")));
+    metrics.addCustomChart((new SimplePie("banmanagerMode", () -> online ? "online" : "offline")));
   }
 
   @Override
   public void submitStorageType(String storageType) {
-    metrics.addCustomChart((new Metrics2.SimplePie("storageType", () -> storageType)));
+    metrics.addCustomChart((new SimplePie("storageType", () -> storageType)));
   }
 
   @Override
   public void submitStorageVersion(String version) {
-    metrics.addCustomChart((new Metrics2.DrilldownPie("storageVersion", () -> {
+    metrics.addCustomChart((new DrilldownPie("storageVersion", () -> {
       Map<String, Map<String, Integer>> map = new HashMap<>();
 
       Map<String, Integer> entry = new HashMap<>();
@@ -43,16 +45,16 @@ public class SpongeMetrics implements CommonMetrics {
 
   @Override
   public void submitGlobalMode(boolean enabled) {
-    metrics.addCustomChart((new Metrics2.SimplePie("globalMode", () -> enabled ? "enabled" : "disabled")));
+    metrics.addCustomChart((new SimplePie("globalMode", () -> enabled ? "enabled" : "disabled")));
   }
 
   @Override
   public void submitGeoMode(boolean enabled) {
-    metrics.addCustomChart((new Metrics2.SimplePie("geoMode", () -> enabled ? "enabled" : "disabled")));
+    metrics.addCustomChart((new SimplePie("geoMode", () -> enabled ? "enabled" : "disabled")));
   }
 
   @Override
   public void submitDiscordMode(boolean enabled) {
-    metrics.addCustomChart((new Metrics2.SimplePie("discordMode", () -> enabled ? "enabled" : "disabled")));
+    metrics.addCustomChart((new SimplePie("discordMode", () -> enabled ? "enabled" : "disabled")));
   }
 }
