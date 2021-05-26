@@ -6,6 +6,7 @@ website: http://dev.bukkit.org/bukkit-plugins/ban-management/
 description: ${project.description}
 softdepend:
   - DiscordSRV
+  - PlaceholderAPI
 commands:
   ban:
     description: "ban a player"
