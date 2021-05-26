@@ -76,6 +76,7 @@ public class BanIpRangeCommand extends CommonCommand {
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("baniprange.ip.kick")
+            .set("id", ban.getId())
             .set("reason", ban.getReason())
             .set("actor", actor.getName());
 

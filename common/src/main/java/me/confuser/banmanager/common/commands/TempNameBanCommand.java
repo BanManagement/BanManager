@@ -107,6 +107,7 @@ public class TempNameBanCommand extends CommonCommand {
           Message kickMessage = Message.get("tempbanname.name.kick")
               .set("reason", ban.getReason())
               .set("name", name)
+              .set("id", ban.getId())
               .set("actor", actor.getName());
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {

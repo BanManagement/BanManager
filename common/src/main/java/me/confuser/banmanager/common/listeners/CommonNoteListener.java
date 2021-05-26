@@ -18,6 +18,7 @@ public class CommonNoteListener {
     message.set("player", data.getPlayer().getName())
         .set("playerId", data.getPlayer().getUUID().toString())
         .set("actor", data.getActor().getName())
+        .set("id", data.getId())
         .set("message", data.getMessage());
 
     plugin.getServer().broadcast(message.toString(), "bm.notify.notes");

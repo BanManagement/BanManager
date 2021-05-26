@@ -88,6 +88,7 @@ public class CommonJoinListener {
         message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
       }
 
+      message.set("id", data.getId());
       message.set("ip", address.toString());
       message.set("reason", data.getReason());
       message.set("actor", data.getActor().getName());
@@ -118,6 +119,7 @@ public class CommonJoinListener {
         message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
       }
 
+      message.set("id", data.getId());
       message.set("ip", address.toString());
       message.set("reason", data.getReason());
       message.set("actor", data.getActor().getName());
@@ -149,6 +151,7 @@ public class CommonJoinListener {
         message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
       }
 
+      message.set("id", data.getId());
       message.set("name", name);
       message.set("reason", data.getReason());
       message.set("actor", data.getActor().getName());
@@ -182,6 +185,7 @@ public class CommonJoinListener {
       message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
     }
 
+    message.set("id", data.getId());
     message.set("player", data.getPlayer().getName());
     message.set("reason", data.getReason());
     message.set("actor", data.getActor().getName());
@@ -224,6 +228,7 @@ public class CommonJoinListener {
           Message noteMessage = Message.get("notes.note")
               .set("player", note.getActor().getName())
               .set("message", note.getMessage())
+              .set("id", note.getId())
               .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
 
           notes.add(noteMessage.toString());
@@ -265,6 +270,7 @@ public class CommonJoinListener {
               .set("player", player.getName())
               .set("reason", warning.getReason())
               .set("actor", warning.getActor().getName())
+              .set("id", warning.getId())
               .sendTo(plugin.getServer().getPlayer(player.getUniqueId()));
 
           warning.setRead(true);
@@ -460,6 +466,7 @@ public class CommonJoinListener {
         Message kickMessage = Message.get("denyalts.player.disallowed")
             .set("player", player.getName())
             .set("reason", ban.getReason())
+            .set("id", ban.getId())
             .set("actor", ban.getActor().getName());
 
         bukkitPlayer.kick(kickMessage.toString());
@@ -495,6 +502,7 @@ public class CommonJoinListener {
               .set("displayName", bukkitPlayer.getDisplayName())
               .set("player", newBan.getPlayer().getName())
               .set("reason", newBan.getReason())
+              .set("id", newBan.getId())
               .set("actor", newBan.getActor().getName());
 
           bukkitPlayer.kick(kickMessage.toString());

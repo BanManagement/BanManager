@@ -163,6 +163,7 @@ public class MuteCommand extends CommonCommand {
           .set("player", player.getName())
           .set("playerId", player.getUUID().toString())
           .set("reason", mute.getReason())
+          .set("id", mute.getId())
           .set("actor", actor.getName());
 
       commonPlayer.sendMessage(muteMessage.toString());

@@ -96,6 +96,7 @@ public class TempIpRangeBanCommand extends CommonCommand {
         Message kickMessage = Message.get("tempbaniprange.ip.kick")
             .set("reason", ban.getReason())
             .set("actor", actor.getName())
+            .set("id", ban.getId())
             .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {

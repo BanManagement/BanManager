@@ -143,6 +143,7 @@ public class TempIpMuteCommand extends CommonCommand {
         Message message = Message.get("tempmuteip.ip.disallowed")
             .set("reason", mute.getReason())
             .set("actor", actor.getName())
+            .set("id", mute.getId())
             .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {

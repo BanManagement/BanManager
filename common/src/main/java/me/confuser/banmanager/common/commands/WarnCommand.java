@@ -132,6 +132,7 @@ public class WarnCommand extends CommonCommand {
             .set("playerId", player.getUUID().toString())
             .set("reason", warning.getReason())
             .set("actor", actor.getName())
+            .set("id", warning.getId())
             .set("points", parser.getPoints());
 
         onlinePlayer.sendMessage(warningMessage.toString());
@@ -142,6 +143,7 @@ public class WarnCommand extends CommonCommand {
           .set("playerId", player.getUUID().toString())
           .set("actor", actor.getName())
           .set("reason", warning.getReason())
+          .set("id", warning.getId())
           .set("points", parser.getPoints());
 
       if (!sender.hasPermission("bm.notify.warn")) {
@@ -171,6 +173,7 @@ public class WarnCommand extends CommonCommand {
               .replace("[playerId]", player.getUUID().toString())
               .replace("[actor]", actor.getName())
               .replace("[reason]", warning.getReason())
+              .replace("[id]", String.valueOf(warning.getId()))
               .replace("[points]", Double.toString(parser.getPoints()));
 
           getPlugin().getServer().dispatchCommand(getPlugin().getServer().getConsoleSender(), actionCommand);

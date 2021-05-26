@@ -155,6 +155,7 @@ public class BanCommand extends CommonCommand {
                                      .set("player", player.getName())
                                      .set("playerId", player.getUUID().toString())
                                      .set("reason", ban.getReason())
+                                     .set("id", ban.getId())
                                      .set("actor", actor.getName());
 
         onlinePlayer.kick(kickMessage.toString());

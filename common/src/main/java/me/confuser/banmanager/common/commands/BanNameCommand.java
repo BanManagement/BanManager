@@ -86,6 +86,7 @@ public class BanNameCommand extends CommonCommand {
         Message kickMessage = Message.get("banname.name.kick")
             .set("reason", ban.getReason())
             .set("actor", actor.getName())
+            .set("id", ban.getId())
             .set("name", name);
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
