@@ -395,6 +395,34 @@ public class CommonJoinListener {
 
       plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
     }, 20L);
+    plugin.getScheduler().runAsyncLater(() -> {
+      final UUID uuid = player.getUniqueId();
+      List<PlayerData> duplicates = plugin.getPlayerStorage().getDuplicatesInTime(ip, plugin.getConfig().getTimeAssociatedAlts());
+
+      if (duplicates.isEmpty()) {
+        return;
+      }
+
+      StringBuilder sb = new StringBuilder();
+
+      for (PlayerData playerData : duplicates) {
+        if (playerData.getUUID().equals(uuid)) {
+          continue;
+        }
+
+        sb.append(playerData.getName());
+        sb.append(", ");
+      }
+
+      if (sb.length() == 0) return;
+      if (sb.length() >= 2) sb.setLength(sb.length() - 2);
+
+      Message message = Message.get("duplicateIPAlts");
+      message.set("player", player.getName());
+      message.set("players", sb.toString());
+
+      plugin.getServer().broadcast(message.toString(), "bm.notify.alts");
+    }, 20L);
   }
 
   private void handleJoinDeny(PlayerData player, String reason) {
