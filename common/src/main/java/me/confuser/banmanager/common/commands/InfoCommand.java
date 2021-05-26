@@ -315,6 +315,7 @@ public class InfoCommand extends CommonCommand {
           messages.add(message
               .set("reason", ban.getReason())
               .set("actor", ban.getActor().getName())
+              .set("id", ban.getId())
               .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
               .toString());
         }
@@ -339,6 +340,7 @@ public class InfoCommand extends CommonCommand {
             .set("reason", ban.getReason())
             .set("actor", ban.getActor().getName())
             .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
+            .set("id", ban.getId())
             .toString());
       }
 
@@ -361,6 +363,7 @@ public class InfoCommand extends CommonCommand {
             .set("reason", mute.getReason())
             .set("actor", mute.getActor().getName())
             .set("created", DateUtils.format(dateTimeFormat, mute.getCreated()))
+            .set("id", mute.getId())
             .toString());
       }
 

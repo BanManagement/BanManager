@@ -58,6 +58,7 @@ public class NotesCommand extends CommonCommand {
             Message noteMessage = Message.get("notes.note")
                 .set("player", note.getActor().getName())
                 .set("message", note.getMessage())
+                .set("id", note.getId())
                 .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
             notes.add(noteMessage);
           }
@@ -113,6 +114,7 @@ public class NotesCommand extends CommonCommand {
                   .set("player", note.getPlayer().getName())
                   .set("actor", note.getActor().getName())
                   .set("message", note.getMessage())
+                  .set("id", note.getId())
                   .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
               notes.add(noteMessage);
             }

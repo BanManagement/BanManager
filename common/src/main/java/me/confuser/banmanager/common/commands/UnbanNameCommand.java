@@ -66,6 +66,7 @@ public class UnbanNameCommand extends CommonCommand {
       message
               .set("name", name)
               .set("actor", actor.getName())
+              .set("id", ban.getId())
               .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unbanname") || parser.isSilent()) {

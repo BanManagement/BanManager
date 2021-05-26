@@ -86,6 +86,7 @@ public class UnmuteIpCommand extends CommonCommand {
       message
           .set("ip", ipStr)
           .set("actor", actor.getName())
+          .set("id", mute.getId())
           .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unmuteip") || parser.isSilent()) {
