@@ -221,47 +221,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     return null;
   }
 
-  public List<PlayerData> getDuplicates(IPAddress ip) {
-    ArrayList<PlayerData> players = new ArrayList<>();
-
-    if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
-      return players;
-    }
-
-    QueryBuilder<PlayerData, byte[]> query = queryBuilder();
-    try {
-      query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
-
-      Where<PlayerData, byte[]> where = query.where();
-
-      where.eq("ip", ip);
-
-      query.setWhere(where);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return players;
-    }
-
-
-    CloseableIterator<PlayerData> itr = null;
-    try {
-      itr = query.limit(300L).iterator();
-
-      while (itr.hasNext()) {
-        PlayerData player = itr.next();
-
-        if (!plugin.getExemptionsConfig().isExempt(player, "alts")) players.add(player);
-      }
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      if (itr != null) itr.closeQuietly();
-    }
-
-    return players;
-  }
-
   public HashMap<String, Map.Entry<Integer, List<PlayerData>>> getDuplicateNames() {
     HashMap<String, Map.Entry<Integer, List<PlayerData>>> duplicates = new HashMap<>();
     CloseableIterator<String[]> itr = null;

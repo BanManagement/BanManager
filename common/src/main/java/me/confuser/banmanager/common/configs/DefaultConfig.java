@@ -47,6 +47,8 @@ public class DefaultConfig extends Config {
   @Getter
   private boolean denyAlts = false;
   @Getter
+  private long timeAssociatedAlts;
+  @Getter
   private HashMap<String, CleanUp> cleanUps;
   @Getter
   private int maxOnlinePerIp = 0;
@@ -96,6 +98,7 @@ public class DefaultConfig extends Config {
     displayNotificationsEnabled = conf.getBoolean("displayNotifications", true);
     punishAlts = conf.getBoolean("punishAlts", false);
     denyAlts = conf.getBoolean("denyAlts", false);
+    timeAssociatedAlts = conf.getLong("timeAssociatedAlts", 0);
 
     cleanUps = new HashMap<>(6);
     for (String type : conf.getConfigurationSection("cleanUp").getKeys(false)) {

@@ -48,7 +48,7 @@ public class FindAltsCommand extends CommonCommand {
         return;
       }
 
-      List<PlayerData> players = getPlugin().getPlayerStorage().getDuplicates(ip);
+      List<PlayerData> players = getPlugin().getPlayerStorage().getDuplicatesInTime(ip, getPlugin().getConfig().getTimeAssociatedAlts());
 
       if (!sender.isConsole()) {
         sender.sendMessage(Message.get("alts.header").set("ip", ipStr).toString());

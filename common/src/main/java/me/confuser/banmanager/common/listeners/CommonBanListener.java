@@ -67,7 +67,7 @@ public class CommonBanListener {
       message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
     }
 
-    List<PlayerData> players = plugin.getPlayerStorage().getDuplicates(data.getIp());
+    List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(data.getIp(), plugin.getConfig().getTimeAssociatedAlts());
     StringBuilder playerNames = new StringBuilder();
 
     for (PlayerData player : players) {
