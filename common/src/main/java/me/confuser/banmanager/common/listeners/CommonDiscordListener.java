@@ -34,6 +34,7 @@ public class CommonDiscordListener {
     message.set("player", ban.getPlayer().getName())
         .set("playerId", ban.getPlayer().getUUID().toString())
         .set("actor", ban.getActor().getName())
+        .set("id", ban.getId())
         .set("reason", ban.getReason());
 
     return new Object[]{channelName, message, ignoreSilent};
@@ -81,6 +82,7 @@ public class CommonDiscordListener {
     message.set("player", kick.getPlayer().getName())
         .set("playerId", kick.getPlayer().getUUID().toString())
         .set("actor", kick.getActor().getName())
+        .set("id", kick.getId())
         .set("reason", kick.getReason());
 
     return new Object[]{channelName, message, ignoreSilent};
@@ -106,6 +108,7 @@ public class CommonDiscordListener {
     message.set("player", ban.getPlayer().getName())
         .set("playerId", ban.getPlayer().getUUID().toString())
         .set("actor", ban.getActor().getName())
+        .set("id", ban.getId())
         .set("reason", ban.getReason());
 
     return new Object[]{channelName, message, ignoreSilent};
@@ -119,6 +122,7 @@ public class CommonDiscordListener {
     message.set("player", ban.getPlayer().getName())
         .set("playerId", ban.getPlayer().getUUID().toString())
         .set("actor", ban.getActor().getName())
+        .set("id", ban.getId())
         .set("reason", ban.getReason());
 
     return new Object[]{channelName, message, ignoreSilent};
@@ -131,6 +135,7 @@ public class CommonDiscordListener {
     message.set("player", ban.getPlayer().getName())
         .set("playerId", ban.getPlayer().getUUID().toString())
         .set("actor", actor.getName())
+        .set("id", ban.getId())
         .set("reason", reason);
 
     return new Object[]{channelName, message};
@@ -142,6 +147,7 @@ public class CommonDiscordListener {
 
     message.set("ip", ban.getIp().toString())
         .set("actor", actor.getName())
+        .set("id", ban.getId())
         .set("reason", reason);
 
     return new Object[]{channelName, message};
@@ -154,6 +160,7 @@ public class CommonDiscordListener {
     message.set("player", mute.getPlayer().getName())
         .set("playerId", mute.getPlayer().getUUID().toString())
         .set("actor", actor.getName())
+        .set("id", mute.getId())
         .set("reason", reason);
 
     return new Object[]{channelName, message};

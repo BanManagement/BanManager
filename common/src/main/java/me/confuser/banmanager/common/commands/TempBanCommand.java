@@ -178,6 +178,7 @@ public class TempBanCommand extends CommonCommand {
               .set("playerId", player.getUUID().toString())
               .set("reason", ban.getReason())
               .set("actor", actor.getName())
+              .set("id", ban.getId())
               .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
 
           onlinePlayer.kick(kickMessage.toString());

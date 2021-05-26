@@ -103,6 +103,7 @@ public class UnmuteCommand extends CommonCommand {
                 .set("player", mute.getPlayer().getName())
                 .set("playerId", mute.getPlayer().getUUID().toString())
                 .set("actor", actor.getName())
+                .set("id", mute.getId())
                 .set("reason", reason);
 
         if (!sender.hasPermission("bm.notify.unmute") || parser.isSilent()) {
@@ -125,6 +126,7 @@ public class UnmuteCommand extends CommonCommand {
                  .set("playerId", mute.getPlayer().getUUID().toString())
                  .set("reason", mute.getReason())
                  .set("actor", actor.getName())
+                 .set("id", mute.getId())
                  .sendTo(onlinePlayer);
 
         });

@@ -92,6 +92,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
           .set("from", ban.getFromIp().toString())
           .set("to", ban.getToIp().toString())
           .set("actor", actor.getName())
+          .set("id", ban.getId())
           .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unbaniprange") || parser.isSilent()) {

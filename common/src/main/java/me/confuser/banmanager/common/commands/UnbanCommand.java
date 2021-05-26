@@ -98,6 +98,7 @@ public class UnbanCommand extends CommonCommand {
               .set("player", ban.getPlayer().getName())
               .set("playerId", ban.getPlayer().getUUID().toString())
               .set("actor", actor.getName())
+              .set("id", ban.getId())
               .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unban") || parser.isSilent()) {

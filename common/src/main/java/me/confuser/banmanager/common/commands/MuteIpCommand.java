@@ -126,6 +126,7 @@ public class MuteIpCommand extends CommonCommand {
       getPlugin().getScheduler().runSync(() -> {
         Message message = Message.get("muteip.ip.disallowed")
             .set("reason", mute.getReason())
+            .set("id", mute.getId())
             .set("actor", actor.getName());
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {

@@ -31,6 +31,7 @@ public class CommonMuteListener {
     }
 
     message
+        .set("id", data.getId())
         .set("player", data.getPlayer().getName())
         .set("playerId", data.getPlayer().getUUID().toString())
         .set("actor", data.getActor().getName())
@@ -81,6 +82,7 @@ public class CommonMuteListener {
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
     message
+        .set("id", data.getId())
         .set("ip", data.getIp().toString())
         .set("actor", data.getActor().getName())
         .set("reason", data.getReason())

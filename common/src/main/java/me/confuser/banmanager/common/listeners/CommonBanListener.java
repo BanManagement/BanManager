@@ -29,6 +29,7 @@ public class CommonBanListener {
     }
 
     message
+        .set("id", data.getId())
         .set("player", data.getPlayer().getName())
         .set("playerId", data.getPlayer().getUUID().toString())
         .set("actor", data.getActor().getName())
@@ -79,6 +80,7 @@ public class CommonBanListener {
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
     message
+        .set("id", data.getId())
         .set("ip", data.getIp().toString())
         .set("actor", data.getActor().getName())
         .set("reason", data.getReason())
@@ -118,6 +120,7 @@ public class CommonBanListener {
     }
 
     message
+        .set("id", data.getId())
         .set("from", data.getFromIp().toString())
         .set("to", data.getToIp().toString())
         .set("actor", data.getActor().getName())
@@ -157,6 +160,7 @@ public class CommonBanListener {
     }
 
     message
+        .set("id", data.getId())
         .set("name", data.getName())
         .set("actor", data.getActor().getName())
         .set("reason", data.getReason());

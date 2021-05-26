@@ -152,6 +152,7 @@ public class TempWarnCommand extends CommonCommand {
                                         .set("reason", warning.getReason())
                                         .set("actor", actor.getName())
                                         .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                                        .set("id", warning.getId())
                                         .set("points", parser.getPoints());
 
         onlinePlayer.sendMessage(warningMessage.toString());
@@ -163,6 +164,7 @@ public class TempWarnCommand extends CommonCommand {
                                .set("actor", actor.getName())
                                .set("reason", warning.getReason())
                                .set("expires", DateUtils.getDifferenceFormat(warning.getExpires()))
+                               .set("id", warning.getId())
                                .set("points", parser.getPoints());
 
       if (!sender.hasPermission("bm.notify.tempwarn")) {
@@ -194,6 +196,7 @@ public class TempWarnCommand extends CommonCommand {
                                        .replace("[actor]", actor.getName())
                                        .replace("[reason]", warning.getReason())
                                        .replace("[expires]", parsedArgs[1])
+                                       .replace("[id]", String.valueOf(warning.getId()))
                                        .replace("[points]", Double.toString(parser.getPoints()));
 
           getPlugin().getServer().dispatchCommand(getPlugin().getServer().getConsoleSender(), actionCommand);

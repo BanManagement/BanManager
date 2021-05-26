@@ -125,6 +125,7 @@ public class BanIpCommand extends CommonCommand {
       getPlugin().getScheduler().runSync(() -> {
         Message kickMessage = Message.get("banip.ip.kick")
             .set("reason", ban.getReason())
+            .set("id", ban.getId())
             .set("actor", actor.getName());
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {

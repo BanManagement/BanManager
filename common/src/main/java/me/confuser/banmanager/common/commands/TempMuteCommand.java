@@ -185,6 +185,7 @@ public class TempMuteCommand extends CommonCommand {
                                    .set("playerId", player.getUUID().toString())
                                    .set("reason", mute.getReason())
                                    .set("actor", actor.getName())
+                                   .set("id", mute.getId())
                                    .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
 
       onlinePlayer1.sendMessage(muteMessage.toString());

@@ -86,6 +86,7 @@ public class UnbanIpCommand extends CommonCommand {
       message
               .set("ip", ipStr)
               .set("actor", actor.getName())
+              .set("id", ban.getId())
               .set("reason", reason);
 
       if (!sender.hasPermission("bm.notify.unbanip") || parser.isSilent()) {

@@ -54,6 +54,7 @@ public class CommonChatListener {
         .set("player", player.getName())
         .set("playerId", player.getUniqueId().toString())
         .set("reason", mute.getReason())
+        .set("id", mute.getId())
         .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.muted");
@@ -76,6 +77,7 @@ public class CommonChatListener {
         .set("player", player.getName())
         .set("playerId", player.getUniqueId().toString())
         .set("reason", mute.getReason())
+        .set("id", mute.getId())
         .set("actor", mute.getActor().getName());
 
     player.sendMessage(message);
@@ -106,6 +108,7 @@ public class CommonChatListener {
         .set("player", player.getName())
         .set("playerId", player.getUniqueId().toString())
         .set("reason", mute.getReason())
+        .set("id", mute.getId())
         .set("actor", mute.getActor().getName());
 
     plugin.getServer().broadcast(broadcast.toString(), "bm.notify.mutedip");
@@ -129,6 +132,7 @@ public class CommonChatListener {
         .set("playerId", player.getUniqueId().toString())
         .set("reason", mute.getReason())
         .set("actor", mute.getActor().getName())
+        .set("id", mute.getId())
         .set("ip", mute.getIp().toString());
 
     player.sendMessage(message.toString());
