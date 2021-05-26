@@ -173,6 +173,10 @@ punishAlts: false
 # Automatically deny players from joining that have the same ip address as a banned player
 denyAlts: false
 
+# Time period (in seconds) a player's ip should be classified as an alt of another player
+# Set to 0 for an ip address to always be associated to a player
+timeAssociatedAlts: 0
+
 # Keep records for number of days, use 0 to never delete
 cleanUp:
   kicks: 30
