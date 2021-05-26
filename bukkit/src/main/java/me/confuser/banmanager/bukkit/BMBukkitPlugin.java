@@ -2,6 +2,7 @@ package me.confuser.banmanager.bukkit;
 
 import lombok.Getter;
 import me.confuser.banmanager.bukkit.listeners.*;
+import me.confuser.banmanager.bukkit.placeholders.PAPIPlaceholders;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
@@ -137,6 +138,10 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     if (plugin.getDiscordConfig().isEnabled() && Bukkit.getPluginManager().getPlugin("DiscordSRV") != null) {
       registerEvent(new DiscordListener(plugin));
+    }
+
+    if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+      new PAPIPlaceholders(plugin).register();
     }
   }
 
