@@ -20,7 +20,6 @@ public class InfoSubCommand extends CommonSubCommand {
 
   @Override
   public boolean onCommand(final CommonSender sender, CommandParser parser) {
-    if (sender.isConsole()) return false;
     if (parser.getArgs().length != 1) return false;
 
     final int id;
