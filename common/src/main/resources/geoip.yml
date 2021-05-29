@@ -6,8 +6,8 @@ download:
   licenseKey: ''
 # Allow only certain countries on the server
 countries:
-# blacklist or whitelist
-  type: 'blacklist'
+# allow or deny
+  type: 'deny'
 # Use ISO codes, https://www.iso.org/obp/ui/#search e.g. United Kingdom is GB
   list:
   # - GB

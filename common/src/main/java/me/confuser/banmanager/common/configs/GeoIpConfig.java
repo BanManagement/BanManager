@@ -126,7 +126,8 @@ public class GeoIpConfig extends Config {
   }
 
   public boolean isCountryAllowed(CountryResponse countryResponse) {
-    if (type.equals("blacklist")) {
+    // blacklist option deprecated
+    if (type.equals("blacklist") || type.equals("deny")) {
       return !countries.contains(countryResponse.getCountry().getIsoCode());
     } else {
       return countries.contains(countryResponse.getCountry().getIsoCode());
