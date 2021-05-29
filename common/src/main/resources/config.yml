@@ -127,10 +127,6 @@ cooldowns:
   tempwarn: 10
   report: 10
 
-# To prevent duplicate warnings you can set a cooldown to limit the amount in seconds before a player can be warned again
-# Set to 0 to disable
-warningCooldown: 10
-
 # Commands to execute when a player reaches a certain number of warning points
 warningActions:
   enabled: false
