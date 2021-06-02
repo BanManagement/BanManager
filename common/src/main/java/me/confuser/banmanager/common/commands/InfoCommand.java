@@ -403,7 +403,7 @@ public class InfoCommand extends CommonCommand {
     try {
       iterator = getPlugin().getPlayerHistoryStorage().getSince(player, since, page);
 
-      String dateTimeFormat = Message.getString("info.mute.dateTimeFormat");
+      String dateTimeFormat = Message.getString("info.ips.dateTimeFormat");
 
       while (iterator.hasNext()) {
         PlayerHistoryData data = iterator.next();
