@@ -73,7 +73,7 @@ public abstract class MultiCommonCommand extends CommonCommand {
         boolean showHelp = command.onCommand(sender, new CommandParser(getPlugin(), subArgs));
 
         if (!showHelp && command.getHelp() != null) {
-          sender.sendMessage("/" + getCommandName() + " " + command.getHelp());
+          sender.sendMessage("/" + getCommandName() + " " + command.getName() + " " + command.getHelp());
         }
       }
     } catch (Exception e) {
