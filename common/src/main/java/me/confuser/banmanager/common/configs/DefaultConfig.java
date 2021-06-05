@@ -74,6 +74,8 @@ public class DefaultConfig extends Config {
   private boolean blockInvalidReasons = false;
   @Getter
   private CooldownsConfig cooldownsConfig;
+  @Getter
+  private UUIDFetcher uuidFetcher;
 
   public DefaultConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "config.yml", logger);
@@ -125,6 +127,16 @@ public class DefaultConfig extends Config {
     softMutedBlacklistCommands = new HashSet<>(conf.getStringList("softMutedCommandBlacklist"));
 
     cooldownsConfig = new CooldownsConfig(conf.getConfigurationSection("cooldowns"), logger);
+
+    Fetcher idToName = new Fetcher(
+        conf.getString("uuidFetcher.idToName.url", "https://sessionserver.mojang.com/session/minecraft/profile/[uuid]"),
+        conf.getString("uuidFetcher.idToName.key", "name")
+    );
+    Fetcher nameToId = new Fetcher(
+        conf.getString("uuidFetcher.nameToId.url", "https://api.mojang.com/users/profiles/minecraft/[name]"),
+        conf.getString("uuidFetcher.nameToId.key", "id")
+    );
+    uuidFetcher = new UUIDFetcher(idToName, nameToId);
   }
 
   public void handleBlockedCommands(BanManagerPlugin plugin, HashSet<String> set) {
