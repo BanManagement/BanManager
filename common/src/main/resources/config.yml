@@ -219,3 +219,12 @@ chatPriority: normal
 
 # Don't execute actions with an invalid reason. E.g. /ban confuser #speel-erorr will create a error.
 blockInvalidReasons: false
+
+# Used for online mode servers only
+uuidFetcher:
+  idToName:
+    url: 'https://sessionserver.mojang.com/session/minecraft/profile/[uuid]'
+    key: name
+  nameToId:
+    url: 'https://api.mojang.com/users/profiles/minecraft/[name]'
+    key: id

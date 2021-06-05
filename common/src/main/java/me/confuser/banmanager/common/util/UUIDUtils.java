@@ -2,7 +2,9 @@ package me.confuser.banmanager.common.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.configs.Fetcher;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -17,37 +19,7 @@ import java.util.concurrent.Callable;
 /**
  * Based on UUIDFetcher by evilmidget38
  */
-public class UUIDUtils implements Callable<Map<String, UUID>> {
-
-  private static final double PROFILES_PER_REQUEST = 100;
-  private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
-  private final List<String> names;
-  private final boolean rateLimiting;
-  private BanManagerPlugin plugin;
-
-  public UUIDUtils(BanManagerPlugin plugin, List<String> names, boolean rateLimiting) {
-    this.plugin = plugin;
-    this.names = ImmutableList.copyOf(names);
-    this.rateLimiting = rateLimiting;
-  }
-
-  public UUIDUtils(BanManagerPlugin plugin, Set<String> names, boolean rateLimiting) {
-    this.plugin = plugin;
-    this.names = ImmutableList.copyOf(names);
-    this.rateLimiting = rateLimiting;
-  }
-
-  public UUIDUtils(BanManagerPlugin plugin, List<String> names) {
-    this(plugin, names, true);
-  }
-
-  private static void writeBody(HttpURLConnection connection, String body) throws Exception {
-    OutputStream stream = connection.getOutputStream();
-    stream.write(body.getBytes());
-    stream.flush();
-    stream.close();
-  }
-
+public class UUIDUtils {
   private static HttpURLConnection createConnection(String urlStr, String method) throws Exception {
     URL url = new URL(urlStr);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -83,35 +55,41 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
   }
 
   public static UUIDProfile getUUIDOf(BanManagerPlugin plugin, String name) throws Exception {
-    Map<String, UUID> players = new UUIDUtils(plugin, Collections.singletonList(name)).call();
-
-    if (players.isEmpty()) {
-      return null;
-    }
-
-    Entry<String, UUID> player = players.entrySet().iterator().next();
-
-    return new UUIDProfile(player.getKey(), player.getValue());
-  }
-
-  public static String getCurrentName(BanManagerPlugin plugin, UUID uuid) throws Exception {
-    plugin.getLogger().info("Requesting name for " + uuid.toString());
-    String url = "https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names";
+    plugin.getLogger().info("Requesting UUID for " + name);
+    Fetcher fetcher = plugin.getConfig().getUuidFetcher().getNameToId();
+    String url = fetcher.getUrl().replace("[name]", name);
 
     HttpURLConnection connection = createConnection(url, "GET");
 
     int status = connection.getResponseCode();
 
+    plugin.getLogger().info(url + " " + status);
+
+    if (status != 200) throw new Exception("Error retrieving UUID from " + url);
+
+    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
+        JsonObject.class);
+
+    return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+  }
+
+  public static String getCurrentName(BanManagerPlugin plugin, UUID uuid) throws Exception {
+    plugin.getLogger().info("Requesting name for " + uuid.toString());
+    Fetcher fetcher = plugin.getConfig().getUuidFetcher().getIdToName();
+    String url = fetcher.getUrl().replace("[uuid]", uuid.toString());
+
+    HttpURLConnection connection = createConnection(url, "GET");
+
+    int status = connection.getResponseCode();
+
+    plugin.getLogger().info(url + " " + status);
+
     if (status != 200) throw new Exception("Error retrieving name from " + url);
 
-    JsonResponseNames array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-            JsonResponseNames.class);
+    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
+        JsonObject.class);
 
-    if (array.content.size() == 0) return null;
-
-    JsonResponseNameDetail jsonProfile = array.content.get(array.content.size() - 1);
-
-    return jsonProfile.name;
+    return data.get(fetcher.getKey()).getAsString();
   }
 
   public static UUID createOfflineUUID(String name) {
@@ -120,59 +98,5 @@ public class UUIDUtils implements Callable<Map<String, UUID>> {
     } catch (UnsupportedEncodingException e) {
       return null;
     }
-  }
-
-  public Map<String, UUID> call() throws Exception {
-
-    Map<String, UUID> uuidMap = new HashMap<>();
-    if (!plugin.getConfig().isOnlineMode()) {
-      plugin.getLogger().info("Generating offline UUIDs for " + String.join(",", names));
-
-      for (String s : names) {
-        uuidMap.put(s, createOfflineUUID(s));
-      }
-
-      return uuidMap;
-    }
-
-    plugin.getLogger().info("Requesting UUIDs for " + String.join(",", names));
-
-    int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
-    for (int i = 0; i < requests; i++) {
-      HttpURLConnection connection = createConnection(PROFILE_URL, "POST");
-      String body = new Gson().toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
-      writeBody(connection, body);
-
-      JsonResponseProfileDetail[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-              JsonResponseProfileDetail[].class);
-
-      for (JsonResponseProfileDetail profile : array) {
-        UUID uuid = UUIDUtils.getUUID(profile.id);
-        uuidMap.put(profile.name, uuid);
-      }
-
-      if (rateLimiting && i != requests - 1) {
-        // Try to avoid rate limit
-        Thread.sleep(10000L);
-      }
-    }
-    return uuidMap;
-  }
-
-  public class JsonResponseNames {
-
-    private List<JsonResponseNameDetail> content;
-  }
-
-  public class JsonResponseNameDetail {
-
-    private String name;
-    private long changedToAt;
-  }
-
-  public class JsonResponseProfileDetail {
-
-    private String id;
-    private String name;
   }
 }
