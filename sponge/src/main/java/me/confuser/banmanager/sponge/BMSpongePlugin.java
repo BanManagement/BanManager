@@ -46,7 +46,6 @@ public class BMSpongePlugin {
 
   private CommonLogger logger;
   private BanManagerPlugin plugin;
-  @Inject
   private Metrics metrics;
 
   @Inject
@@ -68,8 +67,9 @@ public class BMSpongePlugin {
   };
 
   @Inject
-  public BMSpongePlugin(Logger logger) {
+  public BMSpongePlugin(Logger logger, Metrics.Factory metrics) {
     this.logger = new PluginLogger(logger);
+    this.metrics = metrics.make(6413);
   }
 
   @Listener
