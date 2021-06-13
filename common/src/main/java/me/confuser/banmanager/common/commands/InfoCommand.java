@@ -3,12 +3,14 @@ package me.confuser.banmanager.common.commands;
 import com.google.gson.JsonElement;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.maxmind.db.model.CountryResponse;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.StringUtils;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
@@ -44,23 +46,9 @@ public class InfoCommand extends CommonCommand {
     }
 
     final String search = parser.args.length > 0 ? parser.args[0] : sender.getName();
+    final boolean isValidName = StringUtils.isValidPlayerName(search);
 
-    // validate username
-    boolean isName = (search.length() <= 16);
-    if (isName) {
-        for (char ch : search.toCharArray()) {
-            if (ch >= 'A' && ch <= 'Z') continue;
-            if (ch >= 'a' && ch <= 'z') continue;
-            if (ch >= '0' && ch <= '9') continue;
-            if (ch == '_') continue;
-            isName = false;
-            break;
-        }
-    }
-
-    final boolean isValidName = isName;
-
-    if (!isName && !IPUtils.isValid(search)) {
+    if (!isValidName && !IPUtils.isValid(search)) {
       sender.sendMessage(Message.getString("sender.error.invalidIp"));
       return true;
     }
@@ -75,25 +63,214 @@ public class InfoCommand extends CommonCommand {
     }
 
     getPlugin().getScheduler().runAsync(() -> {
-      if (isValidName) {
-        try {
+      try {
+        if (isValidName) {
           playerInfo(sender, search, index, parser);
-        } catch (SQLException e) {
-          sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
-          return;
+        } else {
+          ipInfo(sender, IPUtils.toIPAddress(search), parser);
         }
-      } else {
-          sender.sendMessage(Message.getString("sender.error.ipNotSupported"));
+      } catch (SQLException e) {
+        sender.sendMessage(Message.getString("sender.error.exception"));
+        e.printStackTrace();
+        return;
       }
-          /*
-                       TODO
-                       ipInfo(sender, search);
-                       }*/
-
     });
 
     return true;
+  }
+
+  public void ipInfo(CommonSender sender, IPAddress ip, InfoCommandParser parser) throws
+      SQLException {
+    ArrayList<Object> messages = new ArrayList<>();
+
+    boolean hasFlags = parser.isBans() || parser.isMutes();
+
+    if (hasFlags) {
+      long since = 0;
+
+      if (parser.getTime() != null && !parser.getTime().isEmpty()) {
+        try {
+          since = DateUtils.parseDateDiff(parser.getTime(), false);
+        } catch (Exception e1) {
+          sender.sendMessage(Message.get("time.error.invalid").toString());
+          return;
+        }
+      }
+
+      if (parser.isBans() && !sender.hasPermission("bm.command.bminfo.history.ipbans")) {
+        Message.get("sender.error.noPermission").sendTo(sender);
+        return;
+      }
+
+      if (parser.isMutes() && !sender.hasPermission("bm.command.bminfo.history.ipmutes")) {
+        Message.get("sender.error.noPermission").sendTo(sender);
+        return;
+      }
+
+      ArrayList<HashMap<String, Object>> results;
+
+      if (parser.getTime() != null && !parser.getTime().isEmpty()) {
+        results = getPlugin().getHistoryStorage().getSince(ip, since, parser);
+      } else {
+        results = getPlugin().getHistoryStorage().getAll(ip, parser);
+      }
+
+      if (results == null || results.size() == 0) {
+        Message.get("info.history.noResults").sendTo(sender);
+        return;
+      }
+
+      String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
+
+      for (HashMap<String, Object> result : results) {
+        Message message = Message.get("info.history.row")
+            .set("id", (int) result.get("id"))
+            .set("reason", (String) result.get("reason"))
+            .set("type", (String) result.get("type"))
+            .set("created", DateUtils
+                .format(dateTimeFormat, (long) result.get("created")))
+            .set("actor", (String) result.get("actor"))
+            .set("meta", (String) result.get("meta"));
+
+        messages.add(message.toString());
+      }
+    } else {
+      if (sender.hasPermission("bm.command.bminfo.ipstats")) {
+
+        long ipBanTotal = getPlugin().getIpBanRecordStorage().getCount(ip);
+        long ipMuteTotal = getPlugin().getIpMuteRecordStorage().getCount(ip);
+        long ipRangeBanTotal = getPlugin().getIpRangeBanRecordStorage().getCount(ip);
+
+        messages.add(Message.get("info.stats.ip")
+            .set("bans", Long.toString(ipBanTotal))
+            .set("mutes", Long.toString(ipMuteTotal))
+            .set("rangebans", Long.toString(ipRangeBanTotal))
+            .toString());
+      }
+
+      if (getPlugin().getGeoIpConfig().isEnabled() && sender.hasPermission("bm.command.bminfo.geoip")) {
+        try {
+          CountryResponse countryResponse = getPlugin().getGeoIpConfig().getCountryDatabase().getCountry(ip.toInetAddress());
+
+          if (countryResponse != null) {
+            String country = countryResponse.getCountry().getName();
+            String countryIso = countryResponse.getCountry().getIsoCode();
+            String city = "";
+            JsonElement cityResponse = getPlugin().getGeoIpConfig().getCityDatabase().get(ip.toInetAddress());
+
+            if (cityResponse != null && !cityResponse.isJsonNull()) {
+              city = cityResponse.getAsJsonObject().get("city").getAsJsonObject().get("names").getAsJsonObject().get("en").getAsString();
+            }
+
+            Message message = Message.get("info.geoip");
+
+            message.set("country", country)
+                .set("countryIso", countryIso)
+                .set("city", city);
+            messages.add(message.toString());
+          }
+        } catch (IOException e) {
+        }
+      }
+
+      if (sender.hasPermission("bm.command.bminfo.alts")) {
+        messages.add(Message.getString("alts.header"));
+
+        List<PlayerData> duplicatePlayers = getPlugin().getPlayerStorage().getDuplicatesInTime(ip, getPlugin().getConfig().getTimeAssociatedAlts());
+
+        if (!sender.isConsole()) {
+          messages.add(FindAltsCommand.alts(duplicatePlayers));
+        } else {
+          StringBuilder duplicates = new StringBuilder();
+
+          for (PlayerData duplicatePlayer : duplicatePlayers) {
+            duplicates.append(duplicatePlayer.getName()).append(", ");
+          }
+
+          if (duplicates.length() >= 2) duplicates.setLength(duplicates.length() - 2);
+
+          messages.add(duplicates.toString());
+        }
+      }
+
+      if (getPlugin().getIpBanStorage().isBanned(ip)) {
+        IpBanData ban = getPlugin().getIpBanStorage().getBan(ip);
+
+        Message message;
+
+        if (ban.getExpires() == 0) {
+          message = Message.get("info.ipban.permanent");
+        } else {
+          message = Message.get("info.ipban.temporary");
+          message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+        }
+
+        String dateTimeFormat = Message.getString("info.ipban.dateTimeFormat");
+
+        messages.add(message
+            .set("reason", ban.getReason())
+            .set("actor", ban.getActor().getName())
+            .set("id", ban.getId())
+            .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
+            .toString());
+      }
+
+      if (getPlugin().getIpMuteStorage().isMuted(ip)) {
+        IpMuteData mute = getPlugin().getIpMuteStorage().getMute(ip);
+
+        Message message;
+
+        if (mute.getExpires() == 0) {
+          message = Message.get("info.ipmute.permanent");
+        } else {
+          message = Message.get("info.ipmute.temporary");
+          message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+        }
+
+        String dateTimeFormat = Message.getString("info.ipmute.dateTimeFormat");
+
+        messages.add(message
+            .set("reason", mute.getReason())
+            .set("actor", mute.getActor().getName())
+            .set("id", mute.getId())
+            .set("created", DateUtils.format(dateTimeFormat, mute.getCreated()))
+            .toString());
+      }
+
+      if (getPlugin().getIpRangeBanStorage().isBanned(ip)) {
+        IpRangeBanData ban = getPlugin().getIpRangeBanStorage().getBan(ip);
+
+        Message message;
+
+        if (ban.getExpires() == 0) {
+          message = Message.get("info.iprangeban.permanent");
+        } else {
+          message = Message.get("info.iprangeban.temporary");
+          message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+        }
+
+        String dateTimeFormat = Message.getString("info.iprangeban.dateTimeFormat");
+
+        messages.add(message
+            .set("reason", ban.getReason())
+            .set("actor", ban.getActor().getName())
+            .set("id", ban.getId())
+            .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
+            .set("from", ban.getFromIp().toString())
+            .set("to", ban.getToIp().toString())
+            .toString());
+      }
+    }
+
+    for (Object message : messages) {
+      if (message instanceof String) {
+        sender.sendMessage((String) message);
+      } else if (message instanceof TextComponent) {
+        ((CommonPlayer) sender).sendJSONMessage((TextComponent) message);
+      } else {
+        getPlugin().getLogger().warning("Invalid info message, please report the following as a bug: " + message.toString());
+      }
+    }
   }
 
   public void playerInfo(CommonSender sender, String name, Integer index, InfoCommandParser parser) throws
@@ -145,6 +322,7 @@ public class InfoCommand extends CommonCommand {
           return;
         }
       }
+
       if (parser.isBans() && !sender.hasPermission("bm.command.bminfo.history.bans")) {
         Message.get("sender.error.noPermission").sendTo(sender);
         return;
@@ -293,9 +471,13 @@ public class InfoCommand extends CommonCommand {
       if (sender.hasPermission("bm.command.bminfo.ipstats")) {
 
         long ipBanTotal = getPlugin().getIpBanRecordStorage().getCount(player.getIp());
+        long ipMuteTotal = getPlugin().getIpMuteRecordStorage().getCount(player.getIp());
+        long ipRangeBanTotal = getPlugin().getIpRangeBanRecordStorage().getCount(player.getIp());
 
         messages.add(Message.get("info.stats.ip")
             .set("bans", Long.toString(ipBanTotal))
+            .set("mutes", Long.toString(ipMuteTotal))
+            .set("rangebans", Long.toString(ipRangeBanTotal))
             .toString());
 
         if (getPlugin().getIpBanStorage().isBanned(player.getIp())) {

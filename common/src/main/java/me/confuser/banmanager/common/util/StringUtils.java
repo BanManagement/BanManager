@@ -117,4 +117,21 @@ public class StringUtils {
 
     return list.toArray(new String[0]);
   }
+
+  public static boolean isValidPlayerName(String name) {
+    boolean isName = (name.length() <= 16);
+
+    if (isName) {
+      for (char ch : name.toCharArray()) {
+        if (ch >= 'A' && ch <= 'Z') continue;
+        if (ch >= 'a' && ch <= 'z') continue;
+        if (ch >= '0' && ch <= '9') continue;
+        if (ch == '_') continue;
+        isName = false;
+        break;
+      }
+    }
+
+    return isName;
+  }
 }
