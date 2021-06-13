@@ -2,8 +2,7 @@ package me.confuser.banmanager.common.util;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 // From apache commons lang3
 public class StringUtilsTest {
@@ -76,5 +75,16 @@ public class StringUtilsTest {
 
     results = StringUtils.substringsBetween("", "[", "]");
     assertEquals(0, results.length);
+  }
+
+  @Test
+  public void shouldValidatePlayerNames() {
+    assertTrue(StringUtils.isValidPlayerName("confuser"));
+    assertTrue(StringUtils.isValidPlayerName("9081"));
+    assertTrue(StringUtils.isValidPlayerName("AaA1_23456789_0a"));
+
+    assertFalse(StringUtils.isValidPlayerName("AaA1_23456789_0aaaa"));
+    assertFalse(StringUtils.isValidPlayerName("confu$£r"));
+    assertFalse(StringUtils.isValidPlayerName("127.0.0.1"));
   }
 }

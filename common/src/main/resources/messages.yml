@@ -46,7 +46,6 @@ messages:
       noSelf: '&cYou cannot perform that action on yourself!'
       exception: '&cAn error occured whilst attempting to perform this command. Please check the console for further details.'
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
-      ipNotSupported: '&cFetching information by IP address is currently unsupported.'
       offlinePermission: '&cYou are not allowed to perform this action on an offline player'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
@@ -89,7 +88,7 @@ messages:
     stats:
       player: '&6[player] has been banned [bans] times, muted [mutes] times, kicked [kicks] times and warned [warns]
       times ([warnPoints] Points) and has [notes] notes'
-      ip: '&6This ip has been banned [bans] times'
+      ip: '&6This ip has been banned [bans] times, muted [mutes] times and range banned [rangebans] times'
     connection: '&6Their last connection was with [ip] on [lastSeen]'
     geoip: 'Country: [country] City: [city]'
     ban:
@@ -99,6 +98,14 @@ messages:
     ipban:
       permanent: '&6Currently banned for &4[reason]&6 by [actor] at [created]'
       temporary: '&6Currently banned for &4[reason]&6 by [actor] at [created] which expires in [expires]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
+    iprangeban:
+      permanent: '&6[from] - [to] banned for &4[reason]&6 by [actor] at [created]'
+      temporary: '&6[from] - [to] banned for &4[reason]&6 by [actor] at [created] which expires in [expires]'
+      dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
+    ipmute:
+      permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'
+      temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     mute:
       permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'

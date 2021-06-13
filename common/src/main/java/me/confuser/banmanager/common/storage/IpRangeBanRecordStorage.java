@@ -2,7 +2,9 @@ package me.confuser.banmanager.common.storage;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
@@ -12,6 +14,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.IpRangeBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.storage.mysql.IpAddress;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 
@@ -70,10 +73,10 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
   }
 
   public long getCount(IPAddress ip) throws SQLException {
-    return queryBuilder().where().eq("ip", ip).countOf();
+    return queryBuilder().where().raw("? BETWEEN fromIp AND toIp", new SelectArg(SqlType.BYTE_ARRAY, ip.getBytes())).countOf();
   }
 
   public CloseableIterator<IpRangeBanRecord> getRecords(IPAddress ip) throws SQLException {
-    return queryBuilder().where().eq("ip", ip).iterator();
+    return queryBuilder().where().raw("? BETWEEN fromIp AND toIp", new SelectArg(SqlType.BYTE_ARRAY, ip.getBytes())).iterator();
   }
 }

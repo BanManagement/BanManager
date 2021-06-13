@@ -5,6 +5,7 @@ import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
+import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
@@ -26,6 +27,10 @@ public class HistoryStorage {
   private final String kickSql;
   private final String warningSql;
   private final String noteSql;
+
+  private final String ipBanSql;
+  private final String ipMuteSql;
+  private final String ipRangeBanSql;
 
 
   public HistoryStorage(BanManagerPlugin plugin) {
@@ -56,6 +61,24 @@ public class HistoryStorage {
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
             "    WHERE player_id = ?";
+
+    ipBanSql = "SELECT t.id, 'IP Ban' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
+        "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " t" +
+        "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+        .getTableName() + " actor ON pastActor_id = actor.id" +
+        "    WHERE t.ip = ?";
+
+    ipMuteSql = "SELECT t.id, 'IP Mute' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
+        "    FROM " + plugin.getIpMuteRecordStorage().getTableConfig().getTableName() + " t" +
+        "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+        .getTableName() + " actor ON pastActor_id = actor.id" +
+        "    WHERE t.ip = ?";
+
+    ipRangeBanSql = "SELECT t.id, 'IP Range Ban' AS type, actor.name AS actor, pastCreated as created, reason, CONCAT(INET6_NTOA(fromIp), ' - ', INET6_NTOA(toIp)) AS meta" +
+        "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() + " t" +
+        "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+        .getTableName() + " actor ON pastActor_id = actor.id" +
+        "    WHERE ? BETWEEN fromIp AND toIp";
   }
 
   public ArrayList<HashMap<String, Object>> getSince(PlayerData player, long since, InfoCommandParser parser) {
@@ -144,13 +167,7 @@ public class HistoryStorage {
             put("type", result.getString(1));
             put("actor", result.getString(2));
             put("created", result.getLong(3));
-
-            if (result.getString(1).equals("Note")) {
-              put("reason", result.getString(4)); //ChatColor.translateAlternateColorCodes('&', result.getString(4)));
-            } else {
-              put("reason", result.getString(4));
-            }
-
+            put("reason", result.getString(4));
             put("meta", result.getString(5));
           }
         });
@@ -225,6 +242,187 @@ public class HistoryStorage {
 
       for (int i = 0; i < typeCount; i++) {
         statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
+      }
+
+      result = statement.runQuery(null);
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      try {
+        plugin.getLocalConn().releaseConnection(connection);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
+
+      return null;
+    }
+
+    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
+
+    try {
+      while (result.next()) {
+        results.add(new HashMap<String, Object>(4) {
+
+          {
+            put("id", result.getInt(0));
+            put("type", result.getString(1));
+            put("actor", result.getString(2));
+            put("created", result.getLong(3));
+            put("reason", result.getString(4));
+            put("meta", result.getString(5));
+          }
+        });
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      result.closeQuietly();
+    }
+
+    try {
+      plugin.getLocalConn().releaseConnection(connection);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return results;
+  }
+
+  public ArrayList<HashMap<String, Object>> getSince(IPAddress ip, long since, InfoCommandParser parser) {
+    DatabaseConnection connection;
+
+    try {
+      connection = plugin.getLocalConn().getReadOnlyConnection("");
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    final DatabaseResults result;
+    String sql;
+    StringBuilder unions = new StringBuilder();
+    int typeCount = 0;
+
+    if (parser.isBans()) {
+      unions.append(ipBanSql);
+      unions.append(" AND created >= ").append(since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+
+      unions.append(ipRangeBanSql);
+      unions.append(" AND created >= ").append(since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    if (parser.isMutes()) {
+      unions.append(ipMuteSql);
+      unions.append(" AND created >= ").append(since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    unions.setLength(unions.length() - 11);
+
+    sql = playerSql.replace("{QUERIES}", unions.toString());
+
+    try {
+      CompiledStatement statement = connection
+          .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+              .DEFAULT_RESULT_FLAGS, false);
+
+      for (int i = 0; i < typeCount; i++) {
+        statement.setObject(i, ip.getBytes(), SqlType.BYTE_ARRAY);
+      }
+
+      result = statement.runQuery(null);
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      try {
+        plugin.getLocalConn().releaseConnection(connection);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
+
+      return null;
+    }
+
+    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
+
+    try {
+      while (result.next()) {
+        results.add(new HashMap<String, Object>(4) {
+
+          {
+            put("id", result.getInt(0));
+            put("type", result.getString(1));
+            put("actor", result.getString(2));
+            put("created", result.getLong(3));
+            put("reason", result.getString(4));
+            put("meta", result.getString(5));
+          }
+        });
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      result.closeQuietly();
+    }
+
+    try {
+      plugin.getLocalConn().releaseConnection(connection);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return results;
+  }
+
+  public ArrayList<HashMap<String, Object>> getAll(IPAddress ip, InfoCommandParser parser) {
+    DatabaseConnection connection;
+
+    try {
+      connection = plugin.getLocalConn().getReadOnlyConnection("");
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+      return null;
+    }
+
+    final DatabaseResults result;
+    String sql;
+    StringBuilder unions = new StringBuilder();
+    int typeCount = 0;
+
+    if (parser.isBans()) {
+      unions.append(ipBanSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+
+      unions.append(ipRangeBanSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    if (parser.isMutes()) {
+      unions.append(ipMuteSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+
+    unions.setLength(unions.length() - 11);
+
+    sql = playerSql.replace("{QUERIES}", unions.toString());
+
+    try {
+      CompiledStatement statement = connection
+          .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+              .DEFAULT_RESULT_FLAGS, false);
+
+      for (int i = 0; i < typeCount; i++) {
+        statement.setObject(i, ip.getBytes(), SqlType.BYTE_ARRAY);
       }
 
       result = statement.runQuery(null);
