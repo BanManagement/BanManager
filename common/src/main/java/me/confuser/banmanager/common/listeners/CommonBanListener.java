@@ -76,7 +76,6 @@ public class CommonBanListener {
       playerNames.append(", ");
     }
 
-    if (playerNames.length() == 0) return;
     if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
 
     message
