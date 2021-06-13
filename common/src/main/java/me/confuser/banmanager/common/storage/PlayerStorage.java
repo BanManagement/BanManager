@@ -246,7 +246,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
   public List<PlayerData> getDuplicatesInTime(IPAddress ip, long timeDiff) {
     ArrayList<PlayerData> players = new ArrayList<>();
-    long currentTime = System.currentTimeMillis() / 1000L;
 
     if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
       return players;
@@ -258,7 +257,13 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
       Where<PlayerData, byte[]> where = query.where();
 
-      where.eq("ip", ip).and().ge("lastSeen", (currentTime - timeDiff));
+      where.eq("ip", ip);
+
+      if (timeDiff != 0) {
+        long currentTime = System.currentTimeMillis() / 1000L;
+
+        where.and().ge("lastSeen", (currentTime - timeDiff));
+      }
 
       query.setWhere(where);
     } catch (SQLException e) {
