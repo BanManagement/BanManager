@@ -1,7 +1,7 @@
 main: ${plugin.main}
 name: BanManager
 version: ${project.version}
-authors: [ confuser ]
+author: confuser
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
 description: ${project.description}
 softdepend:
@@ -272,7 +272,9 @@ permissions:
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
       bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
       bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
       bm.command.bminfo.history.kicks: true
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
@@ -341,7 +343,9 @@ permissions:
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
       bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
       bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
       bm.command.bminfo.history.kicks: true
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
@@ -449,7 +453,9 @@ permissions:
       bm.command.bminfo.alts: true
       bm.command.bminfo.website: true
       bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
       bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
       bm.command.bminfo.history.kicks: true
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
@@ -501,6 +507,12 @@ permissions:
     default: op
   bm.command.bminfo.history.bans:
     description: Allows you to see ban records
+    default: op
+  bm.command.bminfo.history.ipbans:
+    description: Allows you to see ip ban records
+    default: op
+  bm.command.bminfo.history.ipmutes:
+    description: Allows you to see ip mute records
     default: op
   bm.command.bminfo.history.mutes:
     description: Allows you to see mute reocrds
