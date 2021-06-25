@@ -127,6 +127,7 @@ public class StringUtils {
         if (ch >= 'a' && ch <= 'z') continue;
         if (ch >= '0' && ch <= '9') continue;
         if (ch == '_') continue;
+        if (ch == '*') continue; // Support Bedrock names (via GeyserMC)
         isName = false;
         break;
       }
