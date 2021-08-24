@@ -4,19 +4,10 @@ package me.confuser.banmanager.bukkit.listeners;
 import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.data.IpMuteData;
-import me.confuser.banmanager.common.data.PlayerMuteData;
-import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.listeners.CommonChatHandler;
 import me.confuser.banmanager.common.listeners.CommonChatListener;
-import me.confuser.banmanager.common.util.DateUtils;
-import me.confuser.banmanager.common.util.IPUtils;
-import me.confuser.banmanager.common.util.Message;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import java.sql.SQLException;
-import java.util.UUID;
 
 public class ChatListener implements Listener {
   private final CommonChatListener listener;

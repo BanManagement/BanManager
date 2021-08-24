@@ -10,8 +10,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
 
-import java.util.Arrays;
-
 public class CommandListener {
 
   private final CommonCommandListener listener;

@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.BasePluginTest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class SchedulesConfigTest extends BasePluginTest {
   @Test

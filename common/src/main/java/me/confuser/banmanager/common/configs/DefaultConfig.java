@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonExternalCommand;
 import me.confuser.banmanager.common.CommonLogger;
-import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.StringUtils;
 
 import java.io.File;

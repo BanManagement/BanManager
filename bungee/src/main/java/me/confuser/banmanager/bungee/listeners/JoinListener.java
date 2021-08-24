@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.bungee.BMBungeePlugin;
 import me.confuser.banmanager.bungee.BungeePlayer;
 import me.confuser.banmanager.bungee.BungeeServer;
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
 import me.confuser.banmanager.common.util.IPUtils;
