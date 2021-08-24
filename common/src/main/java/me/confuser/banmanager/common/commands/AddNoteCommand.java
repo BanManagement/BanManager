@@ -32,9 +32,7 @@ public class AddNoteCommand extends CommonCommand {
       return true;
     }
 
-    // Check if UUID vs name
     final String playerName = parser.args[0];
-    final boolean isUUID = playerName.length() > 16;
     final String message = StringUtils.join(parser.args, " ", 1, parser.args.length);
 
     getPlugin().getScheduler().runAsync(() -> {
