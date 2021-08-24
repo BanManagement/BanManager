@@ -200,11 +200,15 @@ public class BanManagerPlugin {
           .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
     }
 
-    metrics.submitStorageType(config.getLocalDb().getStorageType());
-    metrics.submitDiscordMode(discordConfig.isEnabled());
-    metrics.submitGeoMode(geoIpConfig.isEnabled());
-    metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
-    metrics.submitOnlineMode(config.isOnlineMode());
+    try {
+      metrics.submitStorageType(config.getLocalDb().getStorageType());
+      metrics.submitDiscordMode(discordConfig.isEnabled());
+      metrics.submitGeoMode(geoIpConfig.isEnabled());
+      metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
+      metrics.submitOnlineMode(config.isOnlineMode());
+    } catch (Exception e) {
+      logger.warning("Failed to submit stats, ignoring");
+    }
 
     if (!config.getLocalDb().getStorageType().equals("h2")) {
       // Get database version
