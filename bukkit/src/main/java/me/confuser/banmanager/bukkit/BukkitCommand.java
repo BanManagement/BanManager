@@ -3,7 +3,6 @@ package me.confuser.banmanager.bukkit;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

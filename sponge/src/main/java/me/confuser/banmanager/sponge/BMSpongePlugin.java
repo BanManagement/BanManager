@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
-import me.confuser.banmanager.common.data.global.*;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
 import org.bstats.sponge.Metrics;

@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common.util;
 
-import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.CompiledStatement;

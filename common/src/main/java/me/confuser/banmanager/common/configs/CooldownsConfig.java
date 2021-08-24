@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class CooldownsConfig {
   private static HashSet<String> validCommands = new HashSet<String>() {
@@ -23,11 +22,9 @@ public class CooldownsConfig {
     }
   };
 
-  private CommonLogger logger;
   private HashMap<String, Long> cooldowns;
 
   public CooldownsConfig(ConfigurationSection config, CommonLogger logger) {
-    this.logger = logger;
     cooldowns = new HashMap<>();
 
     if (config == null) {

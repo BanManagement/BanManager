@@ -3,7 +3,6 @@ package me.confuser.banmanager.common.commands;
 import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.util.IPUtils;
 import org.junit.Before;

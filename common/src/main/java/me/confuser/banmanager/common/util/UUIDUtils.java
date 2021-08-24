@@ -1,20 +1,17 @@
 package me.confuser.banmanager.common.util;
 
-import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.configs.Fetcher;
-
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
+import java.util.UUID;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.configs.Fetcher;
 
 /**
  * Based on UUIDFetcher by evilmidget38

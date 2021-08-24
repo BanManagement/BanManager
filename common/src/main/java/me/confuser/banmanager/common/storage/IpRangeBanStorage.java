@@ -1,8 +1,6 @@
 package me.confuser.banmanager.common.storage;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.CloseableIterator;
@@ -28,7 +26,6 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
