@@ -32,8 +32,6 @@ public class UnbanCommandParserTest extends BasePluginTest {
     String[] args = new String[] { "confuser" };
     UnbanCommandParser parser = new UnbanCommandParser(this.plugin, args, 0);
 
-    System.out.println(parser.getArgs().length);
-
     assertEquals(false, parser.isDelete());
     assertEquals("confuser", parser.getArgs()[0]);
   }
