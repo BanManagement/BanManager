@@ -41,11 +41,13 @@ public class PlayerData {
     this.uuid = uuid;
     this.id = UUIDUtils.toBytes(uuid);
     this.name = name;
+    
     try {
       this.ip = new IPAddressString("127.0.0.1").toAddress();
     } catch (AddressStringException e) {
-      System.out.println(e);
+      e.printStackTrace();
     }
+
     this.lastSeen = System.currentTimeMillis() / 1000L;
   }
 
