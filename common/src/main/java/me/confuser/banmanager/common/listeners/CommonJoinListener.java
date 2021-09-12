@@ -362,6 +362,11 @@ public class CommonJoinListener {
     if (player.hasPermission("bm.exempt.alts")) return;
 
     plugin.getScheduler().runAsyncLater(() -> {
+      // Handle quick disconnects
+      if (player == null || !player.isOnline()) {
+        return;
+      }
+
       final UUID uuid = player.getUniqueId();
       List<PlayerData> duplicates = plugin.getPlayerBanStorage().getDuplicates(ip);
 
@@ -401,7 +406,13 @@ public class CommonJoinListener {
 
       plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
     }, 20L);
+
     plugin.getScheduler().runAsyncLater(() -> {
+      // Handle quick disconnects
+      if (player == null || !player.isOnline()) {
+        return;
+      }
+
       final UUID uuid = player.getUniqueId();
       List<PlayerData> duplicates = plugin.getPlayerStorage().getDuplicatesInTime(ip, plugin.getConfig().getTimeAssociatedAlts());
 
