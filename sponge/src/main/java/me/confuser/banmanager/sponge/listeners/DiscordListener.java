@@ -86,6 +86,16 @@ public class DiscordListener {
     send(listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason()), event.getActor());
   }
 
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnReport(PlayerReportedEvent event) {
+    Object[] data = listener.notifyOnReport(event.getReport(), event.getReport().getActor(), event.getReport().getReason());
+
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, event.getReport().getActor());
+  }
+
   private void send(Object[] data, PlayerData actor) {
     DiscordMessageBuilder
         .forChannel((String) data[0])

@@ -42,3 +42,7 @@ punishments:
     channel: 'replaceMe'
     message: '[player] has been warned by [actor] for [reason]'
     ignoreSilent: true
+  report:
+    channel: 'replaceMe'
+    message: '[player] has been reported by [actor] for [reason]'
+    ignoreSilent: true
