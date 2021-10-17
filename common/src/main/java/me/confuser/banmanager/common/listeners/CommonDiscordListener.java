@@ -165,4 +165,18 @@ public class CommonDiscordListener {
 
     return new Object[]{channelName, message};
   }
+
+  public Object[] notifyOnReport(PlayerReportData report, PlayerData actor, String reason) {
+    String channelName = plugin.getDiscordConfig().getType("report").getChannel();
+    Message message = plugin.getDiscordConfig().getType("report").getMessage();
+    boolean ignoreSilent = plugin.getDiscordConfig().getType("report").isIgnoreSilent();
+
+    message.set("player", report.getPlayer().getName())
+        .set("playerId", report.getPlayer().getUUID().toString())
+        .set("actor", actor.getName())
+        .set("id", report.getId())
+        .set("reason", reason);
+
+    return new Object[]{channelName, message, ignoreSilent};
+  }
 }

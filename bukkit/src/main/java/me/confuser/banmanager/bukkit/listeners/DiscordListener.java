@@ -87,6 +87,15 @@ public class DiscordListener implements Listener {
     send(data, Bukkit.getPlayer(event.getActor().getUUID()));
   }
 
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void notifyOnReport(PlayerReportedEvent event) {
+    Object[] data = listener.notifyOnReport(event.getReport(), event.getReport().getActor(), event.getReport().getReason());
+
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data, Bukkit.getPlayer(event.getReport().getActor().getUUID()));
+  }
+
   private void send(Object[] data, Player actor) {
     if (actor == null) {
       DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
