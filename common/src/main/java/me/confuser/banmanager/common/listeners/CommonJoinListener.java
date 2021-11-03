@@ -363,7 +363,7 @@ public class CommonJoinListener {
 
     plugin.getScheduler().runAsyncLater(() -> {
       // Handle quick disconnects
-      if (player == null || !player.isOnline()) {
+      if (!player.isOnline()) {
         return;
       }
 
@@ -409,7 +409,7 @@ public class CommonJoinListener {
 
     plugin.getScheduler().runAsyncLater(() -> {
       // Handle quick disconnects
-      if (player == null || !player.isOnline()) {
+      if (!player.isOnline()) {
         return;
       }
 
