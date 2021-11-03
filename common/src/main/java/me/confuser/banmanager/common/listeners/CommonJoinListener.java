@@ -471,8 +471,13 @@ public class CommonJoinListener {
       if (ban == null) continue;
       if (ban.hasExpired()) continue;
 
+      CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(uuid);
+      if(bukkitPlayer == null) continue;
+
       plugin.getScheduler().runSync(() -> {
-        CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(uuid);
+        if (!bukkitPlayer.isOnline()) {
+          return;
+        }
 
         Message kickMessage = Message.get("denyalts.player.disallowed")
             .set("player", player.getName())
