@@ -172,7 +172,7 @@ messages:
 
   muteip:
     ip:
-      disallowed: '&6You have been banned from this server for &4[reason]'
+      disallowed: '&6You have been permanently muted for &4[reason] &6by [actor]'
       broadcast: '&4[Muted]&r [message]'
     notify: '&6[ip] ([players]) have been permanently muted by [actor] for &4[reason]'
     error:
