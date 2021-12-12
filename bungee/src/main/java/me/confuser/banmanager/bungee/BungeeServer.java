@@ -54,6 +54,8 @@ public class BungeeServer implements CommonServer {
 
   @Override
   public void broadcast(String message, String permission) {
+    if(message.isEmpty()) return;
+
     for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
       if (player != null && player.hasPermission(permission)) {
         player.sendMessage(formatMessage(message));
