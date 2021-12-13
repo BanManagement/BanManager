@@ -60,6 +60,8 @@ public class BukkitServer implements CommonServer {
 
   @Override
   public void broadcast(String message, String permission) {
+    if(message.isEmpty()) return;
+
     Set<Permissible> permissibles = Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.user");
 
     for (Permissible permissible : permissibles) {
