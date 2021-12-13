@@ -48,6 +48,8 @@ public class SpongeServer implements CommonServer {
 
   @Override
   public void broadcast(String message, String permission) {
+    if(message.isEmpty()) return;
+
     // @TODO can't figure out how to get message channels to work ¯\_(ツ)_/¯
     // MessageChannel.permission(permission).send(Sponge.getServer().getConsole(), Text.of(message));
     Arrays.stream(getOnlinePlayers()).forEach(player -> {
