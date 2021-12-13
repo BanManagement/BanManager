@@ -200,24 +200,28 @@ public class BanManagerPlugin {
           .severe("The time on your server and MySQL database are out by " + timeDiff + " seconds, this may cause syncing issues.");
     }
 
+    String storageVersion = null;
+    if (!config.getLocalDb().getStorageType().equals("h2")) {
+      // Get database version
+      GenericRawResults<String[]> results2 = playerStorage
+          .queryRaw("SELECT VERSION()");
+      
+      storageVersion = results2.getFirstResult()[0];
+
+      results2.close();
+    }
+
     try {
       metrics.submitStorageType(config.getLocalDb().getStorageType());
       metrics.submitDiscordMode(discordConfig.isEnabled());
       metrics.submitGeoMode(geoIpConfig.isEnabled());
       metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
       metrics.submitOnlineMode(config.isOnlineMode());
+      if (storageVersion != null) {
+        metrics.submitStorageVersion(storageVersion);
+      }
     } catch (Exception e) {
       logger.warning("Failed to submit stats, ignoring");
-    }
-
-    if (!config.getLocalDb().getStorageType().equals("h2")) {
-      // Get database version
-      GenericRawResults<String[]> results2 = playerStorage
-          .queryRaw("SELECT VERSION()");
-
-      metrics.submitStorageVersion(results2.getFirstResult()[0]);
-
-      results2.close();
     }
   }
 
