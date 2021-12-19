@@ -90,7 +90,7 @@ public class Message {
   }
 
   public boolean sendTo(CommonSender sender) {
-    if (sender == null || message.isEmpty()) return false;
+    if (sender == null) return false;
 
     sender.sendMessage(message);
 
@@ -98,7 +98,7 @@ public class Message {
   }
 
   public boolean sendTo(CommonPlayer player) {
-    if (player == null || message.isEmpty()) return false;
+    if (player == null) return false;
     if (!player.isOnline()) return false;
 
     player.sendMessage(message);
