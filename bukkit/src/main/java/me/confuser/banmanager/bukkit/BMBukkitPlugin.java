@@ -120,14 +120,17 @@ public class BMBukkitPlugin extends JavaPlugin {
     registerEvent(new CommandListener(plugin));
     registerEvent(new HookListener(plugin));
 
-    ChatListener chatListener = new ChatListener(plugin);
 
-    // Set custom priority
-    getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(plugin.getConfig().getChatPriority()),
+    String chatPriority = plugin.getConfig().getChatPriority();
+    if(!chatPriority.equals("NONE")) {
+      ChatListener chatListener = new ChatListener(plugin);
+      // Set custom priority
+      getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(chatPriority),
         (listener, event) -> {
           ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
           ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
         }, this);
+    }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));

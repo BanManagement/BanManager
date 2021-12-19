@@ -158,21 +158,24 @@ public class BMSpongePlugin {
     registerEvent(new CommandListener(plugin));
     registerEvent(new HookListener(plugin));
 
-    ChatListener chatListener = new ChatListener(plugin);
+    String chatPriority = plugin.getConfig().getChatPriority();
+    if(!chatPriority.equals("NONE")) {
+      ChatListener chatListener = new ChatListener(plugin);
 
-    // Map Bukkit EventPriority to Sponge Order
-    HashMap<String, Order> orders = new HashMap<String, Order>() {{
-      put("LOWEST", Order.FIRST);
-      put("LOW", Order.EARLY);
-      put("NORMAL", Order.DEFAULT);
-      put("HIGH", Order.LATE);
-      put("HIGHEST", Order.LATE);
-      put("MONITOR", Order.LAST);
-    }};
+      // Map Bukkit EventPriority to Sponge Order
+      HashMap<String, Order> orders = new HashMap<String, Order>() {{
+        put("LOWEST", Order.FIRST);
+        put("LOW", Order.EARLY);
+        put("NORMAL", Order.DEFAULT);
+        put("HIGH", Order.LATE);
+        put("HIGHEST", Order.LATE);
+        put("MONITOR", Order.LAST);
+      }};
 
-    Order priority = orders.getOrDefault(plugin.getConfig().getChatPriority(), Order.DEFAULT);
+      Order priority = orders.getOrDefault(chatPriority, Order.DEFAULT);
 
-    Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, priority, chatListener);
+      Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, priority, chatListener);
+    }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));

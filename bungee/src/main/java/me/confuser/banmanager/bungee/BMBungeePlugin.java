@@ -143,7 +143,10 @@ public class BMBungeePlugin extends Plugin {
     registerEvent(new JoinListener(this));
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
-    registerEvent(new ChatListener(plugin));
+
+    if (!plugin.getConfig().getChatPriority().equals("NONE")) {
+      registerEvent(new ChatListener(plugin));
+    }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
