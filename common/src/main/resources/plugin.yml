@@ -664,6 +664,9 @@ permissions:
   bm.command.delete.banrecords:
     description: Allows you to delete a player's ban records by id
     default: op
+  bm.command.delete.baniprecords:
+    description: Allows you to delete a player's ban records by id
+    default: op
   bm.command.delete.kicks:
     description: Allows you to delete a player's kick records by id
     default: op
