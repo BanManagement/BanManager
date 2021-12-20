@@ -437,6 +437,8 @@ permissions:
       bm.exempt.ban: true
       bm.exempt.banip: true
       bm.exempt.kick: true
+      bm.exempt.maxonlineperip: true
+      bm.exempt.maxmultiaccountsrecently: true
       bm.exempt.mute: true
       bm.exempt.tempban: true
       bm.exempt.tempipban: true

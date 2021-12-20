@@ -335,7 +335,7 @@ public class CommonJoinListener {
 
     final IPAddress ip = IPUtils.toIPAddress(player.getAddress());
 
-    if (plugin.getConfig().getMaxOnlinePerIp() > 0) {
+    if (plugin.getConfig().getMaxOnlinePerIp() > 0 && !player.hasPermission("bm.exempt.maxonlineperip")) {
       int count = 0;
 
       for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
@@ -349,7 +349,7 @@ public class CommonJoinListener {
 
     }
 
-    if (plugin.getConfig().getMaxMultiaccountsRecently() > 0) {
+    if (plugin.getConfig().getMaxMultiaccountsRecently() > 0 && !player.hasPermission("bm.exempt.maxmultiaccountsrecently")) {
       long timeDiff = plugin.getConfig().getMultiaccountsTime();
 
       List<PlayerData> multiAccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timeDiff);
