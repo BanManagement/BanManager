@@ -13,6 +13,7 @@ public class DeleteCommand extends CommonCommand {
 
     {
       add("banrecords");
+      add("baniprecords");
       add("kicks");
       add("muterecords");
       add("notes");
@@ -62,6 +63,10 @@ public class DeleteCommand extends CommonCommand {
           switch (type) {
             case "banrecords":
               rows = getPlugin().getPlayerBanRecordStorage().deleteIds(ids);
+              break;
+
+            case "baniprecords":
+              rows = getPlugin().getIpBanRecordStorage().deleteIds(ids);
               break;
 
             case "kicks":
