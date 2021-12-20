@@ -29,6 +29,8 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(String message) {
+    if(message.isEmpty()) return;
+
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
