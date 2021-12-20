@@ -16,6 +16,8 @@ public class ExemptionsConfig extends Config {
       add("alts");
       add("ban");
       add("tempban");
+      add("baniprange");
+      add("tempbaniprange");
       add("mute");
       add("tempmute");
       add("warn");
@@ -59,9 +61,12 @@ public class ExemptionsConfig extends Config {
   }
 
   public boolean isExempt(PlayerData player, String type) {
-    PlayerExemptionsData exemptionsData = players.get(player.getUUID());
+    return isExempt(player.getUUID(), type);
+  }
+
+  public boolean isExempt(UUID uuid, String type) {
+    PlayerExemptionsData exemptionsData = players.get(uuid);
 
     return exemptionsData != null && exemptionsData.isExempt(type);
-
   }
 }

@@ -79,6 +79,12 @@ public class CommonJoinListener {
         return;
       }
 
+      if (data.getExpires() == 0 && plugin.getExemptionsConfig().isExempt(id, "baniprange")) {
+        return;
+      } else if (data.getExpires() != 0 && plugin.getExemptionsConfig().isExempt(id, "tempbaniprange")) {
+        return;
+      }
+
       Message message;
 
       if (data.getExpires() == 0) {
