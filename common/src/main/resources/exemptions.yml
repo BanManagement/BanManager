@@ -3,6 +3,8 @@
 # uuid-here:
 #  ban: true
 #  tempban: true
+#  baniprange: true
+#  tempbaniprange: true
 #  mute: true
 #  tempmute: true
 #  warn: true
