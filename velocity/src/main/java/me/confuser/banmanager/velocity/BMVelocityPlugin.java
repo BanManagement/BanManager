@@ -1,16 +1,20 @@
 package me.confuser.banmanager.velocity;
 
 import com.google.inject.Inject;
+
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import lombok.SneakyThrows;
+
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+
+import lombok.SneakyThrows;
 import lombok.Getter;
+
 import me.confuser.banmanager.velocity.configs.VelocityConfig;
 import me.confuser.banmanager.velocity.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -21,9 +25,11 @@ import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+
 @Plugin(
         id = "banmanager",
         name = "BanManager",
@@ -39,7 +45,7 @@ public class BMVelocityPlugin {
   private BanManagerPlugin plugin;
   @Getter
   private VelocityConfig velocityConfig;
-  private String[] configs = new String[]{
+  private final String[] configs = new String[]{
       "config.yml",
       "velocity.yml",
       "console.yml",
@@ -50,12 +56,12 @@ public class BMVelocityPlugin {
       "reasons.yml",
       "schedules.yml"
   };
-  Metrics.Factory metricsFactory;
+  private final Metrics.Factory metricsFactory;
   public final ProxyServer server;
   private final Logger logger;
   private final File dataDirectory;
   @Inject
-  public BMVelocityPlugin(ProxyServer server, Logger logger, Metrics.Factory metricsFactory, @DataDirectory Path dataDirectory) {
+  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
     this.server = server;
     this.logger = logger;
     this.metricsFactory = metricsFactory;
@@ -147,7 +153,7 @@ public class BMVelocityPlugin {
           e.printStackTrace();
         }
       } else {
-        Reader defConfigStream = new InputStreamReader(getResourceAsStream(file.getName()), "UTF8");
+        Reader defConfigStream = new InputStreamReader(getResourceAsStream(file.getName()), StandardCharsets.UTF_8);
 
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
         YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
@@ -159,7 +165,7 @@ public class BMVelocityPlugin {
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(getResourceAsStream("plugin.yml"), "UTF8");
+    Reader defConfigStream = new InputStreamReader(getResourceAsStream("plugin.yml"), StandardCharsets.UTF_8);
     YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
     ConfigurationSection commands = conf.getConfigurationSection("commands");
 
@@ -226,18 +232,12 @@ public class BMVelocityPlugin {
   }
   @SneakyThrows
   private InputStream getResourceAsStream(String resource) {
-    try {
 
-      Class cls = Class.forName("me.confuser.banmanager.velocity.BMVelocityPlugin");
+      Class<?> cls = Class.forName("me.confuser.banmanager.velocity.BMVelocityPlugin");
 
       // returns the ClassLoader object associated with this Class
       ClassLoader cLoader = cls.getClassLoader();
 
-      // input stream
-      InputStream i = cLoader.getResourceAsStream(resource);
-      return i;
-    } catch(ClassNotFoundException e) {
-      throw e;
-    }
+      return cLoader.getResourceAsStream(resource);
   }
 }
