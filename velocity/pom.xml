@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>BanManagerBukkit</artifactId>
+    <artifactId>BanManagerVelocity</artifactId>
     <properties>
-        <plugin.main>me.confuser.banmanager.bukkit.BMBukkitPlugin</plugin.main>
+        <plugin.main>me.confuser.banmanager.velocity.BMVelocityPlugin</plugin.main>
     </properties>
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -20,6 +20,14 @@
                 <targetPath>.</targetPath>
                 <filtering>true</filtering>
                 <directory>../common/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>*.yml</include>
                 </includes>
@@ -97,6 +105,10 @@
                                     <shadedPattern>me.confuser.banmanager.common.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>org.apache.commons.net</pattern>
+                                    <shadedPattern>me.confuser.banmanager.common.commons.net</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.apachecommons</shadedPattern>
                                 </relocation>
@@ -163,65 +175,46 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>velocity</id>
+            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
         <repository>
             <id>confuser-repo</id>
             <url>https://ci.frostcast.net/plugin/repository/everything</url>
         </repository>
         <repository>
-            <id>rayzr-repo</id>
-            <url>https://cdn.rawgit.com/Rayzr522/maven-repo/master/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>Scarsz-Nexus</id>
-            <url>https://nexus.scarsz.me/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
-        <repository>
-            <id>placeholderapi</id>
-            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
     </repositories>
     <dependencies>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>me.confuser.banmanager</groupId>
             <artifactId>BanManagerCommon</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.discordsrv</groupId>
-            <artifactId>discordsrv</artifactId>
-            <version>1.21.3</version>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>3.0.1</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>3.0.1</version>
+            <type>javadoc</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
+            <artifactId>bstats-velocity</artifactId>
             <version>2.2.1</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>2.10.9</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
