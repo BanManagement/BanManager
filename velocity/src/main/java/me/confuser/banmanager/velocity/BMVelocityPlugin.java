@@ -55,7 +55,7 @@ public class BMVelocityPlugin {
   private final Logger logger;
   private final File dataDirectory;
   @Inject
-  public BMVelocityPlugin(ProxyServer server, Logger logger, Metrics.Factory metricsFactory, @DataDirectory Path dataDirectory, Metrics.Factory metrics) {
+  public BMVelocityPlugin(ProxyServer server, Logger logger, Metrics.Factory metricsFactory, @DataDirectory Path dataDirectory) {
     this.server = server;
     this.logger = logger;
     this.metricsFactory = metricsFactory;
