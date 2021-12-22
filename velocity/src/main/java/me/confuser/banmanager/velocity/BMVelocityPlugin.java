@@ -50,20 +50,21 @@ public class BMVelocityPlugin {
       "reasons.yml",
       "schedules.yml"
   };
-  private Metrics metrics;
+  Metrics.Factory metricsFactory;
   public final ProxyServer server;
   private final Logger logger;
   private final File dataDirectory;
   @Inject
-  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, Metrics.Factory metrics) {
+  public BMVelocityPlugin(ProxyServer server, Logger logger, Metrics.Factory metricsFactory, @DataDirectory Path dataDirectory, Metrics.Factory metrics) {
     this.server = server;
     this.logger = logger;
+    this.metricsFactory = metricsFactory;
     this.dataDirectory = dataDirectory.toFile();
-    this.metrics = metrics.make(this, 6413);
   }
 
 
   public void onEnable() {
+    Metrics metrics = metricsFactory.make(this, 6413);
     VelocityServer server = new VelocityServer();
     PluginInfo pluginInfo;
     try {
