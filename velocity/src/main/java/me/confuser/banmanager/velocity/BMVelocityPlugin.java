@@ -6,8 +6,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 
-import org.bstats.velocity.Metrics;
-import org.slf4j.Logger;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -24,6 +22,8 @@ import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "banmanager",
         name = "BanManager",
-        version = "${project.version}",
+        version = "7.6.0",
         url = "https://banmanagement.com",
         description = "A suite of moderation plugins & apps for Minecraft servers",
         authors = {
@@ -56,21 +56,23 @@ public class BMVelocityPlugin {
       "reasons.yml",
       "schedules.yml"
   };
-  private final Metrics.Factory metricsFactory;
+//  private final Metrics.Factory metricsFactory;
   public final ProxyServer server;
-  private final Logger logger;
+  @Inject
+  private Logger logger;
+
   private final File dataDirectory;
   @Inject
-  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
+  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory final Path directory) {
     this.server = server;
     this.logger = logger;
-    this.metricsFactory = metricsFactory;
-    this.dataDirectory = dataDirectory.toFile();
+    this.dataDirectory = directory.toFile();
+//    this.metricsFactory = metricsFactory;
   }
 
 
   public void onEnable() {
-    Metrics metrics = metricsFactory.make(this, 6413);
+//    Metrics metrics = metricsFactory.make(this, 6413);
     VelocityServer server = new VelocityServer();
     PluginInfo pluginInfo;
     try {
@@ -81,7 +83,7 @@ public class BMVelocityPlugin {
       return;
     }
 
-    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, new VelocityScheduler(this, this.server), server, new VelocityMetrics(metrics));
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, new VelocityScheduler(this, this.server), server, new VelocityMetrics(null));
 
     server.enable(plugin, this.server);
 
