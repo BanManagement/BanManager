@@ -230,7 +230,6 @@ public class VelocityServer implements CommonServer {
   public CommonExternalCommand getPluginCommand(String commandName) {
     // @TODO Seems like Velocity doesn't expose an easy way to retrieve a command by name?
 //      server.getCommandManager().getCommandMeta(commandName);
-
     return null;
 
 //    return new CommonExternalCommand(null, command.getValue().getName(), Arrays.asList(command.getValue().getAliases()));
