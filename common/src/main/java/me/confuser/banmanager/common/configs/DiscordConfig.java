@@ -14,6 +14,8 @@ public class DiscordConfig extends Config {
   @Getter
   private boolean enabled = false;
   private Map<String, DiscordPunishmentConfig> types;
+  @Getter
+  private boolean messagesFromActor = true;
 
   public DiscordConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "discord.yml", logger);
@@ -24,6 +26,7 @@ public class DiscordConfig extends Config {
     types = new HashMap<>();
 
     enabled = conf.getBoolean("enabled", false);
+    messagesFromActor = conf.getBoolean("messagesFromActor", false);
     ConfigurationSection punishments = conf.getConfigurationSection("punishments");
 
     for (String type : punishments.getKeys(false)) {
