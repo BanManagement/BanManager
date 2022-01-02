@@ -186,6 +186,10 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
   }
 
   public boolean unban(IpBanData ban, PlayerData actor, String reason) throws SQLException {
+    return unban(ban, actor, reason, false);
+  }
+
+  public boolean unban(IpBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("IpUnbanEvent", ban, actor, reason);
 
     if (event.isCancelled()) {
@@ -195,7 +199,7 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
     delete(ban);
     bans.remove(ban.getIp().toString());
 
-    plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
+    if (!delete) plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
 
     return true;
   }
