@@ -62,6 +62,8 @@ public class UnbanIpCommand extends CommonCommand {
         try {
           ip = new IPAddressString(ipStr).toAddress();
         } catch (AddressStringException e) {
+          sender.sendMessage(Message.get("sender.error.exception").toString());
+          e.printStackTrace();
           return;
         }
       }
