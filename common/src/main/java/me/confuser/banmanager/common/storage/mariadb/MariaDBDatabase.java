@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.storage.mariadb;
 
-import com.j256.ormlite.db.MariaDbDatabaseType;
+import me.confuser.banmanager.common.ormlite.db.MariaDbDatabaseType;
 
 public class MariaDBDatabase extends MariaDbDatabaseType {
 

@@ -1,10 +1,10 @@
 package me.confuser.banmanager.common.commands;
 
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.TimeLimitType;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
+import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 

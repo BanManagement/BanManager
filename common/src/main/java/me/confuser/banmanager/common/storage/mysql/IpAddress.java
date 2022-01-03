@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common.storage.mysql;
 
-import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.field.types.ByteArrayType;
-import inet.ipaddr.AddressValueException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressNetwork;
 import lombok.SneakyThrows;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.ipaddr.AddressValueException;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressNetwork;
+import me.confuser.banmanager.common.ormlite.field.FieldType;
+import me.confuser.banmanager.common.ormlite.field.SqlType;
+import me.confuser.banmanager.common.ormlite.field.types.ByteArrayType;
 import me.confuser.banmanager.common.util.IPUtils;
 
 public class IpAddress extends ByteArrayType {

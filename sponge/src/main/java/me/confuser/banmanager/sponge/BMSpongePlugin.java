@@ -33,7 +33,7 @@ import java.util.HashMap;
 @Plugin(
     id = "banmanager",
     name = "BanManager",
-    version = Version.VERSION,
+    version = "${internalVersion}",
     authors = "confuser",
     description = "A punishment plugin",
     url = "https://banmanagement.com",

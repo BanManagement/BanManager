@@ -1,8 +1,8 @@
 package me.confuser.banmanager.common.data;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
+import me.confuser.banmanager.common.ormlite.field.DatabaseField;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
 
 @DatabaseTable

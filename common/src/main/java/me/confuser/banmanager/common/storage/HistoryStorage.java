@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common.storage;
 
-import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.stmt.StatementBuilder;
-import com.j256.ormlite.support.CompiledStatement;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ormlite.field.SqlType;
+import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 
 import java.sql.SQLException;

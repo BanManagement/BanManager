@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.listeners;
 
-import com.j256.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;

@@ -1,10 +1,10 @@
 package me.confuser.banmanager.common.data.global;
 
-import com.j256.ormlite.field.DatabaseField;
-import inet.ipaddr.IPAddress;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
 import me.confuser.banmanager.common.storage.mysql.IpAddress;
 import me.confuser.banmanager.common.util.UUIDUtils;

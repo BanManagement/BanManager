@@ -3,10 +3,10 @@ package me.confuser.banmanager.common.configuration.file;
 import me.confuser.banmanager.common.configuration.Configuration;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.InvalidConfigurationException;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.representer.Representer;
+import me.confuser.banmanager.common.snakeyaml.DumperOptions;
+import me.confuser.banmanager.common.snakeyaml.Yaml;
+import me.confuser.banmanager.common.snakeyaml.error.YAMLException;
+import me.confuser.banmanager.common.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.IOException;

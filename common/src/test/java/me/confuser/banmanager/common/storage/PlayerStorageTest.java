@@ -1,8 +1,8 @@
 package me.confuser.banmanager.common.storage;
 
-import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ormlite.dao.Dao;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class PlayerStorageTest extends BasePluginDbTest {
     UUID uuid = UUID.randomUUID();
 
     PlayerData data = new PlayerData(uuid, "Name 1");
-    CreateOrUpdateStatus status = playerStorage.upsert(data);
+    Dao.CreateOrUpdateStatus status = playerStorage.upsert(data);
     assertTrue(status.isCreated());
     assertFalse(status.isUpdated());
     assertNotNull(playerStorage.getAutoCompleteTree().getValueForExactKey("Name 1"));
@@ -47,7 +47,7 @@ public class PlayerStorageTest extends BasePluginDbTest {
     UUID uuid = UUID.randomUUID();
 
     PlayerData data = new PlayerData(uuid, "PlaYer 1");
-    CreateOrUpdateStatus status = playerStorage.upsert(data);
+    Dao.CreateOrUpdateStatus status = playerStorage.upsert(data);
     assertTrue(status.isCreated());
     assertFalse(status.isUpdated());
 
