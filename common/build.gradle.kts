@@ -17,11 +17,5 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
-    onlyIf{ false }
+    useJUnit()
 }
-/*
-tasks.withType<Test>().configureEach {
-    // useJUnit()
-}*/
-
-// "shade"("ch.vorburger.mariaDB4j:mariaDB4j:2.4.0")

@@ -1,21 +1,24 @@
-*.class
-.settings
+# Eclipse
 .classpath
-bin
 .project
+.settings/
+/bin
+eclipse
+
+# Intellij
 .idea
 *.iml
-.flattened-pom.xml
-.externalToolBuilders
-build.xml
+*.ipr
+*.iws
+
+# Mac
 .DS_Store
-dependency-reduced-pom.xml
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Gradle
+.gradle
+/local.properties
+bin
+build
 target
-
-.travis/*.key
-.travis/*.key.pub
+/dependency-reduced-pom.xml
+*-private.sh
