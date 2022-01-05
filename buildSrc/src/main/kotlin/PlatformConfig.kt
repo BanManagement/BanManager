@@ -23,7 +23,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
     apply(plugin = "maven-publish")
     apply(plugin = "com.jfrog.artifactory")
 
-    ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
+    ext["internalVersion"] = "$version"
 
     // Java 8 turns on doclint which we fail
     tasks.withType<Javadoc>().configureEach {

@@ -1,5 +1,3 @@
-import org.ajoberstar.grgit.Grgit
-
 logger.lifecycle("""
 *******************************************
  You are building BanManagmer!
@@ -13,14 +11,3 @@ logger.lifecycle("""
 """)
 
 applyRootArtifactoryConfig()
-
-if (!project.hasProperty("gitCommitHash")) {
-    apply(plugin = "org.ajoberstar.grgit")
-    ext["gitCommitHash"] = try {
-        Grgit.open(mapOf("currentDir" to project.rootDir))?.head()?.abbreviatedId
-    } catch (e: Exception) {
-        logger.warn("Error getting commit hash", e)
-
-        "no.git.id"
-    }
-}
