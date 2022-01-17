@@ -23,9 +23,9 @@ dependencies {
 
     "shade"("org.apache.commons:commons-compress:1.19")
     "shade"("com.github.seancfoley:ipaddress:5.3.3")
-    "shade"("ch.vorburger.mariaDB4j:mariaDB4j:2.4.0")
     "shade"("com.h2database:h2:1.4.200")
 }
+
 tasks.withType<Jar>() {
     duplicatesStrategy = DuplicatesStrategy.WARN
 }
@@ -39,15 +39,15 @@ tasks.named<ShadowJar>("jar") {
             include(dependency("net.kyori:text-serializer-gson"))
             include(dependency("net.kyori:text-serializer-legacy"))
         }
-        
+
         relocate("org.yaml.snakeyaml", "me.confuser.banmanager.common.snakeyaml") {
             include(dependency("org.yaml:snakeyaml"))
         }
-        
+
         relocate("inet.ipaddr", "me.confuser.banmanager.common.ipaddr") {
             include(dependency("com.github.seancfoley:ipaddress"))
         }
-        
+
         relocate("org.h2", "me.confuser.banmanager.common.h2") {
             include(dependency("com.h2database:h2"))
         }

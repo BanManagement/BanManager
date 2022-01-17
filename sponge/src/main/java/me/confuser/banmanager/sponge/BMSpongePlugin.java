@@ -19,6 +19,7 @@ import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
+import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+@Plugin(id = "banmanager")
 public class BMSpongePlugin {
 
   private CommonLogger logger;

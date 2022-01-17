@@ -66,8 +66,6 @@ configurations {
 dependencies {
     compileOnly("org.spongepowered:spongeapi:7.2.0")
 
-    api("com.github.seancfoley:ipaddress:5.3.3")
-    implementation("com.github.seancfoley:ipaddress:5.3.3")
     api(project(":BanManagerCommon")) {
         isTransitive = true
     }
@@ -75,6 +73,18 @@ dependencies {
         exclude(group = "net.dv8tion", module = "JDA")
     }
     "shadeOnly"("org.bstats:bstats-sponge:2.2.1")
+}
+
+val javaTarget = 8 // Sponge targets a minimum of Java 8
+java {
+    sourceCompatibility = JavaVersion.toVersion(javaTarget)
+    targetCompatibility = JavaVersion.toVersion(javaTarget)
+}
+
+tasks.named<Copy>("processResources") {
+    val internalVersion = project.ext["internalVersion"]
+    inputs.property("internalVersion", internalVersion)
+    expand("internalVersion" to internalVersion)
 }
 
 tasks.named<Jar>("jar") {
@@ -95,13 +105,17 @@ tasks.named<ShadowJar>("shadowJar") {
             include(dependency("org.bstats:"))
         }
     }
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
     exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
+    exclude("META-INF/versions/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
+    exclude("**/module-info.class")
+    // exclude("*.yml")
 }
 
 tasks.named("assemble").configure {

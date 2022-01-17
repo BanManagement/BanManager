@@ -64,7 +64,6 @@ fun Project.applyShadowConfiguration() {
     tasks.named<ShadowJar>("shadowJar") {
         archiveClassifier.set("dist")
         dependencies {
-            //include(project(":worldguard-libs:${project.name.replace("worldguard-", "")}"))
             include(project(":BanManagerCommon"))
         }
         exclude("GradleStart**")
