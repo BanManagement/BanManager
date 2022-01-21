@@ -17,11 +17,11 @@ public class MuteListener extends Listener {
     this.listener = new CommonMuteListener(plugin);
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnMute(PlayerMutedEvent event) {
     listener.notifyOnMute(event.getMute(), event.isSilent());
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnMute(IpMutedEvent event) {listener.notifyOnMute(event.getMute(), event.isSilent()); }
 }

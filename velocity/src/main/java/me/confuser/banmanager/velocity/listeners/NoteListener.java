@@ -15,7 +15,7 @@ public class NoteListener extends Listener {
     this.listener = new CommonNoteListener(plugin);
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnNote(PlayerNoteCreatedEvent event) {
     listener.notifyOnNote(event.getNote());
   }

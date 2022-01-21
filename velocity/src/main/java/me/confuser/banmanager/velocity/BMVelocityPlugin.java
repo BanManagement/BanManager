@@ -22,7 +22,8 @@ import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.bstats.velocity.Metrics;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "banmanager",
         name = "BanManager",
-        version = "7.6.0",
+        version = "${project.version}",
         url = "https://banmanagement.com",
         description = "A suite of moderation plugins & apps for Minecraft servers",
         authors = {
@@ -56,23 +57,24 @@ public class BMVelocityPlugin {
       "reasons.yml",
       "schedules.yml"
   };
-//  private final Metrics.Factory metricsFactory;
-  public final ProxyServer server;
-  @Inject
-  private Logger logger;
-
+  private final Metrics.Factory metricsFactory;
+  public ProxyServer server;
+  private final Logger logger;
   private final File dataDirectory;
+  public static BMVelocityPlugin instance;
+
   @Inject
-  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory final Path directory) {
+  public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory final Path directory, Metrics.Factory metricsFactory) {
     this.server = server;
     this.logger = logger;
+    instance = this;
     this.dataDirectory = directory.toFile();
-//    this.metricsFactory = metricsFactory;
+    this.metricsFactory = metricsFactory;
   }
 
 
   public void onEnable() {
-//    Metrics metrics = metricsFactory.make(this, 6413);
+    Metrics metrics = metricsFactory.make(this, 6413);
     VelocityServer server = new VelocityServer();
     PluginInfo pluginInfo;
     try {
@@ -241,5 +243,9 @@ public class BMVelocityPlugin {
       ClassLoader cLoader = cls.getClassLoader();
 
       return cLoader.getResourceAsStream(resource);
+  }
+
+  public static BMVelocityPlugin getInstance() {
+    return instance;
   }
 }
