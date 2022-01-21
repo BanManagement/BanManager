@@ -141,8 +141,8 @@ public class NotesCommand extends CommonCommand {
   }
 
   public static TextComponent notesAmountMessage(String playerName, Message text) {
-    return LegacyComponentSerializer.legacy().deserialize(
-        text.set("player", playerName).toString(), '&')
+    return LegacyComponentSerializer.legacy('&').deserialize(
+        text.set("player", playerName).toString())
         .clickEvent(ClickEvent.runCommand("/notes " + playerName));
   }
 }

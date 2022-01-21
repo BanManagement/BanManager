@@ -141,10 +141,6 @@
                                     <shadedPattern>me.confuser.banmanager.common.jaxax.annotation</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.kyori.text</pattern>
-                                    <shadedPattern>me.confuser.banmanager.common.kyori.text</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.checkerframework</pattern>
                                     <shadedPattern>me.confuser.banmanager.common.kyori.checkerframework</shadedPattern>
                                 </relocation>

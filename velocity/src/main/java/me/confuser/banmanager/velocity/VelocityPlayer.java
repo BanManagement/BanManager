@@ -7,7 +7,7 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.TextComponent;
 
 import java.net.InetAddress;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void kick(String message) {
-    getPlayer().get().disconnect(VelocityServer.formatMessage(message));
+    getPlayer().disconnect(VelocityServer.formatMessage(message));
   }
 
   @Override
@@ -33,7 +33,7 @@ public class VelocityPlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      getPlayer().get().sendMessage(VelocityServer.formatMessage(message));
+      getPlayer().sendMessage(VelocityServer.formatMessage(message));
     }
   }
 
@@ -45,12 +45,12 @@ public class VelocityPlayer implements CommonPlayer {
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
     // @TODO Find a fix for the JSON component
-    getPlayer().get().sendMessage(VelocityServer.formatMessage(jsonString.content()));
+    getPlayer().sendMessage(VelocityServer.formatMessage(jsonString.content()));
   }
 
   @Override
   public void sendJSONMessage(String jsonString) {
-    getPlayer().get().sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
+    getPlayer().sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
   }
 
   @Override
@@ -70,12 +70,12 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public boolean isOnline() {
-    return getPlayer().isPresent();
+    return getPlayer() != null;
   }
 
   @Override
   public boolean hasPermission(String permission) {
-    return getPlayer().get().hasPermission(permission);
+    return getPlayer().hasPermission(permission);
   }
   // @TODO Velocity doesn't seem to support display names?
   @Override
@@ -85,23 +85,17 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public String getName() {
-    return getPlayer().get().getUsername();
+    return getPlayer().getUsername();
   }
 
   @Override
   public InetAddress getAddress() {
-    if(getPlayer().isPresent()) {
-      return getPlayer().get().getRemoteAddress().getAddress();
-    }
-    return null;
+    return getPlayer().getRemoteAddress().getAddress();
   }
 
   @Override
   public UUID getUniqueId() {
-    if(getPlayer().isPresent()) {
-      return getPlayer().get().getUniqueId();
-    }
-    return null;
+    return getPlayer().getUniqueId();
   }
 
   @Override
@@ -114,7 +108,8 @@ public class VelocityPlayer implements CommonPlayer {
     return true;
   }
 
-  private Optional<Player> getPlayer() {
-    return BMVelocityPlugin.getInstance().server.getPlayer(uuid);
+  private Player getPlayer() {
+    Optional<Player> fetchedPlayer = BMVelocityPlugin.getInstance().server.getPlayer(uuid);
+    return fetchedPlayer.orElse(null);
   }
 }

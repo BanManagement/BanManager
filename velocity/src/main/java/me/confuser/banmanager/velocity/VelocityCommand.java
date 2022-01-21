@@ -3,16 +3,16 @@ package me.confuser.banmanager.velocity;
 
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.command.RawCommand;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import lombok.NonNull;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
-import com.mojang.brigadier.tree.CommandNode;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class VelocityCommand implements SimpleCommand {
@@ -61,8 +61,12 @@ public final class VelocityCommand implements SimpleCommand {
 
     plugin.server.getCommandManager().register(meta, this);
   }
-// @TODO ADD THIS BACK
-  public Iterable<String> onTabComplete(@NonNull CommandSource commandSource, String[] args) {
+
+  @Override
+  public List<String> suggest(@NonNull final Invocation invocation) {
+    CommandSource commandSource = invocation.source();
+    String[] args = invocation.arguments();
+    if(!this.command.isEnableTabCompletion()) return Collections.emptyList();
     return this.command.handlePlayerNameTabComplete(getSender(commandSource), args);
   }
 }

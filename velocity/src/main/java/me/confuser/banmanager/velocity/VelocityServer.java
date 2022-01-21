@@ -10,7 +10,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.velocity.api.events.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Optional;
@@ -60,10 +60,10 @@ public class VelocityServer implements CommonServer {
   }
 
   @Override
-  public void broadcastJSON(net.kyori.text.TextComponent message, String permission) {
+  public void broadcastJSON(TextComponent message, String permission) {
     for (Player player : server.getAllPlayers()) {
       if (player != null && player.hasPermission(permission)) {
-        player.sendMessage((Component) message);
+        player.sendMessage(message);
       }
     }
   }

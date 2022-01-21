@@ -219,7 +219,7 @@ public class BungeeServer implements CommonServer {
   }
 
   public static BaseComponent[] formatMessage(TextComponent message) {
-    return ComponentSerializer.parse(GsonComponentSerializer.INSTANCE.serialize(message));
+    return ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(message));
   }
 
   @Override
