@@ -170,6 +170,7 @@ public class InfoCommand extends CommonCommand {
             messages.add(message.toString());
           }
         } catch (IOException e) {
+          e.printStackTrace();
         }
       }
 
@@ -444,6 +445,7 @@ public class InfoCommand extends CommonCommand {
             messages.add(message.toString());
           }
         } catch (IOException e) {
+          e.printStackTrace();
         }
 
       }
