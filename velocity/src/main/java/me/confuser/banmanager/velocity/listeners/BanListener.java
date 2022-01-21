@@ -20,22 +20,22 @@ public class BanListener extends Listener {
     this.listener = new CommonBanListener(plugin);
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnBan(PlayerBannedEvent event) {
     listener.notifyOnBan(event.getBan(), event.isSilent());
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnIpBan(IpBannedEvent event) {
     listener.notifyOnBan(event.getBan(), event.isSilent());
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnIpRangeBan(IpRangeBannedEvent event) {
     listener.notifyOnBan(event.getBan(), event.isSilent());
   }
 
-  @Subscribe(order = PostOrder.LATE)
+  @Subscribe(order = PostOrder.FIRST)
   public void notifyOnNameBan(NameBannedEvent event) {
     listener.notifyOnBan(event.getBan(), event.isSilent());
   }

@@ -2,7 +2,7 @@ package me.confuser.banmanager.velocity;
 
 import me.confuser.banmanager.common.CommonLogger;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 public class PluginLogger implements CommonLogger {
 
