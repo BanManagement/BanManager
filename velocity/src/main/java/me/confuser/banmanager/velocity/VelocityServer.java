@@ -1,25 +1,18 @@
 package me.confuser.banmanager.velocity;
 
 
-
-import me.confuser.banmanager.velocity.api.events.*;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-
+import me.confuser.banmanager.velocity.api.events.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-
-import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
-
-
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,18 +27,18 @@ public class VelocityServer implements CommonServer {
   public CommonPlayer getPlayer(UUID uniqueId) {
     Optional<Player> player = server.getPlayer(uniqueId);
 
-    if (player == null) return null;
+    if (player.isPresent()) return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
 
-    return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
+    return null;
   }
 
   @Override
   public CommonPlayer getPlayer(String name) {
     Optional<Player> player = server.getPlayer(name);
 
-    if (player == null) return null;
+    if (player.isPresent()) return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
 
-    return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
+    return null;
   }
 
   @Override
@@ -67,7 +60,7 @@ public class VelocityServer implements CommonServer {
   }
 
   @Override
-  public void broadcastJSON(TextComponent message, String permission) {
+  public void broadcastJSON(net.kyori.text.TextComponent message, String permission) {
     for (Player player : server.getAllPlayers()) {
       if (player != null && player.hasPermission(permission)) {
         player.sendMessage((Component) message);
@@ -219,7 +212,7 @@ public class VelocityServer implements CommonServer {
   }
 
   public static Component formatMessage(String message) {
-    return (Component) LegacyComponentSerializer.legacy().deserialize(message);
+    return LegacyComponentSerializer.legacy('&').deserialize(message);
   }
 
   public static TextComponent formatMessage(TextComponent message) {

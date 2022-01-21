@@ -4,6 +4,7 @@ package me.confuser.banmanager.velocity.listeners;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.proxy.Player;
 
@@ -19,8 +20,8 @@ public class LeaveListener extends Listener {
     this.listener = new CommonLeaveListener(plugin);
   }
 
-  @Subscribe(order = PostOrder.NORMAL)
-  public void onLeave(KickedFromServerEvent event) {
+  @Subscribe
+  public void onLeave(DisconnectEvent event) {
     if (ResultedEvent.GenericResult.allowed().isAllowed()) {
       Player player = event.getPlayer();
       listener.onLeave(player.getUniqueId(), player.getUsername());

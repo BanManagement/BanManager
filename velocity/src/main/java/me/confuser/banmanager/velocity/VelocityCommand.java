@@ -4,7 +4,9 @@ package me.confuser.banmanager.velocity;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.RawCommand;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import lombok.NonNull;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
@@ -13,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-public final class VelocityCommand implements RawCommand {
+public final class VelocityCommand implements SimpleCommand {
   private CommonCommand command;
   private BMVelocityPlugin plugin;
 
@@ -28,7 +30,7 @@ public final class VelocityCommand implements RawCommand {
   @Override
   public void execute(final Invocation invocation) {
     CommandSource commandSource = invocation.source();
-    String[] args = invocation.arguments().split("\\s+");
+    String[] args = invocation.arguments();
     CommonSender commonSender = getSender(commandSource);
     boolean success = false;
 
@@ -60,9 +62,7 @@ public final class VelocityCommand implements RawCommand {
     plugin.server.getCommandManager().register(meta, this);
   }
 // @TODO ADD THIS BACK
-//  public Iterable<String> onTabComplete(CommandSource commandSource) {
-//    if (!this.command.isEnableTabCompletion()) return Collections.emptyList();
-//
-//    return this.command.handlePlayerNameTabComplete(getSender(commandSource), args);
-//  }
+  public Iterable<String> onTabComplete(@NonNull CommandSource commandSource, String[] args) {
+    return this.command.handlePlayerNameTabComplete(getSender(commandSource), args);
+  }
 }
