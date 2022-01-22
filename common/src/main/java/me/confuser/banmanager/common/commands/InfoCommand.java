@@ -562,10 +562,11 @@ public class InfoCommand extends CommonCommand {
         if (sender.isConsole()) {
           messages.add(websiteMsg);
         } else {
-          TextComponent.Builder message = Component.text().append(Component.text(websiteMsg));
-
-          message.clickEvent(ClickEvent.openUrl(websiteMsg));
-
+          TextComponent.Builder message = Component.text();
+          message
+                  .append(
+                          Component.text(websiteMsg)
+                                  .clickEvent(ClickEvent.openUrl(websiteMsg)));
           messages.add(message.build());
         }
       }
@@ -577,6 +578,7 @@ public class InfoCommand extends CommonCommand {
         sender.sendMessage((String) message);
       } else if (message instanceof TextComponent) {
         ((CommonPlayer) sender).sendJSONMessage((TextComponent) message);
+        getPlugin().getLogger().info("debugging bminfo message");
       } else {
         getPlugin().getLogger().warning("Invalid info message, please report the following as a bug: " + message.toString());
       }

@@ -44,7 +44,6 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    // @TODO Find a fix for the JSON component
     getPlayer().sendMessage(VelocityServer.formatMessage(jsonString.content()));
   }
 
@@ -77,7 +76,7 @@ public class VelocityPlayer implements CommonPlayer {
   public boolean hasPermission(String permission) {
     return getPlayer().hasPermission(permission);
   }
-  // @TODO Velocity doesn't seem to support display names?
+
   @Override
   public String getDisplayName() {
     return getName();
