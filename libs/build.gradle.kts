@@ -93,6 +93,7 @@ tasks.named<ShadowJar>("jar") {
             include(dependency("com.maxmind.db:maxmind-db-gson"))
         }
     }
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")

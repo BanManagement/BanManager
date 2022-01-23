@@ -74,6 +74,7 @@ tasks.named<ShadowJar>("shadowJar") {
             include(dependency("org.bstats:"))
         }
     }
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")

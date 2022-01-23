@@ -11,6 +11,7 @@ logger.lifecycle("""
 """)
 
 plugins {
+    `maven-publish`
     id("io.freefair.aggregate-javadoc") version "6.3.0"
 }
 
