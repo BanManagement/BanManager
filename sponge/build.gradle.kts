@@ -122,6 +122,8 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("org/jetbrains/**")
     exclude("**/module-info.class")
     exclude("*.yml")
+
+    minimize()
 }
 
 tasks.named("assemble").configure {
