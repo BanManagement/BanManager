@@ -39,7 +39,7 @@ fun Project.applyLibrariesConfiguration() {
         the<JavaPluginExtension>().setTargetCompatibility("1.8")
     }
 
-    group = "${rootProject.group}.BungeeCordLibs"
+    group = "${rootProject.group}.BanManagerLibs"
 
     tasks.register<ShadowJar>("jar") {
         configurations = listOf(project.configurations["shade"])
