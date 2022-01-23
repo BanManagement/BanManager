@@ -6,12 +6,18 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 plugins {
     `java-library`
     id("org.spongepowered.gradle.plugin")
+    id("net.kyori.blossom") version "1.2.0"
 }
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
+blossom {
+    replaceToken("@projectVersion@", project.ext["internalVersion"])
+}
+
 sponge {
+    apiVersion("7.2.0")
     loader {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")
@@ -115,7 +121,7 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
     exclude("**/module-info.class")
-    // exclude("*.yml")
+    exclude("*.yml")
 }
 
 tasks.named("assemble").configure {

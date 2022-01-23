@@ -21,6 +21,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.plugin.Dependency;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,17 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-@Plugin(id = "banmanager")
+@Plugin(
+    id = "banmanager",
+    name = "BanManager",
+    version = "@projectVersion@",
+    authors = "confuser",
+    description = "A punishment plugin",
+    url = "https://banmanagement.com",
+    dependencies = {
+        @Dependency(id = "magibridge", optional = true),
+    }
+)
 public class BMSpongePlugin {
 
   private CommonLogger logger;
