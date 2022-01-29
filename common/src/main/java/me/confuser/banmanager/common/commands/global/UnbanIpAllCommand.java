@@ -1,7 +1,6 @@
 package me.confuser.banmanager.common.commands.global;
 
 
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -9,6 +8,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 

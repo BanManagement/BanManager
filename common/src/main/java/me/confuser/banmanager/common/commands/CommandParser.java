@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.commands;
 
-import com.sampullara.cli.Args;
-import com.sampullara.cli.Argument;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.cli.Args;
+import me.confuser.banmanager.common.cli.Argument;
 import me.confuser.banmanager.common.util.StringUtils;
 
 import java.util.ArrayList;

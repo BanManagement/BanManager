@@ -1,11 +1,11 @@
 package me.confuser.banmanager.common.listeners;
 
-import com.google.common.collect.ImmutableMap;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.ActionCommand;
 import me.confuser.banmanager.common.configs.Hook;
 import me.confuser.banmanager.common.configs.HooksConfig;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.google.guava.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;

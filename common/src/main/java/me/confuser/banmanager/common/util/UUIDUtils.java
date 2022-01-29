@@ -7,11 +7,10 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.Fetcher;
+import me.confuser.banmanager.common.gson.Gson;
+import me.confuser.banmanager.common.gson.JsonObject;
 
 /**
  * Based on UUIDFetcher by evilmidget38

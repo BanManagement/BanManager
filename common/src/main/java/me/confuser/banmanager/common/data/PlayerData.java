@@ -1,12 +1,12 @@
 package me.confuser.banmanager.common.data;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
 import lombok.Getter;
 import lombok.Setter;
+import me.confuser.banmanager.common.ipaddr.AddressStringException;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
+import me.confuser.banmanager.common.ormlite.field.DatabaseField;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.PlayerStorage;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
 import me.confuser.banmanager.common.storage.mysql.IpAddress;

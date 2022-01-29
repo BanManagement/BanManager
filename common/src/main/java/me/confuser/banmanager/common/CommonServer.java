@@ -1,9 +1,8 @@
 package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.api.events.CommonEvent;
-import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
-import net.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
 
 import java.util.UUID;
 

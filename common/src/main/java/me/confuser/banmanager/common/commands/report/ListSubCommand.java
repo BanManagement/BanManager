@@ -1,11 +1,11 @@
 package me.confuser.banmanager.common.commands.report;
 
-import com.j256.ormlite.stmt.SelectArg;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
 import me.confuser.banmanager.common.data.ReportState;
+import me.confuser.banmanager.common.ormlite.stmt.SelectArg;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.ReportList;
 

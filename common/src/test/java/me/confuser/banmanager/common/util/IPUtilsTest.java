@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.util;
 
 import com.github.javafaker.Faker;
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
+import me.confuser.banmanager.common.ipaddr.AddressStringException;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

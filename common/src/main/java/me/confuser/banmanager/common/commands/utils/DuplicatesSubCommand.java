@@ -6,11 +6,11 @@ import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.format.TextColor;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import net.kyori.text.TextComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.format.TextColor;
 
 import java.sql.SQLException;
 import java.util.HashMap;

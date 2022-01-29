@@ -1,12 +1,12 @@
 package me.confuser.banmanager.common.storage.conversion;
 
-import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.DatabaseConfig;
 import me.confuser.banmanager.common.configs.LocalDatabaseConfig;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
+import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.storage.*;
 
 import java.io.File;

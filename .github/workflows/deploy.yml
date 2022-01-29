@@ -26,15 +26,16 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
 
-      - name: Generate Docs
-        run: javadoc -d $HOME/javadoc-latest common/src/main/java/me/confuser/banmanager/common/api/BmAPI.java common/src/main/java/me/confuser/banmanager/common/data/*.java bukkit/src/main/java/me/confuser/banmanager/bukkit/api/events/*.java sponge/src/main/java/me/confuser/banmanager/sponge/api/events/*.java
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle Javadocs
+        env:
+          STORAGE_TYPE: ${{ matrix.storageType }}
+        run: ./gradlew aggregateJavadoc
 
       - uses: webfactory/ssh-agent@v0.4.1
         with:
@@ -42,7 +43,7 @@ jobs:
 
       - name: Deploy
         run: |
-          cd $HOME/javadoc-latest
+          cd ./build/docs/aggregateJavadoc
           ssh-keyscan ${{ secrets.DOKKU_HOST }} >> ~/.ssh/known_hosts
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions"

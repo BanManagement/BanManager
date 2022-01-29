@@ -3,8 +3,8 @@ package me.confuser.banmanager.common.configuration.file;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerializable;
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerialization;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.representer.Representer;
+import me.confuser.banmanager.common.snakeyaml.nodes.Node;
+import me.confuser.banmanager.common.snakeyaml.representer.Representer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

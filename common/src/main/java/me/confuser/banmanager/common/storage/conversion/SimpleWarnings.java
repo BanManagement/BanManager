@@ -1,13 +1,12 @@
 package me.confuser.banmanager.common.storage.conversion;
 
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
-import com.j256.ormlite.stmt.StatementBuilder;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
-
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
+import me.confuser.banmanager.common.ormlite.jdbc.JdbcPooledConnectionSource;
+import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 
 import java.io.File;
 import java.sql.SQLException;

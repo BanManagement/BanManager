@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.storage.mysql;
 
-import com.j256.ormlite.db.MysqlDatabaseType;
+import me.confuser.banmanager.common.ormlite.db.MysqlDatabaseType;
 
 public class MySQLDatabase extends MysqlDatabaseType {
 
