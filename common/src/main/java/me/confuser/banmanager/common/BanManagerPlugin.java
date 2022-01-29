@@ -1,19 +1,19 @@
 package me.confuser.banmanager.common;
 
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.db.H2DatabaseType;
-import com.j256.ormlite.jdbc.DataSourceConnectionSource;
-import com.j256.ormlite.logger.LocalLog;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
 import me.confuser.banmanager.common.api.BmAPI;
 import me.confuser.banmanager.common.commands.*;
 import me.confuser.banmanager.common.commands.global.*;
 import me.confuser.banmanager.common.configs.*;
+import me.confuser.banmanager.common.hikari.HikariDataSource;
+import me.confuser.banmanager.common.ormlite.dao.GenericRawResults;
+import me.confuser.banmanager.common.ormlite.db.DatabaseType;
+import me.confuser.banmanager.common.ormlite.db.H2DatabaseType;
+import me.confuser.banmanager.common.ormlite.jdbc.DataSourceConnectionSource;
+import me.confuser.banmanager.common.ormlite.logger.LocalLog;
+import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.runnables.Runner;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;

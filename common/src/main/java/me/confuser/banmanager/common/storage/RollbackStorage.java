@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common.storage;
 
-import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.table.DatabaseTableConfig;
-import com.j256.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.RollbackData;
+import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
+import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
+import me.confuser.banmanager.common.ormlite.stmt.Where;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
+import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 
 import java.sql.SQLException;

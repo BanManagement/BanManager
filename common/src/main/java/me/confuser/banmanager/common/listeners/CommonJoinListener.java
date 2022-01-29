@@ -1,14 +1,14 @@
 package me.confuser.banmanager.common.listeners;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.j256.ormlite.dao.CloseableIterator;
-import com.maxmind.db.model.CountryResponse;
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.NotesCommand;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.google.guava.cache.Cache;
+import me.confuser.banmanager.common.google.guava.cache.CacheBuilder;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.util.*;
 
 import java.io.IOException;

@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common.commands;
 
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressSeqRange;
-import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.configs.TimeLimitType;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressSeqRange;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;

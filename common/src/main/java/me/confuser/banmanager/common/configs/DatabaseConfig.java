@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.configs;
 
-import com.j256.ormlite.table.DatabaseTableConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 
 import java.io.File;
 import java.util.HashMap;

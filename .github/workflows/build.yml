@@ -26,17 +26,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and Test
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
         env:
           STORAGE_TYPE: ${{ matrix.storageType }}
-        run: mvn -Dcom.j256.ormlite.logger.type=LOCAL compile test
+        run: ./gradlew build
