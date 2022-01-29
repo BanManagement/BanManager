@@ -43,6 +43,10 @@ tasks.named<Jar>("jar") {
 tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
+    archiveBaseName.set("BanManagerBungeeCord")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+
     dependencies {
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
