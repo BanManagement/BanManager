@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "banmanager",
         name = "BanManager",
-        version = "${project.version}",
+        version = "${projectVersion}",
         url = "https://banmanagement.com",
         description = "A suite of moderation plugins & apps for Minecraft servers",
         authors = {

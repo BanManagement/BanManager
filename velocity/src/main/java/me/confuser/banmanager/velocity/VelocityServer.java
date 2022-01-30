@@ -8,10 +8,11 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.velocity.api.events.*;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -211,7 +212,7 @@ public class VelocityServer implements CommonServer {
     return commonEvent;
   }
 
-  public static Component formatMessage(String message) {
+  public static @NotNull Component formatMessage(String message) {
     return LegacyComponentSerializer.legacy('&').deserialize(message);
   }
 

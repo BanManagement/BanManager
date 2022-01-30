@@ -6,8 +6,9 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+
 
 import java.net.InetAddress;
 import java.util.Optional;
