@@ -1,8 +1,8 @@
 package me.confuser.banmanager.common.runnables;
 
-import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.util.DateUtils;
 

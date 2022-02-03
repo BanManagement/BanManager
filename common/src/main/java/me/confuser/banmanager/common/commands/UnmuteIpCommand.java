@@ -1,10 +1,10 @@
 package me.confuser.banmanager.common.commands;
 
 
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 

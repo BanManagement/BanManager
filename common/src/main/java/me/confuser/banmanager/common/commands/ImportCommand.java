@@ -1,12 +1,12 @@
 package me.confuser.banmanager.common.commands;
 
 
-import com.google.gson.stream.JsonReader;
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.gson.stream.JsonReader;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.storage.conversion.AdvancedBan;
 import me.confuser.banmanager.common.storage.conversion.H2;
 import me.confuser.banmanager.common.storage.conversion.SimpleWarnings;

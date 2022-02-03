@@ -5,8 +5,8 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.gson.GsonComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -219,7 +219,7 @@ public class BungeeServer implements CommonServer {
   }
 
   public static BaseComponent[] formatMessage(TextComponent message) {
-    return ComponentSerializer.parse(GsonComponentSerializer.INSTANCE.serialize(message));
+    return ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(message));
   }
 
   @Override

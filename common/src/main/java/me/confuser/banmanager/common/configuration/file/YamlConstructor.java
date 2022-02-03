@@ -1,10 +1,10 @@
 package me.confuser.banmanager.common.configuration.file;
 
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerialization;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
+import me.confuser.banmanager.common.snakeyaml.constructor.SafeConstructor;
+import me.confuser.banmanager.common.snakeyaml.error.YAMLException;
+import me.confuser.banmanager.common.snakeyaml.nodes.Node;
+import me.confuser.banmanager.common.snakeyaml.nodes.Tag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

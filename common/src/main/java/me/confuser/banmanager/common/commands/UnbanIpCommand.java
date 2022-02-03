@@ -1,25 +1,33 @@
 package me.confuser.banmanager.common.commands;
 
-
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.AddressStringException;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.parsers.UnbanCommandParser;
 
 import java.sql.SQLException;
 
 public class UnbanIpCommand extends CommonCommand {
 
   public UnbanIpCommand(BanManagerPlugin plugin) {
-    super(plugin, "unbanip", false);
+    super(plugin, "unbanip", false, UnbanCommandParser.class, 0);
   }
 
   @Override
-  public boolean onCommand(final CommonSender sender, CommandParser parser) {
+  public boolean onCommand(final CommonSender sender, CommandParser originalParser) {
+    final UnbanCommandParser parser = (UnbanCommandParser) originalParser;
+    final boolean isDelete = parser.isDelete();
+
+    if (isDelete && !sender.hasPermission(getPermission() + ".delete")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (parser.args.length < 1) {
       return false;
     }
@@ -53,6 +61,8 @@ public class UnbanIpCommand extends CommonCommand {
         try {
           ip = new IPAddressString(ipStr).toAddress();
         } catch (AddressStringException e) {
+          sender.sendMessage(Message.get("sender.error.exception").toString());
+          e.printStackTrace();
           return;
         }
       }
@@ -71,7 +81,7 @@ public class UnbanIpCommand extends CommonCommand {
       boolean unbanned;
 
       try {
-        unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason);
+        unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason, isDelete);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

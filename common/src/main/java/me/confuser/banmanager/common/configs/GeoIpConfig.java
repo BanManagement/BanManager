@@ -1,17 +1,19 @@
 package me.confuser.banmanager.common.configs;
 
-import com.maxmind.db.GeoIp2Provider;
-import com.maxmind.db.cache.CHMCache;
-import com.maxmind.db.Reader.FileMode;
-import com.maxmind.db.Reader;
-import com.maxmind.db.model.CountryResponse;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import me.confuser.banmanager.common.apachecommons.compress.archivers.ArchiveEntry;
+import me.confuser.banmanager.common.apachecommons.compress.archivers.tar.TarArchiveInputStream;
+import me.confuser.banmanager.common.apachecommons.compress.utils.IOUtils;
+import me.confuser.banmanager.common.maxmind.db.GeoIp2Provider;
+import me.confuser.banmanager.common.maxmind.db.Reader;
+import me.confuser.banmanager.common.maxmind.db.cache.CHMCache;
+import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
@@ -89,7 +91,7 @@ public class GeoIpConfig extends Config {
     if (cityFile.exists()) {
       logger.info("Loading city database");
       try {
-        cityDatabase =  new Reader(cityFile, FileMode.MEMORY, new CHMCache());
+        cityDatabase =  new Reader(cityFile, Reader.FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
         logger.severe("Failed loading city database");
         enabled = false;
@@ -101,7 +103,7 @@ public class GeoIpConfig extends Config {
     if (countryFile.exists()) {
       logger.info("Loading country database");
       try {
-        countryDatabase = new Reader(cityFile, FileMode.MEMORY, new CHMCache());
+        countryDatabase = new Reader(cityFile, Reader.FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
         logger.severe("Failed loading country database");
         enabled = false;

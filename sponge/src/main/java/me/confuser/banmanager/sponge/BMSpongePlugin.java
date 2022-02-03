@@ -19,9 +19,9 @@ import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.plugin.Dependency;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.HashMap;
 @Plugin(
     id = "banmanager",
     name = "BanManager",
-    version = Version.VERSION,
+    version = "@projectVersion@",
     authors = "confuser",
     description = "A punishment plugin",
     url = "https://banmanagement.com",

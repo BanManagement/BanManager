@@ -4,8 +4,8 @@ import lombok.Getter;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerReportData;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.List;
 
@@ -47,8 +47,8 @@ public class ReportList {
         sender.sendMessage(message);
       } else {
         ((CommonPlayer) sender).sendJSONMessage(
-            LegacyComponentSerializer.legacy().deserialize(
-                message, '&').clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
+            LegacyComponentSerializer.legacy('&').deserialize(
+                message).clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
             )));
       }
     }

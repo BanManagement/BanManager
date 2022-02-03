@@ -1,19 +1,19 @@
 package me.confuser.banmanager.common.storage;
 
-import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.DatabaseTableConfig;
-import com.j256.ormlite.table.TableUtils;
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.IpBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
+import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
+import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
+import me.confuser.banmanager.common.ormlite.stmt.Where;
+import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
+import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 

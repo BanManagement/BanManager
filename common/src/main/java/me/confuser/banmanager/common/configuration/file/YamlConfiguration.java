@@ -3,10 +3,10 @@ package me.confuser.banmanager.common.configuration.file;
 import me.confuser.banmanager.common.configuration.Configuration;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.InvalidConfigurationException;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.representer.Representer;
+import me.confuser.banmanager.common.snakeyaml.DumperOptions;
+import me.confuser.banmanager.common.snakeyaml.Yaml;
+import me.confuser.banmanager.common.snakeyaml.error.YAMLException;
+import me.confuser.banmanager.common.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +27,10 @@ public class YamlConfiguration extends FileConfiguration {
 
   /**
    * Creates a new {@link YamlConfiguration}, loading from the given file.
-   * <p>
    * <p>Any errors loading the Configuration will be logged and then ignored.
    * If the specified input is not a valid config, a blank config will be
-   * returned.
-   * <p>
-   * <p>The encoding used may follow the system dependent default.
+   * returned.</p>
+   * <p>The encoding used may follow the system dependent default.</p>
    *
    * @param file Input file
    *
@@ -55,7 +53,7 @@ public class YamlConfiguration extends FileConfiguration {
    * <p>
    * Any errors loading the Configuration will be logged and then ignored.
    * If the specified input is not a valid config, a blank config will be
-   * returned.
+   * returned.</p>
    *
    * @param reader input
    * @return resulting configuration

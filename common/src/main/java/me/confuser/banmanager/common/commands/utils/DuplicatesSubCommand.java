@@ -6,11 +6,12 @@ import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.kyori.text.Component;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import net.kyori.text.TextComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.format.TextColor;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -44,14 +45,14 @@ public class DuplicatesSubCommand extends CommonSubCommand {
         }
 
         duplicates.forEach((key, value) -> {
-          TextComponent.Builder message = TextComponent.builder();
+          TextComponent.Builder message = Component.text();
           int count = value.getKey();
 
           message
-              .color(TextColor.GOLD)
-              .append("[")
-              .append(key).append("] * " + count + " ")
-              .color(TextColor.GREEN);
+              .color(NamedTextColor.GOLD)
+              .append(Component.text("["))
+              .append(Component.text(key)).append(Component.text("] * " + count + " "))
+              .color(NamedTextColor.GREEN);
 
           int[] idx = {1};
 
@@ -70,7 +71,7 @@ public class DuplicatesSubCommand extends CommonSubCommand {
 
                 message
                     .append(
-                        TextComponent.builder("[" + idx[0]++ + "] ").
+                       Component.text("[" + idx[0]++ + "] ").
                             clickEvent(ClickEvent.suggestCommand(cmd)));
               });
 

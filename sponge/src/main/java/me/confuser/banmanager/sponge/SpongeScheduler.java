@@ -5,9 +5,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
 public class SpongeScheduler implements CommonScheduler {
-    private BMSpongePlugin plugin;
+    private Object plugin;
 
-    public SpongeScheduler(BMSpongePlugin plugin) {
+    public SpongeScheduler(Object plugin) {
         this.plugin = plugin;
     }
 

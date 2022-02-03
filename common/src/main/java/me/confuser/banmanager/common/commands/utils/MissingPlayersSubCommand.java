@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common.commands.utils;
 
-import com.j256.ormlite.stmt.StatementBuilder;
-import com.j256.ormlite.support.CompiledStatement;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommandParser;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.commands.CommonSubCommand;
+import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 

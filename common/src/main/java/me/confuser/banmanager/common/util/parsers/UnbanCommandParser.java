@@ -1,8 +1,8 @@
 package me.confuser.banmanager.common.util.parsers;
 
-import com.sampullara.cli.Argument;
 import lombok.Getter;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.cli.Argument;
 import me.confuser.banmanager.common.commands.CommandParser;
 
 public class UnbanCommandParser extends CommandParser {

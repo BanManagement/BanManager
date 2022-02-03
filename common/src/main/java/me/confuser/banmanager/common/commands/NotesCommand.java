@@ -1,16 +1,16 @@
 package me.confuser.banmanager.common.commands;
 
-import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import net.kyori.text.TextComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -141,8 +141,8 @@ public class NotesCommand extends CommonCommand {
   }
 
   public static TextComponent notesAmountMessage(String playerName, Message text) {
-    return LegacyComponentSerializer.legacy().deserialize(
-        text.set("player", playerName).toString(), '&')
+    return LegacyComponentSerializer.legacy('&').deserialize(
+        text.set("player", playerName).toString())
         .clickEvent(ClickEvent.runCommand("/notes " + playerName));
   }
 }

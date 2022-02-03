@@ -1,11 +1,11 @@
 package me.confuser.banmanager.common.util;
 
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressNetwork;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.ipv4.IPv4AddressSeqRange;
-import inet.ipaddr.ipv6.IPv6AddressSeqRange;
+import me.confuser.banmanager.common.ipaddr.AddressStringException;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressNetwork;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
+import me.confuser.banmanager.common.ipaddr.ipv4.IPv4AddressSeqRange;
+import me.confuser.banmanager.common.ipaddr.ipv6.IPv6AddressSeqRange;
 
 import java.net.InetAddress;
 

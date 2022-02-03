@@ -97,7 +97,7 @@ public class DiscordListener implements Listener {
   }
 
   private void send(Object[] data, Player actor) {
-    if (actor == null) {
+    if (actor == null || !plugin.getDiscordConfig().isMessagesFromActor()) {
       DiscordUtil.sendMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), data[1].toString());
     } else {
       WebhookUtil.deliverMessage(DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName((String) data[0]), actor, data[1].toString());

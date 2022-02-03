@@ -1,11 +1,11 @@
 package me.confuser.banmanager.common.runnables;
 
-import com.j256.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
+import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.storage.IpBanStorage;
 import me.confuser.banmanager.common.storage.global.GlobalIpBanRecordStorage;
 import me.confuser.banmanager.common.storage.global.GlobalIpBanStorage;

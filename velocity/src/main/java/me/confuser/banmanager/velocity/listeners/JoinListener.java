@@ -12,6 +12,7 @@ import me.confuser.banmanager.velocity.BMVelocityPlugin;
 import me.confuser.banmanager.velocity.Listener;
 import me.confuser.banmanager.velocity.VelocityPlayer;
 import me.confuser.banmanager.velocity.VelocityServer;
+import net.kyori.adventure.text.Component;
 
 public class JoinListener extends Listener {
   private final CommonJoinListener listener;
@@ -51,7 +52,7 @@ public class JoinListener extends Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.setResult(ResultedEvent.ComponentResult.denied(VelocityServer.formatMessage(message.toString())));
+      event.setResult(ResultedEvent.ComponentResult.denied((Component) VelocityServer.formatMessage(message.toString())));
     }
   }
 
@@ -61,7 +62,7 @@ public class JoinListener extends Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.getPlayer().disconnect(VelocityServer.formatMessage(message.toString()));
+      event.getPlayer().disconnect((Component) VelocityServer.formatMessage(message.toString()));
     }
   }
 }

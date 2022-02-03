@@ -1,5 +1,6 @@
 # Requires DiscordSRV for Bukkit and MagiBridge for Sponge
 enabled: false
+messagesFromActor: true
 punishments:
   ban:
     channel: 'replaceMe'

@@ -1,12 +1,12 @@
 package me.confuser.banmanager.common.commands;
 
-import inet.ipaddr.IPAddress;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.configs.ExemptionsConfig;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
 import org.junit.Before;
 import org.junit.Test;

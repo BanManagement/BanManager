@@ -1,9 +1,9 @@
-main: ${plugin.main}
+main: me.confuser.banmanager.bukkit.BMBukkitPlugin
 name: BanManager
-version: ${project.version}
+version: "${internalVersion}"
 author: confuser
 website: http://dev.bukkit.org/bukkit-plugins/ban-management/
-description: ${project.description}
+description: "A database driven punishment system"
 softdepend:
   - DiscordSRV
   - PlaceholderAPI
