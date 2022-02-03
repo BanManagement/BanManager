@@ -10,7 +10,6 @@ import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSer
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import net.kyori.adventure.text.Component;
 
-
 import java.net.InetAddress;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +27,7 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void kick(String message) {
-    player.disconnect(VelocityServer.formatMessageAdventure(message));
+    player.disconnect((Component) VelocityServer.formatMessage(message));
   }
 
   @Override

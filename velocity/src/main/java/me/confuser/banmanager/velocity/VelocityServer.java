@@ -28,7 +28,7 @@ public class VelocityServer implements CommonServer {
   public CommonPlayer getPlayer(UUID uniqueId) {
     Optional<Player> player = server.getPlayer(uniqueId);
 
-    if (player.isPresent()) return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
+    if (player.isPresent()) return new VelocityPlayer(player.get(), plugin.getConfig().isOnlineMode());
 
     return null;
   }
@@ -37,7 +37,7 @@ public class VelocityServer implements CommonServer {
   public CommonPlayer getPlayer(String name) {
     Optional<Player> player = server.getPlayer(name);
 
-    if (player.isPresent()) return new VelocityPlayer(player, plugin.getConfig().isOnlineMode());
+    if (player.isPresent()) return new VelocityPlayer(player.get(), plugin.getConfig().isOnlineMode());
 
     return null;
   }
@@ -45,7 +45,7 @@ public class VelocityServer implements CommonServer {
   @Override
   public CommonPlayer[] getOnlinePlayers() {
       return server.getAllPlayers().stream()
-          .map(player -> new VelocityPlayer(Optional.of(player), plugin.getConfig().isOnlineMode()))
+          .map(player -> new VelocityPlayer(player, plugin.getConfig().isOnlineMode()))
           .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
   }
 
@@ -63,7 +63,7 @@ public class VelocityServer implements CommonServer {
   @Override
   public void broadcastJSON(TextComponent message, String permission) {
     for (Player player : server.getAllPlayers()) {
-      if (player != null && player.hasPermission(permission)) {
+      if (player.hasPermission(permission)) {
         player.sendMessage(message);
       }
     }
@@ -212,10 +212,9 @@ public class VelocityServer implements CommonServer {
     return commonEvent;
   }
 
-  public static @NotNull Component formatMessage(String message) {
+  public static TextComponent formatMessage(String message) {
     return LegacyComponentSerializer.legacy('&').deserialize(message);
   }
-
   public static TextComponent formatMessage(TextComponent message) {
     return message;
   }
