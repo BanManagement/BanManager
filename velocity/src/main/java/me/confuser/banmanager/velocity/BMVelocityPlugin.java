@@ -237,7 +237,7 @@ public class BMVelocityPlugin {
   @SneakyThrows
   private InputStream getResourceAsStream(String resource) {
 
-      Class<?> cls = Class.forName("me.confuser.banmanager.velocity.BMVelocityPlugin");
+      Class<?> cls = getClass();
 
       // returns the ClassLoader object associated with this Class
       ClassLoader cLoader = cls.getClassLoader();
