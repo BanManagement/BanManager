@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 
 import java.net.InetAddress;
@@ -17,14 +18,17 @@ import java.util.UUID;
 public class VelocityPlayer implements CommonPlayer {
   private final UUID uuid;
   private final boolean onlineMode;
-  public VelocityPlayer(Optional<Player> player, boolean onlineMode) {
-    this.uuid = player.get().getUniqueId();
+  private final Player player;
+
+  public VelocityPlayer(Player player, boolean onlineMode) {
+    this.player = player;
+    this.uuid = this.player.getUniqueId();
     this.onlineMode = onlineMode;
   }
 
   @Override
   public void kick(String message) {
-    getPlayer().disconnect(VelocityServer.formatMessage(message));
+    player.disconnect(VelocityServer.formatMessageAdventure(message));
   }
 
   @Override
@@ -34,7 +38,7 @@ public class VelocityPlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      getPlayer().sendMessage(VelocityServer.formatMessage(message));
+      this.player.sendMessage(VelocityServer.formatMessage(message));
     }
   }
 
@@ -45,12 +49,12 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    getPlayer().sendMessage(VelocityServer.formatMessage(jsonString.content()));
+    this.player.sendMessage(VelocityServer.formatMessage(jsonString.content()));
   }
 
   @Override
   public void sendJSONMessage(String jsonString) {
-    getPlayer().sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
+    this.player.sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
   }
 
   @Override
@@ -70,12 +74,12 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public boolean isOnline() {
-    return getPlayer() != null;
+    return this.player != null;
   }
 
   @Override
   public boolean hasPermission(String permission) {
-    return getPlayer().hasPermission(permission);
+    return this.player.hasPermission(permission);
   }
 
   @Override
@@ -85,17 +89,17 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public String getName() {
-    return getPlayer().getUsername();
+    return this.player.getUsername();
   }
 
   @Override
   public InetAddress getAddress() {
-    return getPlayer().getRemoteAddress().getAddress();
+    return this.player.getRemoteAddress().getAddress();
   }
 
   @Override
   public UUID getUniqueId() {
-    return getPlayer().getUniqueId();
+    return this.player.getUniqueId();
   }
 
   @Override
@@ -106,10 +110,5 @@ public class VelocityPlayer implements CommonPlayer {
   @Override
   public boolean canSee(CommonPlayer player) {
     return true;
-  }
-
-  private Player getPlayer() {
-    Optional<Player> fetchedPlayer = BMVelocityPlugin.getInstance().server.getPlayer(uuid);
-    return fetchedPlayer.orElse(null);
   }
 }
