@@ -39,6 +39,7 @@ tasks.named<ShadowJar>("jar") {
             include(dependency("net.kyori:adventure-text-serializer-legacy"))
             include(dependency("net.kyori:adventure-text-serializer-gson"))
             include(dependency("net.kyori:adventure-api"))
+            include(dependency("net.kyori:adventure-key"))
         }
 
         relocate("net.kyori.examination", "me.confuser.banmanager.common.kyori.examination") {
