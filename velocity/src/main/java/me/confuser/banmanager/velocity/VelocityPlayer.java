@@ -37,7 +37,7 @@ public class VelocityPlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      this.player.sendMessage(VelocityServer.formatMessage(message));
+      this.player.sendMessage((Component) VelocityServer.formatMessage(message));
     }
   }
 

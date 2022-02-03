@@ -14,6 +14,7 @@ import me.confuser.banmanager.common.listeners.CommonChatListener;
 import me.confuser.banmanager.common.listeners.CommonCommandListener;
 import me.confuser.banmanager.velocity.Listener;
 import me.confuser.banmanager.velocity.VelocityServer;
+import net.kyori.adventure.text.Component;
 
 public class ChatListener extends Listener {
   private final CommonChatListener listener;
@@ -44,7 +45,7 @@ public class ChatListener extends Listener {
     public void handleSoftMute() {
       event.setResult(PlayerChatEvent.ChatResult.denied()); // Should be eqivalent to the chat being cancelled...
       // @TODO this needs to be passed to a legacy serializer
-      event.getPlayer().sendMessage(VelocityServer.formatMessage(event.getMessage()));
+      event.getPlayer().sendMessage((Component) VelocityServer.formatMessage(event.getMessage()));
     }
   }
 }
