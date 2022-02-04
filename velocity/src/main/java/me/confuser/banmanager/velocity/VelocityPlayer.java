@@ -6,9 +6,9 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+
 
 import java.net.InetAddress;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void kick(String message) {
-    player.disconnect((Component) VelocityServer.formatMessage(message));
+    player.disconnect(VelocityServer.formatMessage(message));
   }
 
   @Override
@@ -37,7 +37,7 @@ public class VelocityPlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      this.player.sendMessage((Component) VelocityServer.formatMessage(message));
+      player.sendMessage(VelocityServer.formatMessage(message));
     }
   }
 
@@ -48,12 +48,12 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    this.player.sendMessage(VelocityServer.formatMessage(jsonString.content()));
+    player.sendMessage(VelocityServer.convert(jsonString));
   }
 
   @Override
   public void sendJSONMessage(String jsonString) {
-    this.player.sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
+    player.sendMessage(GsonComponentSerializer.colorDownsamplingGson().deserialize(jsonString));
   }
 
   @Override
