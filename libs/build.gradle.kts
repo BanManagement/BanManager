@@ -35,10 +35,11 @@ tasks.named<ShadowJar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.WARN
 
     dependencies {
-        relocate("net.kyori.adventure.text", "me.confuser.banmanager.common.kyori.text") {
+        relocate("net.kyori.adventure", "me.confuser.banmanager.common.kyori") {
             include(dependency("net.kyori:adventure-text-serializer-legacy"))
             include(dependency("net.kyori:adventure-text-serializer-gson"))
             include(dependency("net.kyori:adventure-api"))
+            include(dependency("net.kyori:adventure-key"))
         }
 
         relocate("net.kyori.examination", "me.confuser.banmanager.common.kyori.examination") {
