@@ -74,7 +74,7 @@ public class BMVelocityPlugin {
 
 
   public void onEnable() {
-    Metrics metrics = metricsFactory.make(this, 6413);
+    Metrics metrics = metricsFactory.make(this, 14188);
     VelocityServer server = new VelocityServer();
     PluginInfo pluginInfo;
     try {
@@ -85,7 +85,7 @@ public class BMVelocityPlugin {
       return;
     }
 
-    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, new VelocityScheduler(this, this.server), server, new VelocityMetrics(null));
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, new VelocityScheduler(this, this.server), server, new VelocityMetrics(metrics));
 
     server.enable(plugin, this.server);
 
