@@ -8,11 +8,10 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.velocity.api.events.*;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -63,10 +62,9 @@ public class VelocityServer implements CommonServer {
 
   @Override
   public void broadcastJSON(TextComponent message, String permission) {
-    Component converted = convert(message);
     for (Player player : server.getAllPlayers()) {
       if (player.hasPermission(permission)) {
-        player.sendMessage(converted);
+        player.sendMessage(message);
       }
     }
   }
@@ -214,13 +212,11 @@ public class VelocityServer implements CommonServer {
     return commonEvent;
   }
 
-  public static @NotNull Component formatMessage(String message) {
+  public static TextComponent formatMessage(String message) {
     return LegacyComponentSerializer.legacy('&').deserialize(message);
   }
-
-  public static Component convert(me.confuser.banmanager.common.kyori.text.Component message) {
-    String gson =  me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer.gson().serialize(message);
-    return GsonComponentSerializer.gson().deserialize(gson);
+  public static TextComponent formatMessage(TextComponent message) {
+    return message;
   }
 
   @Override
