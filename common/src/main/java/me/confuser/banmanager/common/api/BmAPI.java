@@ -11,6 +11,7 @@ import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,6 +41,15 @@ public class BmAPI {
    */
   public static PlayerData getPlayer(String name) throws SQLException {
     return plugin.getPlayerStorage().retrieve(name, false);
+  }
+
+  /**
+   * @param name Player IP
+   * @return List<PlayerData>
+   * @throws SQLException
+   */
+  public static List<PlayerData> getPlayers(IPAddress ip) throws SQLException {
+    return plugin.getPlayerStorage().getDuplicatesInTime(ip, plugin.getConfig().getTimeAssociatedAlts());
   }
 
   /**
