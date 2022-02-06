@@ -33,7 +33,8 @@ public class DiscordConfig extends Config {
       types.put(type, new DiscordPunishmentConfig(
           punishments.getString(type + ".channel"),
           new Message("discord." + type, punishments.getString(type + ".message")),
-          punishments.getBoolean(".ignoreSilent", true)
+          punishments.getBoolean(type + ".ignoreSilent", true),
+          punishments.getString(type + ".dateTimeFormat", "")
       ));
     }
   }
@@ -54,6 +55,8 @@ public class DiscordConfig extends Config {
     private Message message;
     @Getter
     private boolean ignoreSilent;
+    @Getter
+    private String dateTimeFormat;
 
     public Message getMessage() {
       return Message.get(message.getKey());
