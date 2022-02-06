@@ -55,8 +55,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
             }
         }
     }
-
-    applyCommonArtifactoryConfig()
 }
 
 fun Project.applyShadowConfiguration() {
