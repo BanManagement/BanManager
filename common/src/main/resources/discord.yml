@@ -6,44 +6,56 @@ punishments:
     channel: 'replaceMe'
     message: '[player] has been permanently banned by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   tempban:
     channel: 'replaceMe'
     message: '[player] has been temporarily banned for [expires] by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   unban:
     channel: 'replaceMe'
     message: '[player] has been unbanned by [actor] for [reason]'
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   banip:
     channel: 'replaceMe'
     message: '[ip] has been permanently banned by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   tempbanip:
     channel: 'replaceMe'
     message: '[ip] has been temporarily banned for [expires] by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   unbanip:
     channel: 'replaceMe'
     message: '[ip] has been unbanned by [actor] for [reason]'
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   kick:
     channel: 'replaceMe'
     message: '[player] has been kicked by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   mute:
     channel: 'replaceMe'
     message: '[player] has been permanently muted by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   tempmute:
     channel: 'replaceMe'
     message: '[player] has been temporarily muted for [expires] by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   unmute:
     channel: 'replaceMe'
     message: '[player] has been unmuted by [actor] for [reason]'
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   warning:
     channel: 'replaceMe'
     message: '[player] has been warned by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
   report:
     channel: 'replaceMe'
     message: '[player] has been reported by [actor] for [reason]'
     ignoreSilent: true
+    dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
