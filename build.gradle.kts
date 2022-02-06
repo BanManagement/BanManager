@@ -15,4 +15,3 @@ plugins {
     id("io.freefair.aggregate-javadoc") version "6.3.0"
 }
 
-applyRootArtifactoryConfig()

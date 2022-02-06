@@ -142,8 +142,6 @@ fun Project.applyLibrariesConfiguration() {
             }
         }
     }
-
-    applyCommonArtifactoryConfig()
 }
 
 internal open class LibsConfigPluginHack @Inject constructor(
