@@ -16,15 +16,17 @@ import java.util.UUID;
 public class BungeePlayer implements CommonPlayer {
   private final UUID uuid;
   private final boolean onlineMode;
+  private final ProxiedPlayer player;
 
   public BungeePlayer(ProxiedPlayer player, boolean onlineMode) {
+    this.player = player;
     this.uuid = player.getUniqueId();
     this.onlineMode = onlineMode;
   }
 
   @Override
   public void kick(String message) {
-    getPlayer().disconnect(BungeeServer.formatMessage(message));
+    player.disconnect(BungeeServer.formatMessage(message));
   }
 
   @Override
@@ -34,7 +36,7 @@ public class BungeePlayer implements CommonPlayer {
     if(Message.isJSONMessage(message)) {
       sendJSONMessage(message);
     } else {
-      getPlayer().sendMessage(BungeeServer.formatMessage(message));
+      player.sendMessage(BungeeServer.formatMessage(message));
     }
   }
 
@@ -45,12 +47,12 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    getPlayer().sendMessage(BungeeServer.formatMessage(jsonString));
+    player.sendMessage(BungeeServer.formatMessage(jsonString));
   }
 
   @Override
   public void sendJSONMessage(String jsonString) {
-    getPlayer().sendMessage(ComponentSerializer.parse(jsonString));
+    player.sendMessage(ComponentSerializer.parse(jsonString));
   }
 
   @Override
@@ -75,22 +77,22 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public boolean hasPermission(String permission) {
-    return getPlayer().hasPermission(permission);
+    return player.hasPermission(permission);
   }
 
   @Override
   public String getDisplayName() {
-    return getPlayer().getDisplayName();
+    return player.getDisplayName();
   }
 
   @Override
   public String getName() {
-    return getPlayer().getName();
+    return player.getName();
   }
 
   @Override
   public InetAddress getAddress() {
-    return getPlayer().getAddress().getAddress();
+    return player.getAddress().getAddress();
   }
 
   @Override
