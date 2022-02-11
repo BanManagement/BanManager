@@ -44,8 +44,8 @@ public class BmAPI {
   }
 
   /**
-   * @param name Player IP
-   * @return List<PlayerData>
+   * @param ip Player IP
+   * @return a list of PlayerData
    * @throws SQLException
    */
   public static List<PlayerData> getPlayers(IPAddress ip) throws SQLException {
