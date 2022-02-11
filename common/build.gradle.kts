@@ -16,14 +16,6 @@ dependencies {
     testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:2.4.0")
 }
 
-tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
-    inputs.property("internalVersion", internalVersion)
-    filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion)
-    }
-}
-
 tasks.withType<Test>().configureEach {
     useJUnit()
 }

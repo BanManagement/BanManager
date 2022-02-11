@@ -1,4 +1,4 @@
-main: me.confuser.banmanager.bukkit.BMBukkitPlugin
+main: "${mainPath}"
 name: BanManager
 version: "${internalVersion}"
 author: confuser
