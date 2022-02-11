@@ -50,9 +50,11 @@ dependencies {
 
 tasks.named<Copy>("processResources") {
     val internalVersion = project.ext["internalVersion"]
+
     inputs.property("internalVersion", internalVersion)
+
     filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion)
+        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.bukkit.BMBukkitPlugin")
     }
 }
 
@@ -86,6 +88,7 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
+    exclude("bungeecord.yml")
 
     minimize()
 }

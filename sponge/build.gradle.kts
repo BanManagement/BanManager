@@ -89,8 +89,12 @@ java {
 
 tasks.named<Copy>("processResources") {
     val internalVersion = project.ext["internalVersion"]
+
     inputs.property("internalVersion", internalVersion)
-    expand("internalVersion" to internalVersion)
+
+    filesMatching("plugin.yml") {
+        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.sponge.BMSpongePlugin")
+    }
 }
 
 tasks.named<Jar>("jar") {
@@ -126,6 +130,7 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("org/jetbrains/**")
     exclude("**/module-info.class")
     exclude("*.yml")
+    exclude("assets/banmanager/bungeecord.yml")
 
     minimize()
 }
