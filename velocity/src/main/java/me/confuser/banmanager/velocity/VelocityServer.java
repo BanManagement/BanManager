@@ -1,6 +1,7 @@
 package me.confuser.banmanager.velocity;
 
 
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -15,6 +16,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -86,7 +88,6 @@ public class VelocityServer implements CommonServer {
   @Override
   public boolean dispatchCommand(CommonSender sender, String command) {
     CommandSource velocitySender;
-    //@TODO MAKE SURE THIS DOESNT BREAK STUFF
     if (sender.isConsole()) {
       velocitySender = server.getConsoleCommandSource();
     } else {
@@ -94,7 +95,7 @@ public class VelocityServer implements CommonServer {
     }
 
      server.getCommandManager().executeImmediatelyAsync(velocitySender, command);
-    return true; // bro what do you WANT FROMMME
+    return true;
   }
 
   @Override
@@ -225,11 +226,12 @@ public class VelocityServer implements CommonServer {
 
   @Override
   public CommonExternalCommand getPluginCommand(String commandName) {
-    // @TODO Seems like Velocity doesn't expose an easy way to retrieve a command by name?
-//      server.getCommandManager().getCommandMeta(commandName);
-    return null;
-
-//    return new CommonExternalCommand(null, command.getValue().getName(), Arrays.asList(command.getValue().getAliases()));
+    // This would be a implementation of doing so with Velocity, but the method getCommandMeta does not exist.
+    CommandMeta meta = server.getCommandManager().getCommandMeta(commandName);
+    if (meta != null) {
+      return new CommonExternalCommand(null, meta.getAliases().iterator().next(), new ArrayList(meta.getAliases()));
+    }
+    else return null;
   }
 }
 

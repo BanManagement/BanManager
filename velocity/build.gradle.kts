@@ -12,6 +12,7 @@ repositories {
         name = "velocity"
         url = uri("https://nexus.velocitypowered.com/repository/maven-public/")
     }
+    mavenCentral()
 }
 
 configurations {
@@ -20,9 +21,9 @@ configurations {
 
 dependencies {
     api(project(":BanManagerCommon"))
-    compileOnly("com.velocitypowered:velocity-api:3.0.1")
-    annotationProcessor("com.velocitypowered:velocity-api:3.0.1")
-    "shadeOnly"("org.bstats:bstats-velocity:2.2.1")
+    compileOnly("com.velocitypowered:velocity-api:3.1.0")
+    annotationProcessor("com.velocitypowered:velocity-api:3.1.0")
+    "shadeOnly"("org.bstats:bstats-velocity:3.0.0")
 }
 
 tasks.named<Copy>("processResources") {
@@ -54,7 +55,7 @@ tasks.named<ShadowJar>("shadowJar") {
         }
     }
     exclude("GradleStart**")
-    exclude(".cache");
+    exclude(".cache")
     exclude("LICENSE*")
     exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
