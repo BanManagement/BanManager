@@ -126,7 +126,7 @@ public class BMBungeePlugin extends Plugin {
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(getResourceAsStream("src/main/resources/plugin.yml"), "UTF8");
+    Reader defConfigStream = new InputStreamReader(getResourceAsStream("plugin.yml"), "UTF8");
     YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
     ConfigurationSection commands = conf.getConfigurationSection("commands");
 
