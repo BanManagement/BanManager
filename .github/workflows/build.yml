@@ -44,7 +44,8 @@ jobs:
         run: ./gradlew build
 
       - name: Publish to Maven Central
-        if: github.ref == 'refs/heads/master'
+        # only publish once
+        if: github.ref == 'refs/heads/master' && matrix.java == '8' && matrix.storageType == 'h2'
         env:
           ORG_GRADLE_PROJECT_SONATYPEPASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
           ORG_GRADLE_PROJECT_SONATYPEUSERNAME: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
