@@ -1,14 +1,15 @@
 package me.confuser.banmanager.bungee;
 
+import net.md_5.bungee.api.plugin.Plugin;
 import me.confuser.banmanager.common.CommonScheduler;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.util.concurrent.TimeUnit;
 
 public class BungeeScheduler implements CommonScheduler {
-  private BMBungeePlugin plugin;
+  private Plugin plugin;
 
-  public BungeeScheduler(BMBungeePlugin plugin) {
+  public BungeeScheduler(Plugin plugin) {
     this.plugin = plugin;
   }
 
