@@ -28,6 +28,7 @@
 </p>
 
 ## Overview
+- **Free.** Open source and free to use
 - **Robust.** Used and battle tested by some of the largest Minecraft servers
 - **Maintained.** Actively developed since 2012, 10+ years
 - **Cross platform.** Supports Bukkit, Spigot, Bungeecord & Sponge
