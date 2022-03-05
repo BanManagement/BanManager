@@ -30,7 +30,7 @@ tasks.named<Copy>("processResources") {
     inputs.property("internalVersion", internalVersion)
 
     filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.bukkit.BMBungeePlugin")
+        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.bungee.BMBungeePlugin")
     }
 }
 
