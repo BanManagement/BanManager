@@ -42,3 +42,11 @@ jobs:
         env:
           STORAGE_TYPE: ${{ matrix.storageType }}
         run: ./gradlew build
+
+      - name: Publish to Maven Central
+        if: github.ref == 'refs/heads/master'
+        env:
+          ORG_GRADLE_PROJECT_SONATYPEPASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
+          ORG_GRADLE_PROJECT_SONATYPEUSERNAME: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
+        run: |
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
