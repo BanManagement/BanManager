@@ -77,7 +77,7 @@ fun Project.applyLibrariesConfiguration() {
 
     tasks.register<Jar>("javadocJar") {
         from({
-            altConfigFiles("javadoc")
+            altConfigFiles("sources")
         })
         archiveClassifier.set("javadoc")
     }
@@ -132,6 +132,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(DocsType.DOCS_TYPE_ATTRIBUTE, project.objects.named(DocsType.SOURCES))
         }
         outgoing.artifact(tasks.named("sourcesJar"))
+        outgoing.artifact(tasks.named("javadocJar"))
     }
 
     libsComponent.addVariantsFromConfiguration(apiElements.get()) {
