@@ -7,10 +7,48 @@ plugins {
     `java-library`
     id("org.spongepowered.gradle.plugin")
     id("net.kyori.blossom") version "1.2.0"
+    `maven-publish`
+    signing
 }
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            pom {
+                name.set("BanManagerSponge")
+                description.set("BanManager for Sponge")
+                url.set("https://github.com/BanManagement/BanManager/")
+                licenses {
+                    license {
+                        name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
+                        url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("confuser>")
+                        name.set("James Mortemore")
+                        email.set("jamesmortemore@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
+                    url.set("https://github.com/BanManagement/BanManager/")
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["mavenJava"])
+}
 
 blossom {
     replaceToken("@projectVersion@", project.ext["internalVersion"])

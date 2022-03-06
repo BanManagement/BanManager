@@ -15,14 +15,17 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
+import org.gradle.plugins.signing.*
 import org.gradle.kotlin.dsl.*
 import javax.inject.Inject
 
 fun Project.applyLibrariesConfiguration() {
     apply(plugin = "java-base")
     apply(plugin = "maven-publish")
+    apply(plugin = "signing")
     apply(plugin = "com.github.johnrengelman.shadow")
-    apply(plugin = "com.jfrog.artifactory")
 
     repositories {
         mavenCentral()
@@ -64,6 +67,7 @@ fun Project.applyLibrariesConfiguration() {
                 .filter { it.classifier == artifactType }
                 .map { zipTree(it.file) })
     }
+
     tasks.register<Jar>("sourcesJar") {
         from({
             altConfigFiles("sources")
@@ -71,8 +75,15 @@ fun Project.applyLibrariesConfiguration() {
         archiveClassifier.set("sources")
     }
 
+    tasks.register<Jar>("javadocJar") {
+        from({
+            altConfigFiles("sources")
+        })
+        archiveClassifier.set("javadoc")
+    }
+
     tasks.named("assemble").configure {
-        dependsOn("jar", "sourcesJar")
+        dependsOn("jar", "sourcesJar", "javadocJar")
     }
 
     project.apply<LibsConfigPluginHack>()
@@ -121,6 +132,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(DocsType.DOCS_TYPE_ATTRIBUTE, project.objects.named(DocsType.SOURCES))
         }
         outgoing.artifact(tasks.named("sourcesJar"))
+        outgoing.artifact(tasks.named("javadocJar"))
     }
 
     libsComponent.addVariantsFromConfiguration(apiElements.get()) {
@@ -139,8 +151,39 @@ fun Project.applyLibrariesConfiguration() {
         publications {
             register<MavenPublication>("maven") {
                 from(libsComponent)
+
+                pom {
+                    name.set("BanManagerLibs")
+                    description.set("BanManager shared libs")
+                    url.set("https://github.com/BanManagement/BanManager/")
+                    licenses {
+                        license {
+                            name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
+                            url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("confuser")
+                            name.set("James Mortemore")
+                            email.set("jamesmortemore@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
+                        developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
+                        url.set("https://github.com/BanManagement/BanManager/")
+                    }
+                }
             }
         }
+    }
+
+    configure<SigningExtension> {
+        val pubExt = checkNotNull(extensions.findByType(PublishingExtension::class.java))
+        val publication = pubExt.publications["maven"]
+
+        sign(publication)
     }
 }
 
