@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 logger.lifecycle("""
 *******************************************
  You are building BanManager!
@@ -19,7 +21,7 @@ plugins {
 allprojects {
     plugins.withId("com.vanniktech.maven.publish") {
         mavenPublish {
-            sonatypeHost = "S01"
+            sonatypeHost = SonatypeHost.S01
         }
     }
 }
