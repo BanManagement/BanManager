@@ -39,22 +39,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     the<JavaPluginExtension>().withJavadocJar()
     the<JavaPluginExtension>().withSourcesJar()
-
-    configure<PublishingExtension> {
-        publications {
-            register<MavenPublication>("maven") {
-                from(components["java"])
-                versionMapping {
-                    usage("java-api") {
-                        fromResolutionOf("runtimeClasspath")
-                    }
-                    usage("java-runtime") {
-                        fromResolutionResult()
-                    }
-                }
-            }
-        }
-    }
 }
 
 fun Project.applyShadowConfiguration() {
