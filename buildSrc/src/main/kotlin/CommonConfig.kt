@@ -4,8 +4,8 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 
 fun Project.applyCommonConfiguration() {
-    group = rootProject.group
-    version = rootProject.version
+    group = rootProject.GROUP
+    version = rootProject.VERSION_NAME
 
     repositories {
         mavenCentral()

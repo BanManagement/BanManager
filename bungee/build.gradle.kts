@@ -35,7 +35,7 @@ tasks.named<Copy>("processResources") {
 }
 
 tasks.named<Jar>("jar") {
-    val projectVersion = project.version
+    val projectVersion = project.VERSION_NAME
     inputs.property("projectVersion", projectVersion)
     manifest {
         attributes("Implementation-Version" to projectVersion)
