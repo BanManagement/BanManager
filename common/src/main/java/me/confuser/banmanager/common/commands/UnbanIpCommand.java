@@ -78,6 +78,12 @@ public class UnbanIpCommand extends CommonCommand {
       IpBanData ban = getPlugin().getIpBanStorage().getBan(ip);
       PlayerData actor = sender.getData();
 
+      if (!actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.banip")
+              && sender.hasPermission("bm.command.unbanip.own")) {
+        Message.get("unbanip.error.notOwn").set("ip", ipStr).sendTo(sender);
+        return;
+      }
+
       boolean unbanned;
 
       try {
