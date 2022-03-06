@@ -63,10 +63,14 @@ public class UnmuteIpCommand extends CommonCommand {
       }
 
       IpMuteData mute = getPlugin().getIpMuteStorage().getMute(ip);
-
       final PlayerData actor = sender.getData();
 
-      if (actor == null) return;
+      if (!actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.muteip")
+              && sender.hasPermission("bm.command.unmuteip.own")) {
+        Message.get("unmuteip.error.notOwn").set("ip", ipStr).sendTo(sender);
+        return;
+      }
+
 
       boolean unmuted;
 

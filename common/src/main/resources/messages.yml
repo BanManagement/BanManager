@@ -277,6 +277,7 @@ messages:
     notify: '&6[ip] has been unbanned by [actor]'
     error:
       noExists: '&c[ip] is not banned'
+      notOwn: '&c[ip] was not banned by you, unable to unban'
 
   unbanipall:
     notify: '&6[ip] will be unbanned by [actor]'
