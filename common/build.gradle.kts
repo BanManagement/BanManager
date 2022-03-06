@@ -39,7 +39,11 @@ publishing {
 }
 
 signing {
-    sign(publishing.publications["mavenJava"])
+    if (project.findProperty("signingKey")?.toString()?.toBoolean() == true) {
+        useInMemoryPgpKeys(findProperty("signingKey")?.toString(), findProperty("signingPassword")?.toString())
+
+        sign(publishing.publications["mavenJava"])
+    }
 }
 
 dependencies {

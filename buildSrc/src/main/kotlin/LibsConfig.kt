@@ -183,7 +183,11 @@ fun Project.applyLibrariesConfiguration() {
         val pubExt = checkNotNull(extensions.findByType(PublishingExtension::class.java))
         val publication = pubExt.publications["maven"]
 
-        sign(publication)
+        if (project.findProperty("signingKey")?.toString()?.toBoolean() == true) {
+            useInMemoryPgpKeys(findProperty("signingKey")?.toString(), findProperty("signingPassword")?.toString())
+
+            sign(publication)
+        }
     }
 }
 
