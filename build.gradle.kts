@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 logger.lifecycle("""
 *******************************************
  You are building BanManager!
@@ -13,15 +11,15 @@ logger.lifecycle("""
 """)
 
 plugins {
-    `maven-publish`
-    id("com.vanniktech.maven.publish") version "0.19.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("io.freefair.aggregate-javadoc") version "6.3.0"
 }
 
-allprojects {
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            sonatypeHost = SonatypeHost.S01
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
     }
 }

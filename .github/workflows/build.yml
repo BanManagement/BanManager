@@ -43,21 +43,11 @@ jobs:
           STORAGE_TYPE: ${{ matrix.storageType }}
         run: ./gradlew build
 
-      - name: Upload release
+      - name: Publish to Maven Central
         # only publish once
         if: github.ref == 'refs/heads/master' && matrix.java == '8' && matrix.storageType == 'h2'
-        run: ./gradlew publishAllPublicationsToMavenCentralRepository
         env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
-
-      - name: Publish release
-        # only publish once
-        if: github.ref == 'refs/heads/master' && matrix.java == '8' && matrix.storageType == 'h2'
-        run: ./gradlew closeAndReleaseRepository
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
-
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
+        run: |
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
