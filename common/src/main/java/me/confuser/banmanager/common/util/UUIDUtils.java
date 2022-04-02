@@ -51,6 +51,12 @@ public class UUIDUtils {
   }
 
   public static UUIDProfile getUUIDOf(BanManagerPlugin plugin, String name) throws Exception {
+    if (!plugin.getConfig().isOnlineMode()) {
+      plugin.getLogger().info("Generating offline UUID for " + name);
+
+      return new UUIDProfile(name, createOfflineUUID(name));
+    }
+
     plugin.getLogger().info("Requesting UUID for " + name);
     Fetcher fetcher = plugin.getConfig().getUuidFetcher().getNameToId();
     String url = fetcher.getUrl().replace("[name]", name);
