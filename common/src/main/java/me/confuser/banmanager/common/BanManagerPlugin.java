@@ -205,7 +205,7 @@ public class BanManagerPlugin {
       // Get database version
       GenericRawResults<String[]> results2 = playerStorage
           .queryRaw("SELECT VERSION()");
-      
+
       storageVersion = results2.getFirstResult()[0];
 
       results2.close();
@@ -315,7 +315,7 @@ public class BanManagerPlugin {
       databaseType = new MariaDBDatabase();
     } else if (dbConfig.getStorageType().equals("mysql")) {
       // Forcefully specify the newer driver
-      ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+      ds.setDriverClassName(me.confuser.banmanager.common.mysql.cj.jdbc.Driver.class.getName());
 
       databaseType = new MySQLDatabase();
 
