@@ -208,6 +208,10 @@ public class BukkitServer implements CommonServer {
       case "PlayerUnmuteEvent":
         event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
+
+      case "PluginReloadedEvent":
+        event = new PluginReloadedEvent((PlayerData) args[0]);
+        break;
     }
 
     if (event == null) {

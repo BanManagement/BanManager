@@ -13,6 +13,8 @@ public class ReloadCommand extends CommonCommand {
   public boolean onCommand(CommonSender sender, CommandParser parser) {
     getPlugin().setupConfigs();
 
+    plugin.getServer().callEvent("PluginReloadedEvent", sender.getData());
+
     sender.sendMessage(Message.get("configReloaded").toString());
 
     return true;
