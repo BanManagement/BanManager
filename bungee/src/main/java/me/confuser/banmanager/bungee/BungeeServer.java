@@ -193,6 +193,10 @@ public class BungeeServer implements CommonServer {
       case "PlayerUnmuteEvent":
         event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
+
+      case "PluginReloadedEvent":
+        event = new PluginReloadedEvent((PlayerData) args[0]);
+        break;
     }
 
     if (event == null) {
@@ -235,6 +239,3 @@ public class BungeeServer implements CommonServer {
     return new CommonExternalCommand(null, command.getValue().getName(), Arrays.asList(command.getValue().getAliases()));
   }
 }
-
-
-
