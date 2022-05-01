@@ -10,7 +10,7 @@ public class PluginReloadedEvent extends CustomCancellableEvent {
   private PlayerData actor;
 
   public PluginReloadedEvent(PlayerData actor) {
-    super(false);
+    super();
 
     this.actor = actor;
   }

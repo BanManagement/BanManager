@@ -196,7 +196,7 @@ public class CommonJoinListener {
     message.set("reason", data.getReason());
     message.set("actor", data.getActor().getName());
 
-    handler.handleDeny(message);
+    handler.handlePlayerDeny(data.getPlayer(), message);
     handleJoinDeny(data.getPlayer(), data.getReason());
   }
 

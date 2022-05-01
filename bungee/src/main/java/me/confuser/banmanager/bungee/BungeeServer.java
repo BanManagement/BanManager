@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
+import me.confuser.banmanager.common.util.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -196,6 +197,10 @@ public class BungeeServer implements CommonServer {
 
       case "PluginReloadedEvent":
         event = new PluginReloadedEvent((PlayerData) args[0]);
+        break;
+
+      case "PlayerDeniedEvent":
+        event = new PlayerDeniedEvent((PlayerData) args[0], (Message) args[1]);
         break;
     }
 
