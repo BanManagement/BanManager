@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.bukkit.BukkitPlayer;
 import me.confuser.banmanager.bukkit.BukkitServer;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
 import me.confuser.banmanager.common.util.*;
@@ -25,7 +26,7 @@ public class JoinListener implements Listener {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void banCheck(final AsyncPlayerPreLoginEvent event) {
-    listener.banCheck(event.getUniqueId(), event.getName(), IPUtils.toIPAddress(event.getAddress()), new BanJoinHandler(event));
+    listener.banCheck(event.getUniqueId(), event.getName(), IPUtils.toIPAddress(event.getAddress()), new BanJoinHandler(plugin, event));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -53,7 +54,15 @@ public class JoinListener implements Listener {
 
   @RequiredArgsConstructor
   private class BanJoinHandler implements CommonJoinHandler {
+    private final BanManagerPlugin plugin;
     private final AsyncPlayerPreLoginEvent event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
+
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {
@@ -65,6 +74,11 @@ public class JoinListener implements Listener {
   @RequiredArgsConstructor
   private class LoginHandler implements CommonJoinHandler {
     private final PlayerLoginEvent event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {

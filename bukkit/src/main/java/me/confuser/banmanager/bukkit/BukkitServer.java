@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -211,6 +212,10 @@ public class BukkitServer implements CommonServer {
 
       case "PluginReloadedEvent":
         event = new PluginReloadedEvent((PlayerData) args[0]);
+        break;
+
+      case "PlayerDeniedEvent":
+        event = new PlayerDeniedEvent((PlayerData) args[0], (Message) args[1]);
         break;
     }
 

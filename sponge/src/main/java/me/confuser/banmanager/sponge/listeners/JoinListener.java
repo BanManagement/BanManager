@@ -2,6 +2,7 @@ package me.confuser.banmanager.sponge.listeners;
 
 import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
 import me.confuser.banmanager.common.util.*;
@@ -28,7 +29,7 @@ public class JoinListener {
     InetAddress address = event.getConnection().getAddress().getAddress();
     String name = event.getProfile().getName().get();
 
-    listener.banCheck(event.getProfile().getUniqueId(), name, IPUtils.toIPAddress(address), new BanJoinHandler(event));
+    listener.banCheck(event.getProfile().getUniqueId(), name, IPUtils.toIPAddress(address), new BanJoinHandler(plugin, event));
   }
 
   @Listener(order = Order.LAST)
@@ -51,7 +52,15 @@ public class JoinListener {
 
   @RequiredArgsConstructor
   private class BanJoinHandler implements CommonJoinHandler {
+    private final BanManagerPlugin plugin;
     private final ClientConnectionEvent.Auth event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
+
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {
@@ -63,6 +72,11 @@ public class JoinListener {
   @RequiredArgsConstructor
   private class LoginHandler implements CommonJoinHandler {
     private final ClientConnectionEvent.Login event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {

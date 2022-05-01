@@ -5,6 +5,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.sponge.api.events.*;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
@@ -192,6 +193,10 @@ public class SpongeServer implements CommonServer {
 
       case "PluginReloadedEvent":
         event = new PluginReloadedEvent((PlayerData) args[0]);
+        break;
+
+      case "PlayerDeniedEvent":
+        event = new PlayerDeniedEvent((PlayerData) args[0], (Message) args[1]);
         break;
     }
 

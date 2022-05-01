@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.bungee.BMBungeePlugin;
 import me.confuser.banmanager.bungee.BungeePlayer;
 import me.confuser.banmanager.bungee.BungeeServer;
+import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
 import me.confuser.banmanager.common.util.IPUtils;
@@ -16,7 +18,7 @@ import net.md_5.bungee.event.EventPriority;
 
 public class JoinListener implements Listener {
   private final CommonJoinListener listener;
-  private BMBungeePlugin plugin;
+  private final BMBungeePlugin plugin;
 
   public JoinListener(BMBungeePlugin plugin) {
     this.plugin = plugin;
@@ -28,7 +30,7 @@ public class JoinListener implements Listener {
     event.registerIntent(plugin);
 
     plugin.getPlugin().getScheduler().runAsync(() -> {
-      listener.banCheck(event.getConnection().getUniqueId(), event.getConnection().getName(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()), new BanJoinHandler(event));
+      listener.banCheck(event.getConnection().getUniqueId(), event.getConnection().getName(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()), new BanJoinHandler(plugin.getPlugin(), event));
 
       if (!event.isCancelled()) {
         listener.onPreJoin(event.getConnection().getUniqueId(), event.getConnection().getName(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()));
@@ -50,7 +52,15 @@ public class JoinListener implements Listener {
 
   @RequiredArgsConstructor
   private class BanJoinHandler implements CommonJoinHandler {
+    private final BanManagerPlugin plugin;
     private final LoginEvent event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
+
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {
@@ -62,6 +72,11 @@ public class JoinListener implements Listener {
   @RequiredArgsConstructor
   private class LoginHandler implements CommonJoinHandler {
     private final PostLoginEvent event;
+
+    @Override
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      handleDeny(message);
+    }
 
     @Override
     public void handleDeny(Message message) {
