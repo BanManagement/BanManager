@@ -19,7 +19,7 @@ public class CommonCommandListener {
 
     int startIndex = 0;
 
-    if (args[0].equals(cmd)) {
+    if (args[0].replace("/", "").toLowerCase().equals(cmd)) {
       startIndex = 1;
     }
 
