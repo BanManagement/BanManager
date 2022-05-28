@@ -46,6 +46,11 @@ public class GlobalBanSync extends BmRunnable {
         final PlayerBanData localBan = localBanStorage.retrieveBan(ban.getUUID());
 
         if (localBan != null) {
+          if (localBan.equalsBan(ban.toLocal(plugin))) {
+            kickPlayer(localBan);
+            continue;
+          }
+
           // Global ban overrides local
           localBanStorage
                   .unban(localBan, ban.getActor(plugin));
@@ -57,29 +62,7 @@ public class GlobalBanSync extends BmRunnable {
 
         final PlayerBanData globalBan = localBanStorage.getBan(ban.getUUID());
 
-        plugin.getScheduler().runSync(() -> {
-          // TODO move into a listener
-          CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(globalBan.getPlayer().getUUID());
-
-          if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
-
-          Message kickMessage;
-
-          if (globalBan.getExpires() == 0) {
-            kickMessage = Message.get("ban.player.kick");
-          } else {
-            kickMessage = Message.get("tempban.player.kick");
-            kickMessage.set("expires", DateUtils.getDifferenceFormat(globalBan.getExpires()));
-          }
-
-          kickMessage
-                  .set("displayName", bukkitPlayer.getDisplayName())
-                  .set("player", globalBan.getPlayer().getName())
-                  .set("reason", globalBan.getReason())
-                  .set("actor", globalBan.getActor().getName());
-
-          bukkitPlayer.kick(kickMessage.toString());
-        });
+        kickPlayer(globalBan);
 
       }
     } catch (SQLException e) {
@@ -87,6 +70,31 @@ public class GlobalBanSync extends BmRunnable {
     } finally {
       if (itr != null) itr.closeQuietly();
     }
+  }
+
+  private void kickPlayer(PlayerBanData globalBan) {
+    plugin.getScheduler().runSync(() -> {
+      CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(globalBan.getPlayer().getUUID());
+
+      if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
+
+      Message kickMessage;
+
+      if (globalBan.getExpires() == 0) {
+        kickMessage = Message.get("ban.player.kick");
+      } else {
+        kickMessage = Message.get("tempban.player.kick");
+        kickMessage.set("expires", DateUtils.getDifferenceFormat(globalBan.getExpires()));
+      }
+
+      kickMessage
+        .set("displayName", bukkitPlayer.getDisplayName())
+        .set("player", globalBan.getPlayer().getName())
+        .set("reason", globalBan.getReason())
+        .set("actor", globalBan.getActor().getName());
+
+      bukkitPlayer.kick(kickMessage.toString());
+    });
   }
 
   private void newUnbans() {
@@ -109,6 +117,5 @@ public class GlobalBanSync extends BmRunnable {
     } finally {
       if (itr != null) itr.closeQuietly();
     }
-
   }
 }

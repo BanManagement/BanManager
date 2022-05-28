@@ -34,10 +34,9 @@ public class GlobalIpSync extends BmRunnable {
     newUnbans();
   }
 
-
   private void newBans() {
-
     CloseableIterator<GlobalIpBanData> itr = null;
+
     try {
       itr = banStorage.findBans(lastChecked);
 
@@ -47,6 +46,11 @@ public class GlobalIpSync extends BmRunnable {
         final IpBanData localBan = localBanStorage.retrieveBan(ban.getIp());
 
         if (localBan != null) {
+          if (localBan.equalsBan(ban.toLocal(plugin))) {
+            kickPlayers(localBan);
+            continue;
+          }
+
           // Global ban overrides local
           localBanStorage
               .unban(localBan, ban.getActor(plugin));
@@ -54,33 +58,37 @@ public class GlobalIpSync extends BmRunnable {
           localBanStorage.removeBan(ban.getIp());
         }
 
-        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
+        if (!localBanStorage.ban(ban.toLocal(plugin)))
+          continue;
 
         final IpBanData globalBan = localBanStorage.getBan(ban.getIp());
 
-        plugin.getScheduler().runSync(() -> {
-          Message kickMessage = Message.get("banip.ip.kick").set("reason", globalBan.getReason())
-              .set("actor", globalBan.getActor().getName());
-
-          for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-            if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(globalBan.getIp())) {
-              onlinePlayer.kick(kickMessage.toString());
-            }
-          }
-        });
-
+        kickPlayers(globalBan);
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       if (itr != null) itr.closeQuietly();
     }
+  }
 
+  private void kickPlayers(IpBanData globalBan) {
+    plugin.getScheduler().runSync(() -> {
+      Message kickMessage = Message.get("banip.ip.kick")
+        .set("reason", globalBan.getReason())
+        .set("actor", globalBan.getActor().getName());
+
+      for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+        if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(globalBan.getIp())) {
+          onlinePlayer.kick(kickMessage.toString());
+        }
+      }
+    });
   }
 
   private void newUnbans() {
-
     CloseableIterator<GlobalIpBanRecordData> itr = null;
+
     try {
       itr = recordStorage.findUnbans(lastChecked);
 
@@ -92,13 +100,11 @@ public class GlobalIpSync extends BmRunnable {
         }
 
         localBanStorage.unban(localBanStorage.getBan(record.getIp()), record.getActor(plugin));
-
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       if (itr != null) itr.closeQuietly();
     }
-
   }
 }
