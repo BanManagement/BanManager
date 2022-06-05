@@ -100,6 +100,9 @@ repositories {
     maven {
         name = "jitpack"
         url = uri("https://jitpack.io/")
+        metadataSources {
+            artifact() //Look directly for artifact
+        }
     }
     maven {
         name = "jcenter"
@@ -117,7 +120,7 @@ dependencies {
     api(project(":BanManagerCommon")) {
         isTransitive = true
     }
-    compileOnly("com.github.Eufranio:MagiBridge:api-7-SNAPSHOT") {
+    compileOnly("com.github.Eufranio:MagiBridge:api-7-6ec024d1be-1") {
         exclude(group = "net.dv8tion", module = "JDA")
     }
     "shadeOnly"("org.bstats:bstats-sponge:2.2.1")
