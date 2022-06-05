@@ -2,18 +2,18 @@
 # Setting to 0 disables the scheduler from running.
 # Only change if you know what you are doing!
 scheduler:
-  expiresCheck: 30
-  playerBans: 30
-  playerMutes: 30
-  playerWarnings: 30
-  ipBans: 30
-  ipRangeBans: 30
+  expiresCheck: 5
+  playerBans: 5
+  playerMutes: 5
+  playerWarnings: 5
+  ipBans: 5
+  ipRangeBans: 5
   rollbacks: 30
-  nameBans: 30
-  externalPlayerBans: 120
-  externalPlayerMutes: 120
-  externalPlayerNotes: 120
-  externalIpBans: 120
+  nameBans: 5
+  externalPlayerBans: 5
+  externalPlayerMutes: 5
+  externalPlayerNotes: 5
+  externalIpBans: 5
   saveLastChecked: 60
 
 # Don't change these!
