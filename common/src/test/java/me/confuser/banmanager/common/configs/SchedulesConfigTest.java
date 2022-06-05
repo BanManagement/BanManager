@@ -10,18 +10,18 @@ public class SchedulesConfigTest extends BasePluginTest {
   public void isValid() {
     SchedulesConfig config = plugin.getSchedulesConfig();
 
-    assertEquals(30, config.getSchedule("expiresCheck"));
-    assertEquals(30, config.getSchedule("playerBans"));
-    assertEquals(30, config.getSchedule("playerMutes"));
-    assertEquals(30, config.getSchedule("playerWarnings"));
-    assertEquals(30, config.getSchedule("ipBans"));
-    assertEquals(30, config.getSchedule("ipRangeBans"));
+    assertEquals(5, config.getSchedule("expiresCheck"));
+    assertEquals(5, config.getSchedule("playerBans"));
+    assertEquals(5, config.getSchedule("playerMutes"));
+    assertEquals(5, config.getSchedule("playerWarnings"));
+    assertEquals(5, config.getSchedule("ipBans"));
+    assertEquals(5, config.getSchedule("ipRangeBans"));
     assertEquals(30, config.getSchedule("rollbacks"));
-    assertEquals(30, config.getSchedule("nameBans"));
-    assertEquals(120, config.getSchedule("externalPlayerBans"));
-    assertEquals(120, config.getSchedule("externalPlayerMutes"));
-    assertEquals(120, config.getSchedule("externalPlayerNotes"));
-    assertEquals(120, config.getSchedule("externalIpBans"));
+    assertEquals(5, config.getSchedule("nameBans"));
+    assertEquals(5, config.getSchedule("externalPlayerBans"));
+    assertEquals(5, config.getSchedule("externalPlayerMutes"));
+    assertEquals(5, config.getSchedule("externalPlayerNotes"));
+    assertEquals(5, config.getSchedule("externalIpBans"));
     assertEquals(60, config.getSchedule("saveLastChecked"));
 
     assertEquals(0, config.getLastChecked("expiresCheck"));
