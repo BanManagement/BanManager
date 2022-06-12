@@ -23,6 +23,11 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " CHANGE `created` `created` BIGINT UNSIGNED");
+      } catch (SQLException e) {
+      }
     }
   }
 

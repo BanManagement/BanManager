@@ -42,6 +42,15 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
         executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `pastCreated` `updated` BIGINT UNSIGNED,"
+          + " CHANGE `expired` `expires` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
   }
 

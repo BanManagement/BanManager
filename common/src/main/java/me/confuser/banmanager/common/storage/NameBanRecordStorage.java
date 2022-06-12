@@ -24,6 +24,15 @@ public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
       return;
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `pastCreated` `updated` BIGINT UNSIGNED,"
+          + " CHANGE `expired` `expires` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
   }
 

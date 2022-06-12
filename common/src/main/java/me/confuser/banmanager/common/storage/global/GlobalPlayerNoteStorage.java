@@ -20,6 +20,11 @@ public class GlobalPlayerNoteStorage extends BaseDaoImpl<GlobalPlayerNoteData, I
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " CHANGE `created` `created` BIGINT UNSIGNED");
+      } catch (SQLException e) {
+      }
     }
   }
 
