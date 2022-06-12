@@ -43,7 +43,7 @@ public class IpBanRecordStorage extends BaseDaoImpl<IpBanRecord, Integer> {
         executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
           + " CHANGE `created` `created` BIGINT UNSIGNED,"
           + " CHANGE `pastCreated` `updated` BIGINT UNSIGNED,"
-          + " CHANGE `expired` `expires` BIGINT UNSIGNED"
+          + " CHANGE `expired` `expired` BIGINT UNSIGNED"
         );
       } catch (SQLException e) {
       }
