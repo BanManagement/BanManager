@@ -20,7 +20,7 @@ public class PlayerBanRecord {
   @Getter
   private String reason;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
+  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long expired;
 
@@ -32,11 +32,11 @@ public class PlayerBanRecord {
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData pastActor;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
+  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long pastCreated;
 
-  @DatabaseField(index = true, canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
+  @DatabaseField(index = true, canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long created = System.currentTimeMillis() / 1000L;
 

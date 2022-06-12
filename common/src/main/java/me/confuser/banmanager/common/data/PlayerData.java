@@ -28,7 +28,7 @@ public class PlayerData {
   @DatabaseField(index = true, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
   private IPAddress ip;
   @Getter
-  @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
+  @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long lastSeen = System.currentTimeMillis() / 1000L;
 
   private UUID uuid = null;
