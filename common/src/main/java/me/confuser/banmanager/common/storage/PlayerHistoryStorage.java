@@ -27,6 +27,14 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `join` `join` BIGINT UNSIGNED,"
+          + " CHANGE `leave` `leave` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
+
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
   }

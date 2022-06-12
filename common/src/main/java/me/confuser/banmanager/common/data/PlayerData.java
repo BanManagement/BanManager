@@ -28,7 +28,7 @@ public class PlayerData {
   @DatabaseField(index = true, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
   private IPAddress ip;
   @Getter
-  @DatabaseField(columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long lastSeen = System.currentTimeMillis() / 1000L;
 
   private UUID uuid = null;
@@ -41,7 +41,7 @@ public class PlayerData {
     this.uuid = uuid;
     this.id = UUIDUtils.toBytes(uuid);
     this.name = name;
-    
+
     try {
       this.ip = new IPAddressString("127.0.0.1").toAddress();
     } catch (AddressStringException e) {

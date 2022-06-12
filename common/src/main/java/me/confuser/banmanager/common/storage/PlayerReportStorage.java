@@ -45,6 +45,14 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `updated` `updated` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
   }
 
@@ -72,7 +80,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     if (state != null || uniqueId != null) {
       where = query.where();
-      
+
       if (state != null) where.eq("state_id", state);
       if (state != null && uniqueId != null) where.and();
       if (uniqueId != null) where.eq("actor_id", UUIDUtils.toBytes(uniqueId));
@@ -88,7 +96,7 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     query.reset();
     query.orderBy("created", false).offset(offset).limit(pageSize);
-    
+
     if (where != null) query.setWhere(where);
 
     return new ReportList(query.query(), count, maxPage);

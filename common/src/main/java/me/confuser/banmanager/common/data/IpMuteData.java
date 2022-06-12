@@ -25,13 +25,13 @@ public class IpMuteData {
 
   // Should always be database time
   @Getter
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long created = System.currentTimeMillis() / 1000L;
   @Getter
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long updated = System.currentTimeMillis() / 1000L;
   @Getter
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long expires = 0;
 
   @DatabaseField(index = true)
