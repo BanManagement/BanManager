@@ -21,7 +21,7 @@ public class PlayerKickData {
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData actor;
   // Should always be database time
-  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long created = System.currentTimeMillis() / 1000L;
 
