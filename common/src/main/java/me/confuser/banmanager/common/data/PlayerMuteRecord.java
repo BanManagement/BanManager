@@ -20,7 +20,7 @@ public class PlayerMuteRecord {
   @Getter
   private String reason;
 
-  @DatabaseField(canBeNull = false)
+  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   @Getter
   private long expired;
 
