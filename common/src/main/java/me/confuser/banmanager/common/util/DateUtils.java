@@ -147,11 +147,8 @@ public class DateUtils {
         break;
       }
     }
-    if (!found) {
-      throw new Exception("Illegal Date");
-    }
 
-    if (years > 20) {
+    if (!found) {
       throw new Exception("Illegal Date");
     }
 
