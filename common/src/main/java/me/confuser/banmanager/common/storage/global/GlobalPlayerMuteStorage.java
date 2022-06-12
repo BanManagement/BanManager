@@ -29,6 +29,14 @@ public class GlobalPlayerMuteStorage extends BaseDaoImpl<GlobalPlayerMuteData, I
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
   }
 

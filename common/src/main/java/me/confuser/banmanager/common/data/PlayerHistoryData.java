@@ -23,11 +23,11 @@ public class PlayerHistoryData {
 
   // Should always be database time
   @Getter
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long join = System.currentTimeMillis() / 1000L;
   @Getter
   @Setter
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   private long leave = System.currentTimeMillis() / 1000L;
 
   PlayerHistoryData() {

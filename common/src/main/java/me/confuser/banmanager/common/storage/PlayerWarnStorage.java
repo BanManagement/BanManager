@@ -67,6 +67,13 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
         executeRawNoArgs(update);
       } catch (SQLException e) {
       }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
   }
 

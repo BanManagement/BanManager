@@ -46,6 +46,15 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
         executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
+          + " CHANGE `created` `created` BIGINT UNSIGNED,"
+          + " CHANGE `updated` `updated` BIGINT UNSIGNED,"
+          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
+        );
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();

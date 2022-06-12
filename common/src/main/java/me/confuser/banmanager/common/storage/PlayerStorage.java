@@ -43,6 +43,11 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     if (!isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
     } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " CHANGE `lastSeen` `lastSeen` BIGINT UNSIGNED");
+      } catch (SQLException e) {
+      }
+
       StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip", "bytes");
     }
 

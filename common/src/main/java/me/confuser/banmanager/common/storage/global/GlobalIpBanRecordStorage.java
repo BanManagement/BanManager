@@ -20,6 +20,11 @@ public class GlobalIpBanRecordStorage extends BaseDaoImpl<GlobalIpBanRecordData,
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
+    } else {
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " CHANGE `created` `created` BIGINT UNSIGNED");
+      } catch (SQLException e) {
+      }
     }
   }
 
