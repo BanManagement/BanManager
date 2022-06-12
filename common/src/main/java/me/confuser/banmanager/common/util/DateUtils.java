@@ -90,7 +90,7 @@ public class DateUtils {
   // Copyright essentials, all credits to them for this.
   public static long parseDateDiff(String time, boolean future) throws Exception {
     // Support raw timestamps
-    if (time.length() == 10) {
+    if (time.length() >= 10) {
       try {
         long timestamp = Long.parseLong(time);
 
