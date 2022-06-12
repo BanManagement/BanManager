@@ -29,10 +29,10 @@ public class PlayerReportCommandData {
   @Getter
   private String args;
 
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   @Getter
   private long created = System.currentTimeMillis() / 1000L;
-  @DatabaseField(index = true, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   @Getter
   private long updated = System.currentTimeMillis() / 1000L;
 

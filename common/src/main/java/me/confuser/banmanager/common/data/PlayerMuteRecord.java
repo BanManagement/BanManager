@@ -32,11 +32,11 @@ public class PlayerMuteRecord {
   @Getter
   private PlayerData pastActor;
 
-  @DatabaseField(canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   @Getter
   private long pastCreated;
 
-  @DatabaseField(index = true, canBeNull = false, columnDefinition = "INT(10) NOT NULL")
+  @DatabaseField(index = true, canBeNull = false, columnDefinition = "BIGINT UNSIGNED NOT NULL NOT NULL")
   @Getter
   private long created = System.currentTimeMillis() / 1000L;
 
