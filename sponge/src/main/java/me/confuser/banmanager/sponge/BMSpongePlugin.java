@@ -142,6 +142,11 @@ public class BMSpongePlugin {
     Reader defConfigStream = new InputStreamReader(pluginContainer.getAsset("plugin.yml").get().getUrl().openStream());
     YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
     ConfigurationSection commands = conf.getConfigurationSection("commands");
+    String pluginName = conf.getString("name");
+
+    if (!pluginName.equals("BanManager")) {
+      throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
+    }
 
     for (String command : commands.getKeys(false)) {
       ConfigurationSection cmd = commands.getConfigurationSection(command);
