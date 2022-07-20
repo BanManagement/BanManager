@@ -54,7 +54,7 @@ public abstract class DatabaseConfig {
     name = conf.getString("name");
     user = conf.getString("user");
     password = conf.getString("password");
-    isEnabled = conf.getBoolean("enabled");
+    isEnabled = conf.getBoolean("enabled", false);
     maxConnections = conf.getInt("maxConnections", 10);
     leakDetection = conf.getInt("leakDetection", 0);
     useSSL = conf.getBoolean("useSSL", false);
