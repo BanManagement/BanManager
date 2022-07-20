@@ -88,6 +88,7 @@ dependencies {
     }
     "compileOnly"("me.clip:placeholderapi:2.10.9")
     "shadeOnly"("org.bstats:bstats-bukkit:2.2.1")
+    "shadeOnly"("org.slf4j:slf4j-simple:1.7.36")
 }
 
 tasks.named<Copy>("processResources") {
@@ -120,6 +121,9 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency(":BanManagerLibs"))
         relocate("org.bstats", "me.confuser.banmanager.common.bstats") {
             include(dependency("org.bstats:"))
+        }
+        relocate("org.slf4j", "me.confuser.banmanager.common.slf4j") {
+            include(dependency("org.slf4j:"))
         }
     }
 
