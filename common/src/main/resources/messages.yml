@@ -134,6 +134,7 @@ messages:
     player:
       disallowed: '&6You have been banned from this server for &4[reason]'
       kick: '&6You have been banned permanently for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6[player] has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already banned'
@@ -146,6 +147,7 @@ messages:
     player:
       disallowed: '&6You have been temporarily banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6[player] has been temporarily banned for [expires] by [actor] for &4[reason]'
 
   tempbanall:
@@ -218,6 +220,7 @@ messages:
     name:
       disallowed: '&6You have been banned from this server for &4[reason]'
       kick: '&6You have been banned permanently for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6Name [name] has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&cName [name] is already banned'
@@ -226,6 +229,7 @@ messages:
     name:
       disallowed: '&6You have been banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6Name [name] has been temporarily banned for [expires] by [actor] for &4[reason]'
 
   unbanname:
@@ -237,6 +241,7 @@ messages:
     ip:
       disallowed: '&6You have been banned from this server for &4[reason]'
       kick: '&6You have been banned permanently for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6[ip] ([players]) has been permanently banned by [actor] for &4[reason]'
     error:
       exists: '&c[ip] is already banned'
@@ -250,6 +255,7 @@ messages:
     ip:
       disallowed: '&6You have been banned from this server for &4[reason]'
       kick: '&6You have been banned permanently for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6[from] - [to] have been banned by [actor]'
 
   tempbaniprange:
@@ -257,6 +263,7 @@ messages:
     ip:
       disallowed: '&6You have been banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for [expires] by [actor] for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
 
   unbaniprange:
     notify: '&6[from] - [to] has been unbanned by [actor]'
@@ -268,6 +275,7 @@ messages:
     ip:
       disallowed: '&6You have been banned from this server for &4[reason] \n&6It expires in [expires]'
       kick: '&6You have been temporarily banned for &4[reason]'
+      dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '&6[ip] ([players]) has been temporarily banned for [expires] by [actor] for &4[reason]'
 
   tempbanipall:
