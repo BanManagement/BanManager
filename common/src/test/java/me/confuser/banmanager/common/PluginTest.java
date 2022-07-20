@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class PluginTest extends BasePluginTest {
   @Test
   public void testConfigs() {
-    assertTrue(plugin.getConfig().getLocalDb().isEnabled());
+    assertEquals(10, plugin.getConfig().getLocalDb().getMaxConnections());
     assertEquals("Console", plugin.getConsoleConfig().getName());
   }
 }

@@ -67,13 +67,12 @@ public abstract class BasePluginDbTest {
   private void setupConfig() throws Exception {
     Path configFile = new File(temporaryFolder.getRoot(), "config.yml").toPath();
     List<String> lines = Files.readAllLines(configFile, StandardCharsets.UTF_8);
-    lines.set(5, "    enabled: true");
-    lines.set(6, "    storageType: " + storageType);
-    lines.set(7, "    host: localhost");
-    lines.set(8, "    port: " + (db != null ? db.getConfiguration().getPort() : ""));
-    lines.set(9, "    name: test");
-    lines.set(10, "    user: root");
-    lines.set(11, "    password: ''");
+    lines.set(5, "    storageType: " + storageType);
+    lines.set(6, "    host: localhost");
+    lines.set(7, "    port: " + (db != null ? db.getConfiguration().getPort() : ""));
+    lines.set(8, "    name: test");
+    lines.set(9, "    user: root");
+    lines.set(10, "    password: ''");
 
     Files.write(configFile, lines, StandardCharsets.UTF_8);
 
