@@ -98,7 +98,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, ib.ip AS name, actor.name AS actor, created, '' AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(ib.ip) AS name, actor.name AS actor, created, '' AS name2" +
             "    FROM " + plugin.getIpBanStorage().getTableConfig().getTableName() + " ib" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -106,7 +106,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, ibr.ip AS name, actor.name AS actor, pastCreated AS created, '' AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(ibr.ip) AS name, actor.name AS actor, pastCreated AS created, '' AS name2" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -114,7 +114,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' AS type, ibr.ip AS name, actor.name AS actor, created, '' AS name2" +
+            "    SELECT 'IP Unban' AS type, INET6_NTOA(ibr.ip) AS name, actor.name AS actor, created, '' AS name2" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -122,7 +122,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, fromIp AS name, actor.name AS actor, created, toIp AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(fromIp) AS name, actor.name AS actor, created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -130,7 +130,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, fromIp AS name, actor.name AS actor, pastCreated AS created, toIp AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(fromIp) AS name, actor.name AS actor, pastCreated AS created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -138,7 +138,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' AS type, fromIp AS name, actor.name AS actor, created, toIp AS name2" +
+            "    SELECT 'IP Unban' AS type, INET6_NTOA(fromIp) AS name, actor.name AS actor, created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
@@ -203,37 +203,37 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, ib.ip AS name, created, '' AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(ib.ip) AS name, created, '' AS name2" +
             "    FROM " + plugin.getIpBanStorage().getTableConfig().getTableName() + " ib" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, ibr.ip AS name, pastCreated AS created, '' AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(ibr.ip) AS name, pastCreated AS created, '' AS name2" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' AS type, ibr.ip AS name, created, '' AS name2" +
+            "    SELECT 'IP Unban' AS type, INET6_NTOA(ibr.ip) AS name, created, '' AS name2" +
             "    FROM " + plugin.getIpBanRecordStorage().getTableConfig().getTableName() + " ibr" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, fromIp AS name, created, toIp AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(fromIp) AS name, created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanStorage().getTableConfig().getTableName() +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Ban' AS type, fromIp AS name, pastCreated AS created, toIp AS name2" +
+            "    SELECT 'IP Ban' AS type, INET6_NTOA(fromIp) AS name, pastCreated AS created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Unban' AS type, fromIp AS name, created, toIp AS name2" +
+            "    SELECT 'IP Unban' AS type, INET6_NTOA(fromIp) AS name, created, INET6_NTOA(toIp) AS name2" +
             "    FROM " + plugin.getIpRangeBanRecordStorage().getTableConfig().getTableName() +
             "    WHERE created >= ? AND actor_id = ?" +
 
@@ -303,18 +303,15 @@ public class ActivityStorage {
           ipIndex = 4;
         }
 
-        // Detect names vs ips
-        try {
-          String ip = IPUtils.toString(result.getBytes(1));
+        // ip or name
+        String ip = result.getString(1);
 
-          if (!result.getString(ipIndex).isEmpty()) {
-            ip = ip + " - " + IPUtils.toString(result.getBytes(ipIndex));
-          }
-
-          map.put("player", ip);
-        } catch (Exception e) {
-          map.put("player", result.getString(1));
+        if (!result.getString(ipIndex).isEmpty()) {
+          ip = ip + " - " + result.getString(ipIndex);
         }
+
+        map.put("player", ip);
+
         results.add(map);
       }
     } catch (SQLException e) {
