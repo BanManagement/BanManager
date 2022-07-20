@@ -274,11 +274,6 @@ public class BanManagerPlugin {
   }
 
   public boolean setupConnections() throws SQLException {
-    if (!config.getLocalDb().isEnabled()) {
-      getLogger().warning("Local Database is not enabled, disabling plugin");
-      return false;
-    }
-
     localConn = createConnection(config.getLocalDb(), "bm-local");
 
     if (config.getGlobalDb().isEnabled()) {
