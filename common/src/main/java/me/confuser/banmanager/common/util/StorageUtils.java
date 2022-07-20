@@ -19,34 +19,49 @@ public class StorageUtils {
   public static void convertIpColumn(BanManagerPlugin plugin, String table, String column, String idType) {
     try (DatabaseConnection connection = plugin.getLocalConn().getReadWriteConnection(table)) {
       if (connection.update("ALTER TABLE `" + table + "` CHANGE COLUMN `" + column + "` `" + column + "` VARBINARY(16) NOT NULL", null, null) != 0) {
-          plugin.getLogger().info("Converting " + table + " " + column + " data to support ipv6");
+        plugin.getLogger().info("Converting " + table + " " + column + " data to support IPv6");
 
-        DatabaseResults results = connection
-            .compileStatement("SELECT `id`, INET_NTOA(HEX(UNHEX(CAST(" + column + " AS UNSIGNED)))) FROM `" + table + "`", StatementBuilder
-                .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false)
-            .runQuery(null);
+        plugin.getLogger().info("Attempting fast IPv6 conversion...");
 
-        while (results.next()) {
-          CompiledStatement statement = connection
-              .compileStatement("UPDATE " + table + " SET `" + column + "` = ? WHERE `id` = ?", StatementBuilder
-                  .StatementType.UPDATE, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+        try {
+          if (connection
+            .compileStatement("UPDATE `" + table + "` SET " + column + " = INET6_ATON(INET_NTOA(" + column + "))", StatementBuilder
+                .StatementType.UPDATE, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false)
+            .runUpdate() == 0) {
+              throw new SQLException("Failed to fast convert, attempting slow conversion...");
+            } else {
+              plugin.getLogger().info("Successfully converted " + table + " " + column + " data to support IPv6");
+            }
+        } catch (Exception e) {
+          plugin.getLogger().severe("Failed to fast convert due to " + e.getMessage() + ", attempting slow conversion...");
 
-          Object id;
+          DatabaseResults results = connection
+              .compileStatement("SELECT `id`, INET_NTOA(HEX(UNHEX(CAST(" + column + " AS UNSIGNED)))) FROM `" + table + "`", StatementBuilder
+                  .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false)
+              .runQuery(null);
 
-          if (idType.equals("int")) {
-            id = results.getInt(0);
-          } else {
-            id = results.getBytes(0);
-          }
+          while (results.next()) {
+            CompiledStatement statement = connection
+                .compileStatement("UPDATE " + table + " SET `" + column + "` = ? WHERE `id` = ?", StatementBuilder
+                    .StatementType.UPDATE, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
 
-          String ipStr = results.getString(1);
-          byte[] ip = IPUtils.toBytes(ipStr);
+            Object id;
 
-          statement.setObject(0, ip, SqlType.BYTE_ARRAY);
-          statement.setObject(1, id, idType.equals("int") ? SqlType.INTEGER : SqlType.BYTE_ARRAY);
+            if (idType.equals("int")) {
+              id = results.getInt(0);
+            } else {
+              id = results.getBytes(0);
+            }
 
-          if (statement.runUpdate() == 0) {
-            plugin.getLogger().severe("Unable to convert " + ipStr + " in " + table + " for id " + id);
+            String ipStr = results.getString(1);
+            byte[] ip = IPUtils.toBytes(ipStr);
+
+            statement.setObject(0, ip, SqlType.BYTE_ARRAY);
+            statement.setObject(1, id, idType.equals("int") ? SqlType.INTEGER : SqlType.BYTE_ARRAY);
+
+            if (statement.runUpdate() == 0) {
+              plugin.getLogger().severe("Unable to convert " + ipStr + " in " + table + " for id " + id);
+            }
           }
         }
       }
