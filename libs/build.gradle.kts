@@ -22,7 +22,7 @@ dependencies {
     "shade"("com.google.guava:guava:21.0")
 
     "shade"("org.apache.commons:commons-compress:1.19")
-    "shade"("com.github.seancfoley:ipaddress:5.3.3")
+    "shade"("com.github.seancfoley:ipaddress:5.3.4")
     "shade"("com.h2database:h2:1.4.200")
 }
 
