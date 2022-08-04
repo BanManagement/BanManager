@@ -52,8 +52,8 @@ public class TempIpBanCommand extends CommonCommand {
     if (isName) {
       CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(ipStr);
 
-      if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.banip")
-          && onlinePlayer.hasPermission("bm.exempt.banip")) {
+      if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.tempbanip")
+          && onlinePlayer.hasPermission("bm.exempt.tempbanip")) {
         Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
         return true;
       }

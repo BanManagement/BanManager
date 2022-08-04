@@ -64,8 +64,8 @@ public class TempIpMuteCommand extends CommonCommand {
     if (isName) {
       CommonPlayer onlinePlayer = getPlugin().getServer().getPlayer(ipStr);
 
-      if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.muteip")
-          && onlinePlayer.hasPermission("bm.exempt.muteip")) {
+      if (onlinePlayer != null && !sender.hasPermission("bm.exempt.override.tempmuteip")
+          && onlinePlayer.hasPermission("bm.exempt.tempmuteip")) {
         Message.get("sender.error.exempt").set("player", onlinePlayer.getName()).sendTo(sender);
         return true;
       }
