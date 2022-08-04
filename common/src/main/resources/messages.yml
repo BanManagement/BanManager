@@ -112,7 +112,7 @@ messages:
       temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which expires in [expires]'
       dateTimeFormat: 'dd-MM-yyyy HH:mm:ss'
     website:
-      player: 'http://yourdomain.com/index.php?action=viewplayer&player=[player]&server=0'
+      player: 'https://yourdomain.com/player/[uuid]'
       ip: 'http://yourdomain.com/index.php?action=viewip&ip=[ip]&server=0'
     history:
       row: '&7#[id] &a[&f[type]&a] &6[actor]&f [meta] [reason] - &e[created]'
