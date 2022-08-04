@@ -558,14 +558,16 @@ public class InfoCommand extends CommonCommand {
             .set("playerId", player.getUUID().toString())
             .toString();
 
-        if (sender.isConsole()) {
-          messages.add(websiteMsg);
-        } else {
-          TextComponent.Builder message = TextComponent.builder(websiteMsg);
+        if (!websiteMsg.isEmpty()) {
+          if (sender.isConsole()) {
+            messages.add(websiteMsg);
+          } else {
+            TextComponent.Builder message = TextComponent.builder(websiteMsg);
 
-          message.clickEvent(ClickEvent.openUrl(websiteMsg));
+            message.clickEvent(ClickEvent.openUrl(websiteMsg));
 
-          messages.add(message.build());
+            messages.add(message.build());
+          }
         }
       }
     }
