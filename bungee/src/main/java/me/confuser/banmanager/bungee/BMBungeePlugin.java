@@ -40,10 +40,10 @@ public class BMBungeePlugin extends Plugin {
   public void onEnable() {
     BungeeServer server = new BungeeServer();
     PluginInfo pluginInfo;
+
     try {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
-      getPlugin().disable();
       e.printStackTrace();
       return;
     }
@@ -56,7 +56,8 @@ public class BMBungeePlugin extends Plugin {
     try {
       plugin.enable();
     } catch (Exception e) {
-      getPlugin().disable();
+      if (plugin != null) plugin.disable();
+
       e.printStackTrace();
       return;
     }
