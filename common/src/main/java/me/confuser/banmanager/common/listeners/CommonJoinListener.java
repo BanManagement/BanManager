@@ -141,7 +141,7 @@ public class CommonJoinListener {
       message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
 
       handler.handleDeny(message);
-      handleJoinDeny(address.toString(), data.getReason());
+      handleJoinDeny(address.toString(), data.getActor(), data.getReason());
       return;
     }
 
@@ -217,7 +217,7 @@ public class CommonJoinListener {
     message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
 
     handler.handlePlayerDeny(data.getPlayer(), message);
-    handleJoinDeny(data.getPlayer(), data.getReason());
+    handleJoinDeny(data.getPlayer(), data.getActor(), data.getReason());
   }
 
   public void onPreJoin(UUID id, String name, IPAddress address) {
@@ -468,20 +468,26 @@ public class CommonJoinListener {
     }, 20L);
   }
 
-  private void handleJoinDeny(PlayerData player, String reason) {
+  private void handleJoinDeny(PlayerData player, PlayerData actor, String reason) {
     if (joinCache.getIfPresent(player.getName()) != null) return;
 
     joinCache.put(player.getName(), System.currentTimeMillis());
-    Message message = Message.get("deniedNotify.player").set("player", player.getName()).set("reason", reason);
+    Message message = Message.get("deniedNotify.player")
+      .set("player", player.getName())
+      .set("reason", reason)
+      .set("actor", actor.getName());
 
     plugin.getServer().broadcast(message.toString(), "bm.notify.denied.player");
   }
 
-  private void handleJoinDeny(String ip, String reason) {
+  private void handleJoinDeny(String ip, PlayerData actor, String reason) {
     if (joinCache.getIfPresent(ip) != null) return;
 
     joinCache.put(ip, System.currentTimeMillis());
-    Message message = Message.get("deniedNotify.ip").set("ip", ip).set("reason", reason);
+    Message message = Message.get("deniedNotify.ip")
+      .set("ip", ip)
+      .set("reason", reason)
+      .set("actor", actor.getName());
 
     plugin.getServer().broadcast(message.toString(), "bm.notify.denied.ip");
   }
