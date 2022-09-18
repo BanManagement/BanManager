@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
+
 public abstract class BasePluginDbTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -19,6 +21,7 @@ public abstract class BasePluginDbTest {
   protected BanManagerPlugin plugin;
   protected Faker faker = new Faker();
   protected TestUtils testUtils;
+  protected TestServer server = spy(new TestServer());
   private boolean configSetup = false;
   private static DB db;
 
@@ -34,7 +37,6 @@ public abstract class BasePluginDbTest {
 
   @Before
   public void setup() throws Exception {
-    TestServer server = new TestServer();
     CommonLogger logger = new TestLogger();
     plugin = new BanManagerPlugin(BasePluginTest.setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), server, new TestMetrics());
 

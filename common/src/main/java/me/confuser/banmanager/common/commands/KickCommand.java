@@ -16,29 +16,26 @@ public class KickCommand extends CommonCommand {
 
   @Override
   public boolean onCommand(final CommonSender sender, CommandParser parser) {
-    boolean isSilent;
+    if (parser.args.length < 1 || parser.args[0].isEmpty()) {
+      return false;
+    }
 
-    if (parser.getArgs().length != 1) {
-      parser = new CommandParser(getPlugin(), parser.getArgs(), 1);
-      isSilent = parser.isSilent();
+    final boolean isSilent = parser.isSilent();
 
-      if (parser.isInvalidReason()) {
-        Message.get("sender.error.invalidReason")
-                .set("reason", parser.getReason().getMessage())
-                .sendTo(sender);
-        return true;
-      }
-    } else {
-      isSilent = false;
+    if (parser.args.length > 1) {
+      parser = new CommandParser(getPlugin(), parser.args, 1);
+    }
+
+    if (parser.isInvalidReason()) {
+      Message.get("sender.error.invalidReason")
+              .set("reason", parser.getReason().getMessage())
+              .sendTo(sender);
+      return true;
     }
 
     if (isSilent && !sender.hasPermission(getPermission() + ".silent")) {
       sender.sendMessage(Message.getString("sender.error.noPermission"));
       return true;
-    }
-
-    if (parser.args.length < 1 || parser.args[0].isEmpty()) {
-      return false;
     }
 
     if (parser.args[0].equalsIgnoreCase(sender.getName())) {
