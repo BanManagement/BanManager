@@ -13,7 +13,7 @@
 	<strong>
 		<a href="https://banmanagement.com">Website</a>
 		|
-		<a href="https://banmanagement.com/docs/webui/install">Docs</a>
+		<a href="https://banmanagement.com/docs/banmanager/install">Docs</a>
 		|
 		<a href="https://demo.banmanagement.com">Demo</a>
 	</strong>
