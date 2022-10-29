@@ -79,12 +79,21 @@ public class StringUtilsTest {
 
   @Test
   public void shouldValidatePlayerNames() {
-    assertTrue(StringUtils.isValidPlayerName("confuser"));
-    assertTrue(StringUtils.isValidPlayerName("9081"));
-    assertTrue(StringUtils.isValidPlayerName("AaA1_23456789_0a"));
+    assertTrue(StringUtils.isValidPlayerName("confuser", ""));
+    assertTrue(StringUtils.isValidPlayerName("confuser", null));
+    assertTrue(StringUtils.isValidPlayerName("9081", ""));
+    assertTrue(StringUtils.isValidPlayerName("AaA1_23456789_0a", ""));
+    assertTrue(StringUtils.isValidPlayerName(".confuser", "."));
+    assertTrue(StringUtils.isValidPlayerName("+confuser", "+"));
+    assertTrue(StringUtils.isValidPlayerName("-confuser", "-"));
+    assertTrue(StringUtils.isValidPlayerName("!confuser", "!"));
+    assertTrue(StringUtils.isValidPlayerName("*confuser", "*"));
+    assertTrue(StringUtils.isValidPlayerName("+-!*.confuser", "+!-*."));
 
-    assertFalse(StringUtils.isValidPlayerName("AaA1_23456789_0aaaa"));
-    assertFalse(StringUtils.isValidPlayerName("confu$£r"));
-    assertFalse(StringUtils.isValidPlayerName("127.0.0.1"));
+    assertFalse(StringUtils.isValidPlayerName("AaA1_23456789_0aaaa", ""));
+    assertFalse(StringUtils.isValidPlayerName("confu$£r", ""));
+    assertFalse(StringUtils.isValidPlayerName("127.0.0.1", ""));
+    assertFalse(StringUtils.isValidPlayerName("-confuser", ""));
+    assertFalse(StringUtils.isValidPlayerName("+-!*.confuser", "."));
   }
 }
