@@ -118,19 +118,26 @@ public class StringUtils {
     return list.toArray(new String[0]);
   }
 
-  public static boolean isValidPlayerName(String name) {
+  public static boolean isValidPlayerName(String name, String additionalChars) {
     boolean isName = (name.length() <= 16);
 
-    if (isName) {
-      for (char ch : name.toCharArray()) {
-        if (ch >= 'A' && ch <= 'Z') continue;
-        if (ch >= 'a' && ch <= 'z') continue;
-        if (ch >= '0' && ch <= '9') continue;
-        if (ch == '_') continue;
-        if (ch == '*') continue; // Support Bedrock names (via GeyserMC)
-        isName = false;
-        break;
+    if (!isName) return false;
+
+    char[] nameArray = name.toCharArray();
+
+    for (char ch : nameArray) {
+      if (ch >= 'A' && ch <= 'Z') continue;
+      if (ch >= 'a' && ch <= 'z') continue;
+      if (ch >= '0' && ch <= '9') continue;
+      if (ch == '_') continue;
+
+      if (additionalChars != null && additionalChars.length() > 0 && additionalChars.indexOf(ch) != -1) {
+        continue;
       }
+
+      isName = false;
+
+      break;
     }
 
     return isName;

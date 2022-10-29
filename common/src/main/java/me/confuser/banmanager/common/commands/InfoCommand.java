@@ -46,7 +46,7 @@ public class InfoCommand extends CommonCommand {
     }
 
     final String search = parser.args.length > 0 ? parser.args[0] : sender.getName();
-    final boolean isValidName = StringUtils.isValidPlayerName(search);
+    final boolean isValidName = StringUtils.isValidPlayerName(search, getPlugin().getConfig().getGeyserPrefix());
 
     if (!isValidName && !IPUtils.isValid(search)) {
       sender.sendMessage(Message.getString("sender.error.invalidIp"));

@@ -227,3 +227,6 @@ uuidFetcher:
   nameToId:
     url: 'https://api.mojang.com/users/profiles/minecraft/[name]'
     key: id
+
+# Allows supporting Bedrock names (via GeyserMC)
+geyserPrefix: '.'

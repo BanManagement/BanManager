@@ -75,6 +75,8 @@ public class DefaultConfig extends Config {
   private CooldownsConfig cooldownsConfig;
   @Getter
   private UUIDFetcher uuidFetcher;
+  @Getter
+  private String geyserPrefix;
 
   public DefaultConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "config.yml", logger);
@@ -136,6 +138,8 @@ public class DefaultConfig extends Config {
         conf.getString("uuidFetcher.nameToId.key", "id")
     );
     uuidFetcher = new UUIDFetcher(idToName, nameToId);
+
+    geyserPrefix = conf.getString("geyserPrefix", "");
   }
 
   public void handleBlockedCommands(BanManagerPlugin plugin, HashSet<String> set) {
