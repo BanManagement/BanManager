@@ -65,7 +65,7 @@ public class SpongePlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    getPlayer().sendMessage(TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(jsonString)));
+    getPlayer().sendMessage(TextSerializers.JSON.deserialize(GsonComponentSerializer.gson().serialize(jsonString)));
   }
 
   @Override

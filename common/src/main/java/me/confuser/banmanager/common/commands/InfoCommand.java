@@ -5,6 +5,7 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.gson.JsonElement;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
@@ -562,10 +563,8 @@ public class InfoCommand extends CommonCommand {
           if (sender.isConsole()) {
             messages.add(websiteMsg);
           } else {
-            TextComponent.Builder message = TextComponent.builder(websiteMsg);
-
-            message.clickEvent(ClickEvent.openUrl(websiteMsg));
-
+            TextComponent.Builder message = Component.text();
+            message.append(Component.text(websiteMsg).clickEvent(ClickEvent.openUrl(websiteMsg)));
             messages.add(message.build());
           }
         }

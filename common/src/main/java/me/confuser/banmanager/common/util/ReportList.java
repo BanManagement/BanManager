@@ -47,8 +47,8 @@ public class ReportList {
         sender.sendMessage(message);
       } else {
         ((CommonPlayer) sender).sendJSONMessage(
-            LegacyComponentSerializer.legacy().deserialize(
-                message, '&').clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
+            LegacyComponentSerializer.legacy('&').deserialize(
+                message).clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
             )));
       }
     }
