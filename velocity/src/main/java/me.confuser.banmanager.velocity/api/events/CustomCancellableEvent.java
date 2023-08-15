@@ -1,17 +1,25 @@
 package me.confuser.banmanager.velocity.api.events;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.confuser.banmanager.velocity.Cancellable;
+import com.velocitypowered.api.event.ResultedEvent;
+
+import java.util.Objects;
 
 
-public abstract class CustomCancellableEvent extends CustomEvent implements Cancellable {
+public abstract class CustomCancellableEvent extends CustomEvent implements ResultedEvent<ResultedEvent.GenericResult> {
 
-  @Getter
-  @Setter
-  private boolean cancelled = false;
+  private GenericResult result = GenericResult.allowed();
 
   public CustomCancellableEvent() {
     super();
   }
+
+  @Override
+  public void setResult(GenericResult result) {
+    this.result = Objects.requireNonNull(result);
+  }
+
+  public GenericResult getResult() {
+    return result;
+  }
+
 }

@@ -91,7 +91,11 @@ public class VelocityServer implements CommonServer {
     if (sender.isConsole()) {
       velocitySender = server.getConsoleCommandSource();
     } else {
-      velocitySender = server.getPlayer(sender.getName()).get();
+      if (server.getPlayer(sender.getName()).isPresent()) {
+        velocitySender = server.getPlayer(sender.getName()).get();
+      } else {
+        return false;
+      }
     }
 
      server.getCommandManager().executeImmediatelyAsync(velocitySender, command);
@@ -205,11 +209,11 @@ public class VelocityServer implements CommonServer {
     server.getEventManager().fire(event);
 
     if (event instanceof SilentCancellableEvent) {
-      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(), ((SilentCancellableEvent) event).isSilent());
+      commonEvent = new CommonEvent(((SilentCancellableEvent) event).getResult().isAllowed(), ((SilentCancellableEvent) event).isSilent());
     } else if (event instanceof SilentEvent) {
       commonEvent = new CommonEvent(false, ((SilentEvent) event).isSilent());
     } else if (event instanceof CustomCancellableEvent) {
-      commonEvent = new CommonEvent(((CustomCancellableEvent) event).isCancelled(), true);
+      commonEvent = new CommonEvent(((CustomCancellableEvent) event).getResult().isAllowed(), true);
     }
 
     return commonEvent;
@@ -229,7 +233,7 @@ public class VelocityServer implements CommonServer {
     // This would be a implementation of doing so with Velocity, but the method getCommandMeta does not exist.
     CommandMeta meta = server.getCommandManager().getCommandMeta(commandName);
     if (meta != null) {
-      return new CommonExternalCommand(null, meta.getAliases().iterator().next(), new ArrayList(meta.getAliases()));
+      return new CommonExternalCommand(null, meta.getAliases().iterator().next(), new ArrayList<>(meta.getAliases()));
     }
     else return null;
   }

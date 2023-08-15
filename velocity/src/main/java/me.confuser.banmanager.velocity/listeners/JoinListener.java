@@ -4,6 +4,7 @@ import com.velocitypowered.api.event.*;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import lombok.RequiredArgsConstructor;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
@@ -29,10 +30,12 @@ public class JoinListener extends Listener {
   }
 
   public void checkBanJoin(final LoginEvent event) {
-    listener.banCheck(event.getPlayer().getUniqueId(), event.getPlayer().getUsername(), IPUtils.toIPAddress(event.getPlayer().getRemoteAddress().getAddress()), new BanJoinHandler(event));
+    listener.banCheck(event.getPlayer().getUniqueId(), event.getPlayer().getUsername(),
+            IPUtils.toIPAddress(event.getPlayer().getRemoteAddress().getAddress()), new BanJoinHandler(plugin.getPlugin(), event));
 
     if (event.getResult().isAllowed()) {
-      listener.onPreJoin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername(), IPUtils.toIPAddress(event.getPlayer().getRemoteAddress().getAddress()));
+      listener.onPreJoin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername(),
+              IPUtils.toIPAddress(event.getPlayer().getRemoteAddress().getAddress()));
     }
   }
 
@@ -48,6 +51,7 @@ public class JoinListener extends Listener {
 
   @RequiredArgsConstructor
   public static class BanJoinHandler implements CommonJoinHandler {
+    private final BanManagerPlugin plugin;
     private final LoginEvent event;
 
     @Override
@@ -57,9 +61,8 @@ public class JoinListener extends Listener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-
+      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
     }
-
   }
 
   @RequiredArgsConstructor

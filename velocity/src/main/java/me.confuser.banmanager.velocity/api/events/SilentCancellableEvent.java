@@ -11,8 +11,6 @@ public abstract class SilentCancellableEvent extends CustomCancellableEvent {
 
   public SilentCancellableEvent(boolean silent) {
     super();
-
     this.silent = silent;
   }
-
 }
