@@ -62,6 +62,7 @@ public class JoinListener extends Listener {
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
+      event.setResult(ResultedEvent.ComponentResult.denied(VelocityServer.formatMessage(message.toString())));
     }
   }
 
@@ -76,7 +77,7 @@ public class JoinListener extends Listener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-
+      handleDeny(message);
     }
   }
 }

@@ -124,6 +124,10 @@ public class BMVelocityPlugin {
     for (CommonCommand cmd : plugin.getCommands()) {
       // Ignore reports as not compatible yet
       if (cmd.getCommandName().startsWith("report")) continue;
+      if (cmd.getCommandName().startsWith("mute")) continue;
+      if (cmd.getCommandName().startsWith("muteip")) continue;
+      if (cmd.getCommandName().startsWith("unmute")) continue;
+      if (cmd.getCommandName().startsWith("unmuteip")) continue;
 
       new VelocityCommand(cmd, this);
     }
