@@ -10,6 +10,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.velocity.api.events.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -134,16 +135,6 @@ public class VelocityServer implements CommonServer {
         event = new IpUnbanEvent((IpBanData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
 
-      case "IpMuteEvent":
-        event = new IpMuteEvent((IpMuteData) args[0], (boolean) args[1]);
-        break;
-      case "IpMutedEvent":
-        event = new IpMutedEvent((IpMuteData) args[0], (boolean) args[1]);
-        break;
-      case "IpUnmutedEvent":
-        event = new IpUnmutedEvent((IpMuteData) args[0], (PlayerData) args[1], (String) args[2]);
-        break;
-
       case "PlayerKickedEvent":
         event = new PlayerKickedEvent((PlayerKickData) args[0], (boolean) args[1]);
         break;
@@ -189,15 +180,12 @@ public class VelocityServer implements CommonServer {
         event = new IpRangeUnbanEvent((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
 
-      case "PlayerMuteEvent":
-        event = new PlayerMuteEvent((PlayerMuteData) args[0], (boolean) args[1]);
+      case "PluginReloadedEvent":
+        event = new PluginReloadedEvent((PlayerData) args[0]);
         break;
-      case "PlayerMutedEvent":
-        event = new PlayerMutedEvent((PlayerMuteData) args[0], (boolean) args[1]);
-        break;
-      case "PlayerUnmuteEvent":
-        event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
-        break;
+
+      case "PlayerDeniedEvent":
+        event = new PlayerDeniedEvent((PlayerData) args[0], (Message) args[1]);
     }
 
     if (event == null) {
@@ -209,11 +197,11 @@ public class VelocityServer implements CommonServer {
     server.getEventManager().fire(event);
 
     if (event instanceof SilentCancellableEvent) {
-      commonEvent = new CommonEvent(((SilentCancellableEvent) event).getResult().isAllowed(), ((SilentCancellableEvent) event).isSilent());
+      commonEvent = new CommonEvent(!(((SilentCancellableEvent) event).getResult().isAllowed()), ((SilentCancellableEvent) event).isSilent());
     } else if (event instanceof SilentEvent) {
       commonEvent = new CommonEvent(false, ((SilentEvent) event).isSilent());
     } else if (event instanceof CustomCancellableEvent) {
-      commonEvent = new CommonEvent(((CustomCancellableEvent) event).getResult().isAllowed(), true);
+      commonEvent = new CommonEvent(!((CustomCancellableEvent) event).getResult().isAllowed(), true);
     }
 
     return commonEvent;

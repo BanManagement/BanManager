@@ -10,6 +10,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import com.velocitypowered.api.scheduler.Scheduler;
 import lombok.SneakyThrows;
 import lombok.Getter;
 
@@ -38,7 +39,8 @@ import java.util.concurrent.TimeUnit;
         url = "https://banmanagement.com",
         description = "A suite of moderation plugins & apps for Minecraft servers",
         authors = {
-        "confuser"
+                "confuser",
+                "Lorias-Jak"
         }
 )
 public class BMVelocityPlugin {
@@ -72,8 +74,8 @@ public class BMVelocityPlugin {
     this.metricsFactory = metricsFactory;
   }
 
-
-  public void onEnable() {
+  @Subscribe
+  public void onProxyInitialization(ProxyInitializeEvent event) {
     Metrics metrics = metricsFactory.make(this, 14188);
     VelocityServer server = new VelocityServer();
     PluginInfo pluginInfo;
@@ -112,19 +114,10 @@ public class BMVelocityPlugin {
     plugin.getLogger().info("The following commands are blocked whilst soft muted:");
     plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
   }
-  public void onDisable() {
-    // @TODO Disable scheduled tasks somehow
-    //    server.getScheduler().cancel(this);
 
-    if (plugin != null) plugin.disable();
-  }
-  @Subscribe
-  public void onProxyInitialization(ProxyInitializeEvent event) {
-    onEnable();
-  }
   @Subscribe
   public void onProxyShutdown(ProxyShutdownEvent event) {
-    onDisable();
+    if (plugin != null) plugin.disable();
   }
 
   private void setupCommands() {
@@ -187,13 +180,8 @@ public class BMVelocityPlugin {
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
 
-    if (!plugin.getConfig().getChatPriority().equals("NONE")) {
-      registerEvent(new ChatListener(plugin));
-    }
-
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
-      registerEvent(new MuteListener(plugin));
       registerEvent(new NoteListener(plugin));
     }
   }
@@ -243,9 +231,5 @@ public class BMVelocityPlugin {
       ClassLoader cLoader = cls.getClassLoader();
 
       return cLoader.getResourceAsStream(resource);
-  }
-
-  public static BMVelocityPlugin getInstance() {
-    return instance;
   }
 }
