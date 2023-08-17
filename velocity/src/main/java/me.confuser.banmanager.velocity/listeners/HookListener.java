@@ -32,6 +32,21 @@ public class HookListener extends Listener {
   }
 
   @Subscribe(order = PostOrder.FIRST)
+  public void onMute(final PlayerMuteEvent event) {
+    listener.onMute(event.getMute(), true);
+  }
+
+  @Subscribe(order = PostOrder.FIRST)
+  public void onMute(final PlayerMutedEvent event) {
+    listener.onMute(event.getMute(), false);
+  }
+
+  @Subscribe(order = PostOrder.FIRST)
+  public void onUnmute(final PlayerUnmuteEvent event) {
+    listener.onUnmute(event.getMute(), event.getActor(), event.getReason());
+  }
+
+  @Subscribe(order = PostOrder.FIRST)
   public void onBan(final IpBanEvent event) {
     listener.onBan(event.getBan(), true);
   }

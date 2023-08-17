@@ -135,6 +135,16 @@ public class VelocityServer implements CommonServer {
         event = new IpUnbanEvent((IpBanData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
 
+      case "IpMuteEvent":
+        event = new IpMuteEvent((IpMuteData) args[0], (boolean) args[1]);
+        break;
+      case "IpMutedEvent":
+        event = new IpMutedEvent((IpMuteData) args[0], (boolean) args[1]);
+        break;
+      case "IpUnmutedEvent":
+        event = new IpUnmutedEvent((IpMuteData) args[0], (PlayerData) args[1], (String) args[2]);
+        break;
+
       case "PlayerKickedEvent":
         event = new PlayerKickedEvent((PlayerKickData) args[0], (boolean) args[1]);
         break;
@@ -178,6 +188,16 @@ public class VelocityServer implements CommonServer {
         break;
       case "IpRangeUnbanEvent":
         event = new IpRangeUnbanEvent((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2]);
+        break;
+
+      case "PlayerMuteEvent":
+        event = new PlayerMuteEvent((PlayerMuteData) args[0], (boolean) args[1]);
+        break;
+      case "PlayerMutedEvent":
+        event = new PlayerMutedEvent((PlayerMuteData) args[0], (boolean) args[1]);
+        break;
+      case "PlayerUnmuteEvent":
+        event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
         break;
 
       case "PluginReloadedEvent":

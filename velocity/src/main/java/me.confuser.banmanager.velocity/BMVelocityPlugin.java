@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import com.velocitypowered.api.scheduler.Scheduler;
 import lombok.SneakyThrows;
 import lombok.Getter;
 
@@ -41,6 +41,9 @@ import java.util.concurrent.TimeUnit;
         authors = {
                 "confuser",
                 "Lorias-Jak"
+        },
+        dependencies = {
+                @Dependency(id = "signedvelocity", optional = true)
         }
 )
 public class BMVelocityPlugin {
@@ -64,6 +67,7 @@ public class BMVelocityPlugin {
   private final Logger logger;
   private final File dataDirectory;
   public static BMVelocityPlugin instance;
+  private boolean isMuteAllowed = false;
 
   @Inject
   public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory final Path directory, Metrics.Factory metricsFactory) {
@@ -102,6 +106,7 @@ public class BMVelocityPlugin {
     velocityConfig = new VelocityConfig(dataDirectory, plugin.getLogger());
     velocityConfig.load();
 
+    checkMuteRequirements();
     setupListeners();
 
     if (velocityConfig.isCommandsEnabled()) setupCommands();
@@ -120,14 +125,21 @@ public class BMVelocityPlugin {
     if (plugin != null) plugin.disable();
   }
 
+  private void checkMuteRequirements() {
+    int maxVersionStringLength = this.server.getVersion().getVersion().length();
+    int buildVersion = 0;
+    if (maxVersionStringLength > 4) {
+      String versionAsString = this.server.getVersion().getVersion().substring(maxVersionStringLength - 4, maxVersionStringLength - 1);
+      buildVersion = Integer.parseInt(versionAsString);
+      if (buildVersion <= 140) isMuteAllowed = true;
+    }
+    if (server.getPluginManager().getPlugin("signedvelocity").isPresent() && buildVersion >= 235) isMuteAllowed = true;
+  }
+
   private void setupCommands() {
     for (CommonCommand cmd : plugin.getCommands()) {
       // Ignore reports as not compatible yet
-      if (cmd.getCommandName().startsWith("report")) continue;
-      if (cmd.getCommandName().startsWith("mute")) continue;
-      if (cmd.getCommandName().startsWith("muteip")) continue;
-      if (cmd.getCommandName().startsWith("unmute")) continue;
-      if (cmd.getCommandName().startsWith("unmuteip")) continue;
+      if (checkCommandSkipping(cmd)) continue;
 
       new VelocityCommand(cmd, this);
     }
@@ -139,6 +151,16 @@ public class BMVelocityPlugin {
     }
 
     logger.info("Registered commands");
+  }
+
+  private boolean checkCommandSkipping(CommonCommand cmd) {
+    if (cmd.getCommandName().startsWith("report")) return true;
+    if (cmd.getCommandName().startsWith("mute") && !isMuteAllowed) return true;
+    if (cmd.getCommandName().startsWith("muteip") && !isMuteAllowed) return true;
+    if (cmd.getCommandName().startsWith("unmute") && !isMuteAllowed) return true;
+    if (cmd.getCommandName().startsWith("unmuteip") && !isMuteAllowed) return true;
+
+    return false;
   }
 
   private PluginInfo setupConfigs() throws IOException {
@@ -183,6 +205,10 @@ public class BMVelocityPlugin {
     registerEvent(new JoinListener(this));
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
+
+    if (!plugin.getConfig().getChatPriority().equals("NONE") && isMuteAllowed) {
+      registerEvent(new ChatListener(plugin));
+    }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
