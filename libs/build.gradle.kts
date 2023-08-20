@@ -3,9 +3,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 applyLibrariesConfiguration()
 
 dependencies {
-    "shade"("net.kyori:text-api:${Versions.ADVENTURE}")
-    "shade"("net.kyori:text-serializer-gson:${Versions.ADVENTURE}")
-    "shade"("net.kyori:text-serializer-legacy:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-legacy:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-gson:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-api:${Versions.ADVENTURE}")
+    "shade"("net.kyori:examination-api:1.3.0")
 
     "shade"("com.j256.ormlite:ormlite-core:5.1")
     "shade"("com.j256.ormlite:ormlite-jdbc:5.1")
@@ -34,10 +35,15 @@ tasks.named<ShadowJar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.WARN
 
     dependencies {
-        relocate("net.kyori.text", "me.confuser.banmanager.common.kyori.text") {
-            include(dependency("net.kyori:text-api"))
-            include(dependency("net.kyori:text-serializer-gson"))
-            include(dependency("net.kyori:text-serializer-legacy"))
+        relocate("net.kyori.adventure", "me.confuser.banmanager.common.kyori") {
+            include(dependency("net.kyori:adventure-text-serializer-legacy"))
+            include(dependency("net.kyori:adventure-text-serializer-gson"))
+            include(dependency("net.kyori:adventure-api"))
+            include(dependency("net.kyori:adventure-key"))
+        }
+
+        relocate("net.kyori.examination", "me.confuser.banmanager.common.kyori.examination") {
+            include(dependency("net.kyori:examination-api"))
         }
 
         relocate("org.yaml.snakeyaml", "me.confuser.banmanager.common.snakeyaml") {

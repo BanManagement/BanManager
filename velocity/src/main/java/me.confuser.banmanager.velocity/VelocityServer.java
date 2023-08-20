@@ -1,63 +1,63 @@
-package me.confuser.banmanager.bungee;
+package me.confuser.banmanager.velocity;
 
-import me.confuser.banmanager.bungee.api.events.*;
+
+import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
-import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.Message;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.chat.ComponentSerializer;
+import me.confuser.banmanager.velocity.api.events.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class BungeeServer implements CommonServer {
+public class VelocityServer implements CommonServer {
   private BanManagerPlugin plugin;
+  private ProxyServer server;
 
-  public void enable(BanManagerPlugin plugin) {
-    this.plugin = plugin;
-  }
+  public void enable(BanManagerPlugin plugin, ProxyServer server) {this.plugin = plugin; this.server = server; }
 
   @Override
   public CommonPlayer getPlayer(UUID uniqueId) {
-    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
+    Optional<Player> player = server.getPlayer(uniqueId);
 
-    if (player == null) return null;
+    if (player.isPresent()) return new VelocityPlayer(player.get(), plugin.getConfig().isOnlineMode());
 
-    return new BungeePlayer(player, plugin.getConfig().isOnlineMode());
+    return null;
   }
 
   @Override
   public CommonPlayer getPlayer(String name) {
-    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(name);
+    Optional<Player> player = server.getPlayer(name);
 
-    if (player == null) return null;
+    if (player.isPresent()) return new VelocityPlayer(player.get(), plugin.getConfig().isOnlineMode());
 
-    return new BungeePlayer(player, plugin.getConfig().isOnlineMode());
+    return null;
   }
 
   @Override
   public CommonPlayer[] getOnlinePlayers() {
-    return ProxyServer.getInstance().getPlayers().stream()
-        .map(player -> new BungeePlayer(player, plugin.getConfig().isOnlineMode()))
-        .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
+      return server.getAllPlayers().stream()
+          .map(player -> new VelocityPlayer(player, plugin.getConfig().isOnlineMode()))
+          .collect(Collectors.toList()).toArray(new CommonPlayer[0]);
   }
 
   @Override
   public void broadcast(String message, String permission) {
     if(message.isEmpty()) return;
 
-    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+    for (Player player : server.getAllPlayers()) {
       if (player != null && player.hasPermission(permission)) {
         player.sendMessage(formatMessage(message));
       }
@@ -66,9 +66,10 @@ public class BungeeServer implements CommonServer {
 
   @Override
   public void broadcastJSON(TextComponent message, String permission) {
-    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-      if (player != null && player.hasPermission(permission)) {
-        player.sendMessage(formatMessage(message));
+    Component converted = convert(message);
+    for (Player player : server.getAllPlayers()) {
+      if (player.hasPermission(permission)) {
+        player.sendMessage(converted);
       }
     }
   }
@@ -82,20 +83,24 @@ public class BungeeServer implements CommonServer {
 
   @Override
   public CommonSender getConsoleSender() {
-    return new BungeeSender(plugin, ProxyServer.getInstance().getConsole());
+    return new VelocitySender(plugin, server.getConsoleCommandSource());
   }
 
   @Override
   public boolean dispatchCommand(CommonSender sender, String command) {
-    CommandSender bungeeSender;
-
+    CommandSource velocitySender;
     if (sender.isConsole()) {
-      bungeeSender = ProxyServer.getInstance().getConsole();
+      velocitySender = server.getConsoleCommandSource();
     } else {
-      bungeeSender = ProxyServer.getInstance().getPlayer(sender.getName());
+      if (server.getPlayer(sender.getName()).isPresent()) {
+        velocitySender = server.getPlayer(sender.getName()).get();
+      } else {
+        return false;
+      }
     }
 
-    return ProxyServer.getInstance().getPluginManager().dispatchCommand(bungeeSender, command);
+     server.getCommandManager().executeImmediatelyAsync(velocitySender, command);
+    return true;
   }
 
   @Override
@@ -201,7 +206,6 @@ public class BungeeServer implements CommonServer {
 
       case "PlayerDeniedEvent":
         event = new PlayerDeniedEvent((PlayerData) args[0], (Message) args[1]);
-        break;
     }
 
     if (event == null) {
@@ -210,37 +214,38 @@ public class BungeeServer implements CommonServer {
       return commonEvent;
     }
 
-    ProxyServer.getInstance().getPluginManager().callEvent(event);
+    server.getEventManager().fire(event);
 
     if (event instanceof SilentCancellableEvent) {
-      commonEvent = new CommonEvent(((SilentCancellableEvent) event).isCancelled(), ((SilentCancellableEvent) event).isSilent());
+      commonEvent = new CommonEvent(!(((SilentCancellableEvent) event).getResult().isAllowed()), ((SilentCancellableEvent) event).isSilent());
     } else if (event instanceof SilentEvent) {
       commonEvent = new CommonEvent(false, ((SilentEvent) event).isSilent());
     } else if (event instanceof CustomCancellableEvent) {
-      commonEvent = new CommonEvent(((CustomCancellableEvent) event).isCancelled(), true);
+      commonEvent = new CommonEvent(!((CustomCancellableEvent) event).getResult().isAllowed(), true);
     }
 
     return commonEvent;
   }
 
-  public static BaseComponent[] formatMessage(String message) {
-    return net.md_5.bungee.api.chat.TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
+  public static @NotNull Component formatMessage(String message) {
+    return LegacyComponentSerializer.legacy('&').deserialize(message);
   }
 
-  public static BaseComponent[] formatMessage(TextComponent message) {
-    return ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(message));
+  public static Component convert(me.confuser.banmanager.common.kyori.text.Component message) {
+    String gson =  me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer.gson().serialize(message);
+    return GsonComponentSerializer.gson().deserialize(gson);
   }
 
   @Override
   public CommonExternalCommand getPluginCommand(String commandName) {
-    // @TODO Seems like BungeeCord doesn't expose an easy way to retrieve a command by name?
-    Map.Entry<String, Command> command = ProxyServer.getInstance().getPluginManager().getCommands().stream()
-        .filter(cmd -> cmd.getValue().getName().equals(commandName))
-        .findFirst()
-        .orElse(null);
-
-    if (command == null) return null;
-
-    return new CommonExternalCommand(null, command.getValue().getName(), Arrays.asList(command.getValue().getAliases()));
+    // This would be a implementation of doing so with Velocity, but the method getCommandMeta does not exist.
+    CommandMeta meta = server.getCommandManager().getCommandMeta(commandName);
+    if (meta != null) {
+      return new CommonExternalCommand(null, meta.getAliases().iterator().next(), new ArrayList<>(meta.getAliases()));
+    }
+    else return null;
   }
 }
+
+
+

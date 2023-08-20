@@ -6,8 +6,10 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.kyori.text.format.TextColor;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -81,24 +83,24 @@ public class FindAltsCommand extends CommonCommand {
   }
 
   public static TextComponent alts(List<PlayerData> players) {
-    TextComponent.Builder message = TextComponent.builder();
+    TextComponent.Builder message = Component.text();
     int index = 0;
 
     for (PlayerData player : players) {
-      TextColor colour = TextColor.GREEN;
+      TextColor colour = NamedTextColor.GREEN;
 
       if (BanManagerPlugin.getInstance().getPlayerBanStorage().isBanned(player.getUUID())) {
         PlayerBanData ban = BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(player.getUUID());
 
         if (ban.getExpires() == 0) {
-          colour = TextColor.RED;
+          colour = NamedTextColor.RED;
         } else {
-          colour = TextColor.GOLD;
+          colour = NamedTextColor.GOLD;
         }
       } else {
         try {
           if (BanManagerPlugin.getInstance().getPlayerBanRecordStorage().getCount(player) != 0) {
-            colour = TextColor.YELLOW;
+            colour = NamedTextColor.YELLOW;
           }
         } catch (SQLException e) {
           e.printStackTrace();
@@ -107,12 +109,12 @@ public class FindAltsCommand extends CommonCommand {
 
       message
           .append(
-              TextComponent.builder(player.getName())
+              Component.text(player.getName())
                   .color(colour)
                   .clickEvent(ClickEvent.runCommand("/bminfo " + player.getName())));
 
       if (index != players.size() - 1) {
-        message.append(", ");
+        message.append(Component.text(", "));
       }
 
       index++;

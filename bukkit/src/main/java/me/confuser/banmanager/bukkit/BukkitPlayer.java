@@ -60,7 +60,7 @@ public class BukkitPlayer implements CommonPlayer {
 
   @Override
   public void sendJSONMessage(TextComponent jsonString) {
-    getPlayer().spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.INSTANCE.serialize(jsonString)));
+    getPlayer().spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(jsonString)));
   }
 
   @Override
