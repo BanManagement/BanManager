@@ -9,6 +9,7 @@ import lombok.NonNull;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
+import me.confuser.banmanager.common.util.Message;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -33,6 +34,11 @@ public final class VelocityCommand implements SimpleCommand {
     String[] args = invocation.arguments();
     CommonSender commonSender = getSender(commandSource);
     boolean success = false;
+
+    if (!commonSender.hasPermission(command.getPermission())) {
+      commonSender.sendMessage(Message.getString("sender.error.noPermission"));
+      return;
+    }
 
     try {
       success = this.command.onCommand(commonSender, this.command.getParser(args));
