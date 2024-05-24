@@ -4,13 +4,13 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import me.confuser.banmanager.common.CommonScheduler;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+
 
 public class VelocityScheduler implements CommonScheduler {
-  private BMVelocityPlugin plugin;
+  private Object plugin;
   private ProxyServer server;
 
-  public VelocityScheduler(BMVelocityPlugin plugin, ProxyServer server) {
+  public VelocityScheduler(Object plugin, ProxyServer server) {
     this.plugin = plugin;
     this.server = server;
   }
