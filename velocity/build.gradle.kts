@@ -7,6 +7,46 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            pom {
+                name.set("BanManagerVelocity")
+                description.set("BanManager for Velocity")
+                url.set("https://github.com/BanManagement/BanManager/")
+                licenses {
+                    license {
+                        name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
+                        url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("confuser")
+                        name.set("James Mortemore")
+                        email.set("jamesmortemore@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
+                    url.set("https://github.com/BanManagement/BanManager/")
+                }
+            }
+        }
+    }
+}
+
+signing {
+    if (project.findProperty("signingKey")?.toString()?.toBoolean() == true) {
+        useInMemoryPgpKeys(findProperty("signingKey")?.toString(), findProperty("signingPassword")?.toString())
+
+        sign(publishing.publications["mavenJava"])
+    }
+}
+
 repositories {
     maven {
         name = "velocity"
