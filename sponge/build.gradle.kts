@@ -84,11 +84,6 @@ sponge {
             optional(false)
             version("7.2.0")
         }
-        dependency("magibridge") {
-            loadOrder(PluginDependency.LoadOrder.AFTER)
-            optional(true)
-            version("api-7-SNAPSHOT")
-        }
     }
 }
 
@@ -119,9 +114,6 @@ dependencies {
 
     api(project(":BanManagerCommon")) {
         isTransitive = true
-    }
-    compileOnly("com.github.Eufranio:MagiBridge:api-7-6ec024d1be-1") {
-        exclude(group = "net.dv8tion", module = "JDA")
     }
     "shadeOnly"("org.bstats:bstats-sponge:2.2.1")
 }

@@ -37,9 +37,7 @@ import java.util.HashMap;
     authors = "confuser",
     description = "A punishment plugin",
     url = "https://banmanagement.com",
-    dependencies = {
-        @Dependency(id = "magibridge", optional = true),
-    }
+    dependencies = {}
 )
 public class BMSpongePlugin {
 
@@ -187,10 +185,6 @@ public class BMSpongePlugin {
       registerEvent(new MuteListener(plugin));
       registerEvent(new NoteListener(plugin));
       registerEvent(new ReportListener(plugin));
-    }
-
-    if (plugin.getDiscordConfig().isEnabled() && Sponge.getPluginManager().getPlugin("magibridge").isPresent()) {
-      registerEvent(new DiscordListener(plugin));
     }
   }
 
