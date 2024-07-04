@@ -214,7 +214,7 @@ public class VelocityServer implements CommonServer {
       return commonEvent;
     }
 
-    server.getEventManager().fire(event);
+    server.getEventManager().fire(event).join();
 
     if (event instanceof SilentCancellableEvent) {
       commonEvent = new CommonEvent(!(((SilentCancellableEvent) event).getResult().isAllowed()), ((SilentCancellableEvent) event).isSilent());
