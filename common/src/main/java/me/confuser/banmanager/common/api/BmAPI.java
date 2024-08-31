@@ -23,15 +23,13 @@ import java.util.UUID;
  */
 public class BmAPI {
 
-  private static BanManagerPlugin plugin = BanManagerPlugin.getInstance();
-
   /**
    * @param uuid Player UUID
    * @return PlayerData
    * @throws SQLException
    */
   public static PlayerData getPlayer(UUID uuid) throws SQLException {
-    return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid));
+    return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid));
   }
 
   /**
@@ -40,7 +38,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static PlayerData getPlayer(String name) throws SQLException {
-    return plugin.getPlayerStorage().retrieve(name, false);
+    return BanManagerPlugin.getInstance().getPlayerStorage().retrieve(name, false);
   }
 
   /**
@@ -49,7 +47,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static List<PlayerData> getPlayers(IPAddress ip) throws SQLException {
-    return plugin.getPlayerStorage().getDuplicatesInTime(ip, plugin.getConfig().getTimeAssociatedAlts());
+    return BanManagerPlugin.getInstance().getPlayerStorage().getDuplicatesInTime(ip, BanManagerPlugin.getInstance().getConfig().getTimeAssociatedAlts());
   }
 
   /**
@@ -58,7 +56,7 @@ public class BmAPI {
    * @return PlayerData
    */
   public static PlayerData getConsole() {
-    return plugin.getPlayerStorage().getConsole();
+    return BanManagerPlugin.getInstance().getPlayerStorage().getConsole();
   }
 
   /**
@@ -80,7 +78,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean ban(PlayerBanData ban) throws SQLException {
-    return plugin.getPlayerBanStorage().ban(ban);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().ban(ban);
   }
 
   /**
@@ -120,7 +118,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean unban(PlayerBanData ban, PlayerData actor) throws SQLException {
-    return plugin.getPlayerBanStorage().unban(ban, actor);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().unban(ban, actor);
   }
 
   /**
@@ -130,7 +128,7 @@ public class BmAPI {
    * @return Returns true if player is banned
    */
   public static boolean isBanned(UUID uuid) {
-    return plugin.getPlayerBanStorage().isBanned(uuid);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().isBanned(uuid);
   }
 
   /**
@@ -140,7 +138,7 @@ public class BmAPI {
    * @return Returns true if player is banned
    */
   public static boolean isBanned(String name) {
-    return plugin.getPlayerBanStorage().isBanned(name);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().isBanned(name);
   }
 
 
@@ -151,7 +149,7 @@ public class BmAPI {
    * @return Returns the active ban of a player; if the player is not banned this returns null
    */
   public static PlayerBanData getCurrentBan(String name) {
-    return plugin.getPlayerBanStorage().getBan(name);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(name);
   }
 
   /**
@@ -161,7 +159,7 @@ public class BmAPI {
    * @return Returns the active ban of a player; if the player is not banned this returns null
    */
   public static PlayerBanData getCurrentBan(UUID uuid) {
-    return plugin.getPlayerBanStorage().getBan(uuid);
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(uuid);
   }
 
   /**
@@ -170,7 +168,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static CloseableIterator<PlayerBanRecord> getBanRecords(PlayerData player) throws SQLException {
-    return plugin.getPlayerBanRecordStorage().getRecords(player);
+    return BanManagerPlugin.getInstance().getPlayerBanRecordStorage().getRecords(player);
   }
 
   /**
@@ -182,7 +180,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(PlayerMuteData mute) throws SQLException {
-    return plugin.getPlayerMuteStorage().mute(mute);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().mute(mute);
   }
 
   /**
@@ -256,7 +254,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean mute(IpMuteData mute) throws SQLException {
-    return plugin.getIpMuteStorage().mute(mute);
+    return BanManagerPlugin.getInstance().getIpMuteStorage().mute(mute);
   }
 
   /**
@@ -266,7 +264,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean unmute(PlayerMuteData mute, PlayerData actor) throws SQLException {
-    return plugin.getPlayerMuteStorage().unmute(mute, actor);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().unmute(mute, actor);
   }
 
   /**
@@ -276,7 +274,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean unmute(IpMuteData mute, PlayerData actor) throws SQLException {
-    return plugin.getIpMuteStorage().unmute(mute, actor);
+    return BanManagerPlugin.getInstance().getIpMuteStorage().unmute(mute, actor);
   }
 
   /**
@@ -286,7 +284,7 @@ public class BmAPI {
    * @return Returns true if player muted
    */
   public static boolean isMuted(UUID uuid) {
-    return plugin.getPlayerMuteStorage().isMuted(uuid);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().isMuted(uuid);
   }
 
   /**
@@ -296,7 +294,7 @@ public class BmAPI {
    * @return Returns true if player muted
    */
   public static boolean isMuted(String name) {
-    return plugin.getPlayerMuteStorage().isMuted(name);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().isMuted(name);
   }
 
   /**
@@ -306,7 +304,7 @@ public class BmAPI {
    * @return Returns true if IP address muted
    */
   public static boolean isMuted(IPAddress ip) {
-    return plugin.getIpMuteStorage().isMuted(ip);
+    return BanManagerPlugin.getInstance().getIpMuteStorage().isMuted(ip);
   }
 
   /**
@@ -316,7 +314,7 @@ public class BmAPI {
    * @return Returns the active mute of a player; if the player is not muted this returns null
    */
   public static PlayerMuteData getCurrentMute(String name) {
-    return plugin.getPlayerMuteStorage().getMute(name);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().getMute(name);
   }
 
   /**
@@ -326,7 +324,7 @@ public class BmAPI {
    * @return Returns the active mute of a player; if the player is not muted this returns null
    */
   public static PlayerMuteData getCurrentMute(UUID uuid) {
-    return plugin.getPlayerMuteStorage().getMute(uuid);
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().getMute(uuid);
   }
 
   /**
@@ -335,7 +333,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static CloseableIterator<PlayerMuteRecord> getMuteRecords(PlayerData player) throws SQLException {
-    return plugin.getPlayerMuteRecordStorage().getRecords(player);
+    return BanManagerPlugin.getInstance().getPlayerMuteRecordStorage().getRecords(player);
   }
 
   /**
@@ -347,7 +345,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean ban(IpBanData ban) throws SQLException {
-    return plugin.getIpBanStorage().ban(ban);
+    return BanManagerPlugin.getInstance().getIpBanStorage().ban(ban);
   }
 
   /**
@@ -388,7 +386,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean unban(IpBanData ban, PlayerData actor) throws SQLException {
-    return plugin.getIpBanStorage().unban(ban, actor);
+    return BanManagerPlugin.getInstance().getIpBanStorage().unban(ban, actor);
   }
 
   /**
@@ -398,7 +396,7 @@ public class BmAPI {
    * @return Returns true if ip is banned
    */
   public static boolean isBanned(IPAddress ip) {
-    return plugin.getIpBanStorage().isBanned(ip);
+    return BanManagerPlugin.getInstance().getIpBanStorage().isBanned(ip);
   }
 
   /**
@@ -408,7 +406,7 @@ public class BmAPI {
    * @return Returns the active ban of an ip if the ip is not banned this returns null
    */
   public static IpBanData getCurrentBan(IPAddress ip) {
-    return plugin.getIpBanStorage().getBan(ip);
+    return BanManagerPlugin.getInstance().getIpBanStorage().getBan(ip);
   }
 
   /**
@@ -417,7 +415,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static CloseableIterator<IpBanRecord> getBanRecords(IPAddress ip) throws SQLException {
-    return plugin.getIpBanRecordStorage().getRecords(ip);
+    return BanManagerPlugin.getInstance().getIpBanRecordStorage().getRecords(ip);
   }
 
   /**
@@ -474,7 +472,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static boolean warn(PlayerWarnData data, boolean silent) throws SQLException {
-    return plugin.getPlayerWarnStorage().addWarning(data, silent);
+    return BanManagerPlugin.getInstance().getPlayerWarnStorage().addWarning(data, silent);
   }
 
   /**
@@ -486,7 +484,7 @@ public class BmAPI {
    * @throws SQLException
    */
   public static CloseableIterator<PlayerWarnData> getWarnings(PlayerData player) throws SQLException {
-    return plugin.getPlayerWarnStorage().getWarnings(player);
+    return BanManagerPlugin.getInstance().getPlayerWarnStorage().getWarnings(player);
   }
 
   /**
@@ -498,7 +496,7 @@ public class BmAPI {
   }
 
   public static ConnectionSource getLocalConnection() {
-    return plugin.getLocalConn();
+    return BanManagerPlugin.getInstance().getLocalConn();
   }
 
   public static long toTimestamp(String time, boolean future) throws Exception {
