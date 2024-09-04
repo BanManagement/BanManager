@@ -89,6 +89,11 @@ commands:
     usage: "/kick <player> <reason>"
     aliases: [bmkick]
     permission: bm.command.kick
+  kickall:
+    description: "kick all players on the current server"
+    usage: "/kickall <reason>"
+    aliases: [bmkickall]
+    permission: bm.command.kickall
   mute:
     description: "mutes a player"
     usage: "/mute <player> <reason>"
@@ -139,6 +144,11 @@ commands:
     usage: "/nlkick <player> <reason>"
     aliases: [bmnlkick]
     permission: bm.command.nlkick
+  nlkickall:
+    description: "kick all players on the current server without logging"
+    usage: "/nlkickall <reason>"
+    aliases: [bmnlkickall]
+    permission: bm.command.nlkickall
   bmreload:
     description: "Reloads from the config everything except database connection info"
     usage: "/bmreload"
@@ -289,7 +299,9 @@ permissions:
       bm.command.unbanip: true
       bm.command.import: true
       bm.command.kick: true
+      bm.command.kickall: true
       bm.command.nlkick: true
+      bm.command.nlkickall: true
       bm.command.update: true
       bm.command.mute: true
       bm.command.mute.offline: true
@@ -360,7 +372,9 @@ permissions:
       bm.command.unbanip: true
       bm.command.import: true
       bm.command.kick: true
+      bm.command.kickall: true
       bm.command.nlkick: true
+      bm.command.nlkickall: true
       bm.command.update: true
       bm.command.mute: true
       bm.command.mute.offline: true
@@ -561,6 +575,15 @@ permissions:
   bm.command.kick:
     description: Allows a player to kick another player
     default: op
+  bm.command.kickall:
+    description: Allows a player to kick all players on the server
+    default: op
+  bm.command.nlkick:
+    description: Allows a player to kick another player without logging
+    default: op
+  bm.command.nlkickall:
+    description: Allows a player to kick all players on the server without logging
+    default: op
   bm.command.update:
     description: Notifies player of a plugin update
     default: op
@@ -699,12 +722,12 @@ permissions:
   bm.command.unbanname:
     description: Allows unbanning a name
     default: op
-bm.command.bmutils:
-  description: Allows using bmutils base command
-  default: op
-bm.command.bmutils.missingplayers:
-  description: Allows resolving missing players
-  default: op
-bm.command.bmutils.duplicates:
-  description: Allows resolving duplicate player names
-  default: op
+  bm.command.bmutils:
+    description: Allows using bmutils base command
+    default: op
+  bm.command.bmutils.missingplayers:
+    description: Allows resolving missing players
+    default: op
+  bm.command.bmutils.duplicates:
+    description: Allows resolving duplicate player names
+    default: op
