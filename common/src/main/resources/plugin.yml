@@ -2,7 +2,7 @@ main: "${mainPath}"
 name: BanManager
 version: "${internalVersion}"
 author: confuser
-website: http://dev.bukkit.org/bukkit-plugins/ban-management/
+website: https://banmanagement.com
 description: "A database driven punishment system"
 softdepend:
   - DiscordSRV

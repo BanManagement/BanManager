@@ -8,15 +8,11 @@ import me.confuser.banmanager.common.util.Message;
 public class LoglessKickAllCommand extends CommonCommand {
 
   public LoglessKickAllCommand(BanManagerPlugin plugin) {
-    super(plugin, "nlkickall", true);
+    super(plugin, "nlkickall", true, 0);
   }
 
   @Override
   public boolean onCommand(final CommonSender sender, CommandParser parser) {
-    if (parser.args.length < 1 || parser.args[0].isEmpty()) {
-      return false;
-    }
-
     final boolean isSilent = parser.isSilent();
 
     if (parser.isInvalidReason()) {
@@ -31,12 +27,7 @@ public class LoglessKickAllCommand extends CommonCommand {
       return true;
     }
 
-    if (parser.args[0].equalsIgnoreCase(sender.getName())) {
-      sender.sendMessage(Message.getString("sender.error.noSelf"));
-      return true;
-    }
-
-    final String reason = parser.getReason().getMessage();
+    final String reason = parser.args.length > 0 ? parser.getReason().getMessage() : "";
 
     getPlugin().getScheduler().runAsync(() -> {
       final PlayerData actor = sender.getData();

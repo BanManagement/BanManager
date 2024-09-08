@@ -2,16 +2,10 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.configs.ExemptionsConfig;
-import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
