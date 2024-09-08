@@ -92,7 +92,7 @@ public class HooksConfig {
         delay = delay * 20L; // Convert from seconds to ticks
       }
 
-      actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
+      actionCommands.add(new ActionCommand((String) map.get("cmd"), delay, ""));
     }
 
     return actionCommands;
