@@ -41,7 +41,7 @@ jobs:
       - name: Execute Gradle build
         env:
           STORAGE_TYPE: ${{ matrix.storageType }}
-        run: ./gradlew build
+        run: ./gradlew build --info
 
       - name: Publish to Maven Central
         # only publish once

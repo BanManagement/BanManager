@@ -130,6 +130,14 @@ messages:
       noReason: '&6[player] has been kicked by [actor]'
       reason: '&6[player] has been kicked by [actor] for &4[reason]'
 
+  kickall:
+    player:
+      noReason: '&6You have been kicked'
+      reason: '&6You have been kicked for &4[reason]'
+    notify:
+      noReason: 'All players have been kicked by [actor]'
+      reason: 'All players have been kicked by [actor] for &4[reason]'
+
   ban:
     player:
       disallowed: '&6You have been banned from this server for &4[reason]'
