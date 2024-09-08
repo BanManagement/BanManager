@@ -13,6 +13,7 @@ import me.confuser.banmanager.common.util.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -541,7 +542,12 @@ public class CommonJoinListener {
             ban.isSilent(),
             ban.getExpires());
 
-        plugin.getPlayerBanStorage().ban(newBan);
+        try {
+            plugin.getPlayerBanStorage().ban(newBan);
+        } catch (SQLIntegrityConstraintViolationException e) {
+          // Ignore duplicate entry errors
+          plugin.getPlayerBanStorage().addBan(newBan);
+        }
 
         plugin.getScheduler().runSync(() -> {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
@@ -575,7 +581,12 @@ public class CommonJoinListener {
             mute.isSoft(),
             mute.getExpires());
 
-        plugin.getPlayerMuteStorage().mute(newMute);
+        try {
+          plugin.getPlayerMuteStorage().mute(newMute);
+        } catch (SQLIntegrityConstraintViolationException e) {
+          // Ignore duplicate entry errors
+          plugin.getPlayerMuteStorage().addMute(newMute);
+        }
       }
     }
   }
