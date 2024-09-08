@@ -8,9 +8,12 @@ public class ActionCommand {
   private final String command;
   @Getter
   private final long delay;
+  @Getter
+  private final String pointsTimeframe;
 
-  public ActionCommand(String command, long delay) {
+  public ActionCommand(String command, long delay, String pointsTimeframe) {
     this.command = command;
     this.delay = delay;
+    this.pointsTimeframe = pointsTimeframe;
   }
 }

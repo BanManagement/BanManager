@@ -1,8 +1,11 @@
 package me.confuser.banmanager.common.configs;
 
 import lombok.Getter;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.DateUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +62,20 @@ public class WarningActionsConfig {
             delay = delay * 20L; // Convert from seconds to ticks
           }
 
-          actionCommands.add(new ActionCommand((String) map.get("cmd"), delay));
+          String timeframe = "";
+
+          if (map.get("pointsTimeframe") != null) {
+            try {
+              DateUtils.parseDateDiff(timeframe, false);
+
+              timeframe = (String) map.get("pointsTimeframe");
+            } catch (Exception e) {
+              logger.severe("Invalid pointsTimeframe for " + map.get("cmd"));
+              continue;
+            }
+          }
+
+          actionCommands.add(new ActionCommand((String) map.get("cmd"), delay, timeframe));
         }
 
         this.actions.put(amountDbl, actionCommands);
@@ -72,7 +88,7 @@ public class WarningActionsConfig {
         List<ActionCommand> actionCommands = new ArrayList<>(actions.size());
 
         for (String action : actions) {
-          actionCommands.add(new ActionCommand(action, 0));
+          actionCommands.add(new ActionCommand(action, 0, ""));
         }
 
         this.actions.put(amountDbl, actionCommands);
@@ -80,8 +96,28 @@ public class WarningActionsConfig {
     }
   }
 
-  public List<ActionCommand> getCommand(double amount) {
-    return actions.get(amount);
+  public List<ActionCommand> getCommands(PlayerData player, double overallPoints) {
+    List<ActionCommand> commands = new ArrayList<>();
+
+    for (Map.Entry<Double, List<ActionCommand>> entry : actions.entrySet()) {
+      for (ActionCommand actionCommand : entry.getValue()) {
+        double totalPoints = overallPoints;
+
+        if (!actionCommand.getPointsTimeframe().isEmpty()) {
+          try {
+            totalPoints = BanManagerPlugin.getInstance().getPlayerWarnStorage().getPointsCount(player, DateUtils.parseDateDiff(actionCommand.getPointsTimeframe(), false));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+
+        if (totalPoints == entry.getKey()) {
+          commands.add(actionCommand);
+        }
+      }
+    }
+
+    return commands;
   }
 
 }

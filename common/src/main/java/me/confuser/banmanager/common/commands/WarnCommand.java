@@ -155,8 +155,7 @@ public class WarnCommand extends CommonCommand {
       final List<ActionCommand> actionCommands;
 
       try {
-        actionCommands = getPlugin().getConfig().getWarningActions()
-            .getCommand(getPlugin().getPlayerWarnStorage().getPointsCount(player));
+        actionCommands = getPlugin().getConfig().getWarningActions().getCommands(player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
         e.printStackTrace();
         return;
