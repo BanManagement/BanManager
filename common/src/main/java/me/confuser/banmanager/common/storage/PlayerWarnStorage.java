@@ -143,6 +143,25 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     return 0;
   }
 
+  public double getPointsCount(PlayerData player, long timeframe) throws SQLException {
+    try (DatabaseConnection connection = connectionSource.getReadOnlyConnection(getTableName())) {
+      CompiledStatement statement = connection
+          .compileStatement("SELECT SUM(points) AS points FROM " + getTableName() + " WHERE player_id = ? AND created >= ?", StatementBuilder.StatementType.SELECT, null, DatabaseConnection
+              .DEFAULT_RESULT_FLAGS, false);
+
+      statement.setObject(0, player.getId(), SqlType.BYTE_ARRAY);
+      statement.setObject(1, timeframe, SqlType.LONG);
+
+      DatabaseResults results = statement.runQuery(null);
+
+      if (results.next()) return results.getDouble(0);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return 0;
+  }
+
   public boolean isRecentlyWarned(PlayerData player, long cooldown) throws SQLException {
     if (cooldown == 0) {
       return false;
