@@ -250,7 +250,7 @@ public class BMVelocityPlugin {
   private void setupAsyncRunnable(long length, Runnable runnable) {
     if (length <= 0) return;
 
-    server.getScheduler().buildTask(this, runnable).delay(length, TimeUnit.SECONDS).schedule();
+    server.getScheduler().buildTask(this, runnable).repeat(length, TimeUnit.SECONDS).schedule();
   }
   @SneakyThrows
   private InputStream getResourceAsStream(String resource) {
