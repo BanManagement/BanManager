@@ -10,7 +10,6 @@ import me.confuser.banmanager.common.gson.GsonBuilder;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DiscordConfig extends Config {
