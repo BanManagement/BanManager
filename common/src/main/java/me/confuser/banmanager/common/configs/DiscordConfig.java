@@ -4,18 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
-import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.gson.Gson;
+import me.confuser.banmanager.common.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DiscordConfig extends Config {
   @Getter
-  private boolean enabled = false;
-  private Map<String, DiscordPunishmentConfig> types;
-  @Getter
-  private boolean messagesFromActor = true;
+  private boolean hooksEnabled = false;
+  private Map<String, DiscordHookConfig> hookTypes;
 
   public DiscordConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "discord.yml", logger);
@@ -23,18 +23,27 @@ public class DiscordConfig extends Config {
 
   @Override
   public void afterLoad() {
-    types = new HashMap<>();
+    if (conf.getBoolean("enabled", false)) {
+      this.logger.warning("DiscordSRV/MagiBridge integration removed, please switch to hooks in discord.yml");
+      return;
+    }
 
-    enabled = conf.getBoolean("enabled", false);
-    messagesFromActor = conf.getBoolean("messagesFromActor", false);
-    ConfigurationSection punishments = conf.getConfigurationSection("punishments");
+    hooksEnabled = conf.getBoolean("hooks.enabled", false);
 
-    for (String type : punishments.getKeys(false)) {
-      types.put(type, new DiscordPunishmentConfig(
-          punishments.getString(type + ".channel"),
-          new Message("discord." + type, punishments.getString(type + ".message")),
-          punishments.getBoolean(type + ".ignoreSilent", true),
-          punishments.getString(type + ".dateTimeFormat", "")
+    ConfigurationSection hooks = conf.getConfigurationSection("hooks.punishments");
+    hookTypes = new HashMap<>();
+
+    for (String type : hooks.getKeys(false)) {
+      ConfigurationSection payloadSection = hooks.getConfigurationSection(type + ".payload");
+      Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+      StringWriter writer = new StringWriter();
+      gson.toJson(payloadSection.getValues(true), writer);
+      String payload = writer.toString();
+
+      hookTypes.put(type, new DiscordHookConfig(
+          hooks.getString(type + ".url"),
+          payload,
+          hooks.getBoolean(type + ".ignoreSilent", true)
       ));
     }
   }
@@ -44,22 +53,17 @@ public class DiscordConfig extends Config {
 
   }
 
-  public DiscordPunishmentConfig getType(String type) {
-    return types.get(type);
+  public DiscordHookConfig getType(String type) {
+    return hookTypes.get(type);
   }
 
   @AllArgsConstructor
-  public class DiscordPunishmentConfig {
+  public class DiscordHookConfig {
     @Getter
-    private String channel;
-    private Message message;
+    private String url;
+    @Getter
+    private String payload;
     @Getter
     private boolean ignoreSilent;
-    @Getter
-    private String dateTimeFormat;
-
-    public Message getMessage() {
-      return Message.get(message.getKey());
-    }
   }
 }

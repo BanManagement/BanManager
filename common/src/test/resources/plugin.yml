@@ -5,7 +5,6 @@ author: confuser
 website: https://banmanagement.com
 description: "A database driven punishment system"
 softdepend:
-  - DiscordSRV
   - PlaceholderAPI
 
 # Mark the plugin as 1.13 compatible to avoid CB having to perform quite as much unnecessary

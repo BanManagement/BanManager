@@ -83,9 +83,6 @@ dependencies {
     "compileOnly"("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
-    "compileOnly"("com.discordsrv:discordsrv:1.24.0") {
-        isTransitive  = false
-    }
     "compileOnly"("me.clip:placeholderapi:2.10.9")
     "shadeOnly"("org.bstats:bstats-bukkit:2.2.1")
     "shadeOnly"("org.slf4j:slf4j-simple:1.7.36")

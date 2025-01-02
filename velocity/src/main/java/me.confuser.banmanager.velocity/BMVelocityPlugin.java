@@ -214,6 +214,10 @@ public class BMVelocityPlugin {
       registerEvent(new BanListener(plugin));
       registerEvent(new NoteListener(plugin));
     }
+
+    if (plugin.getDiscordConfig().isHooksEnabled()) {
+      registerEvent(new DiscordListener(plugin));
+    }
   }
 
   private void registerEvent(Listener listener) {

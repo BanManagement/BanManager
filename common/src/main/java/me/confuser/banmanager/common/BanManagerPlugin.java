@@ -213,7 +213,7 @@ public class BanManagerPlugin {
 
     try {
       metrics.submitStorageType(config.getLocalDb().getStorageType());
-      metrics.submitDiscordMode(discordConfig.isEnabled());
+      metrics.submitDiscordMode(discordConfig.isHooksEnabled());
       metrics.submitGeoMode(geoIpConfig.isEnabled());
       metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
       metrics.submitOnlineMode(config.isOnlineMode());
