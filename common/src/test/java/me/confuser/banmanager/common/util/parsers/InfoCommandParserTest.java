@@ -76,4 +76,14 @@ public class InfoCommandParserTest extends BasePluginTest {
     assertEquals(5, parser.getIps(), 0);
     assertEquals(1, parser.getArgs().length);
   }
+
+  @Test
+  public void parsesReportsFlag() {
+    String[] args = new String[] { "confuser", "-r" };
+    InfoCommandParser parser = new InfoCommandParser(this.plugin, args, 1);
+
+    assert (parser.isReports());
+    assertEquals("confuser", parser.getArgs()[0]);
+    assertEquals(1, parser.getArgs().length);
+  }
 }

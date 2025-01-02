@@ -311,7 +311,7 @@ public class InfoCommand extends CommonCommand {
     ArrayList<Object> messages = new ArrayList<>();
 
     boolean hasFlags = parser.isBans() || parser.isKicks() || parser.isMutes() || parser.isNotes() || parser
-        .isWarnings() || parser.getIps() != null;
+        .isWarnings() || parser.isReports() || parser.getIps() != null;
 
     if (hasFlags) {
       long since = 0;
@@ -341,6 +341,11 @@ public class InfoCommand extends CommonCommand {
       }
 
       if (parser.isNotes() && !sender.hasPermission("bm.command.bminfo.history.notes")) {
+        Message.get("sender.error.noPermission").sendTo(sender);
+        return;
+      }
+
+      if (parser.isReports() && !sender.hasPermission("bm.command.bminfo.history.reports")) {
         Message.get("sender.error.noPermission").sendTo(sender);
         return;
       }
@@ -401,6 +406,7 @@ public class InfoCommand extends CommonCommand {
         double warnPointsTotal = getPlugin().getPlayerWarnStorage().getPointsCount(player);
         long kickTotal = getPlugin().getPlayerKickStorage().getCount(player);
         long noteTotal = getPlugin().getPlayerNoteStorage().getCount(player);
+        long reportTotal = getPlugin().getPlayerReportStorage().getCount(player);
 
         messages.add(Message.get("info.stats.player")
             .set("player", player.getName())
@@ -411,6 +417,7 @@ public class InfoCommand extends CommonCommand {
             .set("warns", Long.toString(warnTotal))
             .set("warnPoints", warnPointsTotal)
             .set("kicks", Long.toString(kickTotal))
+            .set("reports", Long.toString(reportTotal))
             .toString());
       }
 

@@ -35,6 +35,10 @@ public class InfoCommandParser extends CommandParser {
   @Getter
   private Integer ips;
 
+  @Argument(alias = "r")
+  @Getter
+  private boolean reports;
+
   public InfoCommandParser(BanManagerPlugin plugin, String[] args) {
     super(plugin, args);
   }

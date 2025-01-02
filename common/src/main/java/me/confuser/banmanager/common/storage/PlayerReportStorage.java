@@ -150,4 +150,8 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
 
     return count;
   }
+
+  public long getCount(PlayerData player) throws SQLException {
+    return queryBuilder().where().eq("player_id", player).countOf();
+  }
 }

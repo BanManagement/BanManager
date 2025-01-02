@@ -27,6 +27,7 @@ public class HistoryStorage {
   private final String kickSql;
   private final String warningSql;
   private final String noteSql;
+  private final String reportSql;
 
   private final String ipBanSql;
   private final String ipMuteSql;
@@ -60,6 +61,13 @@ public class HistoryStorage {
             "    FROM " + plugin.getPlayerNoteStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON actor_id = actor.id" +
+            "    WHERE player_id = ?";
+    reportSql = "SELECT t.id, 'Reported' AS type, actor.name AS actor, created, reason, state.name AS meta" +
+            "    FROM " + plugin.getPlayerReportStorage().getTableConfig().getTableName() + " t" +
+            "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
+                                     .getTableName() + " actor ON actor_id = actor.id" +
+            "    LEFT JOIN " + plugin.getReportStateStorage().getTableConfig()
+                                      .getTableName() + " state ON t.state_id = state.id" +
             "    WHERE player_id = ?";
 
     ipBanSql = "SELECT t.id, 'IP Ban' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
@@ -119,6 +127,12 @@ public class HistoryStorage {
     }
     if (parser.isNotes()) {
       unions.append(noteSql);
+      unions.append(" AND created >= ").append(since);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isReports()) {
+      unions.append(reportSql);
       unions.append(" AND created >= ").append(since);
       unions.append(" UNION ALL ");
       typeCount++;
@@ -222,6 +236,11 @@ public class HistoryStorage {
     }
     if (parser.isNotes()) {
       unions.append(noteSql);
+      unions.append(" UNION ALL ");
+      typeCount++;
+    }
+    if (parser.isReports()) {
+      unions.append(reportSql);
       unions.append(" UNION ALL ");
       typeCount++;
     }
