@@ -186,6 +186,10 @@ public class BMSpongePlugin {
       registerEvent(new NoteListener(plugin));
       registerEvent(new ReportListener(plugin));
     }
+
+    if (plugin.getDiscordConfig().isHooksEnabled()) {
+      registerEvent(new DiscordListener(plugin));
+    }
   }
 
   private void registerEvent(Object listener) {
