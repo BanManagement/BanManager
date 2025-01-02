@@ -144,7 +144,7 @@ public class BMBukkitPlugin extends JavaPlugin {
       registerEvent(new ReportListener(plugin));
     }
 
-    if (plugin.getDiscordConfig().isEnabled() && Bukkit.getPluginManager().getPlugin("DiscordSRV") != null) {
+    if (plugin.getDiscordConfig().isHooksEnabled()) {
       registerEvent(new DiscordListener(plugin));
     }
 

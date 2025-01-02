@@ -1,20 +1,22 @@
-package me.confuser.banmanager.bukkit.listeners;
+package me.confuser.banmanager.sponge.listeners;
 
-import me.confuser.banmanager.bukkit.api.events.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonDiscordListener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import me.confuser.banmanager.sponge.api.events.*;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
 
-public class DiscordListener implements Listener {
+public class DiscordListener {
   private CommonDiscordListener listener;
 
   public DiscordListener(BanManagerPlugin plugin) {
     this.listener = new CommonDiscordListener(plugin);
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnBan(PlayerBannedEvent event) {
     Object[] data = listener.notifyOnBan(event.getBan());
 
@@ -23,7 +25,8 @@ public class DiscordListener implements Listener {
     send(data);
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnMute(PlayerMutedEvent event) {
     Object[] data = listener.notifyOnMute(event.getMute());
 
@@ -32,25 +35,8 @@ public class DiscordListener implements Listener {
     send(data);
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void notifyOnBan(IpBannedEvent event) {
-    Object[] data = listener.notifyOnBan(event.getBan());
-
-    if (event.isSilent() && (boolean) data[2]) return;
-
-    send(data);
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void notifyOnKick(PlayerKickedEvent event) {
-    Object[] data = listener.notifyOnKick(event.getKick());
-
-    if (event.isSilent() && (boolean) data[2]) return;
-
-    send(data);
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnWarn(PlayerWarnedEvent event) {
     Object[] data = listener.notifyOnWarn(event.getWarning());
 
@@ -59,28 +45,46 @@ public class DiscordListener implements Listener {
     send(data);
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnBan(IpBannedEvent event) {
+    Object[] data = listener.notifyOnBan(event.getBan());
+
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data);
+  }
+
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
+  public void notifyOnKick(PlayerKickedEvent event) {
+    Object[] data = listener.notifyOnKick(event.getKick());
+
+    if (event.isSilent() && (boolean) data[2]) return;
+
+    send(data);
+  }
+
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnUnban(PlayerUnbanEvent event) {
-    Object[] data = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
-
-    send(data);
+    send(listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason()));
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnUnban(IpUnbanEvent event) {
-    Object[] data = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
-
-    send(data);
+    send(listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason()));
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnUnmute(PlayerUnmuteEvent event) {
-    Object[] data = listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason());
-
-    send(data);
+    send(listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason()));
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @IsCancelled(Tristate.UNDEFINED)
+  @Listener(order = Order.POST)
   public void notifyOnReport(PlayerReportedEvent event) {
     Object[] data = listener.notifyOnReport(event.getReport(), event.getReport().getActor(), event.getReport().getReason());
 

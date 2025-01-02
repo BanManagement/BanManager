@@ -55,6 +55,11 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
         );
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " MODIFY `reason` TEXT NOT NULL");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();

@@ -3,9 +3,20 @@ package me.confuser.banmanager.common.listeners;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
-import me.confuser.banmanager.common.util.Message;
 
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
+import java.sql.SQLException;
+import java.time.ZoneId;
 
 public class CommonDiscordListener {
   private BanManagerPlugin plugin;
@@ -14,38 +25,47 @@ public class CommonDiscordListener {
     this.plugin = plugin;
   }
 
+  private String toISO8601(long timestamp) {
+    return DateTimeFormatter.ISO_INSTANT
+        .format(java.time.Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
+  }
+
   public Object[] notifyOnBan(PlayerBanData ban) {
-    String channelName;
-    Message message;
+    String url;
+    String payload;
     boolean ignoreSilent;
-    String dateTimeFormat;
 
     if (ban.getExpires() == 0) {
-      channelName = plugin.getDiscordConfig().getType("ban").getChannel();
-      message = plugin.getDiscordConfig().getType("ban").getMessage();
+      url = plugin.getDiscordConfig().getType("ban").getUrl();
+      payload = plugin.getDiscordConfig().getType("ban").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("ban").isIgnoreSilent();
-      dateTimeFormat =  plugin.getDiscordConfig().getType("ban").getDateTimeFormat();
     } else {
-      channelName = plugin.getDiscordConfig().getType("tempban").getChannel();
-      message = plugin.getDiscordConfig().getType("tempban").getMessage();
-      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-
+      url = plugin.getDiscordConfig().getType("tempban").getUrl();
+      payload = plugin.getDiscordConfig().getType("tempban").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("tempban").isIgnoreSilent();
-      dateTimeFormat =  plugin.getDiscordConfig().getType("tempban").getDateTimeFormat();
     }
 
-    message.set("player", ban.getPlayer().getName())
-        .set("playerId", ban.getPlayer().getUUID().toString())
-        .set("actor", ban.getActor().getName())
-        .set("id", ban.getId())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("reason", ban.getReason());
+    payload = payload.replace("[player]", ban.getPlayer().getName())
+        .replace("[playerId]", ban.getPlayer().getUUID().toString())
+        .replace("[actor]", ban.getActor().getName())
+        .replace("[actorId]", ban.getActor().getUUID().toString())
+        .replace("[id]", String.valueOf(ban.getId()))
+        .replace("[created]", toISO8601(ban.getCreated()))
+        .replace("[reason]", ban.getReason());
 
-    return new Object[]{channelName, message, ignoreSilent};
+    if (ban.getExpires() != 0) {
+      payload = payload.replace("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
+
+    return new Object[] { url, payload, ignoreSilent };
   }
 
   public Object[] notifyOnBan(IpBanData ban) {
-    List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(ban.getIp(), plugin.getConfig().getTimeAssociatedAlts());
+    String url;
+    String payload;
+    boolean ignoreSilent;
+    List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(ban.getIp(),
+        plugin.getConfig().getTimeAssociatedAlts());
     StringBuilder playerNames = new StringBuilder();
 
     for (PlayerData player : players) {
@@ -53,154 +73,259 @@ public class CommonDiscordListener {
       playerNames.append(", ");
     }
 
-    if (playerNames.length() >= 2) playerNames.setLength(playerNames.length() - 2);
-
-    String channelName;
-    Message message;
-    boolean ignoreSilent;
-    String dateTimeFormat;
+    if (playerNames.length() >= 2)
+      playerNames.setLength(playerNames.length() - 2);
 
     if (ban.getExpires() == 0) {
-      channelName = plugin.getDiscordConfig().getType("banip").getChannel();
-      message = plugin.getDiscordConfig().getType("banip").getMessage();
+      url = plugin.getDiscordConfig().getType("banip").getUrl();
+      payload = plugin.getDiscordConfig().getType("banip").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("banip").isIgnoreSilent();
-      dateTimeFormat =  plugin.getDiscordConfig().getType("banip").getDateTimeFormat();
     } else {
-      channelName = plugin.getDiscordConfig().getType("tempbanip").getChannel();
-      message = plugin.getDiscordConfig().getType("tempbanip").getMessage();
-      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+      url = plugin.getDiscordConfig().getType("tempbanip").getUrl();
+      payload = plugin.getDiscordConfig().getType("tempbanip").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("tempbanip").isIgnoreSilent();
-      dateTimeFormat =  plugin.getDiscordConfig().getType("tempbanip").getDateTimeFormat();
     }
 
-    message.set("ip", ban.getIp().toString())
-        .set("actor", ban.getActor().getName())
-        .set("reason", ban.getReason())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("players", playerNames.toString());
+    payload = payload.replace("[ip]", ban.getIp().toString())
+        .replace("[actor]", ban.getActor().getName())
+        .replace("[actorId]", ban.getActor().getUUID().toString())
+        .replace("[reason]", ban.getReason())
+        .replace("[created]", toISO8601(ban.getCreated()))
+        .replace("[players]", playerNames.toString());
 
-    return new Object[]{channelName, message, ignoreSilent};
+    if (ban.getExpires() != 0) {
+      payload = payload.replace("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
+    }
+
+    return new Object[] { url, payload, ignoreSilent };
   }
 
   public Object[] notifyOnKick(PlayerKickData kick) {
-    String channelName = plugin.getDiscordConfig().getType("kick").getChannel();
-    Message message = plugin.getDiscordConfig().getType("kick").getMessage();
+    String url = plugin.getDiscordConfig().getType("kick").getUrl();
+    String payload = plugin.getDiscordConfig().getType("kick").getPayload();
     boolean ignoreSilent = plugin.getDiscordConfig().getType("kick").isIgnoreSilent();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("kick").getDateTimeFormat();
 
-    message.set("player", kick.getPlayer().getName())
-        .set("playerId", kick.getPlayer().getUUID().toString())
-        .set("actor", kick.getActor().getName())
-        .set("id", kick.getId())
-        .set("created", DateUtils.format(dateTimeFormat, kick.getCreated()))
-        .set("reason", kick.getReason());
+    payload = payload.replace("[player]", kick.getPlayer().getName())
+        .replace("[playerId]", kick.getPlayer().getUUID().toString())
+        .replace("[actor]", kick.getActor().getName())
+        .replace("[actorId]", kick.getActor().getUUID().toString())
+        .replace("[id]", String.valueOf(kick.getId()))
+        .replace("[created]", toISO8601(kick.getCreated()))
+        .replace("[reason]", kick.getReason());
 
-    return new Object[]{channelName, message, ignoreSilent};
+    return new Object[] { url, payload, ignoreSilent };
   }
 
-  public Object[] notifyOnMute(PlayerMuteData ban) {
-    String channelName;
-    Message message;
+  public Object[] notifyOnMute(PlayerMuteData mute) {
+    String url;
+    String payload;
     boolean ignoreSilent;
-    String dateTimeFormat;
 
-    if (ban.getExpires() == 0) {
-      channelName = plugin.getDiscordConfig().getType("mute").getChannel();
-      message = plugin.getDiscordConfig().getType("mute").getMessage();
+    if (mute.getExpires() == 0) {
+      url = plugin.getDiscordConfig().getType("mute").getUrl();
+      payload = plugin.getDiscordConfig().getType("mute").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("mute").isIgnoreSilent();
-      dateTimeFormat =  plugin.getDiscordConfig().getType("mute").getDateTimeFormat();
     } else {
-      channelName = plugin.getDiscordConfig().getType("tempmute").getChannel();
-      message = plugin.getDiscordConfig().getType("tempmute").getMessage();
-      message.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-      dateTimeFormat =  plugin.getDiscordConfig().getType("tempmute").getDateTimeFormat();
-
+      url = plugin.getDiscordConfig().getType("tempmute").getUrl();
+      payload = plugin.getDiscordConfig().getType("tempmute").getPayload();
       ignoreSilent = plugin.getDiscordConfig().getType("tempmute").isIgnoreSilent();
     }
 
-    message.set("player", ban.getPlayer().getName())
-        .set("playerId", ban.getPlayer().getUUID().toString())
-        .set("actor", ban.getActor().getName())
-        .set("id", ban.getId())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("reason", ban.getReason());
+    payload = payload.replace("[player]", mute.getPlayer().getName())
+        .replace("[playerId]", mute.getPlayer().getUUID().toString())
+        .replace("[actor]", mute.getActor().getName())
+        .replace("[actorId]", mute.getActor().getUUID().toString())
+        .replace("[id]", String.valueOf(mute.getId()))
+        .replace("[created]", toISO8601(mute.getCreated()))
+        .replace("[reason]", mute.getReason());
 
-    return new Object[]{channelName, message, ignoreSilent};
+    if (mute.getExpires() != 0) {
+      payload = payload.replace("[expires]", DateUtils.getDifferenceFormat(mute.getExpires()));
+    }
+
+    return new Object[] { url, payload, ignoreSilent };
   }
 
-  public Object[] notifyOnWarn(PlayerWarnData ban) {
-    String channelName = plugin.getDiscordConfig().getType("warning").getChannel();
-    Message message = plugin.getDiscordConfig().getType("warning").getMessage();
-    boolean ignoreSilent = plugin.getDiscordConfig().getType("warning").isIgnoreSilent();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("warning").getDateTimeFormat();
+  public Object[] notifyOnWarn(PlayerWarnData warn) {
+    String url;
+    String payload;
+    boolean ignoreSilent;
 
-    message.set("player", ban.getPlayer().getName())
-        .set("playerId", ban.getPlayer().getUUID().toString())
-        .set("actor", ban.getActor().getName())
-        .set("id", ban.getId())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("reason", ban.getReason());
+    if (warn.getExpires() == 0) {
+      url = plugin.getDiscordConfig().getType("warning").getUrl();
+      payload = plugin.getDiscordConfig().getType("warning").getPayload();
+      ignoreSilent = plugin.getDiscordConfig().getType("warning").isIgnoreSilent();
+    } else {
+      url = plugin.getDiscordConfig().getType("tempwarning").getUrl();
+      payload = plugin.getDiscordConfig().getType("tempwarning").getPayload();
+      ignoreSilent = plugin.getDiscordConfig().getType("tempwarning").isIgnoreSilent();
+    }
 
-    return new Object[]{channelName, message, ignoreSilent};
+    payload = payload.replace("[player]", warn.getPlayer().getName())
+        .replace("[playerId]", warn.getPlayer().getUUID().toString())
+        .replace("[actor]", warn.getActor().getName())
+        .replace("[actorId]", warn.getActor().getUUID().toString())
+        .replace("[id]", String.valueOf(warn.getId()))
+        .replace("[created]", toISO8601(warn.getCreated()))
+        .replace("[points]", String.valueOf(warn.getPoints()))
+        .replace("[reason]", warn.getReason());
+
+    if (warn.getExpires() != 0) {
+      payload = payload.replace("[expires]", DateUtils.getDifferenceFormat(warn.getExpires()));
+    }
+
+    return new Object[] { url, payload, ignoreSilent };
   }
 
   public Object[] notifyOnUnban(PlayerBanData ban, PlayerData actor, String reason) {
-    String channelName = plugin.getDiscordConfig().getType("unban").getChannel();
-    Message message = plugin.getDiscordConfig().getType("unban").getMessage();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("unban").getDateTimeFormat();
+    String url = plugin.getDiscordConfig().getType("unban").getUrl();
+    String payload = plugin.getDiscordConfig().getType("unban").getPayload();
 
-    message.set("player", ban.getPlayer().getName())
-        .set("playerId", ban.getPlayer().getUUID().toString())
-        .set("actor", actor.getName())
-        .set("id", ban.getId())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("reason", reason);
+    payload = payload.replace("[player]", ban.getPlayer().getName())
+        .replace("[playerId]", ban.getPlayer().getUUID().toString())
+        .replace("[actor]", actor.getName())
+        .replace("[actorId]", actor.getUUID().toString())
+        .replace("[id]", String.valueOf(ban.getId()))
+        .replace("[created]", toISO8601(ban.getCreated()))
+        .replace("[reason]", reason);
 
-    return new Object[]{channelName, message};
+    return new Object[] { url, payload };
   }
 
   public Object[] notifyOnUnban(IpBanData ban, PlayerData actor, String reason) {
-    String channelName = plugin.getDiscordConfig().getType("unbanip").getChannel();
-    Message message = plugin.getDiscordConfig().getType("unbanip").getMessage();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("unbanip").getDateTimeFormat();
+    String url = plugin.getDiscordConfig().getType("unbanip").getUrl();
+    String payload = plugin.getDiscordConfig().getType("unbanip").getPayload();
 
-    message.set("ip", ban.getIp().toString())
-        .set("actor", actor.getName())
-        .set("id", ban.getId())
-        .set("created", DateUtils.format(dateTimeFormat, ban.getCreated()))
-        .set("reason", reason);
+    payload = payload.replace("[ip]", ban.getIp().toString())
+        .replace("[actor]", actor.getName())
+        .replace("[actorId]", actor.getUUID().toString())
+        .replace("[id]", String.valueOf(ban.getId()))
+        .replace("[created]", toISO8601(ban.getCreated()))
+        .replace("[reason]", reason);
 
-    return new Object[]{channelName, message};
+    return new Object[] { url, payload };
   }
 
   public Object[] notifyOnUnmute(PlayerMuteData mute, PlayerData actor, String reason) {
-    String channelName = plugin.getDiscordConfig().getType("unmute").getChannel();
-    Message message = plugin.getDiscordConfig().getType("unmute").getMessage();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("unmute").getDateTimeFormat();
+    String url = plugin.getDiscordConfig().getType("unmute").getUrl();
+    String payload = plugin.getDiscordConfig().getType("unmute").getPayload();
 
-    message.set("player", mute.getPlayer().getName())
-        .set("playerId", mute.getPlayer().getUUID().toString())
-        .set("actor", actor.getName())
-        .set("id", mute.getId())
-        .set("created", DateUtils.format(dateTimeFormat, mute.getCreated()))
-        .set("reason", reason);
+    payload = payload.replace("[player]", mute.getPlayer().getName())
+        .replace("[playerId]", mute.getPlayer().getUUID().toString())
+        .replace("[actor]", actor.getName())
+        .replace("[actorId]", actor.getUUID().toString())
+        .replace("[id]", String.valueOf(mute.getId()))
+        .replace("[created]", toISO8601(mute.getCreated()))
+        .replace("[reason]", reason);
 
-    return new Object[]{channelName, message};
+    return new Object[] { url, payload };
   }
 
   public Object[] notifyOnReport(PlayerReportData report, PlayerData actor, String reason) {
-    String channelName = plugin.getDiscordConfig().getType("report").getChannel();
-    Message message = plugin.getDiscordConfig().getType("report").getMessage();
+    String url = plugin.getDiscordConfig().getType("report").getUrl();
+    String payload = plugin.getDiscordConfig().getType("report").getPayload();
     boolean ignoreSilent = plugin.getDiscordConfig().getType("report").isIgnoreSilent();
-    String dateTimeFormat = plugin.getDiscordConfig().getType("report").getDateTimeFormat();
+    List<PlayerReportLocationData> locations = null;
+    try {
+      locations = plugin.getPlayerReportLocationStorage().getByReport(report);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
-    message.set("player", report.getPlayer().getName())
-        .set("playerId", report.getPlayer().getUUID().toString())
-        .set("actor", actor.getName())
-        .set("id", report.getId())
-        .set("created", DateUtils.format(dateTimeFormat, report.getCreated()))
-        .set("reason", reason);
+    payload = payload.replace("[player]", report.getPlayer().getName())
+        .replace("[playerId]", report.getPlayer().getUUID().toString())
+        .replace("[actor]", actor.getName())
+        .replace("[actorId]", actor.getUUID().toString())
+        .replace("[id]", String.valueOf(report.getId()))
+        .replace("[created]", toISO8601(report.getCreated()))
+        .replace("[reason]", reason);
 
-    return new Object[]{channelName, message, ignoreSilent};
+    if (locations != null && locations.size() > 0) {
+      PlayerReportLocationData playerLocation = null;
+      PlayerReportLocationData actorLocation = null;
+
+      for (PlayerReportLocationData location : locations) {
+        if (location.getPlayer().equals(actor)) {
+          actorLocation = location;
+        } else {
+          playerLocation = location;
+        }
+      }
+
+      if (playerLocation != null) {
+        payload = payload.replace("[playerWorld]", playerLocation.getWorld())
+            .replace("[playerX]", String.valueOf(playerLocation.getX()))
+            .replace("[playerY]", String.valueOf(playerLocation.getY()))
+            .replace("[playerZ]", String.valueOf(playerLocation.getZ()))
+            .replace("[playerYaw]", String.valueOf(playerLocation.getYaw()))
+            .replace("[playerPitch]", String.valueOf(playerLocation.getPitch()));
+      }
+
+      if (actorLocation != null) {
+        payload = payload.replace("[actorWorld]", actorLocation.getWorld())
+            .replace("[actorX]", String.valueOf(actorLocation.getX()))
+            .replace("[actorY]", String.valueOf(actorLocation.getY()))
+            .replace("[actorZ]", String.valueOf(actorLocation.getZ()))
+            .replace("[actorYaw]", String.valueOf(actorLocation.getYaw()))
+            .replace("[actorPitch]", String.valueOf(actorLocation.getPitch()));
+      }
+    }
+
+    return new Object[] { url, payload, ignoreSilent };
+  }
+
+  public void send(String url, String payload) {
+    BufferedReader reader = null;
+    OutputStream stream = null;
+
+    if (plugin.getConfig().isDebugEnabled()) {
+      plugin.getLogger().info("Sending Discord webhook to " + url + " with payload:" + payload);
+    }
+
+    try {
+      HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
+      connection.addRequestProperty("Content-Type", "application/json");
+      connection.addRequestProperty("User-Agent", "BanManager");
+      connection.setDoOutput(true);
+      connection.setRequestMethod("POST");
+
+      stream = connection.getOutputStream();
+      stream.write(payload.getBytes());
+      stream.flush();
+
+      int responseCode = connection.getResponseCode();
+      if (responseCode > 299) {
+        plugin.getLogger().warning("Failed to send Discord webhook");
+        plugin.getLogger().warning("Response code: " + responseCode);
+
+        StringBuilder responseBody = new StringBuilder();
+        try {
+          reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        } catch (IOException e) {
+          reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        }
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+          responseBody.append(line);
+        }
+
+        plugin.getLogger().warning("Response body: " + responseBody.toString());
+      }
+
+      connection.getInputStream().close();
+      connection.disconnect();
+    } catch (Exception e) {
+      plugin.getLogger().warning("Failed to send Discord message with payload: " + payload);
+      plugin.getLogger().warning("Error: " + e.getMessage());
+      e.printStackTrace();
+    } finally {
+      try {
+        if (reader != null) reader.close();
+        if (stream != null) stream.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 }

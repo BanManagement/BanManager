@@ -6,7 +6,6 @@ include(":BanManagerBungee")
 include(":BanManagerSponge")
 include(":BanManagerLibs")
 include(":BanManagerVelocity")
-//include("BanManagerVelocity")
 
 project(":BanManagerCommon").projectDir = file("common")
 project(":BanManagerBukkit").projectDir = file("bukkit")
