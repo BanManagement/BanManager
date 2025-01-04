@@ -25,7 +25,7 @@ fun Project.applyLibrariesConfiguration() {
     apply(plugin = "java-base")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
 
     repositories {
         mavenCentral()

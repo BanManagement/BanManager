@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "banmanager",
+  "version": "${internalVersion}",
+  "name": "BanManager",
+  "description": "A database driven punishment system",
+  "authors": [
+    {
+      "name": "confuser",
+      "contact": {
+        "sources": "https://github.com/confuser",
+        "homepage": "https://banmanagement.com"
+      }
+    }
+  ],
+  "contact": {
+    "homepage": "https://banmanagement.com",
+    "sources": "https://github.com/BanManagement/BanManager",
+    "issues": "https://github.com/BanManagement/BanManager/issues"
+  },
+  "icon": "assets/banmanager/icon.png",
+  "license": "CC-BY-NC-SA-2.0-UK",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "${mainPath}"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.9.0",
+    "fabric-api-base": "*",
+    "fabric-command-api-v2": "*",
+    "fabric-events-interaction-v0": "*",
+    "fabric-lifecycle-events-v1": "*",
+    "fabric-message-api-v1": "*",
+    "fabric-networking-api-v1": "*",
+    "fabric-permissions-api-v0": ">=0.3.1",
+    "minecraft": ">=1.21"
+  }
+}

@@ -256,6 +256,7 @@ public class BMVelocityPlugin {
 
     server.getScheduler().buildTask(this, runnable).repeat(length, TimeUnit.SECONDS).schedule();
   }
+
   @SneakyThrows
   private InputStream getResourceAsStream(String resource) {
 
