@@ -264,23 +264,69 @@ public class FabricServer implements CommonServer {
   }
 
   public CommonExternalCommand getPluginCommand(String commandName) {
+    CommandNode<?> node = null;
+
+    // Not overly efficient but it's only on startup and seems to find aliases correctly for blocking
     for (CommandNode<?> commandNode : this.server.getCommandManager().getDispatcher().getRoot().getChildren()) {
       if (commandNode.getName().equals(commandName)) {
-        List<String> redirects = new ArrayList<>();
-
-        if (commandNode instanceof LiteralCommandNode) {
-          LiteralCommandNode<?> literalNode = (LiteralCommandNode<?>) commandNode;
-          CommandNode<?> redirectNode = literalNode.getRedirect();
-
-          if (redirectNode != null) {
-            redirects.add(redirectNode.getName());
+        node = commandNode;
+        break;
+      }
+      if (commandNode instanceof LiteralCommandNode) {
+        LiteralCommandNode<?> literalNode = (LiteralCommandNode<?>) commandNode;
+        for (CommandNode<?> child : literalNode.getChildren()) {
+          if (child.getName().equals(commandName)) {
+            node = child;
+            break;
           }
         }
-
-        return new CommonExternalCommand(commandNode.getName(), commandNode.getName(), redirects);
+        if (node == null) {
+          CommandNode<?> redirectNode = literalNode.getRedirect();
+          if (redirectNode != null && redirectNode.getName().equals(commandName)) {
+            node = redirectNode;
+            break;
+          }
+        }
       }
     }
-    return null;
+
+    if (node == null) return null;
+
+    List<String> redirects = new ArrayList<>();
+
+    for (CommandNode<?> commandNode : this.server.getCommandManager().getDispatcher().getRoot().getChildren()) {
+      if (commandNode instanceof LiteralCommandNode) {
+        LiteralCommandNode<?> literalNode = (LiteralCommandNode<?>) commandNode;
+        for (CommandNode<?> child : literalNode.getChildren()) {
+          if (child.getName().equals(node.getName())) {
+            collectRedirects(child, redirects);
+          }
+        }
+        CommandNode<?> redirectNode = literalNode.getRedirect();
+        if (redirectNode != null && redirectNode.getName().equals(node.getName())) {
+          redirects.add(literalNode.getName());
+
+          collectRedirects(redirectNode, redirects);
+        }
+      }
+    }
+
+    return new CommonExternalCommand(node.getName(), node.getName(), redirects);
+  }
+
+  private void collectRedirects(CommandNode<?> node, List<String> redirects) {
+    if (node instanceof LiteralCommandNode) {
+      LiteralCommandNode<?> literalNode = (LiteralCommandNode<?>) node;
+      CommandNode<?> redirectNode = literalNode.getRedirect();
+
+      if (redirectNode != null) {
+        redirects.add(redirectNode.getName());
+        collectRedirects(redirectNode, redirects);
+      }
+      for (CommandNode<?> child : literalNode.getChildren()) {
+        collectRedirects(child, redirects);
+      }
+    }
   }
 
   public static Text formatMessage(String message) {
