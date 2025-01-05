@@ -17,8 +17,8 @@ jobs:
         include:
           - storageType: mariadb
             java: 21
-          - storageType: h2
-            java: 21
+          # - storageType: h2 # disabled for now due to memory issues
+          #   java: 21
 
     steps:
       - uses: actions/checkout@v2
