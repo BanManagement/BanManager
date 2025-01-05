@@ -20,7 +20,7 @@
 </p>
 <p align="center">
   <a aria-label="Tests status" href="https://github.com/BanManagement/BanManager/actions/workflows/build.yml">
-    <img alt="" src="https://img.shields.io/github/workflow/status/BanManagement/BanManager/Java%20CI?label=Tests&style=for-the-badge&labelColor=000000">
+    <img alt="" src="https://img.shields.io/github/actions/workflow/status/BanManagement/BanManager/build.yml?branch=master&label=Tests&style=for-the-badge&labelColor=000000">
   </a>
   <a aria-label="Join the community on Discord" href="https://discord.gg/59bsgZB">
     <img alt="" src="https://img.shields.io/discord/664808009393766401?label=Support&style=for-the-badge&labelColor=000000&color=7289da">
@@ -38,7 +38,7 @@
 To learn more about configuration, usage and features of BanManager, take a look at [the website](https://banmanagement.com/docs/banmanager/configuration) or view [the website demo](https://demo.banmanagement.com).
 
 ## Requirements
-- Java 8+
+- Java 8+ (JDK21+ required to build from source)
 - CraftBukkit/Spigot/Paper, BungeeCord or Sponge for Minecraft 1.7.2+
 - Optionally [MySQL or MariaDB](https://banmanagement.com/docs/banmanager/install#setup-shared-database-optional)
 

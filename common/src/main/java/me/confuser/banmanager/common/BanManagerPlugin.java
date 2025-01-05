@@ -211,17 +211,19 @@ public class BanManagerPlugin {
       results2.close();
     }
 
-    try {
-      metrics.submitStorageType(config.getLocalDb().getStorageType());
-      metrics.submitDiscordMode(discordConfig.isHooksEnabled());
-      metrics.submitGeoMode(geoIpConfig.isEnabled());
-      metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
-      metrics.submitOnlineMode(config.isOnlineMode());
-      if (storageVersion != null) {
-        metrics.submitStorageVersion(storageVersion);
+    if (metrics != null) {
+      try {
+        metrics.submitStorageType(config.getLocalDb().getStorageType());
+        metrics.submitDiscordMode(discordConfig.isHooksEnabled());
+        metrics.submitGeoMode(geoIpConfig.isEnabled());
+        metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
+        metrics.submitOnlineMode(config.isOnlineMode());
+        if (storageVersion != null) {
+          metrics.submitStorageVersion(storageVersion);
+        }
+      } catch (Exception e) {
+        logger.warning("Failed to submit stats, ignoring");
       }
-    } catch (Exception e) {
-      logger.warning("Failed to submit stats, ignoring");
     }
   }
 

@@ -152,9 +152,9 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
-        relocate("org.bstats", "me.confuser.banmanager.common.bstats") {
-            include(dependency("org.bstats:"))
-        }
+        include(dependency("org.bstats:.*:.*"))
+
+        relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
 
     exclude("GradleStart**")
@@ -168,8 +168,11 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("**/module-info.class")
     exclude("*.yml")
     exclude("assets/banmanager/bungeecord.yml")
+    exclude("assets/banmanager/velocity.yml")
 
-    minimize()
+    minimize {
+        exclude(dependency("org.bstats:.*:.*"))
+    }
 }
 
 tasks.named("assemble").configure {

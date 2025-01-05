@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "me.confuser.banmanager.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BanCommandMixin",
+    "BanIpCommandMixin",
+    "KickCommandMixin",
+    "PardonCommandMixin",
+    "ServerPlayerNetworkHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
