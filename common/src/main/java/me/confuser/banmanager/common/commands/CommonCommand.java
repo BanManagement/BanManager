@@ -167,6 +167,10 @@ public abstract class CommonCommand {
             args, start);
   }
 
+  public CommandParser getParser(List<String> args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    return getParser(args.toArray(new String[0]));
+  }
+
   public List<String> handlePlayerNameTabComplete(CommonSender sender, String[] args) {
     ArrayList<String> mostLike = new ArrayList<>();
     if(args.length == 1) {

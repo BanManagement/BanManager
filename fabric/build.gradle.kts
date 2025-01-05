@@ -1,9 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    `java-library`
-    `maven-publish`
-    signing
+  `java-library`
+  `maven-publish`
+  `signing`
+  `fabric-loom`
 }
 
 applyPlatformAndCoreConfiguration()
@@ -15,8 +17,8 @@ publishing {
             from(components["java"])
 
             pom {
-                name.set("BanManagerBungee")
-                description.set("BanManager for BungeeCord")
+                name.set("BanManagerFabric")
+                description.set("BanManager for Fabric")
                 url.set("https://github.com/BanManagement/BanManager/")
                 licenses {
                     license {
@@ -51,8 +53,8 @@ signing {
 
 repositories {
     maven {
-        name = "paper"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
+        name = "Fabric"
+        url = uri("https://maven.fabricmc.net/")
     }
 }
 
@@ -61,9 +63,27 @@ configurations {
 }
 
 dependencies {
+    minecraft("com.mojang:minecraft:1.21.4")
+    mappings("net.fabricmc:yarn:1.21.4+build.1:v2")
+    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+
+    val modules = listOf(
+        "fabric-api-base",
+        "fabric-command-api-v2",
+        "fabric-events-interaction-v0",
+        "fabric-lifecycle-events-v1",
+        "fabric-message-api-v1",
+        "fabric-networking-api-v1",
+        "fabric-entity-events-v1"
+    )
+
+    modules.forEach {
+        modImplementation(fabricApi.module(it, "0.111.0+1.21.4"))
+    }
+
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
+
     api(project(":BanManagerCommon"))
-    compileOnly("net.md-5:bungeecord-api:1.14-SNAPSHOT")
-    "shadeOnly"("org.bstats:bstats-bungeecord:2.2.1")
 }
 
 tasks.named<Copy>("processResources") {
@@ -71,8 +91,8 @@ tasks.named<Copy>("processResources") {
 
     inputs.property("internalVersion", internalVersion)
 
-    filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.bungee.BMBungeePlugin")
+    filesMatching(listOf("plugin.yml", "fabric.mod.json")) {
+        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.fabric.BMFabricPlugin")
     }
 }
 
@@ -87,16 +107,13 @@ tasks.named<Jar>("jar") {
 tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
-    archiveBaseName.set("BanManagerBungeeCord")
+    archiveBaseName.set("BanManagerFabric")
     archiveClassifier.set("")
     archiveVersion.set("")
 
     dependencies {
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
-        include(dependency("org.bstats:.*:.*"))
-
-        relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
     exclude("GradleStart**")
     exclude(".cache");
@@ -105,11 +122,18 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
-    exclude("velocity.yml")
+    exclude("/mappings/*")
 
-    minimize {
-        exclude(dependency("org.bstats:.*:.*"))
-    }
+    minimize()
+}
+
+tasks.named<RemapJarTask>("remapJar") {
+    dependsOn(tasks.named<ShadowJar>("shadowJar"))
+
+    inputFile.set(tasks.named<ShadowJar>("shadowJar").get().archiveFile)
+    archiveBaseName.set("BanManagerFabric")
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }
 
 tasks.named("assemble").configure {

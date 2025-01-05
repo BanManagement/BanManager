@@ -11,8 +11,8 @@ logger.lifecycle("""
 """)
 
 plugins {
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("io.freefair.aggregate-javadoc") version "6.3.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("io.freefair.aggregate-javadoc") version "8.11"
 }
 
 nexusPublishing {
