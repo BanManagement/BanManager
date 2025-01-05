@@ -3,14 +3,11 @@
   "package": "me.confuser.banmanager.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    // "PlayerManagerMixin",
-    // "ServerPlayNetworkHandlerMixin",
-    // "accessor.ServerConfigEntryAccessor",
-    // "vanilla.BanCommandMixin",
-    // "vanilla.BanIpCommandMixin",
-    // "vanilla.KickCommandMixin",
-    // "vanilla.PardonCommandMixin",
-    // "CommandManagerMixin"
+    "BanCommandMixin",
+    "BanIpCommandMixin",
+    "KickCommandMixin",
+    "PardonCommandMixin",
+    "ServerPlayerNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

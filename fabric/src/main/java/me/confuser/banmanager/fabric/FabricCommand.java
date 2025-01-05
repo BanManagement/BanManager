@@ -43,7 +43,7 @@ public class FabricCommand {
 
   private void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, String name) {
     LiteralArgumentBuilder<ServerCommandSource> literal = CommandManager.literal(name)
-      .requires(source -> Permissions.check(source, command.getPermission(), 2))
+      .requires(source -> Permissions.check(source, command.getPermission(), 4))
       .executes(this::execute)
       .then(CommandManager.argument("args", StringArgumentType.greedyString()).executes(this::execute));
 
@@ -60,7 +60,7 @@ public class FabricCommand {
     args.remove(0);
 
     try {
-      if (Permissions.check(source, command.getPermission(), 2)) {
+      if (commonSender.hasPermission(command.getPermission())) {
         boolean success = this.command.onCommand(commonSender, this.command.getParser(args));
 
         if (!success) {

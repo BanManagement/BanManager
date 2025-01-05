@@ -85,6 +85,8 @@ public class FabricServer implements CommonServer {
     Arrays.stream(getOnlinePlayers())
       .filter(player -> player.hasPermission(permission))
       .forEach(player -> player.sendMessage(message));
+
+    getConsoleSender().sendMessage(message);
   }
 
   public void broadcastJSON(TextComponent message, String permission) {

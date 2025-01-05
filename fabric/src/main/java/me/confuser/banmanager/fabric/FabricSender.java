@@ -27,7 +27,7 @@ public class FabricSender implements CommonSender {
 
   @Override
   public boolean hasPermission(String permission) {
-    return Permissions.check(sender, permission);
+    return Permissions.check(sender, permission, 4);
   }
 
   @Override

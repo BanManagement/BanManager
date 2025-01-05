@@ -82,7 +82,7 @@ public class FabricPlayer implements CommonPlayer {
   }
 
   public boolean hasPermission(String permission) {
-    return Permissions.check(getPlayer(), permission);
+    return Permissions.check(getPlayer(), permission,4);
   }
 
   public String getDisplayName() {
