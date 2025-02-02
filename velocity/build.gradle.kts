@@ -92,9 +92,9 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
-        relocate("org.bstats", "me.confuser.banmanager.common.bstats") {
-            include(dependency("org.bstats:"))
-        }
+        include(dependency("org.bstats:.*:.*"))
+
+        relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
     exclude("GradleStart**")
     exclude(".cache")
@@ -104,7 +104,9 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
 
-    minimize()
+    minimize {
+        exclude(dependency("org.bstats:.*:.*"))
+    }
 }
 
 tasks.named("assemble").configure {
