@@ -25,15 +25,14 @@ public class FabricScheduler implements CommonScheduler {
       }
     });
     this.executorService = new ForkJoinPool(
-      Runtime.getRuntime().availableProcessors(),
-      pool -> {
-        ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-        worker.setName("banmanager-worker-" + worker.getPoolIndex());
-        return worker;
-      },
-      (t, e) -> e.printStackTrace(),
-      false
-    );
+        Runtime.getRuntime().availableProcessors(),
+        pool -> {
+          ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+          worker.setName("banmanager-worker-" + worker.getPoolIndex());
+          return worker;
+        },
+        (t, e) -> e.printStackTrace(),
+        false);
   }
 
   public void enable(MinecraftServer server) {
@@ -91,7 +90,7 @@ public class FabricScheduler implements CommonScheduler {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }), initialDelay, period, TimeUnit.MILLISECONDS);
+    }), initialDelay, period, TimeUnit.SECONDS);
   }
 
   public void shutdown() {

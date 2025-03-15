@@ -3,25 +3,36 @@ package me.confuser.banmanager.common.configs;
 import me.confuser.banmanager.common.CommonLogger;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SchedulesConfig extends Config {
 
-  private HashMap<String, Integer> schedules = new HashMap<>(6);
-  private HashMap<String, Long> lastChecked = new HashMap<>(4);
+  private ConcurrentHashMap<String, Integer> schedules = new ConcurrentHashMap<>(13);
+  private ConcurrentHashMap<String, Long> lastChecked = new ConcurrentHashMap<>(12);
 
   public SchedulesConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "schedules.yml", logger);
   }
 
-  public int getSchedule(String schedule) {
-    return schedules.get(schedule);
+  public int getSchedule(String scheduleName) {
+    Integer schedule = schedules.get(scheduleName);
+
+    if (schedule == null) {
+      logger.severe("Unknown schedule " + scheduleName + ", defaulting to 30 seconds");
+
+      return 30;
+    }
+
+    return schedule;
   }
 
   public long getLastChecked(String lastChecked) {
     Long checked = this.lastChecked.get(lastChecked);
 
-    if (checked == null) return 0;
+    if (checked == null) {
+      logger.severe("Unknown last checked " + lastChecked + ", defaulting to 0");
+      return 0;
+    }
 
     return checked;
   }
