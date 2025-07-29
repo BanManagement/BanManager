@@ -20,7 +20,7 @@ public class VelocityConfig extends Config {
   @Override
   public void afterLoad() {
     commandsEnabled = conf.getBoolean("features.commands", false);
-    forceEnableMute = conf.getBoolean("features.force-enable-mute", false);
+    forceEnableMute = conf.getBoolean("features.forceEnableMute", false);
   }
 
   @Override
