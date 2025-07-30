@@ -10,6 +10,8 @@ import java.nio.file.Path;
 public class VelocityConfig extends Config {
   @Getter
   private boolean commandsEnabled = false;
+  @Getter
+  private boolean forceEnableMute = false;
 
   public VelocityConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "velocity.yml", logger);
@@ -18,6 +20,7 @@ public class VelocityConfig extends Config {
   @Override
   public void afterLoad() {
     commandsEnabled = conf.getBoolean("features.commands", false);
+    forceEnableMute = conf.getBoolean("features.forceEnableMute", false);
   }
 
   @Override

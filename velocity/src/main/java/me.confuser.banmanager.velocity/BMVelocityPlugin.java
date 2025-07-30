@@ -134,6 +134,7 @@ public class BMVelocityPlugin {
       if (buildVersion <= 140) isMuteAllowed = true;
     }
     if (server.getPluginManager().getPlugin("signedvelocity").isPresent() && buildVersion >= 235) isMuteAllowed = true;
+    if (velocityConfig.isForceEnableMute()) isMuteAllowed = true;
   }
 
   private void setupCommands() {
