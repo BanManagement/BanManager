@@ -51,6 +51,11 @@ public final class VelocityCommand implements SimpleCommand {
     }
   }
 
+  @Override
+  public boolean hasPermission(final Invocation invocation) {
+      return invocation.source().hasPermission(command.getPermission());
+  }
+
   private CommonSender getSender(CommandSource source) {
     if (source instanceof Player) {
       return new VelocityPlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
