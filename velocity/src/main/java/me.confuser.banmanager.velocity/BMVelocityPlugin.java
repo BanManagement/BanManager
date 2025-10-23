@@ -130,8 +130,12 @@ public class BMVelocityPlugin {
     int buildVersion = 0;
     if (maxVersionStringLength > 4) {
       String versionAsString = this.server.getVersion().getVersion().substring(maxVersionStringLength - 4, maxVersionStringLength - 1);
-      buildVersion = Integer.parseInt(versionAsString);
-      if (buildVersion <= 140) isMuteAllowed = true;
+      try{
+        buildVersion = Integer.parseInt(versionAsString);
+        if (buildVersion <= 140) isMuteAllowed = true;
+        } catch (NumberFormatException e) {
+          // Don't crash the plugin
+        }
     }
     if (server.getPluginManager().getPlugin("signedvelocity").isPresent() && buildVersion >= 235) isMuteAllowed = true;
     if (velocityConfig.isForceEnableMute()) isMuteAllowed = true;
