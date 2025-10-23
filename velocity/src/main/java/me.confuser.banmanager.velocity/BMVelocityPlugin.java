@@ -217,6 +217,7 @@ public class BMVelocityPlugin {
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
+      registerEvent(new MuteListener(plugin));
       registerEvent(new NoteListener(plugin));
     }
 
