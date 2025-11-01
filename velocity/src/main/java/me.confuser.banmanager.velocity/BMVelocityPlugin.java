@@ -213,6 +213,7 @@ public class BMVelocityPlugin {
 
     if (!plugin.getConfig().getChatPriority().equals("NONE") && isMuteAllowed) {
       registerEvent(new ChatListener(plugin));
+      registerEvent(new CommandListener(plugin));
     }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
