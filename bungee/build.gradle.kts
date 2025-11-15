@@ -54,6 +54,10 @@ repositories {
         name = "paper"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven {
+        name = "sonatype"
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 configurations {
@@ -62,7 +66,7 @@ configurations {
 
 dependencies {
     api(project(":BanManagerCommon"))
-    compileOnly("net.md-5:bungeecord-api:1.14-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
     "shadeOnly"("org.bstats:bstats-bungeecord:2.2.1")
 }
 

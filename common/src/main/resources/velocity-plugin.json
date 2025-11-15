@@ -1,0 +1,18 @@
+{
+  "id": "banmanager",
+  "name": "BanManager",
+  "version": "${internalVersion}",
+  "description": "A suite of moderation plugins & apps for Minecraft servers",
+  "url": "https://gitlab.com/cubekrowd/plugins/globalvanish",
+  "authors": [
+    "confuser",
+    "Lorias-Jak"
+  ],
+  "main": "${mainPath}",
+  "dependencies": [
+    {
+      "id": "signedvelocity",
+      "optional": true
+    }
+  ]
+}
