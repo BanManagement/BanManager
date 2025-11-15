@@ -32,20 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(
-        id = "banmanager",
-        name = "BanManager",
-        version = "${projectVersion}",
-        url = "https://banmanagement.com",
-        description = "A suite of moderation plugins & apps for Minecraft servers",
-        authors = {
-                "confuser",
-                "Lorias-Jak"
-        },
-        dependencies = {
-                @Dependency(id = "signedvelocity", optional = true)
-        }
-)
 public class BMVelocityPlugin {
   @Getter
   private BanManagerPlugin plugin;
