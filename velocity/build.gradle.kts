@@ -70,8 +70,12 @@ dependencies {
 
 tasks.named<Copy>("processResources") {
     val internalVersion = project.ext["internalVersion"]
+
     inputs.property("internalVersion", internalVersion)
-    expand("internalVersion" to internalVersion)
+
+    filesMatching("velocity-plugin.json") {
+        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.velocity.BMVelocityPlugin")
+    }
 }
 
 tasks.named<Jar>("jar") {
