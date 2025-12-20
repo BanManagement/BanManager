@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class H2 implements IConverter {
+  // Mapping of H2 report state IDs to MySQL/MariaDB report states (matched by name)
+  private Map<Integer, ReportState> stateIdMapping = new HashMap<>();
   private BanManagerPlugin plugin;
   private PlayerBanStorage playerBanStorage;
   private PlayerBanRecordStorage playerBanRecordStorage;
@@ -303,13 +305,25 @@ public class H2 implements IConverter {
 
     try (CloseableIterator<ReportState> itr = reportStateStorage.closeableIterator()) {
       while (itr.hasNext()) {
-        ReportState data = itr.next();
+        ReportState h2State = itr.next();
 
         try {
-          plugin.getReportStateStorage().createIfNotExists(data);
+          // Find existing state by name in MySQL/MariaDB, or create a new one
+          ReportState mysqlState = plugin.getReportStateStorage().queryBuilder()
+              .where().eq("name", h2State.getName())
+              .queryForFirst();
+
+          if (mysqlState == null) {
+            // State doesn't exist in MySQL, create it
+            mysqlState = new ReportState(h2State.getName());
+            plugin.getReportStateStorage().create(mysqlState);
+          }
+
+          // Store the mapping of H2 state ID to MySQL state
+          stateIdMapping.put(h2State.getId(), mysqlState);
         } catch (SQLException e) {
           e.printStackTrace();
-          plugin.getLogger().severe("Failed to import player report state " + data.getId());
+          plugin.getLogger().severe("Failed to import player report state " + h2State.getId());
         }
       }
     } catch (IOException e) {
@@ -358,11 +372,38 @@ public class H2 implements IConverter {
 
     plugin.getLogger().info("Importing player reports");
 
+    // Get default state to use as fallback for unmapped states
+    ReportState defaultState = null;
+    try {
+      defaultState = plugin.getReportStateStorage().queryBuilder()
+          .where().eq("name", "Open")
+          .queryForFirst();
+    } catch (SQLException e) {
+      plugin.getLogger().warning("Could not find default 'Open' state for fallback");
+    }
+
     try (CloseableIterator<PlayerReportData> itr = playerReportStorage.closeableIterator()) {
       while (itr.hasNext()) {
         PlayerReportData data = itr.next();
 
         try {
+          // Update the state reference to use the correct MySQL state
+          if (data.getState() != null) {
+            if (stateIdMapping.containsKey(data.getState().getId())) {
+              data.setState(stateIdMapping.get(data.getState().getId()));
+            } else {
+              // State not found in mapping - use default state as fallback
+              plugin.getLogger().warning("Report " + data.getId() + " references unknown state ID "
+                  + data.getState().getId() + ", using default 'Open' state");
+              if (defaultState != null) {
+                data.setState(defaultState);
+              } else {
+                plugin.getLogger().severe("Cannot import report " + data.getId() + " - no valid state available");
+                continue;
+              }
+            }
+          }
+
           plugin.getPlayerReportStorage().createIfNotExists(data);
         } catch (SQLException e) {
           e.printStackTrace();
@@ -373,7 +414,7 @@ public class H2 implements IConverter {
       e.printStackTrace();
     }
 
-    plugin.getLogger().info("Finished importing player report");
+    plugin.getLogger().info("Finished importing player reports");
 
     plugin.getLogger().info("Importing player report locations");
 
