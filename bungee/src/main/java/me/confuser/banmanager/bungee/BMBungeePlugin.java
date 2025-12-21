@@ -23,6 +23,8 @@ public class BMBungeePlugin extends Plugin {
   @Getter
   private BungeeConfig bungeeConfig;
 
+  private ChatListener chatListener;
+
   private String[] configs = new String[]{
       "config.yml",
       "bungeecord.yml",
@@ -150,9 +152,9 @@ public class BMBungeePlugin extends Plugin {
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
 
-    if (!plugin.getConfig().getChatPriority().equals("NONE")) {
-      registerEvent(new ChatListener(plugin));
-    }
+    registerChatListener();
+
+    registerEvent(new ReloadListener(this));
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
@@ -162,6 +164,22 @@ public class BMBungeePlugin extends Plugin {
 
     if (plugin.getDiscordConfig().isHooksEnabled()) {
       registerEvent(new DiscordListener(plugin));
+    }
+  }
+
+  private void unregisterChatListener() {
+    if (chatListener != null) {
+      getProxy().getPluginManager().unregisterListener(chatListener);
+      chatListener = null;
+    }
+  }
+
+  public void registerChatListener() {
+    unregisterChatListener();
+
+    if (!plugin.getConfig().getChatPriority().equals("NONE")) {
+      chatListener = new ChatListener(plugin);
+      registerEvent(chatListener);
     }
   }
 

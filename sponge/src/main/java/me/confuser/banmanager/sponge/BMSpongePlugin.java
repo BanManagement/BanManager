@@ -44,6 +44,7 @@ public class BMSpongePlugin {
   private CommonLogger logger;
   private BanManagerPlugin plugin;
   private Metrics metrics;
+  private ChatListener chatListener;
 
   @Inject
   @ConfigDir(sharedRoot = false)
@@ -161,9 +162,35 @@ public class BMSpongePlugin {
     registerEvent(new CommandListener(plugin));
     registerEvent(new HookListener(plugin));
 
+    registerChatListener();
+
+    registerEvent(new ReloadListener(this));
+
+    if (plugin.getConfig().isDisplayNotificationsEnabled()) {
+      registerEvent(new BanListener(plugin));
+      registerEvent(new MuteListener(plugin));
+      registerEvent(new NoteListener(plugin));
+      registerEvent(new ReportListener(plugin));
+    }
+
+    if (plugin.getDiscordConfig().isHooksEnabled()) {
+      registerEvent(new DiscordListener(plugin));
+    }
+  }
+
+  private void unregisterChatListener() {
+    if (chatListener != null) {
+      Sponge.getEventManager().unregisterListeners(chatListener);
+      chatListener = null;
+    }
+  }
+
+  public void registerChatListener() {
+    unregisterChatListener();
+
     String chatPriority = plugin.getConfig().getChatPriority();
-    if(!chatPriority.equals("NONE")) {
-      ChatListener chatListener = new ChatListener(plugin);
+    if (!chatPriority.equals("NONE")) {
+      chatListener = new ChatListener(plugin);
 
       // Map Bukkit EventPriority to Sponge Order
       HashMap<String, Order> orders = new HashMap<String, Order>() {{
@@ -178,17 +205,6 @@ public class BMSpongePlugin {
       Order priority = orders.getOrDefault(chatPriority, Order.DEFAULT);
 
       Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, priority, chatListener);
-    }
-
-    if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-      registerEvent(new BanListener(plugin));
-      registerEvent(new MuteListener(plugin));
-      registerEvent(new NoteListener(plugin));
-      registerEvent(new ReportListener(plugin));
-    }
-
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      registerEvent(new DiscordListener(plugin));
     }
   }
 

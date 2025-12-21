@@ -68,6 +68,7 @@ public class BMVelocityPlugin {
   private final File dataDirectory;
   public static BMVelocityPlugin instance;
   private boolean isMuteAllowed = false;
+  private ChatListener chatListener;
 
   @Inject
   public BMVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory final Path directory, Metrics.Factory metricsFactory) {
@@ -211,9 +212,9 @@ public class BMVelocityPlugin {
     registerEvent(new LeaveListener(plugin));
     registerEvent(new HookListener(plugin));
 
-    if (!plugin.getConfig().getChatPriority().equals("NONE") && isMuteAllowed) {
-      registerEvent(new ChatListener(plugin));
-    }
+    registerChatListener();
+
+    registerEvent(new ReloadListener(this));
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
@@ -222,6 +223,22 @@ public class BMVelocityPlugin {
 
     if (plugin.getDiscordConfig().isHooksEnabled()) {
       registerEvent(new DiscordListener(plugin));
+    }
+  }
+
+  private void unregisterChatListener() {
+    if (chatListener != null) {
+      server.getEventManager().unregisterListener(this, chatListener);
+      chatListener = null;
+    }
+  }
+
+  public void registerChatListener() {
+    unregisterChatListener();
+
+    if (!plugin.getConfig().getChatPriority().equals("NONE") && isMuteAllowed) {
+      chatListener = new ChatListener(plugin);
+      registerEvent(chatListener);
     }
   }
 

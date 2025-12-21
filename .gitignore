@@ -23,3 +23,11 @@ target
 /dependency-reduced-pom.xml
 *-private.sh
 *.txt
+
+# E2E Tests (Node.js)
+e2e/tests/node_modules/
+e2e/tests/dist/
+e2e/tests/*.log
+e2e/tests/coverage/
+
+dependency-reduced-pom.xml
