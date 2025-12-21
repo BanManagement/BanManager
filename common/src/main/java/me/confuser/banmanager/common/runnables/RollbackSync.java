@@ -78,6 +78,91 @@ public class RollbackSync extends BmRunnable {
               it.remove();
             }
             break;
+
+          case "banrecords":
+            // Sync restored bans to in-memory cache
+            // Query for bans that were restored (created within rollback timeframe)
+            CloseableIterator<PlayerBanData> restoredBans = plugin.getPlayerBanStorage()
+                .queryBuilder()
+                .where()
+                .le("created", data.getCreated())
+                .and().ge("created", data.getExpires())
+                .iterator();
+
+            try {
+              while (restoredBans.hasNext()) {
+                PlayerBanData ban = restoredBans.next();
+                if (!plugin.getPlayerBanStorage().isBanned(ban.getPlayer().getUUID())) {
+                  plugin.getPlayerBanStorage().addBan(ban);
+                }
+              }
+            } finally {
+              restoredBans.closeQuietly();
+            }
+            break;
+
+          case "ipbanrecords":
+            // Sync restored IP bans to in-memory cache
+            CloseableIterator<IpBanData> restoredIpBans = plugin.getIpBanStorage()
+                .queryBuilder()
+                .where()
+                .le("created", data.getCreated())
+                .and().ge("created", data.getExpires())
+                .iterator();
+
+            try {
+              while (restoredIpBans.hasNext()) {
+                IpBanData ban = restoredIpBans.next();
+                if (!plugin.getIpBanStorage().isBanned(ban.getIp())) {
+                  plugin.getIpBanStorage().addBan(ban);
+                }
+              }
+            } finally {
+              restoredIpBans.closeQuietly();
+            }
+            break;
+
+          case "muterecords":
+            // Sync restored mutes to in-memory cache
+            CloseableIterator<PlayerMuteData> restoredMutes = plugin.getPlayerMuteStorage()
+                .queryBuilder()
+                .where()
+                .le("created", data.getCreated())
+                .and().ge("created", data.getExpires())
+                .iterator();
+
+            try {
+              while (restoredMutes.hasNext()) {
+                PlayerMuteData mute = restoredMutes.next();
+                if (!plugin.getPlayerMuteStorage().isMuted(mute.getPlayer().getUUID())) {
+                  plugin.getPlayerMuteStorage().addMute(mute);
+                }
+              }
+            } finally {
+              restoredMutes.closeQuietly();
+            }
+            break;
+
+          case "ipmuterecords":
+            // Sync restored IP mutes to in-memory cache
+            CloseableIterator<IpMuteData> restoredIpMutes = plugin.getIpMuteStorage()
+                .queryBuilder()
+                .where()
+                .le("created", data.getCreated())
+                .and().ge("created", data.getExpires())
+                .iterator();
+
+            try {
+              while (restoredIpMutes.hasNext()) {
+                IpMuteData mute = restoredIpMutes.next();
+                if (!plugin.getIpMuteStorage().isMuted(mute.getIp())) {
+                  plugin.getIpMuteStorage().addMute(mute);
+                }
+              }
+            } finally {
+              restoredIpMutes.closeQuietly();
+            }
+            break;
         }
       }
 

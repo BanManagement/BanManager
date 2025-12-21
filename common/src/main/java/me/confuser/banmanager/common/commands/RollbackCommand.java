@@ -130,7 +130,9 @@ public class RollbackCommand extends CommonCommand {
 
               for (PlayerBanRecord record : banRecords.query()) {
                 try {
-                  if (getPlugin().getPlayerBanStorage().retrieveBan(record.getPlayer().getUUID()) == null) {
+                  // Only restore if the original ban wasn't also by the malicious mod
+                  if (getPlugin().getPlayerBanStorage().retrieveBan(record.getPlayer().getUUID()) == null
+                      && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getPlayerBanStorage().create(new PlayerBanData(record));
                   }
 
@@ -141,6 +143,12 @@ public class RollbackCommand extends CommonCommand {
                   return;
                 }
               }
+
+              // Also delete records where the malicious mod was the original banner (pastActor)
+              // These are bans made by the malicious mod that were later legitimately unbanned
+              DeleteBuilder<PlayerBanRecord, Integer> maliciousBanRecords = getPlugin().getPlayerBanRecordStorage().deleteBuilder();
+              maliciousBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+              maliciousBanRecords.delete();
 
               break;
 
@@ -157,7 +165,9 @@ public class RollbackCommand extends CommonCommand {
 
               for (IpBanRecord record : ipBanRecords.query()) {
                 try {
-                  if (getPlugin().getIpBanStorage().retrieveBan(record.getIp()) == null) {
+                  // Only restore if the original ban wasn't also by the malicious mod
+                  if (getPlugin().getIpBanStorage().retrieveBan(record.getIp()) == null
+                      && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getIpBanStorage().create(new IpBanData(record));
                   }
 
@@ -168,6 +178,11 @@ public class RollbackCommand extends CommonCommand {
                   return;
                 }
               }
+
+              // Also delete records where the malicious mod was the original banner (pastActor)
+              DeleteBuilder<IpBanRecord, Integer> maliciousIpBanRecords = getPlugin().getIpBanRecordStorage().deleteBuilder();
+              maliciousIpBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+              maliciousIpBanRecords.delete();
 
               break;
 
@@ -192,7 +207,9 @@ public class RollbackCommand extends CommonCommand {
 
               for (PlayerMuteRecord record : muteRecords.query()) {
                 try {
-                  if (getPlugin().getPlayerMuteStorage().retrieveMute(record.getPlayer().getUUID()) == null) {
+                  // Only restore if the original mute wasn't also by the malicious mod
+                  if (getPlugin().getPlayerMuteStorage().retrieveMute(record.getPlayer().getUUID()) == null
+                      && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getPlayerMuteStorage().create(new PlayerMuteData(record));
                   }
 
@@ -203,6 +220,12 @@ public class RollbackCommand extends CommonCommand {
                   return;
                 }
               }
+
+              // Also delete records where the malicious mod was the original muter (pastActor)
+              DeleteBuilder<PlayerMuteRecord, Integer> maliciousMuteRecords = getPlugin().getPlayerMuteRecordStorage().deleteBuilder();
+              maliciousMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+              maliciousMuteRecords.delete();
+
               break;
 
             case "ipmutes":
@@ -218,7 +241,9 @@ public class RollbackCommand extends CommonCommand {
 
               for (IpMuteRecord record : ipMuteRecords.query()) {
                 try {
-                  if (getPlugin().getIpMuteStorage().retrieveMute(record.getIp()) == null) {
+                  // Only restore if the original mute wasn't also by the malicious mod
+                  if (getPlugin().getIpMuteStorage().retrieveMute(record.getIp()) == null
+                      && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getIpMuteStorage().create(new IpMuteData(record));
                   }
 
@@ -229,6 +254,12 @@ public class RollbackCommand extends CommonCommand {
                   return;
                 }
               }
+
+              // Also delete records where the malicious mod was the original muter (pastActor)
+              DeleteBuilder<IpMuteRecord, Integer> maliciousIpMuteRecords = getPlugin().getIpMuteRecordStorage().deleteBuilder();
+              maliciousIpMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+              maliciousIpMuteRecords.delete();
+
               break;
 
             case "notes":

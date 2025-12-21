@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 public abstract class BasePluginDbTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  protected static String storageType = System.getenv("STORAGE_TYPE");
+  protected static String storageType = System.getenv("STORAGE_TYPE") != null ? System.getenv("STORAGE_TYPE") : "h2";
   protected BanManagerPlugin plugin;
   protected Faker faker = new Faker();
   protected TestUtils testUtils;
@@ -27,8 +27,6 @@ public abstract class BasePluginDbTest {
 
   @BeforeClass
   public static void dbSetup() throws ManagedProcessException {
-    if (storageType == null || storageType.isEmpty()) storageType = "mariadb";
-
     if (storageType.equals("mariadb")) {
       db = DB.newEmbeddedDB(0);
       db.start();
