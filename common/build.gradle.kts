@@ -55,7 +55,7 @@ dependencies {
     testImplementation("org.powermock:powermock-api-mockito2:2.0.2")
     testImplementation("com.github.javafaker:javafaker:1.0.2")
     testImplementation("org.awaitility:awaitility:4.0.1")
-    testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:2.4.0")
+    testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:2.6.0")
 }
 
 tasks.withType<Test>().configureEach {
