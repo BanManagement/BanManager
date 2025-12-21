@@ -26,6 +26,8 @@ public class BMBukkitPlugin extends JavaPlugin {
   @Getter
   private BanManagerPlugin plugin;
 
+  private ChatListener chatListener;
+
   private String[] configs = new String[]{
       "config.yml",
       "console.yml",
@@ -125,17 +127,9 @@ public class BMBukkitPlugin extends JavaPlugin {
     registerEvent(new CommandListener(plugin));
     registerEvent(new HookListener(plugin));
 
+    registerChatListener();
 
-    String chatPriority = plugin.getConfig().getChatPriority();
-    if(!chatPriority.equals("NONE")) {
-      ChatListener chatListener = new ChatListener(plugin);
-      // Set custom priority
-      getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(chatPriority),
-        (listener, event) -> {
-          ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
-          ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
-        }, this);
-    }
+    registerEvent(new ReloadListener(this));
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
       registerEvent(new BanListener(plugin));
@@ -150,6 +144,32 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
       new PAPIPlaceholders(plugin).register();
+    }
+  }
+
+  private void unregisterChatListener() {
+    if (chatListener != null) {
+      AsyncPlayerChatEvent.getHandlerList().unregister(chatListener);
+      chatListener = null;
+      plugin.getLogger().info("Chat listener unregistered");
+    }
+  }
+
+  public void registerChatListener() {
+    unregisterChatListener();
+
+    String chatPriority = plugin.getConfig().getChatPriority();
+    if (!chatPriority.equals("NONE")) {
+      chatListener = new ChatListener(plugin);
+      // Set custom priority
+      getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, EventPriority.valueOf(chatPriority),
+        (listener, event) -> {
+          ((ChatListener) listener).onPlayerChat((AsyncPlayerChatEvent) event);
+          ((ChatListener) listener).onIpChat((AsyncPlayerChatEvent) event);
+        }, this);
+      plugin.getLogger().info("Chat listener registered with priority: " + chatPriority);
+    } else {
+      plugin.getLogger().info("Chat listener disabled (priority: NONE)");
     }
   }
 

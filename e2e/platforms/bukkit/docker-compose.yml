@@ -1,0 +1,84 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banmanager
+      MYSQL_USER: banmanager
+      MYSQL_PASSWORD: banmanager
+    healthcheck:
+      test: ["CMD", "mariadb", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - banmanager
+
+  paper:
+    image: itzg/minecraft-server:java21
+    environment:
+      EULA: "TRUE"
+      TYPE: "PAPER"
+      VERSION: "1.21.1"
+      ONLINE_MODE: "false"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      MEMORY: "2G"
+      # Performance optimizations for faster startup
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 4
+      SIMULATION_DISTANCE: 4
+      MAX_WORLD_SIZE: 100
+      LEVEL_TYPE: "flat"
+      GENERATE_STRUCTURES: "false"
+      # Copy plugins from mounted source to allow Paper to create .paper-remapped
+      COPY_PLUGINS_SRC: "/plugins"
+      COPY_PLUGINS_DEST: "/data/plugins"
+      # Copy configs from mounted source
+      COPY_CONFIG_SRC: "/config"
+      COPY_CONFIG_DEST: "/data/plugins/BanManager"
+    volumes:
+      # Mount the plugin JAR to a source directory (will be copied on startup)
+      - ../../../bukkit/build/libs/BanManagerBukkit.jar:/plugins/BanManager.jar:ro
+      # Mount the plugin config source (will be copied on startup)
+      - ./configs:/config:ro
+      # Cache server data between runs (Paper JAR, world data)
+      - paper-data:/data
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rcon-cli", "--password", "testing", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks:
+      - banmanager
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.tests
+    depends_on:
+      paper:
+        condition: service_healthy
+    environment:
+      SERVER_HOST: paper
+      SERVER_PORT: 25565
+      RCON_HOST: paper
+      RCON_PORT: 25575
+      RCON_PASSWORD: testing
+    networks:
+      - banmanager
+
+networks:
+  banmanager:
+    driver: bridge
+
+volumes:
+  paper-data:

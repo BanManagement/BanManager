@@ -1,0 +1,99 @@
+name: E2E Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    name: E2E - ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Bukkit
+            task: testBukkit
+            build_task: ":BanManagerBukkit:shadowJar"
+            compose_dir: platforms/bukkit
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .gradle/loom-cache
+          key: ${{ runner.os }}-loom-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-loom-
+
+      # Docker Buildx for better caching
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Cache Docker layers for test runner image
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-e2e-${{ hashFiles('e2e/Dockerfile.tests', 'e2e/tests/package*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-e2e-
+
+      # Pre-build the test runner image with cache
+      - name: Build test runner image
+        uses: docker/build-push-action@v5
+        with:
+          context: e2e
+          file: e2e/Dockerfile.tests
+          push: false
+          load: true
+          tags: e2e-tests:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      # Move cache to avoid ever-growing cache
+      - name: Move Docker cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Build plugin JARs
+        run: ./gradlew ${{ matrix.build_task }} --build-cache
+
+      - name: Run E2E tests
+        run: ./gradlew :BanManagerE2E:${{ matrix.task }}
+        timeout-minutes: 15
+
+      - name: Collect logs on failure
+        if: failure()
+        working-directory: e2e/${{ matrix.compose_dir }}
+        run: |
+          docker compose logs > ../../e2e-logs-${{ matrix.platform }}.txt 2>&1 || true
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs-${{ matrix.platform }}
+          path: e2e-logs-${{ matrix.platform }}.txt
+          retention-days: 7
+
+      - name: Cleanup
+        if: always()
+        working-directory: e2e/${{ matrix.compose_dir }}
+        run: docker compose down -v || true
