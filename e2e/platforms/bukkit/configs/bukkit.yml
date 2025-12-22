@@ -1,0 +1,30 @@
+# Bukkit configuration for E2E tests
+settings:
+  connection-throttle: -1
+  allow-end: true
+  warn-on-overload: true
+  permissions-file: permissions.yml
+  update-folder: update
+  plugin-profiling: false
+  shutdown-message: Server closed
+  minimum-api: none
+  use-map-color-cache: true
+spawn-limits:
+  monsters: 0
+  animals: 0
+  water-animals: 0
+  water-ambient: 0
+  water-underground-creature: 0
+  axolotls: 0
+  ambient: 0
+chunk-gc:
+  period-in-ticks: 600
+ticks-per:
+  animal-spawns: 400
+  monster-spawns: 1
+  water-spawns: 1
+  water-ambient-spawns: 1
+  water-underground-creature-spawns: 1
+  axolotl-spawns: 1
+  ambient-spawns: 1
+  autosave: 6000

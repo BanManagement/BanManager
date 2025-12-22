@@ -53,3 +53,19 @@ export async function unmutePlayer (player: string): Promise<string> {
 export async function getPlayerList (): Promise<string> {
   return await sendCommand('list')
 }
+
+export async function banPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`ban ${player} ${reason}`)
+}
+
+export async function unbanPlayer (player: string): Promise<string> {
+  return await sendCommand(`unban ${player}`)
+}
+
+export async function opPlayer (player: string): Promise<string> {
+  return await sendCommand(`op ${player}`)
+}
+
+export async function deopPlayer (player: string): Promise<string> {
+  return await sendCommand(`deop ${player}`)
+}

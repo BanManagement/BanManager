@@ -471,6 +471,7 @@ public class CommonJoinListener {
 
   private void handleJoinDeny(PlayerData player, PlayerData actor, String reason) {
     if (joinCache.getIfPresent(player.getName()) != null) return;
+    if (plugin.getExemptionsConfig().isExempt(player, "deniedNotify")) return;
 
     joinCache.put(player.getName(), System.currentTimeMillis());
     Message message = Message.get("deniedNotify.player")
