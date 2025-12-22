@@ -32,6 +32,8 @@ services:
       MAX_WORLD_SIZE: 100
       LEVEL_TYPE: "flat"
       GENERATE_STRUCTURES: "false"
+      # Disable connection throttling for e2e tests
+      BUKKIT_SETTINGS_CONNECTION_THROTTLE: -1
       # Copy plugins from mounted source to allow Paper to create .paper-remapped
       COPY_PLUGINS_SRC: "/plugins"
       COPY_PLUGINS_DEST: "/data/plugins"
@@ -43,6 +45,8 @@ services:
       - ../../../bukkit/build/libs/BanManagerBukkit.jar:/plugins/BanManager.jar:ro
       # Mount the plugin config source (will be copied on startup)
       - ./configs:/config:ro
+      # Mount bukkit.yml to disable connection throttling
+      - ./configs/bukkit.yml:/data/bukkit.yml:ro
       # Cache server data between runs (Paper JAR, world data)
       - paper-data:/data
     ports:

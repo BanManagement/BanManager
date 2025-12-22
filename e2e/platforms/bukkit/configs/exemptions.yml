@@ -10,3 +10,9 @@
 #  warn: true
 #  tempwarn: true
 #  alts: true
+#  deniedNotify: true
+
+# E2E Test: ExemptBannedPlayer has deniedNotify exemption
+# Offline UUID for "ExemptBannedPlayer"
+47d8e47b-11c1-393b-8611-7c34449ba1b1:
+  deniedNotify: true
