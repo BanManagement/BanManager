@@ -50,11 +50,14 @@ signing {
 }
 
 repositories {
-    maven {
-        name = "velocity"
-        url = uri("https://nexus.velocitypowered.com/repository/maven-public/")
-    }
     mavenCentral()
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+        content {
+            includeGroup("com.velocitypowered")
+        }
+    }
 }
 
 configurations {
