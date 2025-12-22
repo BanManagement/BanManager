@@ -23,7 +23,16 @@ fun Project.applyPlatformAndCoreConfiguration() {
     apply(plugin = "maven-publish")
     apply(plugin = "com.jfrog.artifactory")
 
-    ext["internalVersion"] = "$version"
+    // Build version string with optional Jenkins build number for SNAPSHOT builds
+    val baseVersion = "$version"
+    val buildNumber = System.getenv("BUILD_NUMBER")
+    val internalVersion = if (baseVersion.contains("SNAPSHOT") && buildNumber != null) {
+        "$baseVersion (build $buildNumber)"
+    } else {
+        baseVersion
+    }
+
+    ext["internalVersion"] = internalVersion
 
     // Java 8 turns on doclint which we fail
     tasks.withType<Javadoc>().configureEach {
