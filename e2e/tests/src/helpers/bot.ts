@@ -9,9 +9,15 @@ export interface ChatMessage {
   timestamp: number
 }
 
+export interface SystemMessage {
+  message: string
+  timestamp: number
+}
+
 export class TestBot {
   private bot: Bot | null = null
   private chatMessages: ChatMessage[] = []
+  private systemMessages: SystemMessage[] = []
   private readonly username: string
 
   constructor (username: string) {
@@ -46,7 +52,9 @@ export class TestBot {
       })
 
       this.bot.once('kicked', (reason) => {
+        clearTimeout(timeout)
         console.log(`Bot ${this.username} was kicked: ${String(reason)}`)
+        reject(new Error(`Bot ${this.username} was kicked: ${String(reason)}`))
       })
 
       // Listen for chat messages
@@ -59,11 +67,15 @@ export class TestBot {
         console.log(`Chat: <${username}> ${message}`)
       })
 
-      // Listen for system messages (including mute notifications)
+      // Listen for system messages (including mute notifications, denied notifications)
       this.bot.on('message', (jsonMsg) => {
         const text = jsonMsg.toString()
         if (text.trim() !== '') {
-          console.log(`System: ${text}`)
+          this.systemMessages.push({
+            message: text,
+            timestamp: Date.now()
+          })
+          console.log(`[${this.username}] System: ${text}`)
         }
       })
     })
@@ -91,6 +103,60 @@ export class TestBot {
 
   getChatMessages (): ChatMessage[] {
     return [...this.chatMessages]
+  }
+
+  clearSystemMessages (): void {
+    this.systemMessages = []
+  }
+
+  getSystemMessages (): SystemMessage[] {
+    return [...this.systemMessages]
+  }
+
+  /**
+   * Wait for a system message containing specific text
+   */
+  async waitForSystemMessage (
+    containsText: string,
+    timeoutMs: number = 5000
+  ): Promise<SystemMessage> {
+    const startTime = Date.now()
+    const startIndex = this.systemMessages.length
+
+    return await new Promise((resolve, reject) => {
+      const checkInterval = setInterval(() => {
+        for (let i = startIndex; i < this.systemMessages.length; i++) {
+          const msg = this.systemMessages[i]
+          if (msg.message.includes(containsText)) {
+            clearInterval(checkInterval)
+            resolve(msg)
+            return
+          }
+        }
+
+        if (Date.now() - startTime > timeoutMs) {
+          clearInterval(checkInterval)
+          reject(new Error(`Timeout waiting for system message containing "${containsText}"`))
+        }
+      }, 100)
+    })
+  }
+
+  /**
+   * Assert that no system message containing the text is received within a timeout period
+   * Useful for testing denied notification exemptions
+   */
+  async expectNoSystemMessage (containsText: string, timeoutMs: number = 3000): Promise<void> {
+    const startIndex = this.systemMessages.length
+
+    await this.sleep(timeoutMs)
+
+    for (let i = startIndex; i < this.systemMessages.length; i++) {
+      const msg = this.systemMessages[i]
+      if (msg.message.includes(containsText)) {
+        throw new Error(`Unexpected system message containing "${containsText}": "${msg.message}"`)
+      }
+    }
   }
 
   /**

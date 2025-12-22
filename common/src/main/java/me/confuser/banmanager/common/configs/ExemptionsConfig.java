@@ -22,6 +22,7 @@ public class ExemptionsConfig extends Config {
       add("tempmute");
       add("warn");
       add("tempwarn");
+      add("deniedNotify");
     }
   };
   private HashMap<UUID, PlayerExemptionsData> players;
