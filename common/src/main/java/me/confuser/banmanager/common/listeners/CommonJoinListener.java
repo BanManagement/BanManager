@@ -14,6 +14,7 @@ import me.confuser.banmanager.common.util.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -334,7 +335,7 @@ public class CommonJoinListener {
         }
       }
 
-    }, 20L);
+    }, Duration.ofSeconds(1));
   }
 
   public void onPlayerLogin(final CommonPlayer player, CommonJoinHandler handler) {
@@ -432,7 +433,7 @@ public class CommonJoinListener {
       message.set("players", sb.toString());
 
       plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
-    }, 20L);
+    }, Duration.ofSeconds(1));
 
     plugin.getScheduler().runAsyncLater(() -> {
       // Handle quick disconnects
@@ -466,7 +467,7 @@ public class CommonJoinListener {
       message.set("players", sb.toString());
 
       plugin.getServer().broadcast(message.toString(), "bm.notify.alts");
-    }, 20L);
+    }, Duration.ofSeconds(1));
   }
 
   private void handleJoinDeny(PlayerData player, PlayerData actor, String reason) {

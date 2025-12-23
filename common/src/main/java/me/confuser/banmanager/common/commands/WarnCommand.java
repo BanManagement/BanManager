@@ -10,6 +10,7 @@ import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.parsers.WarnCommandParser;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -176,7 +177,7 @@ public class WarnCommand extends CommonCommand {
               .replace("[points]", Double.toString(parser.getPoints()));
 
           getPlugin().getServer().dispatchCommand(getPlugin().getServer().getConsoleSender(), actionCommand);
-        }, action.getDelay());
+        }, Duration.ofMillis(action.getDelay()));
     });
 
     return true;

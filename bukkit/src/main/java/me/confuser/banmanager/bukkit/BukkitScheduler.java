@@ -1,8 +1,11 @@
 package me.confuser.banmanager.bukkit;
 
 import me.confuser.banmanager.common.CommonScheduler;
+import me.confuser.banmanager.common.util.SchedulerTime;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.time.Duration;
 
 public class BukkitScheduler implements CommonScheduler {
 
@@ -18,8 +21,9 @@ public class BukkitScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runAsyncLater(Runnable task, long delay) {
-    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, task, delay);
+  public void runAsyncLater(Runnable task, Duration delay) {
+    long ticks = SchedulerTime.durationToTicksCeil(delay);
+    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, task, ticks);
   }
 
   @Override
@@ -28,7 +32,15 @@ public class BukkitScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runSyncLater(Runnable task, long delay) {
-    Bukkit.getScheduler().runTaskLater(plugin, task, delay);
+  public void runSyncLater(Runnable task, Duration delay) {
+    long ticks = SchedulerTime.durationToTicksCeil(delay);
+    Bukkit.getScheduler().runTaskLater(plugin, task, ticks);
+  }
+
+  @Override
+  public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
+    long initialTicks = SchedulerTime.durationToTicksCeil(initialDelay);
+    long periodTicks = SchedulerTime.durationToTicksCeil(period);
+    Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, initialTicks, periodTicks);
   }
 }
