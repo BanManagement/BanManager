@@ -21,6 +21,7 @@ import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
+import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.net.InetAddress;
@@ -205,10 +206,12 @@ public class IpBanStorage extends BaseDaoImpl<IpBanData, Integer> {
       return false;
     }
 
-    delete(ban);
-    bans.remove(ban.getIp().toString());
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      delete(ban);
+      if (!delete) plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
+    });
 
-    if (!delete) plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
+    bans.remove(ban.getIp().toString());
 
     return true;
   }

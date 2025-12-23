@@ -20,6 +20,7 @@ import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
+import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.net.InetAddress;
@@ -202,10 +203,12 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       return false;
     }
 
-    delete(mute);
-    mutes.remove(mute.getIp().toString());
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      delete(mute);
+      plugin.getIpMuteRecordStorage().addRecord(mute, actor, reason);
+    });
 
-    plugin.getIpMuteRecordStorage().addRecord(mute, actor, reason);
+    mutes.remove(mute.getIp().toString());
 
     return true;
   }

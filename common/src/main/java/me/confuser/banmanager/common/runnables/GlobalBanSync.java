@@ -51,9 +51,10 @@ public class GlobalBanSync extends BmRunnable {
             continue;
           }
 
-          // Global ban overrides local
-          localBanStorage
-                  .unban(localBan, ban.getActor(plugin));
+          // Global ban overrides local - respect event cancellation
+          if (!localBanStorage.unban(localBan, ban.getActor(plugin))) {
+            continue;
+          }
         } else if (localBanStorage.isBanned(ban.getUUID())) {
           localBanStorage.removeBan(ban.getUUID());
         }
