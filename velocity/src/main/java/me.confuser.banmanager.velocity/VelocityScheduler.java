@@ -21,8 +21,8 @@ public class VelocityScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runAsyncLater(Runnable task, long delay) {
-    server.getScheduler().buildTask(plugin, task).delay(Duration.ofMillis(delay)).schedule();
+  public void runAsyncLater(Runnable task, Duration delay) {
+    server.getScheduler().buildTask(plugin, task).delay(delay).schedule();
   }
 
   @Override
@@ -31,7 +31,12 @@ public class VelocityScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runSyncLater(Runnable task, long delay) {
+  public void runSyncLater(Runnable task, Duration delay) {
     runAsyncLater(task, delay);
+  }
+
+  @Override
+  public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
+    server.getScheduler().buildTask(plugin, task).delay(initialDelay).repeat(period).schedule();
   }
 }

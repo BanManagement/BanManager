@@ -105,8 +105,12 @@ warningActions:
 warningMute: false
 
 hooks:
-  enabled: false
-  events: {}
+  enabled: true
+  events:
+    mute:
+      post:
+        - cmd: "say hook-fired-mute"
+          delay: 2
 
 checkForUpdates: false
 offlineAutoComplete: true

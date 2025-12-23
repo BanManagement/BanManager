@@ -15,7 +15,7 @@ import org.bstats.bungeecord.Metrics;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class BMBungeePlugin extends Plugin {
   @Getter
@@ -201,22 +201,22 @@ public class BMBungeePlugin extends Plugin {
 
     plugin.setSyncRunner(syncRunner);
 
-    setupAsyncRunnable(1L, syncRunner);
+    // Runner loop: run every 1 second on all platforms
+    Duration runnerPeriod = Duration.ofSeconds(1);
+    plugin.getScheduler().runAsyncRepeating(syncRunner, runnerPeriod, runnerPeriod);
 
     /*
-     * This task should be ran last with a 1L offset as it gets modified
-     * above.
+     * This task should be ran last with a small offset as it gets modified
+     * above. Use +50ms (1 tick) offset for consistency across platforms.
      */
-    setupAsyncRunnable((plugin.getSchedulesConfig()
-        .getSchedule("saveLastChecked")) + 1L, new SaveLastChecked(plugin));
+    int saveLastCheckedSeconds = plugin.getSchedulesConfig().getSchedule("saveLastChecked");
+    if (saveLastCheckedSeconds > 0) {
+      Duration period = Duration.ofSeconds(saveLastCheckedSeconds);
+      Duration initialDelay = period.plusMillis(50);
+      plugin.getScheduler().runAsyncRepeating(new SaveLastChecked(plugin), initialDelay, period);
+    }
 
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));
-  }
-
-  private void setupAsyncRunnable(long length, Runnable runnable) {
-    if (length <= 0) return;
-
-    getProxy().getScheduler().schedule(this, runnable, length, length, TimeUnit.SECONDS);
   }
 }

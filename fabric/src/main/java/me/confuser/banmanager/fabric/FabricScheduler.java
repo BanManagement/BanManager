@@ -3,6 +3,7 @@ package me.confuser.banmanager.fabric;
 import me.confuser.banmanager.common.CommonScheduler;
 import net.minecraft.server.MinecraftServer;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -51,14 +52,14 @@ public class FabricScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runAsyncLater(Runnable task, long delay) {
+  public void runAsyncLater(Runnable task, Duration delay) {
     schedulerService.schedule(() -> executorService.execute(() -> {
       try {
         task.run();
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }), delay, TimeUnit.MILLISECONDS);
+    }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -73,24 +74,25 @@ public class FabricScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runSyncLater(Runnable task, long delay) {
+  public void runSyncLater(Runnable task, Duration delay) {
     schedulerService.schedule(() -> server.execute(() -> {
       try {
         task.run();
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }), delay, TimeUnit.MILLISECONDS);
+    }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
 
-  public void runAsyncRepeating(Runnable task, long initialDelay, long period) {
+  @Override
+  public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
     schedulerService.scheduleAtFixedRate(() -> executorService.execute(() -> {
       try {
         task.run();
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }), initialDelay, period, TimeUnit.SECONDS);
+    }), initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
   }
 
   public void shutdown() {

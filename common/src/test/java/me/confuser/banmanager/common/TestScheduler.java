@@ -1,5 +1,7 @@
 package me.confuser.banmanager.common;
 
+import java.time.Duration;
+
 public class TestScheduler implements CommonScheduler {
 
   @Override
@@ -8,7 +10,7 @@ public class TestScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runAsyncLater(Runnable task, long delay) {
+  public void runAsyncLater(Runnable task, Duration delay) {
     task.run();
   }
 
@@ -18,7 +20,13 @@ public class TestScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runSyncLater(Runnable task, long delay) {
+  public void runSyncLater(Runnable task, Duration delay) {
+    task.run();
+  }
+
+  @Override
+  public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
+    // In tests, just run the task once immediately
     task.run();
   }
 }
