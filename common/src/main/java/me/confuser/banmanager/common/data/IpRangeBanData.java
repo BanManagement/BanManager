@@ -78,6 +78,10 @@ public class IpRangeBanData {
     this.updated = updated;
   }
 
+  public IpRangeBanData(IpRangeBanRecord banRecord) {
+    this(banRecord.getFromIp(), banRecord.getToIp(), banRecord.getPastActor(), banRecord.getReason(), banRecord.isSilent(), banRecord.getExpired(), banRecord.getPastCreated());
+  }
+
   public boolean hasExpired() {
     return getExpires() != 0 && getExpires() <= (System.currentTimeMillis() / 1000L);
   }
@@ -94,8 +98,8 @@ public class IpRangeBanData {
     return ban.getReason().equals(this.reason)
             && ban.getExpires() == expires
             && ban.getCreated() == this.created
-            && ban.getFromIp() == this.fromIp
-            && ban.getToIp() == this.toIp
+            && ban.getFromIp().equals(this.fromIp)
+            && ban.getToIp().equals(this.toIp)
             && ban.getActor().getUUID().equals(this.actor.getUUID());
   }
 }

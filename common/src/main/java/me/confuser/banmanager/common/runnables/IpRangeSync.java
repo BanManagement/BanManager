@@ -63,6 +63,12 @@ public class IpRangeSync extends BmRunnable {
           continue;
         }
 
+        // Only remove the ban if the unban record corresponds to the current ban for that range.
+        IpRangeBanData localBan = banStorage.getBan(ban.getRange());
+        if (localBan == null || !localBan.equalsBan(new IpRangeBanData(ban))) {
+          continue;
+        }
+
         banStorage.removeBan(ban.getRange());
 
       }

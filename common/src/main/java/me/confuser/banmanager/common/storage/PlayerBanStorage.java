@@ -19,6 +19,7 @@ import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -226,10 +227,12 @@ public class PlayerBanStorage extends BaseDaoImpl<PlayerBanData, Integer> {
       return false;
     }
 
-    delete(ban);
-    bans.remove(ban.getPlayer().getUUID());
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      delete(ban);
+      if (!delete) plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+    });
 
-    if (!delete) plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+    bans.remove(ban.getPlayer().getUUID());
 
     return true;
   }
