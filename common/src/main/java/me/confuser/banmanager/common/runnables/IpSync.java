@@ -71,6 +71,13 @@ public class IpSync extends BmRunnable {
           continue;
         }
 
+        // Only remove the ban if the unban record corresponds to the current ban.
+        // Prevents removing a newer/different ban when record ordering lags.
+        IpBanData localBan = banStorage.getBan(ban.getIp());
+        if (localBan == null || !localBan.equalsBan(new IpBanData(ban))) {
+          continue;
+        }
+
         banStorage.removeBan(ban.getIp());
 
       }
@@ -119,6 +126,12 @@ public class IpSync extends BmRunnable {
         final IpMuteRecord mute = itr.next();
 
         if (!muteStorage.isMuted(mute.getIp())) {
+          continue;
+        }
+
+        // Only remove the mute if the unmute record corresponds to the current mute.
+        IpMuteData localMute = muteStorage.getMute(mute.getIp());
+        if (localMute == null || !localMute.equalsMute(new IpMuteData(mute))) {
           continue;
         }
 

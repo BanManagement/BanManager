@@ -18,6 +18,7 @@ import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -243,10 +244,12 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       return false;
     }
 
-    delete(mute);
-    mutes.remove(mute.getPlayer().getUUID());
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      delete(mute);
+      if (!delete) plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
+    });
 
-    if (!delete) plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
+    mutes.remove(mute.getPlayer().getUUID());
 
     return true;
   }

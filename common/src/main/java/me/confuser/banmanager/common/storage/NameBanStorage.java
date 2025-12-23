@@ -18,6 +18,7 @@ import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -186,10 +187,12 @@ public class NameBanStorage extends BaseDaoImpl<NameBanData, Integer> {
       return false;
     }
 
-    delete(ban);
-    bans.remove(ban.getName().toLowerCase());
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      delete(ban);
+      if (!delete) plugin.getNameBanRecordStorage().addRecord(ban, actor, reason);
+    });
 
-    if (!delete) plugin.getNameBanRecordStorage().addRecord(ban, actor, reason);
+    bans.remove(ban.getName().toLowerCase());
 
     return true;
   }

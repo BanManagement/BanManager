@@ -51,15 +51,15 @@ public class GlobalIpSync extends BmRunnable {
             continue;
           }
 
-          // Global ban overrides local
-          localBanStorage
-              .unban(localBan, ban.getActor(plugin));
+          // Global ban overrides local - respect event cancellation
+          if (!localBanStorage.unban(localBan, ban.getActor(plugin))) {
+            continue;
+          }
         } else if (localBanStorage.isBanned(ban.getIp())) {
           localBanStorage.removeBan(ban.getIp());
         }
 
-        if (!localBanStorage.ban(ban.toLocal(plugin)))
-          continue;
+        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
 
         final IpBanData globalBan = localBanStorage.getBan(ban.getIp());
 
