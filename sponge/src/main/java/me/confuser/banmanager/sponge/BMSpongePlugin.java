@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.HashMap;
 
 @Plugin(
@@ -238,26 +239,22 @@ public class BMSpongePlugin {
 
     plugin.setSyncRunner(syncRunner);
 
-    setupAsyncRunnable(10L, syncRunner);
+    // Runner loop: run every 1 second on all platforms
+    Duration runnerPeriod = Duration.ofSeconds(1);
+    plugin.getScheduler().runAsyncRepeating(syncRunner, runnerPeriod, runnerPeriod);
 
     /*
-     * This task should be ran last with a 1L offset as it gets modified
-     * above.
+     * This task should be ran last with a small offset as it gets modified
+     * above. Use +50ms (1 tick) offset for consistency across platforms.
      */
-    setupAsyncRunnable((plugin.getSchedulesConfig()
-        .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
+    int saveLastCheckedSeconds = plugin.getSchedulesConfig().getSchedule("saveLastChecked");
+    if (saveLastCheckedSeconds > 0) {
+      Duration period = Duration.ofSeconds(saveLastCheckedSeconds);
+      Duration initialDelay = period.plusMillis(50);
+      plugin.getScheduler().runAsyncRepeating(new SaveLastChecked(plugin), initialDelay, period);
+    }
 
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));
-
-    if (!plugin.getConfig().isCheckForUpdates()) return;
-
-    // @TODO Update checker logic here
-  }
-
-  private void setupAsyncRunnable(long length, Runnable runnable) {
-    if (length <= 0) return;
-
-    Sponge.getGame().getScheduler().createTaskBuilder().async().execute(runnable).intervalTicks(length).submit(this);
   }
 }

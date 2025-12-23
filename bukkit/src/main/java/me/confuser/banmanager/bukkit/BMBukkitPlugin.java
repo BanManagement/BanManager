@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.Duration;
 
 public class BMBukkitPlugin extends JavaPlugin {
 
@@ -211,33 +212,22 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     plugin.setSyncRunner(syncRunner);
 
-    setupAsyncRunnable(10L, syncRunner);
+    // Runner loop: run every 1 second on all platforms
+    Duration runnerPeriod = Duration.ofSeconds(1);
+    plugin.getScheduler().runAsyncRepeating(syncRunner, runnerPeriod, runnerPeriod);
 
     /*
-     * This task should be ran last with a 1L offset as it gets modified
-     * above.
+     * This task should be ran last with a small offset as it gets modified
+     * above. Use +50ms (1 tick) offset for consistency across platforms.
      */
-    setupAsyncRunnable((plugin.getSchedulesConfig()
-        .getSchedule("saveLastChecked") * 20L) + 1L, new SaveLastChecked(plugin));
+    int saveLastCheckedSeconds = plugin.getSchedulesConfig().getSchedule("saveLastChecked");
+    if (saveLastCheckedSeconds > 0) {
+      Duration period = Duration.ofSeconds(saveLastCheckedSeconds);
+      Duration initialDelay = period.plusMillis(50);
+      plugin.getScheduler().runAsyncRepeating(new SaveLastChecked(plugin), initialDelay, period);
+    }
 
     // Purge
     plugin.getScheduler().runAsync(new Purge(plugin));
-
-//    // TODO Refactor
-//    if (!plugin.getConfig().isCheckForUpdates()) return;
-//
-//    plugin.getScheduler().runAsync(() -> {
-//      Updater updater = new Updater(this, 41473, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-//
-//      if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
-//        plugin.getScheduler().runSync(() -> registerEvent(new UpdateListener(plugin)));
-//      }
-//    });
-  }
-
-  private void setupAsyncRunnable(long length, Runnable runnable) {
-    if (length <= 0) return;
-
-    getServer().getScheduler().runTaskTimerAsynchronously(this, runnable, length, length);
   }
 }

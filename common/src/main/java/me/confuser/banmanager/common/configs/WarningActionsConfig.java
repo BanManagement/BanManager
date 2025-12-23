@@ -59,7 +59,7 @@ public class WarningActionsConfig {
               continue;
             }
 
-            delay = delay * 20L; // Convert from seconds to ticks
+            delay = delay * 1000L; // Convert from seconds to milliseconds
           }
 
           String timeframe = "";

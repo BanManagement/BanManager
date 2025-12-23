@@ -22,8 +22,12 @@ public abstract class BmRunnable implements Runnable {
   }
 
   public boolean shouldExecute() {
-    return !isRunning && (System.currentTimeMillis() / 1000L) - lastChecked > plugin.getSchedulesConfig()
-                                                                                    .getSchedule(name);
+    int scheduleSeconds = plugin.getSchedulesConfig().getSchedule(name);
+    // Setting schedule to 0 or negative disables this task (matches schedules.yml docs)
+    if (scheduleSeconds <= 0) {
+      return false;
+    }
+    return !isRunning && (System.currentTimeMillis() / 1000L) - lastChecked > scheduleSeconds;
   }
 
   public void beforeRun() {

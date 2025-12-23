@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.configs.HooksConfig;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.google.guava.collect.ImmutableMap;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -224,7 +225,7 @@ public class CommonHooksListener {
         }
 
         plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), hookCommand);
-      }, command.getDelay());
+      }, Duration.ofMillis(command.getDelay()));
     }
   }
 }

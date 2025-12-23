@@ -4,6 +4,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import me.confuser.banmanager.common.CommonScheduler;
 import net.md_5.bungee.api.ProxyServer;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class BungeeScheduler implements CommonScheduler {
@@ -19,8 +20,8 @@ public class BungeeScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runAsyncLater(Runnable task, long delay) {
-    ProxyServer.getInstance().getScheduler().schedule(plugin, task, (delay / 20L), TimeUnit.SECONDS);
+  public void runAsyncLater(Runnable task, Duration delay) {
+    ProxyServer.getInstance().getScheduler().schedule(plugin, task, delay.toMillis(), TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -29,7 +30,12 @@ public class BungeeScheduler implements CommonScheduler {
   }
 
   @Override
-  public void runSyncLater(Runnable task, long delay) {
+  public void runSyncLater(Runnable task, Duration delay) {
     runAsyncLater(task, delay);
+  }
+
+  @Override
+  public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
+    ProxyServer.getInstance().getScheduler().schedule(plugin, task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
   }
 }
