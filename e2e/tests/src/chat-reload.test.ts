@@ -61,8 +61,11 @@ describe('BanManager E2E Tests', () => {
   })
 
   test('plugin is loaded and RCON works', async () => {
-    const response = await sendCommand('plugins')
-    expect(response).toContain('BanManager')
+    // Use bmreload as a platform-agnostic way to check if BanManager is loaded
+    // (/plugins is Bukkit-specific and doesn't exist on Fabric)
+    const response = await sendCommand('bmreload')
+    // If BanManager is loaded, bmreload will return a success message
+    expect(response).toContain('reloaded')
   })
 
   test('bmreload command works', async () => {
@@ -139,11 +142,11 @@ describe('BanManager E2E Tests', () => {
     // Reload the plugin
     await reloadPlugin()
 
-    // Wait for reload to complete (poll for plugin)
+    // Wait for reload to complete (poll using bmreload command - works on all platforms)
     await waitFor(
       async () => {
-        const plugins = await sendCommand('plugins')
-        return plugins.includes('BanManager')
+        const response = await sendCommand('bmreload')
+        return response.includes('reloaded')
       },
       { timeout: 5000, interval: 200, message: 'Plugin not loaded after reload' }
     )

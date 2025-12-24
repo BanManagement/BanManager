@@ -1,0 +1,151 @@
+debug: false
+databases:
+  local:
+    storageType: 'mariadb'
+    host: mariadb
+    port: 3306
+    name: banmanager
+    user: banmanager
+    password: 'banmanager'
+    maxConnections: 10
+    useSSL: false
+    allowPublicKeyRetrieval: true
+    verifyServerCertificate: false
+    maxLifetime: 1800000
+    connectionTimeout: 30000
+    tables:
+      players: bm_players
+      playerBans: bm_player_bans
+      playerBanRecords: bm_player_ban_records
+      playerMutes: bm_player_mutes
+      playerMuteRecords: bm_player_mute_records
+      playerKicks: bm_player_kicks
+      playerNotes: bm_player_notes
+      playerHistory: bm_player_history
+      playerReports: bm_player_reports
+      playerReportLocations: bm_player_report_locations
+      playerReportStates: bm_player_report_states
+      playerReportCommands: bm_player_report_commands
+      playerReportComments: bm_player_report_comments
+      playerWarnings: bm_player_warnings
+      ipBans: bm_ip_bans
+      ipBanRecords: bm_ip_ban_records
+      ipMutes: bm_ip_mutes
+      ipMuteRecords: bm_ip_mute_records
+      ipRangeBans: bm_ip_range_bans
+      ipRangeBanRecords: bm_ip_range_ban_records
+      rollbacks: bm_rollbacks
+      nameBans: bm_name_bans
+      nameBanRecords: bm_name_ban_records
+
+  global:
+    enabled: false
+    storageType: 'mysql'
+    host: 127.0.0.1
+    port: 3306
+    name: global_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    useSSL: false
+    allowPublicKeyRetrieval: false
+    verifyServerCertificate: false
+    leakDetection: 3000
+    maxLifetime: 1800000
+    connectionTimeout: 30000
+    tables:
+      playerBans: bm_player_ban_all
+      playerUnbans: bm_player_unban_all
+      playerMutes: bm_player_mute_all
+      playerUnmutes: bm_player_unmute_all
+      playerNotes: bm_player_note_all
+      ipBans: bm_ip_ban_all
+      ipUnbans: bm_ip_unban_all
+
+mutedCommandBlacklist:
+- msg
+
+softMutedCommandBlacklist:
+- msg
+
+duplicateIpCheck: false
+bypassDuplicateChecks:
+- 0.0.0.0
+- 127.0.0.1
+
+logKicks: false
+logIps: true
+displayNotifications: true
+broadcastOnSync: false
+
+timeLimits:
+  playerMutes: {}
+  playerBans: {}
+  playerWarnings: {}
+  ipBans: {}
+  ipMutes: {}
+  rollbacks: {}
+  nameBans: {}
+
+cooldowns:
+  ban: 0
+  tempban: 0
+  mute: 0
+  tempmute: 0
+  banip: 0
+  tempbanip: 0
+  warn: 0
+  tempwarn: 0
+  report: 0
+
+warningActions:
+  enabled: false
+  actions: {}
+
+warningMute: false
+
+hooks:
+  enabled: true
+  events:
+    mute:
+      post:
+        - cmd: "say hook-fired-mute"
+          delay: 2
+
+checkForUpdates: false
+offlineAutoComplete: true
+punishAlts: false
+denyAlts: false
+timeAssociatedAlts: 0
+
+cleanUp:
+  kicks: 0
+  banRecords: 0
+  ipBanRecords: 0
+  ipMuteRecords: 0
+  muteRecords: 0
+  readWarnings: 0
+  unreadWarnings: 0
+  playerHistory: 0
+
+maxOnlinePerIp: 0
+maxMultiaccountsRecently: 0
+multiaccountsTime: 300
+checkOnJoin: false
+createNoteReasons: false
+onlineMode: false
+
+# Chat priority for E2E testing - this value will be modified during tests
+chatPriority: normal
+
+blockInvalidReasons: false
+
+uuidFetcher:
+  idToName:
+    url: 'https://sessionserver.mojang.com/session/minecraft/profile/[uuid]'
+    key: name
+  nameToId:
+    url: 'https://api.mojang.com/users/profiles/minecraft/[name]'
+    key: id
+
+geyserPrefix: '.'

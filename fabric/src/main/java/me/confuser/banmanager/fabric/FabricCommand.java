@@ -45,7 +45,9 @@ public class FabricCommand {
     LiteralArgumentBuilder<ServerCommandSource> literal = CommandManager.literal(name)
       .requires(source -> Permissions.check(source, command.getPermission(), 4))
       .executes(this::execute)
-      .then(CommandManager.argument("args", StringArgumentType.greedyString()).executes(this::execute));
+      .then(CommandManager.argument("args", StringArgumentType.greedyString())
+        .suggests(this::suggest)
+        .executes(this::execute));
 
     dispatcher.register(literal);
   }
@@ -87,7 +89,7 @@ public class FabricCommand {
     }
   }
 
-  private CompletableFuture<Suggestions> suggest(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+  private CompletableFuture<Suggestions> suggest(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
     if (!this.command.isEnableTabCompletion()) {
       return builder.buildFuture();
     }
@@ -95,13 +97,17 @@ public class FabricCommand {
     ServerCommandSource source = context.getSource();
     CommonSender commonSender = getSender(source);
 
-    String input = context.getInput().substring(context.getInput().indexOf(' ') + 1);
-    String[] args = input.split(" ");
+    String remaining = builder.getRemaining();
+    String[] args = remaining.isEmpty() ? new String[]{""} : remaining.split(" ", -1);
+
+    // Prefix ensures we don't replace prior arguments when completing later ones
+    int lastSpace = remaining.lastIndexOf(' ');
+    String prefix = lastSpace == -1 ? "" : remaining.substring(0, lastSpace + 1);
 
     List<String> suggestions = this.command.handlePlayerNameTabComplete(commonSender, args);
 
     for (String suggestion : suggestions) {
-      builder.suggest(suggestion);
+      builder.suggest(prefix + suggestion);
     }
 
     return builder.buildFuture();
