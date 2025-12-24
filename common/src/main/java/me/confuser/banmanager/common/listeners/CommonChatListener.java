@@ -40,11 +40,16 @@ public class CommonChatListener {
     PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
 
     if (mute.hasExpired()) {
-      try {
-        plugin.getPlayerMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
+      plugin.getPlayerMuteStorage().removeMute(mute);
+
+      plugin.getScheduler().runAsync(() -> {
+        try {
+          plugin.getPlayerMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      });
+
       return false;
     }
 
@@ -93,11 +98,15 @@ public class CommonChatListener {
     IpMuteData mute = plugin.getIpMuteStorage().getMute(address);
 
     if (mute.hasExpired()) {
-      try {
-        plugin.getIpMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
+      plugin.getIpMuteStorage().removeMute(mute);
+
+      plugin.getScheduler().runAsync(() -> {
+        try {
+          plugin.getIpMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      });
 
       return false;
     }
