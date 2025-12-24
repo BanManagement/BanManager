@@ -1,3 +1,9 @@
+# Parameterized Fabric E2E testing
+# Environment variables:
+#   MC_VERSION: Minecraft version (default: 1.21.4)
+#   JAVA_IMAGE: Java image tag (default: java21, use java17 for 1.20.x)
+#   FABRIC_LOADER: Fabric loader version (default: 0.16.9)
+
 services:
   mariadb:
     image: mariadb:10.11
@@ -15,12 +21,12 @@ services:
       - banmanager
 
   fabric:
-    image: itzg/minecraft-server:java21
+    image: itzg/minecraft-server:${JAVA_IMAGE:-java21}
     environment:
       EULA: "TRUE"
       TYPE: "FABRIC"
-      VERSION: "1.21.4"
-      FABRIC_LOADER_VERSION: "0.16.9"
+      VERSION: "${MC_VERSION:-1.21.4}"
+      FABRIC_LOADER_VERSION: "${FABRIC_LOADER:-0.16.9}"
       ONLINE_MODE: "false"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "testing"
@@ -43,11 +49,12 @@ services:
       COPY_CONFIG_DEST: "/data/config/banmanager"
     volumes:
       # Mount the mod JAR to a source directory (will be copied on startup)
-      - ../../../fabric/build/libs/BanManagerFabric.jar:/mods-src/BanManager.jar:ro
+      # Uses versioned jar name from Stonecutter build
+      - ../../../fabric/versions/${MC_VERSION:-1.21.4}/build/libs/BanManagerFabric-mc${MC_VERSION:-1.21.4}.jar:/mods-src/BanManager.jar:ro
       # Mount the plugin config source (will be copied on startup)
       - ./configs:/config:ro
       # Cache server data between runs (Fabric JAR, world data)
-      - fabric-data:/data
+      - fabric-data-${MC_VERSION:-1.21.4}:/data
     ports:
       - "25565:25565"
       - "25575:25575"
@@ -76,6 +83,7 @@ services:
       RCON_HOST: fabric
       RCON_PORT: 25575
       RCON_PASSWORD: testing
+      MC_VERSION: "${MC_VERSION:-1.21.4}"
     networks:
       - banmanager
 
@@ -84,4 +92,6 @@ networks:
     driver: bridge
 
 volumes:
-  fabric-data:
+  fabric-data-1.20.1:
+  fabric-data-1.21.1:
+  fabric-data-1.21.4:

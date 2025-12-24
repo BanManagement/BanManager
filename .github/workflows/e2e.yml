@@ -15,14 +15,35 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Bukkit/Paper
           - platform: Bukkit
             task: testBukkit
             build_task: ":BanManagerBukkit:shadowJar"
             compose_dir: platforms/bukkit
-          - platform: Fabric
-            task: testFabric
-            build_task: ":BanManagerFabric:remapJar"
+          # Fabric 1.20.1 (legacy modded, Java 17)
+          - platform: Fabric-1.20.1
+            task: testFabric_1_20_1
+            build_task: ":fabric:1.20.1:remapJar"
             compose_dir: platforms/fabric
+            mc_version: "1.20.1"
+            java_image: "java17"
+            fabric_loader: "0.16.10"
+          # Fabric 1.21.1 (stable 1.21, Java 21)
+          - platform: Fabric-1.21.1
+            task: testFabric_1_21_1
+            build_task: ":fabric:1.21.1:remapJar"
+            compose_dir: platforms/fabric
+            mc_version: "1.21.1"
+            java_image: "java21"
+            fabric_loader: "0.16.9"
+          # Fabric 1.21.4 (current latest, Java 21)
+          - platform: Fabric-1.21.4
+            task: testFabric_1_21_4
+            build_task: ":fabric:1.21.4:remapJar"
+            compose_dir: platforms/fabric
+            mc_version: "1.21.4"
+            java_image: "java21"
+            fabric_loader: "0.16.9"
 
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +53,17 @@ jobs:
         with:
           java-version: 21
           distribution: "temurin"
+
+      # Also set up JDK 17 for Fabric 1.20.x builds
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "temurin"
+
+      # Ensure JDK 21 is the default
+      - name: Set JDK 21 as default
+        run: echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -82,12 +114,20 @@ jobs:
       - name: Run E2E tests
         run: ./gradlew :BanManagerE2E:${{ matrix.task }}
         timeout-minutes: 15
+        env:
+          MC_VERSION: ${{ matrix.mc_version }}
+          JAVA_IMAGE: ${{ matrix.java_image }}
+          FABRIC_LOADER: ${{ matrix.fabric_loader }}
 
       - name: Collect logs on failure
         if: failure()
         working-directory: e2e/${{ matrix.compose_dir }}
         run: |
           docker compose logs > ../../e2e-logs-${{ matrix.platform }}.txt 2>&1 || true
+        env:
+          MC_VERSION: ${{ matrix.mc_version }}
+          JAVA_IMAGE: ${{ matrix.java_image }}
+          FABRIC_LOADER: ${{ matrix.fabric_loader }}
 
       - name: Upload logs on failure
         if: failure()
@@ -101,3 +141,7 @@ jobs:
         if: always()
         working-directory: e2e/${{ matrix.compose_dir }}
         run: docker compose down -v || true
+        env:
+          MC_VERSION: ${{ matrix.mc_version }}
+          JAVA_IMAGE: ${{ matrix.java_image }}
+          FABRIC_LOADER: ${{ matrix.fabric_loader }}

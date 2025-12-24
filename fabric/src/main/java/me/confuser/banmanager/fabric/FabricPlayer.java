@@ -16,6 +16,7 @@ import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSer
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
+//? if >=1.21.1
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -90,7 +91,11 @@ public class FabricPlayer implements CommonPlayer {
   }
 
   public String getName() {
+    //? if >=1.21 {
     return getPlayer().getNameForScoreboard();
+    //?} else {
+    /*return getPlayer().getName().getString();
+    *///?}
   }
 
   public InetAddress getAddress() {
@@ -106,7 +111,14 @@ public class FabricPlayer implements CommonPlayer {
 
     for (ServerWorld world1 : this.server.getWorlds()) {
       if (world1.getRegistryKey().getValue().toString().equals(world.getName())) {
+        //? if >=1.21.4 {
         return player.teleport(world1, x, y, z, Collections.<PositionFlag>emptySet(), yaw, pitch, true);
+        //?} elif >=1.21.1 {
+        /*return player.teleport(world1, x, y, z, Collections.<PositionFlag>emptySet(), yaw, pitch);
+        *///?} else {
+        /*player.teleport(world1, x, y, z, yaw, pitch);
+        return true;
+        *///?}
       }
     }
 
