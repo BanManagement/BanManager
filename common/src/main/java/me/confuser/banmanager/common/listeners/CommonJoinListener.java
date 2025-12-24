@@ -28,6 +28,14 @@ public class CommonJoinListener {
       .concurrencyLevel(2)
       .maximumSize(100)
       .build();
+
+  // Caches multiaccounts count during async pre-login for use in sync PlayerLoginEvent
+  // Short expiry since it's only needed between AsyncPlayerPreLoginEvent and PlayerLoginEvent
+  private final Cache<UUID, Integer> multiaccountsCache = CacheBuilder.newBuilder()
+      .expireAfterWrite(30, TimeUnit.SECONDS)
+      .maximumSize(500)
+      .build();
+
   private BanManagerPlugin plugin;
 
   public CommonJoinListener(BanManagerPlugin plugin) {
@@ -35,6 +43,18 @@ public class CommonJoinListener {
   }
 
   public void banCheck(UUID id, String name, IPAddress address, CommonJoinHandler handler) {
+    // Pre-fetch multiaccounts count (async-safe) and cache for later permission check in PlayerLoginEvent
+    if (plugin.getConfig().getMaxMultiaccountsRecently() > 0) {
+      try {
+        long timeDiff = plugin.getConfig().getMultiaccountsTime();
+        List<PlayerData> multiAccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(address, timeDiff);
+        multiaccountsCache.put(id, multiAccountPlayers.size());
+      } catch (Exception e) {
+        // DB error - don't cache anything; check will be skipped in PlayerLoginEvent (fail-open)
+        plugin.getLogger().warning("Failed to pre-check multiaccounts for " + name + ": " + e.getMessage());
+      }
+    }
+
     if (plugin.getConfig().isCheckOnJoin()) {
       // Check for new bans/mutes
       if (!plugin.getIpBanStorage().isBanned(address)) {
@@ -372,15 +392,14 @@ public class CommonJoinListener {
     }
 
     if (plugin.getConfig().getMaxMultiaccountsRecently() > 0 && !player.hasPermission("bm.exempt.maxmultiaccountsrecently")) {
-      long timeDiff = plugin.getConfig().getMultiaccountsTime();
+      // Use cached count from banCheck() instead of querying DB on main thread
+      Integer cachedCount = multiaccountsCache.getIfPresent(player.getUniqueId());
 
-      List<PlayerData> multiAccountPlayers = plugin.getPlayerStorage().getDuplicatesInTime(ip, timeDiff);
-
-      if (multiAccountPlayers.size() > plugin.getConfig().getMaxMultiaccountsRecently()) {
+      if (cachedCount != null && cachedCount > plugin.getConfig().getMaxMultiaccountsRecently()) {
         handler.handleDeny(Message.get("deniedMultiaccounts"));
         return;
       }
-
+      // If not cached (DB was down during async phase), fail-open to avoid blocking
     }
 
     if (!plugin.getConfig().isDuplicateIpCheckEnabled()) {

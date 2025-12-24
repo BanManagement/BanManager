@@ -22,7 +22,7 @@ public abstract class BasePluginDbTest {
   protected Faker faker = new Faker();
   protected TestUtils testUtils;
   protected TestServer server = spy(new TestServer());
-  private boolean configSetup = false;
+  private static boolean configSetup = false;
   private static DB db;
 
   @BeforeClass
@@ -47,14 +47,31 @@ public abstract class BasePluginDbTest {
       } catch (Exception e) {
       }
 
+      // Clean up any resources from the initial enable before reconfiguring
+      plugin.disable();
+
       setupConfig();
+
+      // Recreate plugin with updated config
+      plugin = new BanManagerPlugin(BasePluginTest.setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), server, new TestMetrics());
+      testUtils = new TestUtils(plugin, faker);
+      server.enable(plugin);
     }
 
     plugin.enable();
   }
 
+  @After
+  public void cleanup() {
+    if (plugin != null) {
+      plugin.disable();
+    }
+  }
+
   @AfterClass
   public static void teardown() {
+    configSetup = false;  // Reset for next test class
+
     if (db == null) return;
 
     try {
