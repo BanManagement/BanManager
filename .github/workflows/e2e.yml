@@ -19,6 +19,10 @@ jobs:
             task: testBukkit
             build_task: ":BanManagerBukkit:shadowJar"
             compose_dir: platforms/bukkit
+          - platform: Fabric
+            task: testFabric
+            build_task: ":BanManagerFabric:remapJar"
+            compose_dir: platforms/fabric
 
     steps:
       - uses: actions/checkout@v4

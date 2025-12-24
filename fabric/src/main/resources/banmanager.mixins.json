@@ -7,7 +7,8 @@
     "BanIpCommandMixin",
     "KickCommandMixin",
     "PardonCommandMixin",
-    "ServerPlayerNetworkHandlerMixin"
+    "ServerPlayerNetworkHandlerMixin",
+    "SignUpdateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
