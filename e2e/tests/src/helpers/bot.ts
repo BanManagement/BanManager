@@ -83,8 +83,32 @@ export class TestBot {
 
   async disconnect (): Promise<void> {
     if (this.bot != null) {
-      this.bot.quit()
+      const bot = this.bot
       this.bot = null
+
+      await new Promise<void>((resolve) => {
+        // Set a timeout in case 'end' never fires
+        const timeout = setTimeout(() => {
+          resolve()
+        }, 2000)
+
+        bot.once('end', () => {
+          clearTimeout(timeout)
+          resolve()
+        })
+
+        // Remove listeners to prevent callbacks during shutdown
+        bot.removeAllListeners('chat')
+        bot.removeAllListeners('message')
+        bot.removeAllListeners('error')
+
+        // Quit the bot
+        bot.quit()
+      })
+
+      // Extra delay to let any remaining timers clear
+      await this.sleep(200)
+
       console.log(`Bot ${this.username} disconnected`)
     }
   }

@@ -3,6 +3,7 @@ package me.confuser.banmanager.common;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -22,6 +23,13 @@ public abstract class BasePluginTest {
     try {
       plugin.enable();
     } catch (Exception e) {
+    }
+  }
+
+  @After
+  public void cleanup() {
+    if (plugin != null) {
+      plugin.disable();
     }
   }
 
