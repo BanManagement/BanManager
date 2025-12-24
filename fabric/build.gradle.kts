@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 plugins {
   `java-library`
@@ -8,17 +9,44 @@ plugins {
   `fabric-loom`
 }
 
+// Read version-specific properties
+val minecraftVersion: String by project.extra { property("minecraft_version") as String }
+val yarnMappings: String by project.extra { property("yarn_mappings") as String }
+val fabricLoaderVersion: String by project.extra { property("fabric_loader") as String }
+val fabricApiVersion: String by project.extra { property("fabric_api") as String }
+val javaVersion: String by project.extra { property("java_version") as String }
+
+// Stonecutter version check helper
+val mcVersion = minecraftVersion.split(".").let { parts ->
+    val major = parts.getOrElse(0) { "1" }.toIntOrNull() ?: 1
+    val minor = parts.getOrElse(1) { "0" }.toIntOrNull() ?: 0
+    val patch = parts.getOrElse(2) { "0" }.toIntOrNull() ?: 0
+    Triple(major, minor, patch)
+}
+val isPreV21 = mcVersion.second < 21
+
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
+
+// Configure Java toolchain based on MC version
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion.toInt()))
+    }
+}
+
+// Stonecutter 0.7.11 handles source sets automatically with the "shared sources" fix
+// No custom source set configuration needed
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            artifactId = "BanManagerFabric-mc$minecraftVersion"
 
             pom {
                 name.set("BanManagerFabric")
-                description.set("BanManager for Fabric")
+                description.set("BanManager for Fabric - Minecraft $minecraftVersion")
                 url.set("https://github.com/BanManagement/BanManager/")
                 licenses {
                     license {
@@ -63,13 +91,13 @@ configurations {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.4")
-    mappings("net.fabricmc:yarn:1.21.4+build.1:v2")
-    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+    minecraft("com.mojang:minecraft:$minecraftVersion")
+    mappings("net.fabricmc:yarn:$yarnMappings:v2")
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 
-    val modules = listOf(
+    // Base modules available in all versions
+    val baseModules = listOf(
         "fabric-api-base",
-        "fabric-command-api-v2",
         "fabric-events-interaction-v0",
         "fabric-lifecycle-events-v1",
         "fabric-message-api-v1",
@@ -77,8 +105,15 @@ dependencies {
         "fabric-entity-events-v1"
     )
 
-    modules.forEach {
-        modImplementation(fabricApi.module(it, "0.111.0+1.21.4"))
+    baseModules.forEach {
+        modImplementation(fabricApi.module(it, fabricApiVersion))
+    }
+
+    // Command API: v1 for 1.20.1, v2 for 1.21+
+    if (isPreV21) {
+        modImplementation(fabricApi.module("fabric-command-api-v1", fabricApiVersion))
+    } else {
+        modImplementation(fabricApi.module("fabric-command-api-v2", fabricApiVersion))
     }
 
     modImplementation("me.lucko:fabric-permissions-api:0.3.1")
@@ -87,12 +122,28 @@ dependencies {
 }
 
 tasks.named<Copy>("processResources") {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
     val internalVersion = project.ext["internalVersion"]
+    val mixinJavaVersion = "JAVA_$javaVersion"
+    val commandApiModule = if (isPreV21) "fabric-command-api-v1" else "fabric-command-api-v2"
 
     inputs.property("internalVersion", internalVersion)
+    inputs.property("minecraftVersion", minecraftVersion)
+    inputs.property("mixinJavaVersion", mixinJavaVersion)
+    inputs.property("commandApiModule", commandApiModule)
 
     filesMatching(listOf("plugin.yml", "fabric.mod.json")) {
-        expand("internalVersion" to internalVersion, "mainPath" to "me.confuser.banmanager.fabric.BMFabricPlugin")
+        expand(
+            "internalVersion" to internalVersion,
+            "mainPath" to "me.confuser.banmanager.fabric.BMFabricPlugin",
+            "minecraftVersion" to minecraftVersion,
+            "commandApiModule" to commandApiModule
+        )
+    }
+
+    filesMatching("banmanager.mixins.json") {
+        expand("mixinJavaVersion" to mixinJavaVersion)
     }
 }
 
@@ -108,7 +159,7 @@ tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     archiveBaseName.set("BanManagerFabric")
-    archiveClassifier.set("")
+    archiveClassifier.set("mc$minecraftVersion")
     archiveVersion.set("")
 
     dependencies {
@@ -132,7 +183,7 @@ tasks.named<RemapJarTask>("remapJar") {
 
     inputFile.set(tasks.named<ShadowJar>("shadowJar").get().archiveFile)
     archiveBaseName.set("BanManagerFabric")
-    archiveClassifier.set("")
+    archiveClassifier.set("mc$minecraftVersion")
     archiveVersion.set("")
 }
 

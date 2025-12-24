@@ -27,8 +27,12 @@ fun Project.applyCommonConfiguration() {
         }
     }
 
+    // Only set Java 1.8 for non-Fabric modules
+    // Fabric uses toolchain configuration in its build.gradle.kts
     plugins.withId("java") {
-        the<JavaPluginExtension>().setSourceCompatibility("1.8")
-        the<JavaPluginExtension>().setTargetCompatibility("1.8")
+        if (!plugins.hasPlugin("fabric-loom")) {
+            the<JavaPluginExtension>().setSourceCompatibility("1.8")
+            the<JavaPluginExtension>().setTargetCompatibility("1.8")
+        }
     }
 }

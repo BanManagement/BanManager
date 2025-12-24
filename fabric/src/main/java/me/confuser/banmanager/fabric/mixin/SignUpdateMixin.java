@@ -23,6 +23,10 @@ public class SignUpdateMixin {
 
   @Inject(method = "onSignUpdate", at = @At("HEAD"), cancellable = true)
   private void banmanager$blockMutedSignEdit(UpdateSignC2SPacket packet, List<?> signText, CallbackInfo ci) {
+    checkMutedSign(ci);
+  }
+
+  private void checkMutedSign(CallbackInfo ci) {
     BanManagerPlugin plugin = BanManagerPlugin.getInstance();
     if (plugin == null) return;
 

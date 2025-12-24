@@ -40,7 +40,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+//? if >=1.21 {
 import net.minecraft.text.TextCodecs;
+//?}
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
@@ -338,16 +340,24 @@ public class FabricServer implements CommonServer {
   }
 
   public static Text formatMessage(TextComponent message) {
+    //? if >=1.21 {
     return TextCodecs.CODEC
       .decode(JsonOps.INSTANCE, JsonParser.parseString(GsonComponentSerializer.gson().serialize(message)))
       .getOrThrow()
       .getFirst();
+    //?} else {
+    /*return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(message));
+    *///?}
   }
 
   public static Text formatJsonMessage(String message) {
+    //? if >=1.21 {
     return TextCodecs.CODEC
       .decode(JsonOps.INSTANCE, JsonParser.parseString(message))
       .getOrThrow()
       .getFirst();
+    //?} else {
+    /*return Text.Serializer.fromJson(message);
+    *///?}
   }
 }
