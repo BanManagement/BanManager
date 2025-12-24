@@ -24,6 +24,16 @@ public class TestUtils {
     return null;
   }
 
+  public PlayerData createPlayerWithName(String name) {
+    try {
+      return plugin.getPlayerStorage().createIfNotExists(UUID.fromString(faker.internet().uuid()), name);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   public String createRandomPlayerName() {
     String name = faker.name().username();
 

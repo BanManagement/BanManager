@@ -1,0 +1,87 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banmanager
+      MYSQL_USER: banmanager
+      MYSQL_PASSWORD: banmanager
+    healthcheck:
+      test: ["CMD", "mariadb", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - banmanager
+
+  fabric:
+    image: itzg/minecraft-server:java21
+    environment:
+      EULA: "TRUE"
+      TYPE: "FABRIC"
+      VERSION: "1.21.4"
+      FABRIC_LOADER_VERSION: "0.16.9"
+      ONLINE_MODE: "false"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      MEMORY: "2G"
+      # Performance optimizations for faster startup
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 4
+      SIMULATION_DISTANCE: 4
+      MAX_WORLD_SIZE: 100
+      LEVEL_TYPE: "flat"
+      GENERATE_STRUCTURES: "false"
+      # Download Fabric API and Fabric Permissions API from Modrinth
+      MODRINTH_PROJECTS: "fabric-api,fabric-permissions-api"
+      # Copy mods from mounted source
+      COPY_MODS_SRC: "/mods-src"
+      COPY_MODS_DEST: "/data/mods"
+      # Copy configs from mounted source
+      COPY_CONFIG_SRC: "/config"
+      COPY_CONFIG_DEST: "/data/config/banmanager"
+    volumes:
+      # Mount the mod JAR to a source directory (will be copied on startup)
+      - ../../../fabric/build/libs/BanManagerFabric.jar:/mods-src/BanManager.jar:ro
+      # Mount the plugin config source (will be copied on startup)
+      - ./configs:/config:ro
+      # Cache server data between runs (Fabric JAR, world data)
+      - fabric-data:/data
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rcon-cli", "--password", "testing", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    networks:
+      - banmanager
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.tests
+    depends_on:
+      fabric:
+        condition: service_healthy
+    environment:
+      SERVER_HOST: fabric
+      SERVER_PORT: 25565
+      RCON_HOST: fabric
+      RCON_PORT: 25575
+      RCON_PASSWORD: testing
+    networks:
+      - banmanager
+
+networks:
+  banmanager:
+    driver: bridge
+
+volumes:
+  fabric-data:

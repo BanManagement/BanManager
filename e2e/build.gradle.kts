@@ -43,11 +43,19 @@ createPlatformTestTask(
     "Run Bukkit E2E tests in Docker"
 )
 
+// Fabric E2E tests
+createPlatformTestTask(
+    "testFabric",
+    "fabric",
+    ":BanManagerFabric:remapJar",
+    "Run Fabric E2E tests in Docker"
+)
+
 tasks.register("testAll") {
     group = "verification"
-    description = "Run E2E tests for all working platforms (currently Bukkit only)"
+    description = "Run E2E tests for all platforms"
 
-    dependsOn("testBukkit")
+    dependsOn("testBukkit", "testFabric")
 }
 
 // Backward compatibility - "test" now runs Bukkit tests
@@ -85,10 +93,38 @@ tasks.register<Exec>("logsBukkit") {
     commandLine("docker", "compose", "logs", "-f", "paper")
 }
 
+// Helper tasks for Fabric debugging
+tasks.register<Exec>("startFabric") {
+    group = "verification"
+    description = "Start the Fabric test server without running tests (for debugging)"
+
+    dependsOn(":BanManagerFabric:remapJar")
+
+    workingDir = file("platforms/fabric")
+    commandLine("docker", "compose", "up", "-d", "mariadb", "fabric")
+}
+
+tasks.register<Exec>("stopFabric") {
+    group = "verification"
+    description = "Stop the Fabric test server"
+
+    workingDir = file("platforms/fabric")
+    commandLine("docker", "compose", "down", "-v")
+    isIgnoreExitValue = true
+}
+
+tasks.register<Exec>("logsFabric") {
+    group = "verification"
+    description = "Show Fabric server logs"
+
+    workingDir = file("platforms/fabric")
+    commandLine("docker", "compose", "logs", "-f", "fabric")
+}
+
 tasks.named("clean") {
     doLast {
         // Clean up all platform Docker resources
-        listOf("bukkit").forEach { platform ->
+        listOf("bukkit", "fabric").forEach { platform ->
             exec {
                 workingDir = file("platforms/$platform")
                 commandLine("docker", "compose", "down", "-v", "--rmi", "local")
