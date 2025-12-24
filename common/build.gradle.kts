@@ -60,4 +60,6 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     useJUnit()
+    maxHeapSize = "512m"
+    forkEvery = 1  // Fork a new JVM for each test class to prevent memory accumulation
 }
