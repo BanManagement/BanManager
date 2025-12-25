@@ -39,9 +39,9 @@ publishing {
 }
 
 signing {
-    if (project.findProperty("signingKey")?.toString()?.toBoolean() == true) {
-        useInMemoryPgpKeys(findProperty("signingKey")?.toString(), findProperty("signingPassword")?.toString())
-
+    val signingKey = findProperty("signingKey")?.toString()
+    if (!signingKey.isNullOrBlank()) {
+        useInMemoryPgpKeys(signingKey, findProperty("signingPassword")?.toString())
         sign(publishing.publications["mavenJava"])
     }
 }

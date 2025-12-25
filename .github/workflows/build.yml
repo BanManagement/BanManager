@@ -67,4 +67,11 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
         run: |
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+          VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+          if [[ "$VERSION" == *"SNAPSHOT"* ]]; then
+            # SNAPSHOT: publish to snapshot repository (no staging/release)
+            ./gradlew publishToSonatype
+          else
+            # Release: publish, stage, and release to Maven Central
+            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+          fi
