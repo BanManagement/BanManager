@@ -3,104 +3,95 @@ package me.confuser.banmanager.sponge;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
+import net.kyori.adventure.text.Component;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.ArgumentParseException;
-import org.spongepowered.api.command.args.parsing.InputTokenizer;
-import org.spongepowered.api.command.args.parsing.SingleArg;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.plugin.PluginContainer;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class SpongeCommand implements CommandCallable {
+public class SpongeCommand {
 
-  private BMSpongePlugin plugin;
-  private CommonCommand command;
-  private static final InputTokenizer tokeniser = InputTokenizer.spaceSplitString();
+    private final BanManagerPlugin plugin;
+    private final CommonCommand command;
+    private final PluginContainer pluginContainer;
 
-  public SpongeCommand(BMSpongePlugin plugin, CommonCommand command) {
-    this.plugin = plugin;
-    this.command = command;
-
-    register();
-  }
-
-  public void register() {
-    Sponge.getCommandManager().register(plugin, this, command.getCommandName());
-  }
-
-  @Override
-  public CommandResult process(CommandSource source, String arguments) {
-    CommonSender sender = getSender(source);
-    boolean result = execute(sender, arguments);
-
-    if (!result) {
-      sender.sendMessage(command.getUsage());
-      return CommandResult.empty();
+    public SpongeCommand(BanManagerPlugin plugin, CommonCommand command, PluginContainer pluginContainer) {
+        this.plugin = plugin;
+        this.command = command;
+        this.pluginContainer = pluginContainer;
     }
 
-    return CommandResult.success();
-  }
-
-  private boolean execute(CommonSender sender, String arguments) {
-    try {
-      if (sender.hasPermission(command.getPermission())) {
-        return this.command.onCommand(sender, this.command.getParser(parseArgs(arguments)));
-      } else {
-        sender.sendMessage("&cYou do not have permission to use this command");
-        return true;
-      }
-    } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | ArgumentParseException e) {
-      e.printStackTrace();
+    public void register() {
+        Command.Parameterized cmd = buildCommand();
+        Sponge.server().commandManager().registrar(Command.Parameterized.class)
+            .orElseThrow(() -> new IllegalStateException("Command registrar not found"))
+            .register(pluginContainer, cmd, command.getCommandName(), command.getAliases().toArray(new String[0]));
     }
 
-    return false;
-  }
+    public Command.Parameterized buildCommand() {
+        Parameter.Value<String> argsParam = Parameter.remainingJoinedStrings()
+            .key("args")
+            .optional()
+            .build();
 
-  private String[] parseArgs(String arguments) throws ArgumentParseException {
-    return tokeniser.tokenize(arguments, false).stream().map(SingleArg::getValue).toArray(String[]::new);
-  }
-
-  @Override
-  public List<String> getSuggestions(CommandSource source, String arguments, Location<World> targetPosition) {
-    if (!command.isEnableTabCompletion()) return Collections.emptyList();
-
-    return command.handlePlayerNameTabComplete(getSender(source), arguments.split(" "));
-  }
-
-  private CommonSender getSender(CommandSource source) {
-    if (source instanceof Player) {
-      return new SpongePlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
-    } else {
-      return new SpongeSender(BanManagerPlugin.getInstance(), source);
+        return Command.builder()
+            .addParameter(argsParam)
+            .permission(command.getPermission())
+            .executor(context -> execute(context, argsParam))
+            .build();
     }
-  }
 
-  @Override
-  public boolean testPermission(CommandSource source) {
-    return source.hasPermission(command.getPermission());
-  }
+    private CommandResult execute(CommandContext context, Parameter.Value<String> argsParam) throws CommandException {
+        CommandCause cause = context.cause();
+        CommonSender sender = getSender(cause);
 
-  @Override
-  public Optional<Text> getShortDescription(CommandSource source) {
-    return Optional.empty();
-  }
+        Optional<String> argsOpt = context.one(argsParam);
+        List<String> args = new LinkedList<>();
 
-  @Override
-  public Optional<Text> getHelp(CommandSource source) {
-    return Optional.empty();
-  }
+        if (argsOpt.isPresent()) {
+            String argsStr = argsOpt.get();
+            if (!argsStr.isEmpty()) {
+                args.addAll(Arrays.asList(argsStr.split(" ")));
+            }
+        }
 
-  @Override
-  public Text getUsage(CommandSource source) {
-    return Text.of(command.getUsage());
-  }
+        try {
+            if (sender.hasPermission(command.getPermission())) {
+                boolean success = this.command.onCommand(sender, this.command.getParser(args));
+
+                if (!success) {
+                    sender.sendMessage(command.getUsage());
+                }
+
+                return CommandResult.success();
+            } else {
+                sender.sendMessage("&cYou do not have permission to use this command");
+                return CommandResult.success();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CommandResult.error(Component.text("An error occurred: " + e.getMessage()));
+        }
+    }
+
+    private CommonSender getSender(CommandCause cause) {
+        Object root = cause.root();
+        if (root instanceof ServerPlayer) {
+            return new SpongePlayer((ServerPlayer) root, plugin.getConfig().isOnlineMode());
+        } else {
+            // Use CommandCause directly as the audience - this properly routes
+            // messages back to RCON connections and other command sources
+            return new SpongeSender(plugin, cause);
+        }
+    }
 }

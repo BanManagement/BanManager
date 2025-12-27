@@ -4,6 +4,8 @@
 #   JAVA_IMAGE: Java image tag (default: java21, use java17 for 1.20.x)
 #   FABRIC_LOADER: Fabric loader version (default: 0.16.9)
 
+name: bm-fabric
+
 services:
   mariadb:
     image: mariadb:10.11
@@ -55,9 +57,7 @@ services:
       - ./configs:/config:ro
       # Cache server data between runs (Fabric JAR, world data)
       - fabric-data-${MC_VERSION:-1.21.4}:/data
-    ports:
-      - "25565:25565"
-      - "25575:25575"
+    # Note: No host port mappings - tests use Docker network, avoids conflicts with other platforms
     depends_on:
       mariadb:
         condition: service_healthy

@@ -1,0 +1,732 @@
+main: "${mainPath}"
+name: BanManager
+version: "${internalVersion}"
+author: confuser
+website: https://banmanagement.com
+description: "A database driven punishment system"
+softdepend:
+  - PlaceholderAPI
+
+# Mark the plugin as 1.13 compatible to avoid CB having to perform quite as much unnecessary
+# remapping when the plugin is loaded. Note that despite what this setting might otherwise imply,
+# BM is still compatible with pre-1.13 releases.
+api-version: 1.13
+
+commands:
+  ban:
+    description: "ban a player"
+    usage: "/ban <player> <reason>"
+    aliases: [bmban]
+    permission: bm.command.ban
+  banall:
+    description: "ban a player across multiple servers"
+    usage: "/banall <player> <reason>"
+    aliases: [bmbanall]
+    permission: bm.command.banall
+  tempban:
+    description: "tempban a player"
+    usage: "/tempban <player> <timeDiff> <reason>"
+    aliases: [bmtempban]
+    permission: bm.command.tempban
+  tempbanall:
+    description: "tempban a player across multiple servers"
+    usage: "/tempbanall <player> <timeDiff> <reason>"
+    aliases: [bmtempbanall]
+    permission: bm.command.tempbanall
+  unban:
+    description: "unban a player"
+    usage: "/unban <player> [reason]"
+    aliases: [bmunban, pardon]
+    permission: bm.command.unban
+  unbanall:
+    description: "unban a player across multiple servers"
+    usage: "/unbanall <player> [reason]"
+    aliases: [bmunbanall]
+    permission: bm.command.unbanall
+  bminfo:
+    description: "see information on a player"
+    usage: "/bminfo <player> [index]"
+    aliases: [bmbminfo]
+    permission: bm.command.bminfo
+  banip:
+    description: "ban an ip"
+    usage: "/banip <player || ip> <reason>"
+    aliases: [bmbanip]
+    permission: bm.command.banip
+  banipall:
+    description: "ban an ip across multiple servers"
+    usage: "/banipall <player || ip> <reason>"
+    aliases: [bmbanipall]
+    permission: bm.command.banipall
+  tempbanip:
+    description: "tempban an ip"
+    usage: "/tempbanip <player || ip> <timeDiff> <reason>"
+    aliases: [bmtempbanip]
+    permission: bm.command.tempbanip
+  tempbanipall:
+    description: "tempban an ip across multiple servers"
+    usage: "/tempbanipall <player || ip> <timeDiff> <reason>"
+    aliases: [bmtempbanipall]
+    permission: bm.command.tempbanipall
+  unbanip:
+    description: "unban's an ip"
+    usage: "/unbanip <ip> [reason]"
+    aliases: [bmunbanip, pardonip]
+    permission: bm.command.unbanip
+  unbanipall:
+    description: "unban's an ip across multiple servers"
+    usage: "/unbanipall <ip> [reason]"
+    aliases: [bmunbanipall]
+    permission: bm.command.unbanipall
+  bmimport:
+    description: "imports bans"
+    usage: "/bmimport <player || ip>"
+    aliases: [bmbanimport, banimport]
+    permission: bm.command.import
+  kick:
+    description: "kick a player"
+    usage: "/kick <player> <reason>"
+    aliases: [bmkick]
+    permission: bm.command.kick
+  kickall:
+    description: "kick all players on the current server"
+    usage: "/kickall <reason>"
+    aliases: [bmkickall]
+    permission: bm.command.kickall
+  mute:
+    description: "mutes a player"
+    usage: "/mute <player> <reason>"
+    aliases: [bmmute]
+    permission: bm.command.mute
+  muteip:
+    description: "mutes an ip"
+    usage: "/muteip <ip || player> <reason>"
+    aliases: [bmmuteip]
+    permission: bm.command.muteip
+  muteall:
+    description: "mutes a player across multiple servers"
+    usage: "/muteall <player> <reason>"
+    aliases: [bmmuteall]
+    permission: bm.command.muteall
+  tempmute:
+    description: "temp mutes a player"
+    usage: "/tempmute <player> <timeDiff> <reason>"
+    aliases: [bmtempmute]
+    permission: bm.command.tempmute
+  tempmuteip:
+    description: "temp mutes an ip"
+    usage: "/tempmute <ip || player> <timeDiff> <reason>"
+    aliases: [bmtempmuteip]
+    permission: bm.command.tempmuteip
+  tempmuteall:
+    description: "temp mutes a player across multiple servers"
+    usage: "/tempmuteall <player> <timeDiff> <reason>"
+    aliases: [bmtempmuteall]
+    permission: bm.command.tempmuteall
+  unmute:
+    description: "unmute a player"
+    usage: "/unmute <player> [reason]"
+    aliases: [bmunmute]
+    permission: bm.command.unmute
+  unmuteip:
+    description: "unmute an ip"
+    usage: "/unmuteip <ip || player> [reason]"
+    aliases: [bmunmuteip]
+    permission: bm.command.unmuteip
+  unmuteall:
+    description: "unmute a player across multiple servers"
+    usage: "/unmuteall <player> [reason]"
+    aliases: [bmunmuteall]
+    permission: bm.command.unmuteall
+  nlkick:
+    description: "kick a player without logging"
+    usage: "/nlkick <player> <reason>"
+    aliases: [bmnlkick]
+    permission: bm.command.nlkick
+  nlkickall:
+    description: "kick all players on the current server without logging"
+    usage: "/nlkickall <reason>"
+    aliases: [bmnlkickall]
+    permission: bm.command.nlkickall
+  bmreload:
+    description: "Reloads from the config everything except database connection info"
+    usage: "/bmreload"
+    permission: bm.command.reload
+  warn:
+    description: "Warn a player"
+    usage: "/warn <player> <reason>"
+    aliases: [bmwarn]
+    permission: bm.command.warn
+  tempwarn:
+    description: "Temporarily warn a player"
+    usage: "/tempwarn <player> <timeDiff> <reason>"
+    aliases: [bmtempwarn]
+    permission: bm.command.tempwarn
+  alts:
+    description: "Find alts"
+    usage: "/alts <player || ip>"
+    aliases: [bmalts]
+    permission: bm.command.alts
+  bmclear:
+    description: "Clear a player's records"
+    usage: "/bmclear <player> [type]"
+    permission: bm.command.clear
+  dwarn:
+    description: "Delete a player's last warning"
+    usage: "/dwarn <player>"
+    aliases: [bmdwarn]
+    permission: bm.command.dwarn
+  bmsync:
+    description: "Forces synchronisation from database"
+    usage: "/bmsync <local || global>"
+    permission: bm.command.sync
+  addnote:
+    description: "Attach a private note to a player"
+    usage: "/addnote <player> <message>"
+    permission: bm.command.addnote
+  addnoteall:
+    description: "Add a note for a player across multiple servers"
+    usage: "/addnoteall <player> <message>"
+    aliases: [bmaddnotell]
+    permission: bm.command.addnoteall
+  notes:
+    description: "View private notes attached to a player"
+    usage: "/notes <player>"
+    permission: bm.command.notes
+  bmexport:
+    description: "Export bans to vanilla format"
+    usage: "/bmexport <players || ips>"
+    permission: bm.command.export
+  banlist:
+    description: "View all players banned from this server"
+    usage: "/banlist [players || ipranges || ips]"
+    permission: bm.command.banlist
+  baniprange:
+    description: "Ban an entire ip range"
+    usage: "/baniprange <cidr || wildcard> <reason>"
+    permission: bm.command.baniprange
+  tempbaniprange:
+    description: "Temporarily ban an entire ip range"
+    usage: "/tempbaniprange <cidr || wildcard> <timeDiff> <reason>"
+    permission: bm.command.tempbaniprange
+  unbaniprange:
+    description: "Unban an entire ip range"
+    usage: "/unbaniprange <cidr || wildcard || player> [reason]"
+    permission: bm.command.unbaniprange
+  bmactivity:
+    description: "View recent activity"
+    usage: "/bmactivity <timeDiff> [player]"
+    permission: bm.command.bmactivity
+  bmdelete:
+    description: "Delete records"
+    usage: "/bmdelete <type> <ids>"
+    permission: bm.command.delete
+  report:
+    description: "report a player"
+    usage: "/report <player> <reason>"
+    aliases: [bmreport]
+    permission: bm.command.report
+  reports:
+    description: "report management"
+    usage: "/reports <sub command> <args>"
+    aliases: [bmreports]
+    permission: bm.command.reports
+  reasons:
+    description: List all available predefined reasons
+    usage: "/reasons"
+    alias: [bmreasons]
+    permission: bm.command.reasons
+  bmrollback:
+    description: Rollback malicious actions
+    usage: "/bmrollback <player> <timeDiff> [types]"
+    permission: bm.command.bmrollback
+  banname:
+    description: "Ban a player by name"
+    usage: "/banname <name> <reason>"
+    alias: [bmbanname]
+    permission: bm.command.banname
+  tempbanname:
+    description: "Temporarily ban a player by name"
+    usage: "/tempbanname <name> <timeDiff> <reason>"
+    alias: [bmtempbanname]
+    permission: bm.command.tempbanname
+  unbanname:
+    description: "Unban a name"
+    usage: "/unbanname <name> [reason]"
+    alias: [bmunbanname]
+    permission: bm.command.unbanname
+  bmutils:
+    description: "BanManager utility commands"
+    usage: "/bmutils help"
+    permission: bm.command.bmutils
+permissions:
+  bm.command.*:
+    description: Gives access to all BanManager commands
+    children:
+      bm.command.alts: true
+      bm.command.ban: true
+      bm.command.ban.offline: true
+      bm.command.ban.override: true
+      bm.command.unban: true
+      bm.command.tempban: true
+      bm.command.tempban.offline: true
+      bm.command.tempban.override: true
+      bm.command.exempt: true
+      bm.command.bminfo: true
+      bm.command.bminfo.others: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.geoip: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
+      bm.command.banip: true
+      bm.command.banip.override: true
+      bm.command.baniprange: true
+      bm.command.tempbaniprange: true
+      bm.command.unbaniprange: true
+      bm.command.tempbanip: true
+      bm.command.tempbanip.override: true
+      bm.command.unbanip: true
+      bm.command.import: true
+      bm.command.kick: true
+      bm.command.kickall: true
+      bm.command.nlkick: true
+      bm.command.nlkickall: true
+      bm.command.update: true
+      bm.command.mute: true
+      bm.command.mute.offline: true
+      bm.command.mute.override: true
+      bm.command.tempmute: true
+      bm.command.tempmute.offline: true
+      bm.command.tempmute.override: true
+      bm.command.unmute: true
+      bm.command.warn: true
+      bm.command.tempwarn: true
+      bm.command.dwarn: true
+      bm.command.clear: true
+      bm.command.sync: true
+      bm.command.addnote: true
+      bm.command.notes: true
+      bm.command.export: true
+      bm.command.banlist: true
+      bm.command.banlist.players: true
+      bm.command.banlist.ips: true
+      bm.command.banlist.ipranges: true
+      bm.command.bmactivity: true
+      bm.command.delete: true
+      bm.command.report: true
+      bm.command.report.offline: true
+      bm.command.report.override: true
+      bm.command.reasons: true
+      bm.command.bmrollback: true
+      bm.command.banname: true
+      bm.command.tempbanname: true
+      bm.command.unbanname: true
+      bm.command.bmutils: true
+      bm.command.bmutils.missingplayers: true
+      bm.command.bmutils.duplicates: true
+  bm.*:
+    description: Gives access to all BanManager commands
+    children:
+      bm.command.ban: true
+      bm.command.ban.offline: true
+      bm.command.ban.override: true
+      bm.command.unban: true
+      bm.command.tempban: true
+      bm.command.tempban.offline: true
+      bm.command.tempban.override: true
+      bm.command.exempt: true
+      bm.command.bminfo: true
+      bm.command.bminfo.others: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.geoip: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
+      bm.command.banip: true
+      bm.command.banip.override: true
+      bm.command.baniprange: true
+      bm.command.tempbaniprange: true
+      bm.command.unbaniprange: true
+      bm.command.tempbanip: true
+      bm.command.tempbanip.override: true
+      bm.command.unbanip: true
+      bm.command.import: true
+      bm.command.kick: true
+      bm.command.kickall: true
+      bm.command.nlkick: true
+      bm.command.nlkickall: true
+      bm.command.update: true
+      bm.command.mute: true
+      bm.command.mute.offline: true
+      bm.command.mute.override: true
+      bm.command.tempmute: true
+      bm.command.tempmute.offline: true
+      bm.command.tempmute.override: true
+      bm.command.unmute: true
+      bm.command.warn: true
+      bm.command.tempwarn: true
+      bm.command.dwarn: true
+      bm.command.clear: true
+      bm.command.sync: true
+      bm.command.addnote: true
+      bm.command.notes: true
+      bm.command.export: true
+      bm.command.banlist: true
+      bm.command.banlist.players: true
+      bm.command.banlist.ips: true
+      bm.command.banlist.ipranges: true
+      bm.command.bmactivity: true
+      bm.command.delete: true
+      bm.command.report: true
+      bm.command.report.offline: true
+      bm.command.report.override: true
+      bm.command.reports.assign: true
+      bm.command.reports.close: true
+      bm.command.reports.list: true
+      bm.command.reports.teleport: true
+      bm.command.reports.unassign: true
+      bm.command.reasons: true
+      bm.command.bmrollback: true
+      bm.command.banname: true
+      bm.command.tempbanname: true
+      bm.command.unbanname: true
+      bm.command.bmutils: true
+      bm.command.bmutils.missingplayers: true
+      bm.command.bmutils.duplicates: true
+  bm.notify.*:
+    description: Players with this permission will be notified of bans
+    default: op
+    children:
+      bm.notify.ban: true
+      bm.notify.ipban: true
+      bm.notify.kick: true
+      bm.notify.mute: true
+      bm.notify.tempban: true
+      bm.notify.tempipban: true
+      bm.notify.tempmute: true
+      bm.notify.unban: true
+      bm.notify.unipban: true
+      bm.notify.unmute: true
+      bm.notify.warn: true
+      bm.notify.duplicateips: true
+      bm.notify.update: true
+      bm.notify.denied.player: true
+      bm.notify.denied.ip: true
+      bm.notify.baniprange: true
+      bm.notify.tempbaniprange: true
+      bm.notify.unbaniprange: true
+      bm.notify.report: true
+      bm.notify.muted: true
+      bm.notify.mutedip: true
+      bm.notify.reports.open: true
+      bm.notify.reports.assigned: true
+      bm.notify.banname: true
+      bm.notify.tempbanname: true
+      bm.notify.unbanname: true
+  bm.exempt.*:
+    description: Players with this permission cannot be banned, kicked or muted
+    default: op
+    children:
+      bm.exempt.alts: true
+      bm.exempt.ban: true
+      bm.exempt.banip: true
+      bm.exempt.kick: true
+      bm.exempt.maxonlineperip: true
+      bm.exempt.maxmultiaccountsrecently: true
+      bm.exempt.mute: true
+      bm.exempt.tempban: true
+      bm.exempt.tempipban: true
+      bm.exempt.tempmute: true
+      bm.exempt.warn: true
+      bm.exempt.report: true
+  bm.command.bminfo.*:
+    description: Gives access to all BanManager information
+    children:
+      bm.command.bminfo.others: true
+      bm.command.bminfo.playerstats: true
+      bm.command.bminfo.connection: true
+      bm.command.bminfo.ipstats: true
+      bm.command.bminfo.alts: true
+      bm.command.bminfo.website: true
+      bm.command.bminfo.history.bans: true
+      bm.command.bminfo.history.ipbans: true
+      bm.command.bminfo.history.mutes: true
+      bm.command.bminfo.history.ipmutes: true
+      bm.command.bminfo.history.kicks: true
+      bm.command.bminfo.history.ips: true
+      bm.command.bminfo.history.warnings: true
+      bm.command.bminfo.history.notes: true
+  bm.command.unban:
+    description: Allows you to unban a player
+    default: op
+  bm.command.ban:
+    description: Allows you to ban a player
+    default: op
+  bm.command.ban.offline:
+    description: Allows you to ban an offline player
+    default: op
+  bm.command.ban.override:
+    description: Allows you to ovveride a ban
+    default: op
+  bm.command.tempban:
+    description: Allows you to tempban a player
+    default: op
+  bm.command.tempban.offline:
+    description: Allows you to tempban an offline player
+    default: op
+  bm.command.tempban.override:
+    description: Allows you to ovveride a temp ban
+    default: op
+  bm.command.bminfo:
+    description: Allows you to see information on players
+    default: op
+  bm.command.bminfo.others:
+    description: Allows you to see other players information
+    default: op
+  bm.command.bminfo.playerstats:
+   description: Allows you to see player statistics
+   default: op
+  bm.command.bminfo.ipstats:
+    description: Allows you to see ip statistics
+    default: op
+  bm.command.bminfo.connection:
+    description: Allows you to see connection information
+    default: op
+  bm.command.bminfo.geoip:
+    description: Allows you to see city and country information
+    default: op
+  bm.command.bminfo.alts:
+    description: Allows you to see possible alts
+    default: op
+  bm.command.bminfo.website:
+    description: Allows you to see a website link
+    default: op
+  bm.command.bminfo.history.bans:
+    description: Allows you to see ban records
+    default: op
+  bm.command.bminfo.history.ipbans:
+    description: Allows you to see ip ban records
+    default: op
+  bm.command.bminfo.history.ipmutes:
+    description: Allows you to see ip mute records
+    default: op
+  bm.command.bminfo.history.mutes:
+    description: Allows you to see mute reocrds
+    default: op
+  bm.command.bminfo.history.kicks:
+    description: Allows you to see kicks
+    default: op
+  bm.command.bminfo.history.ips:
+    description: Allows you to see player join leave history
+    default: op
+  bm.command.bminfo.history.warnings:
+    description: Allows you to see warnings
+    default: op
+  bm.command.bminfo.history.notes:
+    description: Allows you to see notes
+    default: op
+  bm.command.banip:
+    description: Allows you to ban an ip
+    default: op
+  bm.command.banip.override:
+    description: Allows you to ovveride a ban
+    default: op
+  bm.command.tempbanip:
+    description: Allows you to temban an ip
+    default: op
+  bm.command.tempbanip.override:
+    description: Allows you to ovveride a ban
+    default: op
+  bm.command.unbanip:
+    description: Allows you to unban an ip
+    default: op
+  bm.command.baniprange:
+    description: Allows you to ban an ip range
+    default: op
+  bm.command.tempbaniprange:
+    description: Allows you to temporarily ban an ip range
+    default: op
+  bm.command.unbaniprange:
+    description: Allows you to unban an ip range
+    default: op
+  bm.command.import:
+    description: Allows importing of banned players and ips from Bukkit
+    default: op
+  bm.command.kick:
+    description: Allows a player to kick another player
+    default: op
+  bm.command.kickall:
+    description: Allows a player to kick all players on the server
+    default: op
+  bm.command.nlkick:
+    description: Allows a player to kick another player without logging
+    default: op
+  bm.command.nlkickall:
+    description: Allows a player to kick all players on the server without logging
+    default: op
+  bm.command.update:
+    description: Notifies player of a plugin update
+    default: op
+  bm.command.mute:
+    description: Allows you to mute a player
+    default: op
+  bm.command.mute.offline:
+    description: Allows you to mute an offline player
+    default: op
+  bm.command.mute.override:
+    description: Allows you to ovveride a mute
+    default: op
+  bm.command.tempmute:
+    description: Allows you to temp mute a player
+    default: op
+  bm.command.tempmute.offline:
+    description: Allows you to temp mute an offline player
+    default: op
+  bm.command.tempmute.override:
+    description: Allows you to ovveride a mute
+    default: op
+  bm.command.unmute:
+    description: Allows you to unmute a player
+    default: op
+  bm.command.warn:
+    description: Allows you to warn a player
+    default: op
+  bm.command.tempwarn:
+    description: Allows you to temporarily warn a player
+    default: op
+  bm.command.clear:
+    description: Allows you to clear a player's records
+    default: op
+  bm.command.clear.banrecords:
+    description: Allows you to clear a player's ban records
+    default: op
+  bm.command.clear.baniprecords:
+    description: Allows you to clear a player's ip ban records
+    default: op
+  bm.command.clear.kicks:
+    description: Allows you to clear a player's kick records
+    default: op
+  bm.command.clear.muterecords:
+    description: Allows you to clear a player's mute records
+    default: op
+  bm.command.clear.notes:
+    description: Allows you to clear a player's notes
+    default: op
+  bm.command.clear.reports:
+    description: Allows you to clear a player's reports
+    default: op
+  bm.command.clear.warnings:
+    description: Allows you to clear a player's warnings
+    default: op
+  bm.command.sync:
+    description: Allows you to force synchronisation with the database
+    default: op
+  bm.command.addnote:
+    description: Allows you to attach a private note to a player
+    default: op
+  bm.command.notes:
+    description: Allows you to view private notes attached to a player
+    default: op
+  bm.command.export:
+    description: Allows you to export bans to a vanilla compatible file
+    default: op
+  bm.command.banlist:
+    description: Allows you to view currently banned players or ip addresses
+    default: op
+  bm.command.banlist.players:
+    description: Allows you to view currently banned players
+    default: op
+  bm.command.banlist.ips:
+    description: Allows you to view currently banned ip addresses
+    default: op
+  bm.command.banlist.ipranges:
+    description: Allows you to view currently banned ip ranges
+    default: op
+  bm.command.bmactivity:
+    description: Allows you to view recent activity
+    default: op
+  bm.command.report:
+    description: Allows you to report a player
+    default: op
+  bm.command.reports.assign:
+    description: Allows you to assign a report to a player
+    default: op
+  bm.command.reports.close:
+    description: Allows you to close a report
+    default: op
+  bm.command.reports.list:
+    description: Allows you to list reports
+    default: op
+  bm.command.reports.tp:
+    description: Allows you to teleport to the location of the actor who created the report
+    default: op
+  bm.command.reports.unassign:
+    description: Allows you to unassign a report
+    default: op
+  bm.command.delete:
+    description: Allows you to delete records by id
+    default: op
+  bm.command.delete.banrecords:
+    description: Allows you to delete a player's ban records by id
+    default: op
+  bm.command.delete.baniprecords:
+    description: Allows you to delete a player's ban records by id
+    default: op
+  bm.command.delete.kicks:
+    description: Allows you to delete a player's kick records by id
+    default: op
+  bm.command.delete.muterecords:
+    description: Allows you to delete a player's mute records by id
+    default: op
+  bm.command.delete.notes:
+    description: Allows you to delete a player's notes by id
+    default: op
+  bm.command.delete.reports:
+    description: Allows you to clear a player's reports by id
+    default: op
+  bm.command.delete.warnings:
+    description: Allows you to clear a player's warnings by id
+    default: op
+  bm.command.reasons:
+    description: Allows you to list all available predefined reasons
+    default: op
+  bm.command.bmrollback:
+    description: Allows you to rollback player actions
+    default: op
+  bm.command.banname:
+    description: Allows you to ban a player by name
+    default: op
+  bm.command.tempbanname:
+    description: Allows you to temporarily ban a player by name
+    default: op
+  bm.command.unbanname:
+    description: Allows unbanning a name
+    default: op
+  bm.command.bmutils:
+    description: Allows using bmutils base command
+    default: op
+  bm.command.bmutils.missingplayers:
+    description: Allows resolving missing players
+    default: op
+  bm.command.bmutils.duplicates:
+    description: Allows resolving duplicate player names
+    default: op

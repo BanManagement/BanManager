@@ -1,87 +1,108 @@
 package me.confuser.banmanager.sponge.listeners;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.listeners.CommonJoinHandler;
 import me.confuser.banmanager.common.listeners.CommonJoinListener;
-import me.confuser.banmanager.common.util.*;
+import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.sponge.SpongePlayer;
 import me.confuser.banmanager.sponge.SpongeServer;
-import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 
 import java.net.InetAddress;
 
 public class JoinListener {
-  private final CommonJoinListener listener;
-  private BanManagerPlugin plugin;
-
-  public JoinListener(BanManagerPlugin plugin) {
-    this.plugin = plugin;
-    this.listener = new CommonJoinListener(plugin);
-  }
-
-  @Listener(order = Order.LAST)
-  public void banCheck(final ClientConnectionEvent.Auth event) {
-    InetAddress address = event.getConnection().getAddress().getAddress();
-    String name = event.getProfile().getName().get();
-
-    listener.banCheck(event.getProfile().getUniqueId(), name, IPUtils.toIPAddress(address), new BanJoinHandler(plugin, event));
-  }
-
-  @Listener(order = Order.LAST)
-  public void onJoin(ClientConnectionEvent.Auth event) {
-    if (event.isCancelled()) return;
-
-    this.listener.onPreJoin(event.getProfile().getUniqueId(), event.getProfile().getName().get(), IPUtils.toIPAddress(event.getConnection().getAddress().getAddress()));
-  }
-
-  @Listener(order = Order.LAST)
-  public void onJoin(final ClientConnectionEvent.Join event) {
-    listener.onJoin(new SpongePlayer(event.getTargetEntity(), plugin.getConfig().isOnlineMode()));
-  }
-
-  @Listener(order = Order.LAST)
-  public void onPlayerLogin(final ClientConnectionEvent.Login event) {
-    User user = event.getTargetUser();
-    listener.onPlayerLogin(new SpongePlayer(user, plugin.getConfig().isOnlineMode(), event.getConnection().getAddress().getAddress()), new LoginHandler(event));
-  }
-
-  @RequiredArgsConstructor
-  private class BanJoinHandler implements CommonJoinHandler {
+    private final CommonJoinListener listener;
     private final BanManagerPlugin plugin;
-    private final ClientConnectionEvent.Auth event;
 
-    @Override
-    public void handlePlayerDeny(PlayerData player, Message message) {
-      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-
-      handleDeny(message);
+    public JoinListener(BanManagerPlugin plugin) {
+        this.plugin = plugin;
+        this.listener = new CommonJoinListener(plugin);
     }
 
-    @Override
-    public void handleDeny(Message message) {
-      event.setCancelled(true);
-      event.setMessage(SpongeServer.formatMessage(message.toString()));
-    }
-  }
+    @Listener(order = Order.LAST)
+    public void onAuth(ServerSideConnectionEvent.Auth event) {
+        InetAddress address = event.connection().address().getAddress();
+        String name = event.profile().name().orElse("");
 
-  @RequiredArgsConstructor
-  private class LoginHandler implements CommonJoinHandler {
-    private final ClientConnectionEvent.Login event;
-
-    @Override
-    public void handlePlayerDeny(PlayerData player, Message message) {
-      handleDeny(message);
+        try {
+            listener.banCheck(
+                event.profile().uniqueId(),
+                name,
+                IPUtils.toIPAddress(address),
+                new BanJoinHandler(plugin, event)
+            );
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error during banCheck: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void handleDeny(Message message) {
-      event.setMessage(SpongeServer.formatMessage(message.toString()));
-      event.setCancelled(true);
+    @Listener(order = Order.LAST)
+    public void onLogin(ServerSideConnectionEvent.Login event) {
+        if (event.isCancelled()) return;
+
+        InetAddress address = event.connection().address().getAddress();
+        String name = event.profile().name().orElse("");
+
+        listener.onPreJoin(
+            event.profile().uniqueId(),
+            name,
+            IPUtils.toIPAddress(address)
+        );
     }
-  }
+
+    @Listener(order = Order.LAST)
+    public void onJoin(ServerSideConnectionEvent.Join event) {
+        ServerPlayer player = event.player();
+
+        listener.onJoin(new SpongePlayer(player, plugin.getConfig().isOnlineMode()));
+
+        listener.onPlayerLogin(
+            new SpongePlayer(player, plugin.getConfig().isOnlineMode(), player.connection().address().getAddress()),
+            new LoginHandler(player)
+        );
+    }
+
+    @RequiredArgsConstructor
+    private class BanJoinHandler implements CommonJoinHandler {
+        private final BanManagerPlugin plugin;
+        private final ServerSideConnectionEvent.Auth event;
+        @Getter
+        private boolean isDenied = false;
+
+        @Override
+        public void handlePlayerDeny(PlayerData player, Message message) {
+            plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
+            handleDeny(message);
+        }
+
+        @Override
+        public void handleDeny(Message message) {
+            isDenied = true;
+            event.setCancelled(true);
+            event.setMessage(SpongeServer.formatMessage(message.toString()));
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class LoginHandler implements CommonJoinHandler {
+        private final ServerPlayer player;
+
+        @Override
+        public void handlePlayerDeny(PlayerData player, Message message) {
+            handleDeny(message);
+        }
+
+        @Override
+        public void handleDeny(Message message) {
+            player.kick(SpongeServer.formatMessage(message.toString()));
+        }
+    }
 }

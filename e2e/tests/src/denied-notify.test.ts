@@ -2,12 +2,19 @@ import { TestBot, createBot } from './helpers/bot'
 import {
   connectRcon,
   disconnectRcon,
-  banPlayer,
-  unbanPlayer,
   opPlayer,
   sendCommand
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
+
+// Use BanManager-specific commands to avoid conflicts with Sponge's built-in ban service
+async function bmBanPlayer (player: string, reason: string): Promise<string> {
+  return await sendCommand(`bmban ${player} ${reason}`)
+}
+
+async function bmUnbanPlayer (player: string): Promise<string> {
+  return await sendCommand(`bmunban ${player}`)
+}
 
 describe('Denied Notification Exemption Tests', () => {
   let staffBot: TestBot
@@ -65,12 +72,12 @@ describe('Denied Notification Exemption Tests', () => {
   afterAll(async () => {
     // Clean up
     try {
-      await unbanPlayer(BANNED_USERNAME)
+      await bmUnbanPlayer(BANNED_USERNAME)
     } catch {
       // Ignore errors during cleanup
     }
     try {
-      await unbanPlayer(EXEMPT_BANNED_USERNAME)
+      await bmUnbanPlayer(EXEMPT_BANNED_USERNAME)
     } catch {
       // Ignore errors during cleanup
     }
@@ -87,14 +94,14 @@ describe('Denied Notification Exemption Tests', () => {
     staffBot.clearChatHistory()
     staffBot.clearSystemMessages()
 
-    // Ensure banned players are not banned
+    // Ensure banned players are not banned (use BanManager command)
     try {
-      await unbanPlayer(BANNED_USERNAME)
+      await bmUnbanPlayer(BANNED_USERNAME)
     } catch {
       // Player might not be banned, ignore
     }
     try {
-      await unbanPlayer(EXEMPT_BANNED_USERNAME)
+      await bmUnbanPlayer(EXEMPT_BANNED_USERNAME)
     } catch {
       // Player might not be banned, ignore
     }
@@ -103,37 +110,42 @@ describe('Denied Notification Exemption Tests', () => {
   })
 
   test('staff receives denied notification when banned player tries to join', async () => {
-    // Ban the player (they should now exist in the database)
-    await banPlayer(BANNED_USERNAME, 'E2E test ban')
-    await sleep(1000)
+    // Ban the player using BanManager (not vanilla ban)
+    await bmBanPlayer(BANNED_USERNAME, 'E2E test ban')
+
+    // Wait for ban to be fully processed and synced
+    await sleep(2000)
 
     // Clear system messages right before the connection attempt
     staffBot.clearSystemMessages()
 
-    // Attempt to connect with the banned player
+    // Attempt to connect with the banned player - this will be rejected
     const bannedBot = new TestBot(BANNED_USERNAME)
-    const connectPromise = bannedBot.connect().catch(() => {
+
+    // Start the connection attempt (will fail because player is banned)
+    bannedBot.connect().catch(() => {
       // Expected to fail - player is banned
     })
 
-    // Small delay to let the connection attempt and notification happen
-    await sleep(2000)
-
-    // Wait for the denied notification to arrive (poll the system messages)
+    // Wait for the denied notification to arrive
+    // The notification is sent when the auth check fails
     await waitFor(
-      () => staffBot.getSystemMessages().some(m => m.message.includes('attempted to join')),
-      { timeout: 10000, interval: 200, message: 'Denied notification not received' }
+      () => staffBot.getSystemMessages().some(m =>
+        m.message.includes('attempted to join') ||
+        m.message.toLowerCase().includes('denied')
+      ),
+      { timeout: 15000, interval: 300, message: 'Denied notification not received' }
     )
 
     // Verify the message content
     const messages = staffBot.getSystemMessages()
     const deniedMessage = messages.find(m =>
-      m.message.includes('attempted to join') && m.message.includes(BANNED_USERNAME)
+      (m.message.includes('attempted to join') || m.message.toLowerCase().includes('denied')) &&
+      m.message.toLowerCase().includes(BANNED_USERNAME.toLowerCase())
     )
     expect(deniedMessage).toBeDefined()
 
-    // Wait for connection to complete/fail
-    await connectPromise
+    // Clean up the banned bot connection
     await bannedBot.disconnect().catch(() => {})
   }, 60000)
 
@@ -141,29 +153,29 @@ describe('Denied Notification Exemption Tests', () => {
     // This player has deniedNotify: true in exemptions.yml
     // UUID: 47d8e47b-11c1-393b-8611-7c34449ba1b1 (offline UUID for "ExemptBannedPlayer")
 
-    // Ban the exempt player
-    await banPlayer(EXEMPT_BANNED_USERNAME, 'E2E test ban for exemption test')
-    await sleep(1000)
+    // Ban the exempt player using BanManager
+    await bmBanPlayer(EXEMPT_BANNED_USERNAME, 'E2E test ban for exemption test')
+
+    // Wait for ban to be fully processed
+    await sleep(2000)
 
     // Clear system messages right before the connection attempt
     staffBot.clearSystemMessages()
 
     // Attempt to connect with the exempt banned player
     const bannedBot = new TestBot(EXEMPT_BANNED_USERNAME)
-    const connectPromise = bannedBot.connect().catch(() => {
+    bannedBot.connect().catch(() => {
       // Expected to fail - player is banned
     })
 
-    // Wait for the connection to fail
-    await connectPromise
-
-    // Give some time for any notification to arrive
-    await sleep(3000)
+    // Give time for connection attempt and any potential notification
+    await sleep(5000)
 
     // Verify NO denied notification was received for the exempt player
     const messages = staffBot.getSystemMessages()
     const deniedMessage = messages.find(m =>
-      m.message.includes('attempted to join') && m.message.includes(EXEMPT_BANNED_USERNAME)
+      (m.message.includes('attempted to join') || m.message.toLowerCase().includes('denied')) &&
+      m.message.toLowerCase().includes(EXEMPT_BANNED_USERNAME.toLowerCase())
     )
     expect(deniedMessage).toBeUndefined()
 

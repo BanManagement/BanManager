@@ -47,6 +47,30 @@ jobs:
             mc_version: "1.21.4"
             java_image: "java21"
             fabric_loader: "0.16.9"
+          # Sponge API 11 (MC 1.20.6, Java 21)
+          - platform: Sponge-1.20.6
+            task: testSponge_1_20_6
+            build_task: ":BanManagerSponge:shadowJar"
+            compose_dir: platforms/sponge
+            mc_version: "1.20.6"
+            java_image: "java21"
+            spongeversion: "1.20.6-11.0.0"
+          # Sponge API 12 (MC 1.21.1, Java 21)
+          - platform: Sponge-1.21.1
+            task: testSponge_1_21_1
+            build_task: ":BanManagerSponge:shadowJar"
+            compose_dir: platforms/sponge
+            mc_version: "1.21.1"
+            java_image: "java21"
+            spongeversion: "1.21.1-12.0.2"
+          # Sponge API 13 (MC 1.21.3, Java 21)
+          - platform: Sponge-1.21.3
+            task: testSponge_1_21_3
+            build_task: ":BanManagerSponge:shadowJar"
+            compose_dir: platforms/sponge
+            mc_version: "1.21.3"
+            java_image: "java21"
+            spongeversion: "1.21.3-13.0.0"
 
     steps:
       - uses: actions/checkout@v4
@@ -121,6 +145,7 @@ jobs:
           MC_VERSION: ${{ matrix.mc_version }}
           JAVA_IMAGE: ${{ matrix.java_image }}
           FABRIC_LOADER: ${{ matrix.fabric_loader }}
+          SPONGEVERSION: ${{ matrix.spongeversion }}
 
       - name: Collect logs on failure
         if: failure()
@@ -131,6 +156,7 @@ jobs:
           MC_VERSION: ${{ matrix.mc_version }}
           JAVA_IMAGE: ${{ matrix.java_image }}
           FABRIC_LOADER: ${{ matrix.fabric_loader }}
+          SPONGEVERSION: ${{ matrix.spongeversion }}
 
       - name: Upload logs on failure
         if: failure()
@@ -148,3 +174,4 @@ jobs:
           MC_VERSION: ${{ matrix.mc_version }}
           JAVA_IMAGE: ${{ matrix.java_image }}
           FABRIC_LOADER: ${{ matrix.fabric_loader }}
+          SPONGEVERSION: ${{ matrix.spongeversion }}
