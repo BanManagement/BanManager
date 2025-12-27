@@ -1,7 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 
@@ -41,7 +40,7 @@ java {
 // No custom source set configuration needed
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 
     configure(JavaLibrary(

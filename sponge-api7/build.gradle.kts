@@ -1,7 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
-import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 
@@ -16,7 +15,7 @@ applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 
     configure(JavaLibrary(

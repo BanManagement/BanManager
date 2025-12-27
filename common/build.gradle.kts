@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 
@@ -10,7 +9,7 @@ plugins {
 applyPlatformAndCoreConfiguration()
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 
     configure(JavaLibrary(
