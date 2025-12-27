@@ -1,6 +1,24 @@
-node_modules
+# Ignore node_modules - dependencies are installed in container
 tests/node_modules
-*.log
+
+# Ignore IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore git
 .git
-platforms/
-*.sh
+.gitignore
+
+# Ignore build artifacts
+tests/dist
+tests/coverage
+
+# Ignore platform-specific files (not needed for test container build)
+platforms
