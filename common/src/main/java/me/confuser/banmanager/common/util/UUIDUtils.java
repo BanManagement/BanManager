@@ -69,10 +69,10 @@ public class UUIDUtils {
 
     if (status != 200) throw new Exception("Error retrieving UUID from " + url);
 
-    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-        JsonObject.class);
-
-    return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+    try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+      JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+      return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+    }
   }
 
   public static String getCurrentName(BanManagerPlugin plugin, UUID uuid) throws Exception {
@@ -88,10 +88,10 @@ public class UUIDUtils {
 
     if (status != 200) throw new Exception("Error retrieving name from " + url);
 
-    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-        JsonObject.class);
-
-    return data.get(fetcher.getKey()).getAsString();
+    try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+      JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+      return data.get(fetcher.getKey()).getAsString();
+    }
   }
 
   public static UUID createOfflineUUID(String name) {

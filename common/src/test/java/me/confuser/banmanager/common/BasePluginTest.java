@@ -46,17 +46,13 @@ public abstract class BasePluginTest {
     };
 
     for (String name : configs) {
-      try {
-        InputStream in = BasePluginTest.class.getClassLoader().getResource(name).openStream();
-        File outFile = new File(folder.getRoot(), name);
-        OutputStream out = new FileOutputStream(outFile);
+      try (InputStream in = BasePluginTest.class.getClassLoader().getResource(name).openStream();
+           OutputStream out = new FileOutputStream(new File(folder.getRoot(), name))) {
         byte[] buf = new byte[1024];
         int len;
         while ((len = in.read(buf)) > 0) {
           out.write(buf, 0, len);
         }
-        out.close();
-        in.close();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -64,21 +60,19 @@ public abstract class BasePluginTest {
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = null;
-    try {
-      defConfigStream = new InputStreamReader(BasePluginTest.class.getClassLoader().getResource("plugin.yml").openStream());
+    try (InputStream in = BasePluginTest.class.getClassLoader().getResource("plugin.yml").openStream();
+         Reader defConfigStream = new InputStreamReader(in)) {
+      YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+      ConfigurationSection commands = conf.getConfigurationSection("commands");
+
+      for (String command : commands.getKeys(false)) {
+        ConfigurationSection cmd = commands.getConfigurationSection(command);
+
+        pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+      }
     } catch (IOException e) {
       e.printStackTrace();
       return null;
-    }
-
-    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
-    ConfigurationSection commands = conf.getConfigurationSection("commands");
-
-    for (String command : commands.getKeys(false)) {
-      ConfigurationSection cmd = commands.getConfigurationSection(command);
-
-      pluginInfo.setCommand( new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
     }
 
     return pluginInfo;
