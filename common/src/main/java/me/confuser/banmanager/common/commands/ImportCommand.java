@@ -17,7 +17,6 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -104,8 +103,9 @@ public class ImportCommand extends CommonCommand {
 
     getPlugin().getLogger().info(Message.getString("import.player.started"));
 
-    try {
-      JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream("banned-players.json"), StandardCharsets.UTF_8.newDecoder()));
+    try (FileInputStream fis = new FileInputStream("banned-players.json");
+         InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+         JsonReader reader = new JsonReader(isr)) {
       reader.beginArray();
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -204,8 +204,6 @@ public class ImportCommand extends CommonCommand {
       }
 
       reader.endArray();
-
-      reader.close();
     } catch (IOException | SQLException e) {
       e.printStackTrace();
     }
@@ -219,8 +217,9 @@ public class ImportCommand extends CommonCommand {
 
     getPlugin().getLogger().info(Message.getString("import.ip.started"));
 
-    try {
-      JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream("banned-ips.json"), Charset.forName("UTF-8").newDecoder()));
+    try (FileInputStream fis = new FileInputStream("banned-ips.json");
+         InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+         JsonReader reader = new JsonReader(isr)) {
       reader.beginArray();
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -308,8 +307,6 @@ public class ImportCommand extends CommonCommand {
       }
 
       reader.endArray();
-
-      reader.close();
     } catch (IOException e) {
       e.printStackTrace();
     }

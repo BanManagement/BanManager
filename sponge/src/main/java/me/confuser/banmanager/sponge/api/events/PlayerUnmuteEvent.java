@@ -23,5 +23,3 @@ public class PlayerUnmuteEvent extends CustomEvent {
     }
 }
 
-
-

@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class ExportCommand extends CommonCommand {
 
@@ -87,39 +87,42 @@ public class ExportCommand extends CommonCommand {
       throw new IOException("File already exists");
     }
 
-    JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")
-        .newEncoder()));
+    try (FileOutputStream fos = new FileOutputStream(file);
+         OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+         JsonWriter jsonWriter = new JsonWriter(osw)) {
 
-    jsonWriter.beginArray();
-    jsonWriter.setIndent("  ");
+      jsonWriter.beginArray();
+      jsonWriter.setIndent("  ");
 
-    CloseableIterator<IpBanData> itr = getPlugin().getIpBanStorage().iterator();
+      CloseableIterator<IpBanData> itr = getPlugin().getIpBanStorage().iterator();
 
-    while (itr.hasNext()) {
-      IpBanData next = itr.next();
+      try {
+        while (itr.hasNext()) {
+          IpBanData next = itr.next();
 
-      jsonWriter.beginObject();
+          jsonWriter.beginObject();
 
-      jsonWriter.name("ip").value(next.getIp().toString());
-      jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
-      jsonWriter.name("source").value(next.getActor().getName());
-      jsonWriter.name("expires");
+          jsonWriter.name("ip").value(next.getIp().toString());
+          jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
+          jsonWriter.name("source").value(next.getActor().getName());
+          jsonWriter.name("expires");
 
-      if (next.getExpires() == 0) {
-        jsonWriter.value("forever");
-      } else {
-        jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
+          if (next.getExpires() == 0) {
+            jsonWriter.value("forever");
+          } else {
+            jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
+          }
+
+          jsonWriter.name("reason").value(next.getReason());
+
+          jsonWriter.endObject();
+        }
+      } finally {
+        itr.closeQuietly();
       }
 
-      jsonWriter.name("reason").value(next.getReason());
-
-      jsonWriter.endObject();
+      jsonWriter.endArray();
     }
-
-    itr.closeQuietly();
-
-    jsonWriter.endArray();
-    jsonWriter.close();
   }
 
   private void exportPlayers(String fileName) throws IOException {
@@ -131,38 +134,42 @@ public class ExportCommand extends CommonCommand {
       throw new IOException("File already exists");
     }
 
-    JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")
-        .newEncoder()));
-    jsonWriter.beginArray();
-    jsonWriter.setIndent("  ");
+    try (FileOutputStream fos = new FileOutputStream(file);
+         OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+         JsonWriter jsonWriter = new JsonWriter(osw)) {
 
-    CloseableIterator<PlayerBanData> itr = getPlugin().getPlayerBanStorage().iterator();
+      jsonWriter.beginArray();
+      jsonWriter.setIndent("  ");
 
-    while (itr.hasNext()) {
-      PlayerBanData next = itr.next();
+      CloseableIterator<PlayerBanData> itr = getPlugin().getPlayerBanStorage().iterator();
 
-      jsonWriter.beginObject();
+      try {
+        while (itr.hasNext()) {
+          PlayerBanData next = itr.next();
 
-      jsonWriter.name("uuid").value(next.getPlayer().getUUID().toString());
-      jsonWriter.name("name").value(next.getPlayer().getName());
-      jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
-      jsonWriter.name("source").value(next.getActor().getName());
-      jsonWriter.name("expires");
+          jsonWriter.beginObject();
 
-      if (next.getExpires() == 0) {
-        jsonWriter.value("forever");
-      } else {
-        jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
+          jsonWriter.name("uuid").value(next.getPlayer().getUUID().toString());
+          jsonWriter.name("name").value(next.getPlayer().getName());
+          jsonWriter.name("created").value(DateUtils.format(EXPORT_FORMAT, next.getCreated()));
+          jsonWriter.name("source").value(next.getActor().getName());
+          jsonWriter.name("expires");
+
+          if (next.getExpires() == 0) {
+            jsonWriter.value("forever");
+          } else {
+            jsonWriter.value(DateUtils.format(EXPORT_FORMAT, next.getExpires()));
+          }
+
+          jsonWriter.name("reason").value(next.getReason());
+
+          jsonWriter.endObject();
+        }
+      } finally {
+        itr.closeQuietly();
       }
 
-      jsonWriter.name("reason").value(next.getReason());
-
-      jsonWriter.endObject();
+      jsonWriter.endArray();
     }
-
-    itr.closeQuietly();
-
-    jsonWriter.endArray();
-    jsonWriter.close();
   }
 }

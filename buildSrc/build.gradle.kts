@@ -22,4 +22,5 @@ dependencies {
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:5.2.5")
     implementation("org.spongepowered:spongegradle-plugin-development:2.3.0")
     implementation("fabric-loom:fabric-loom.gradle.plugin:1.9.2")
+    implementation("com.vanniktech:gradle-maven-publish-plugin:0.30.0")
 }

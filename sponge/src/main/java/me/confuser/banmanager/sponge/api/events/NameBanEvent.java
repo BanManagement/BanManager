@@ -13,5 +13,3 @@ public class NameBanEvent extends SilentCancellableEvent {
     }
 }
 
-
-

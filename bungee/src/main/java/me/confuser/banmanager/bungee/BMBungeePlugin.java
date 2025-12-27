@@ -14,6 +14,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 
@@ -117,31 +118,34 @@ public class BMBungeePlugin extends Plugin {
           e.printStackTrace();
         }
       } else {
-        Reader defConfigStream = new InputStreamReader(getResourceAsStream(file.getName()), "UTF8");
-
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-        conf.setDefaults(defConfig);
-        conf.options().copyDefaults(true);
-        conf.save(file);
+        try (InputStream in = getResourceAsStream(file.getName());
+             Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+          YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+          YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+          conf.setDefaults(defConfig);
+          conf.options().copyDefaults(true);
+          conf.save(file);
+        }
       }
     }
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(getResourceAsStream("plugin.yml"), "UTF8");
-    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
-    ConfigurationSection commands = conf.getConfigurationSection("commands");
-    String pluginName = conf.getString("name");
+    try (InputStream in = getResourceAsStream("plugin.yml");
+         Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+      YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+      ConfigurationSection commands = conf.getConfigurationSection("commands");
+      String pluginName = conf.getString("name");
 
-    if (!pluginName.equals("BanManager")) {
-      throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
-    }
+      if (!pluginName.equals("BanManager")) {
+        throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
+      }
 
-    for (String command : commands.getKeys(false)) {
-      ConfigurationSection cmd = commands.getConfigurationSection(command);
+      for (String command : commands.getKeys(false)) {
+        ConfigurationSection cmd = commands.getConfigurationSection(command);
 
-      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+        pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+      }
     }
 
     return pluginInfo;
