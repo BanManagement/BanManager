@@ -29,6 +29,8 @@ services:
       TYPE: "CUSTOM"
       CUSTOM_SERVER: "https://repo.spongepowered.org/repository/maven-releases/org/spongepowered/spongevanilla/${SPONGEVERSION:-1.20.6-11.0.0}/spongevanilla-${SPONGEVERSION:-1.20.6-11.0.0}-universal.jar"
       ONLINE_MODE: "false"
+      # Skip re-downloading server JAR just to verify hash (speeds up cached runs)
+      SKIP_SERVER_JAR_HASH_CHECK: "true"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "testing"
       RCON_PORT: 25575
@@ -75,6 +77,9 @@ services:
       RCON_PORT: 25575
       RCON_PASSWORD: testing
       MC_VERSION: "${MC_VERSION:-1.20.6}"
+    volumes:
+      # Cache Jest/ts-jest transformations between runs
+      - jest-cache:/tmp/jest_cache
     networks:
       - banmanager
 
@@ -86,3 +91,4 @@ volumes:
   sponge-data-1.20.6:
   sponge-data-1.21.1:
   sponge-data-1.21.3:
+  jest-cache:

@@ -30,6 +30,8 @@ services:
       VERSION: "${MC_VERSION:-1.21.4}"
       FABRIC_LOADER_VERSION: "${FABRIC_LOADER:-0.16.9}"
       ONLINE_MODE: "false"
+      # Skip re-downloading server JAR just to verify hash (speeds up cached runs)
+      SKIP_SERVER_JAR_HASH_CHECK: "true"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "testing"
       RCON_PORT: 25575
@@ -84,6 +86,9 @@ services:
       RCON_PORT: 25575
       RCON_PASSWORD: testing
       MC_VERSION: "${MC_VERSION:-1.21.4}"
+    volumes:
+      # Cache Jest/ts-jest transformations between runs
+      - jest-cache:/tmp/jest_cache
     networks:
       - banmanager
 
@@ -95,3 +100,4 @@ volumes:
   fabric-data-1.20.1:
   fabric-data-1.21.1:
   fabric-data-1.21.4:
+  jest-cache:

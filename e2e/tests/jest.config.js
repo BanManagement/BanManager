@@ -7,4 +7,6 @@ module.exports = {
   verbose: true,
   forceExit: true,
   detectOpenHandles: true,
+  // Use custom cache directory if set (for Docker volume caching)
+  cacheDirectory: process.env.JEST_CACHE_DIRECTORY || '/tmp/jest_cache',
 };
