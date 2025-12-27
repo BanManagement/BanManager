@@ -151,23 +151,19 @@ public class GeoIpConfig extends Config {
     con.setConnectTimeout(6000);
     con.connect();
 
-    InputStream input = new GZIPInputStream(con.getInputStream());
-    TarArchiveInputStream inputStream = new TarArchiveInputStream(input);
+    try (InputStream input = new GZIPInputStream(con.getInputStream());
+         TarArchiveInputStream inputStream = new TarArchiveInputStream(input);
+         FileOutputStream outputStream = new FileOutputStream(location)) {
 
-    FileOutputStream outputStream = new FileOutputStream(location);
+      ArchiveEntry entry = null;
+      while ((entry = inputStream.getNextEntry()) != null) {
+        if (entry.isDirectory()) continue;
+        if (!entry.getName().endsWith(".mmdb")) continue;
 
-    ArchiveEntry entry = null;
-    while ((entry = inputStream.getNextEntry()) != null) {
-      if (entry.isDirectory()) continue;
-      if (!entry.getName().endsWith(".mmdb")) continue;
+        IOUtils.copy(inputStream, outputStream);
 
-      IOUtils.copy(inputStream, outputStream);
-
-      break;
+        break;
+      }
     }
-
-    outputStream.close();
-    inputStream.close();
-    input.close();
   }
 }

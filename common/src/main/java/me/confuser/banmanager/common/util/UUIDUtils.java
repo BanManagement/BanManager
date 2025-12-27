@@ -63,15 +63,19 @@ public class UUIDUtils {
 
     HttpURLConnection connection = createConnection(url, "GET");
 
-    int status = connection.getResponseCode();
+    try {
+      int status = connection.getResponseCode();
 
-    plugin.getLogger().info(url + " " + status);
+      plugin.getLogger().info(url + " " + status);
 
-    if (status != 200) throw new Exception("Error retrieving UUID from " + url);
+      if (status != 200) throw new Exception("Error retrieving UUID from " + url);
 
-    try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
-      JsonObject data = new Gson().fromJson(reader, JsonObject.class);
-      return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+        return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+      }
+    } finally {
+      connection.disconnect();
     }
   }
 
@@ -82,15 +86,19 @@ public class UUIDUtils {
 
     HttpURLConnection connection = createConnection(url, "GET");
 
-    int status = connection.getResponseCode();
+    try {
+      int status = connection.getResponseCode();
 
-    plugin.getLogger().info(url + " " + status);
+      plugin.getLogger().info(url + " " + status);
 
-    if (status != 200) throw new Exception("Error retrieving name from " + url);
+      if (status != 200) throw new Exception("Error retrieving name from " + url);
 
-    try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
-      JsonObject data = new Gson().fromJson(reader, JsonObject.class);
-      return data.get(fetcher.getKey()).getAsString();
+      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+        return data.get(fetcher.getKey()).getAsString();
+      }
+    } finally {
+      connection.disconnect();
     }
   }
 
