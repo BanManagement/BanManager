@@ -4,12 +4,14 @@ import lombok.Getter;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 
 public class IpRangeBanEvent extends SilentCancellableEvent {
+    @Getter
+    private IpRangeBanData ban;
 
-  @Getter
-  private IpRangeBanData ban;
-
-  public IpRangeBanEvent(IpRangeBanData ban, boolean silent) {
-    super(silent);
-    this.ban = ban;
-  }
+    public IpRangeBanEvent(IpRangeBanData ban, boolean isSilent) {
+        super(isSilent);
+        this.ban = ban;
+    }
 }
+
+
+

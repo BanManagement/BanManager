@@ -17,8 +17,8 @@ plugins {
 
 nexusPublishing {
     repositories {
-        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+        sonatype {  // Central Portal (OSSRH sunset June 2025)
+            nexusUrl.set(uri("https://central.sonatype.com/service/local/"))
             snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
         }
     }

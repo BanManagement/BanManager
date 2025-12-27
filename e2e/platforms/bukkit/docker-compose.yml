@@ -1,3 +1,5 @@
+name: bm-bukkit
+
 services:
   mariadb:
     image: mariadb:10.11
@@ -49,9 +51,7 @@ services:
       - ./configs/bukkit.yml:/data/bukkit.yml:ro
       # Cache server data between runs (Paper JAR, world data)
       - paper-data:/data
-    ports:
-      - "25565:25565"
-      - "25575:25575"
+    # Note: No host port mappings - tests use Docker network, avoids conflicts with other platforms
     depends_on:
       mariadb:
         condition: service_healthy

@@ -1,24 +1,27 @@
 package me.confuser.banmanager.sponge.api.events;
 
 import lombok.Getter;
-import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
+import me.confuser.banmanager.common.data.PlayerData;
 
+public class PlayerUnmuteEvent extends CustomEvent {
 
-public class PlayerUnmuteEvent extends CustomCancellableEvent {
+    @Getter
+    private PlayerMuteData mute;
 
-  @Getter
-  private PlayerMuteData mute;
-  @Getter
-  private PlayerData actor;
-  @Getter
-  private String reason;
+    @Getter
+    private PlayerData actor;
 
-  public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason) {
-    super();
+    @Getter
+    private String reason;
 
-    this.mute = mute;
-    this.actor = actor;
-    this.reason = reason;
-  }
+    public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason) {
+        super();
+        this.mute = mute;
+        this.actor = actor;
+        this.reason = reason;
+    }
 }
+
+
+

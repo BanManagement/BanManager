@@ -4,22 +4,24 @@ import lombok.Getter;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 
+public class PlayerUnbanEvent extends CustomEvent {
 
-public class PlayerUnbanEvent extends CustomCancellableEvent {
+    @Getter
+    private PlayerBanData ban;
 
-  @Getter
-  private PlayerBanData ban;
-  @Getter
-  private PlayerData actor;
-  @Getter
-  private String reason;
+    @Getter
+    private PlayerData actor;
 
-  public PlayerUnbanEvent(PlayerBanData ban, PlayerData actor, String reason) {
-    super();
+    @Getter
+    private String reason;
 
-    this.ban = ban;
-    this.actor = actor;
-    this.reason = reason;
-  }
-
+    public PlayerUnbanEvent(PlayerBanData ban, PlayerData actor, String reason) {
+        super();
+        this.ban = ban;
+        this.actor = actor;
+        this.reason = reason;
+    }
 }
+
+
+

@@ -1,0 +1,10 @@
+# 
+# Allow only certain countries on the server
+enabled: false
+download:
+  city: https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=[licenseKey]&suffix=tar.gz
+  country: https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=[licenseKey]&suffix=tar.gz
+  lastUpdated: 0
+  licenseKey: ''
+countries:
+  type: deny

@@ -9,252 +9,252 @@ import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
-import org.bstats.sponge.Metrics;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
-import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.plugin.Dependency;
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
+import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
+import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.HashMap;
 
-@Plugin(
-    id = "banmanager",
-    name = "BanManager",
-    version = "@projectVersion@",
-    authors = "confuser",
-    description = "A punishment plugin",
-    url = "https://banmanagement.com",
-    dependencies = {}
-)
+@Plugin("banmanager")
 public class BMSpongePlugin {
 
-  private CommonLogger logger;
-  private BanManagerPlugin plugin;
-  private Metrics metrics;
-  private ChatListener chatListener;
+    private CommonLogger logger;
+    private BanManagerPlugin plugin;
+    private SpongeScheduler scheduler;
+    private SpongeServer server;
+    private ChatListener chatListener;
 
-  @Inject
-  @ConfigDir(sharedRoot = false)
-  private Path dataFolder;
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private Path dataFolder;
 
-  @Inject
-  private PluginContainer pluginContainer;
+    @Inject
+    private PluginContainer pluginContainer;
 
-  private String[] configs = new String[]{
-      "config.yml",
-      "console.yml",
-      "discord.yml",
-      "exemptions.yml",
-      "geoip.yml",
-      "messages.yml",
-      "reasons.yml",
-      "schedules.yml"
-  };
+    @Inject
+    private Game game;
 
-  @Inject
-  public BMSpongePlugin(Logger logger, Metrics.Factory metrics) {
-    this.logger = new PluginLogger(logger);
-    this.metrics = metrics.make(6413);
-  }
+    private String[] configs = new String[]{
+        "config.yml",
+        "console.yml",
+        "discord.yml",
+        "exemptions.yml",
+        "geoip.yml",
+        "messages.yml",
+        "reasons.yml",
+        "schedules.yml"
+    };
 
-  @Listener
-  public void onDisable(GameStoppingServerEvent event) {
-    // @TODO Disable scheduled tasks somehow
-
-    if (plugin != null) plugin.disable();
-  }
-
-  @Listener
-  public void onEnable(GamePreInitializationEvent event) {
-    SpongeServer server = new SpongeServer();
-    PluginInfo pluginInfo;
-    try {
-      pluginInfo = setupConfigs();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
+    @Inject
+    public BMSpongePlugin(Logger logger) {
+        this.logger = new PluginLogger(logger);
     }
 
-    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), new SpongeScheduler(this), server, new SpongeMetrics(metrics));
+    @Listener
+    public void onServerStarted(StartedEngineEvent<Server> event) {
+        this.server = new SpongeServer();
+        this.scheduler = new SpongeScheduler(pluginContainer);
 
-    server.enable(plugin);
+        PluginInfo pluginInfo;
+        try {
+            pluginInfo = setupConfigs();
+        } catch (IOException e) {
+            this.logger.severe("Failed to setup configs: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
-    try {
-      plugin.enable();
-    } catch (Exception e) {
-      logger.severe("Unable to start BanManager");
-      e.printStackTrace();
-      return;
+        this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), scheduler, server, null);
+
+        server.enable(plugin, event.engine());
+
+        try {
+            plugin.enable();
+        } catch (Exception e) {
+            logger.severe("Unable to start BanManager");
+            e.printStackTrace();
+            return;
+        }
+
+        setupListeners();
+        setupCommands();
+        setupRunnables();
+
+        plugin.getLogger().info("The following commands are blocked whilst muted:");
+        plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getMutedBlacklistCommands());
+
+        plugin.getLogger().info("The following commands are blocked whilst soft muted:");
+        plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
     }
 
+    @Listener
+    public void onServerStopping(StoppingEngineEvent<Server> event) {
+        if (scheduler != null) {
+            scheduler.shutdown();
+        }
 
-    setupListeners();
-    setupCommands();
-    setupRunnables();
-  }
-
-  @Listener
-  public void onStart(GameLoadCompleteEvent event) {
-    plugin.getLogger().info("The following commands are blocked whilst muted:");
-    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getMutedBlacklistCommands());
-
-    plugin.getLogger().info("The following commands are blocked whilst soft muted:");
-    plugin.getConfig().handleBlockedCommands(plugin, plugin.getConfig().getSoftMutedBlacklistCommands());
-  }
-
-  public CommonLogger getLogger() {
-    return logger;
-  }
-
-  private PluginInfo setupConfigs() throws IOException {
-    for (String name : configs) {
-      File file = new File(dataFolder.toFile(), name);
-      if (file.exists()) {
-        // YAMLConfigurationLoader messes with format and makes it unreadable
-        Reader defConfigStream = new InputStreamReader(pluginContainer.getAsset(name).get().getUrl().openStream());
-
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-        conf.setDefaults(defConfig);
-        conf.options().copyDefaults(true);
-        conf.save(file);
-      } else {
-        pluginContainer.getAsset(name).get().copyToDirectory(dataFolder);
-      }
+        if (plugin != null) {
+            plugin.disable();
+        }
     }
 
-    // Load plugin.yml
-    PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(pluginContainer.getAsset("plugin.yml").get().getUrl().openStream());
-    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
-    ConfigurationSection commands = conf.getConfigurationSection("commands");
-    String pluginName = conf.getString("name");
+    public void setupCommands() {
+        for (CommonCommand cmd : plugin.getCommands()) {
+            SpongeCommand spongeCmd = new SpongeCommand(plugin, cmd, pluginContainer);
+            spongeCmd.register();
+        }
 
-    if (!pluginName.equals("BanManager")) {
-      throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
+        if (plugin.getGlobalConn() != null) {
+            for (CommonCommand cmd : plugin.getGlobalCommands()) {
+                SpongeCommand spongeCmd = new SpongeCommand(plugin, cmd, pluginContainer);
+                spongeCmd.register();
+            }
+        }
     }
 
-    for (String command : commands.getKeys(false)) {
-      ConfigurationSection cmd = commands.getConfigurationSection(command);
-
-      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+    public CommonLogger getLogger() {
+        return logger;
     }
 
-    return pluginInfo;
-  }
-
-  public void setupListeners() {
-    registerEvent(new JoinListener(plugin));
-    registerEvent(new LeaveListener(plugin));
-    registerEvent(new CommandListener(plugin));
-    registerEvent(new HookListener(plugin));
-
-    registerChatListener();
-
-    registerEvent(new ReloadListener(this));
-
-    if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-      registerEvent(new BanListener(plugin));
-      registerEvent(new MuteListener(plugin));
-      registerEvent(new NoteListener(plugin));
-      registerEvent(new ReportListener(plugin));
+    public PluginContainer getPluginContainer() {
+        return pluginContainer;
     }
 
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      registerEvent(new DiscordListener(plugin));
-    }
-  }
-
-  private void unregisterChatListener() {
-    if (chatListener != null) {
-      Sponge.getEventManager().unregisterListeners(chatListener);
-      chatListener = null;
-    }
-  }
-
-  public void registerChatListener() {
-    unregisterChatListener();
-
-    String chatPriority = plugin.getConfig().getChatPriority();
-    if (!chatPriority.equals("NONE")) {
-      chatListener = new ChatListener(plugin);
-
-      // Map Bukkit EventPriority to Sponge Order
-      HashMap<String, Order> orders = new HashMap<String, Order>() {{
-        put("LOWEST", Order.FIRST);
-        put("LOW", Order.EARLY);
-        put("NORMAL", Order.DEFAULT);
-        put("HIGH", Order.LATE);
-        put("HIGHEST", Order.LATE);
-        put("MONITOR", Order.LAST);
-      }};
-
-      Order priority = orders.getOrDefault(chatPriority, Order.DEFAULT);
-
-      Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, priority, chatListener);
-    }
-  }
-
-  private void registerEvent(Object listener) {
-    Sponge.getEventManager().registerListeners(this, listener);
-  }
-
-  public void setupCommands() {
-    for (CommonCommand cmd : plugin.getCommands()) {
-      new SpongeCommand(this, cmd);
+    public BanManagerPlugin getPlugin() {
+        return plugin;
     }
 
-    if (plugin.getGlobalConn() != null) {
-      for (CommonCommand cmd : plugin.getGlobalCommands()) {
-        new SpongeCommand(this, cmd);
-      }
+    private PluginInfo setupConfigs() throws IOException {
+        File dataDir = dataFolder.toFile();
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+
+        for (String name : configs) {
+            File file = new File(dataDir, name);
+
+            if (!file.exists()) {
+                try (InputStream in = getResourceAsStream(name)) {
+                    if (in != null) {
+                        Files.copy(in, file.toPath());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try (InputStream in = getResourceAsStream(name);
+                     Reader defConfigStream = in != null ? new InputStreamReader(in, StandardCharsets.UTF_8) : null) {
+                    if (defConfigStream != null) {
+                        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+                        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+                        conf.setDefaults(defConfig);
+                        conf.options().copyDefaults(true);
+                        conf.save(file);
+                    }
+                }
+            }
+        }
+
+        PluginInfo pluginInfo = new PluginInfo();
+        try (InputStream in = getResourceAsStream("plugin.yml");
+             Reader defConfigStream = in != null ? new InputStreamReader(in, StandardCharsets.UTF_8) : null) {
+            if (defConfigStream == null) {
+                throw new IOException("plugin.yml not found in resources");
+            }
+            YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+            ConfigurationSection commands = conf.getConfigurationSection("commands");
+
+            if (commands != null) {
+                for (String command : commands.getKeys(false)) {
+                    ConfigurationSection cmd = commands.getConfigurationSection(command);
+                    pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+                }
+            }
+        }
+
+        return pluginInfo;
     }
-  }
 
-  public void setupRunnables() {
-    Runner syncRunner;
+    public void setupListeners() {
+        Sponge.eventManager().registerListeners(pluginContainer, new JoinListener(plugin));
+        Sponge.eventManager().registerListeners(pluginContainer, new LeaveListener(plugin));
+        Sponge.eventManager().registerListeners(pluginContainer, new CommandListener(plugin));
+        Sponge.eventManager().registerListeners(pluginContainer, new HookListener(plugin));
 
-    if (plugin.getGlobalConn() == null) {
-      syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
-    } else {
-      syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
-          new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
-          new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
+        registerChatListener();
+
+        if (plugin.getConfig().isDisplayNotificationsEnabled()) {
+            Sponge.eventManager().registerListeners(pluginContainer, new BanListener(plugin));
+            Sponge.eventManager().registerListeners(pluginContainer, new MuteListener(plugin));
+            Sponge.eventManager().registerListeners(pluginContainer, new NoteListener(plugin));
+            Sponge.eventManager().registerListeners(pluginContainer, new ReportListener(plugin));
+        }
+
+        if (plugin.getDiscordConfig().isHooksEnabled()) {
+            Sponge.eventManager().registerListeners(pluginContainer, new DiscordListener(plugin));
+        }
     }
 
-    plugin.setSyncRunner(syncRunner);
+    public void registerChatListener() {
+        unregisterChatListener();
 
-    // Runner loop: run every 1 second on all platforms
-    Duration runnerPeriod = Duration.ofSeconds(1);
-    plugin.getScheduler().runAsyncRepeating(syncRunner, runnerPeriod, runnerPeriod);
-
-    /*
-     * This task should be ran last with a small offset as it gets modified
-     * above. Use +50ms (1 tick) offset for consistency across platforms.
-     */
-    int saveLastCheckedSeconds = plugin.getSchedulesConfig().getSchedule("saveLastChecked");
-    if (saveLastCheckedSeconds > 0) {
-      Duration period = Duration.ofSeconds(saveLastCheckedSeconds);
-      Duration initialDelay = period.plusMillis(50);
-      plugin.getScheduler().runAsyncRepeating(new SaveLastChecked(plugin), initialDelay, period);
+        String chatPriority = plugin.getConfig().getChatPriority();
+        if (!chatPriority.equals("NONE")) {
+            chatListener = new ChatListener(plugin);
+            Sponge.eventManager().registerListeners(pluginContainer, chatListener);
+        }
     }
 
-    // Purge
-    plugin.getScheduler().runAsync(new Purge(plugin));
-  }
+    private void unregisterChatListener() {
+        if (chatListener != null) {
+            Sponge.eventManager().unregisterListeners(chatListener);
+            chatListener = null;
+        }
+    }
+
+    public void setupRunnables() {
+        Runner syncRunner;
+
+        if (plugin.getGlobalConn() == null) {
+            syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
+                new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin));
+        } else {
+            syncRunner = new Runner(new BanSync(plugin), new MuteSync(plugin), new IpSync(plugin), new IpRangeSync(plugin), new ExpiresSync(plugin),
+                new WarningSync(plugin), new RollbackSync(plugin), new NameSync(plugin),
+                new GlobalBanSync(plugin), new GlobalMuteSync(plugin), new GlobalIpSync(plugin), new GlobalNoteSync(plugin));
+        }
+
+        plugin.setSyncRunner(syncRunner);
+
+        Duration runnerPeriod = Duration.ofSeconds(1);
+        plugin.getScheduler().runAsyncRepeating(syncRunner, runnerPeriod, runnerPeriod);
+
+        int saveLastCheckedSeconds = plugin.getSchedulesConfig().getSchedule("saveLastChecked");
+        if (saveLastCheckedSeconds > 0) {
+            Duration period = Duration.ofSeconds(saveLastCheckedSeconds);
+            Duration initialDelay = period.plusMillis(50);
+            plugin.getScheduler().runAsyncRepeating(new SaveLastChecked(plugin), initialDelay, period);
+        }
+
+        plugin.getScheduler().runAsync(new Purge(plugin));
+    }
+
+    private InputStream getResourceAsStream(String resource) {
+        return getClass().getClassLoader().getResourceAsStream("assets/banmanager/" + resource);
+    }
 }

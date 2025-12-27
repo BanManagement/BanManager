@@ -1,0 +1,17 @@
+# Sponge Global Configuration for E2E Tests
+# This file configures command aliases to prioritize BanManager commands
+
+sponge {
+    commands {
+        # Map vanilla/Sponge commands to BanManager's commands
+        aliases {
+            ban=banmanager
+            unban=banmanager
+            mute=banmanager
+            unmute=banmanager
+            kick=banmanager
+            warn=banmanager
+        }
+    }
+}
+

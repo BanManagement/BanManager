@@ -69,3 +69,19 @@ export async function opPlayer (player: string): Promise<string> {
 export async function deopPlayer (player: string): Promise<string> {
   return await sendCommand(`deop ${player}`)
 }
+
+export async function warnPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`warn ${player} ${reason}`)
+}
+
+export async function addNote (player: string, message: string = 'E2E Test Note'): Promise<string> {
+  return await sendCommand(`addnote ${player} ${message}`)
+}
+
+export async function kickPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`kick ${player} ${reason}`)
+}
+
+export async function reportPlayer (player: string, reason: string = 'E2E Test Report'): Promise<string> {
+  return await sendCommand(`report ${player} ${reason}`)
+}
