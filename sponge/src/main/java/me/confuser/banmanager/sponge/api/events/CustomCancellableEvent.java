@@ -10,5 +10,3 @@ public abstract class CustomCancellableEvent extends CustomEvent implements Canc
     private boolean cancelled = false;
 }
 
-
-

@@ -19,5 +19,3 @@ public class PlayerDeniedEvent extends CustomEvent {
     }
 }
 
-
-

@@ -14,5 +14,3 @@ public class PlayerMuteEvent extends SilentCancellableEvent {
     }
 }
 
-
-

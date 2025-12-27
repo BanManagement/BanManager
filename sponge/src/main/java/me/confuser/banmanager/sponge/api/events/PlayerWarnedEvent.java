@@ -13,5 +13,3 @@ public class PlayerWarnedEvent extends SilentEvent {
     }
 }
 
-
-

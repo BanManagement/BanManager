@@ -76,9 +76,10 @@ jobs:
         run: |
           VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
           if [[ "$VERSION" == *"SNAPSHOT"* ]]; then
-            # SNAPSHOT: publish to snapshot repository (no staging/release)
-            ./gradlew publishToSonatype
+            # SNAPSHOT: publish to Central Portal snapshot repository
+            ./gradlew publishAllPublicationsToCentralPortalRepository
           else
-            # Release: publish, stage, and release to Maven Central
-            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+            # Release: not yet configured for Central Portal
+            echo "ERROR: Release publishing requires Central Portal release configuration (e.g. vanniktech plugin)."
+            exit 1
           fi
