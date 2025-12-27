@@ -145,27 +145,30 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
           e.printStackTrace();
         }
       } else {
-        Reader defConfigStream = new InputStreamReader(getResourceAsStream(file.getName()), StandardCharsets.UTF_8);
-
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-        conf.setDefaults(defConfig);
-        conf.options().copyDefaults(true);
-        conf.save(file);
+        try (InputStream in = getResourceAsStream(file.getName());
+             Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+          YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+          YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+          conf.setDefaults(defConfig);
+          conf.options().copyDefaults(true);
+          conf.save(file);
+        }
       }
     }
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(getResourceAsStream("plugin.yml"), StandardCharsets.UTF_8);
-    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
-    ConfigurationSection commands = conf.getConfigurationSection("commands");
+    try (InputStream in = getResourceAsStream("plugin.yml");
+         Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+      YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+      ConfigurationSection commands = conf.getConfigurationSection("commands");
 
-    for (String command : commands.getKeys(false)) {
-      ConfigurationSection cmd = commands.getConfigurationSection(command);
+      for (String command : commands.getKeys(false)) {
+        ConfigurationSection cmd = commands.getConfigurationSection(command);
 
-      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"),
-          cmd.getStringList("aliases")));
+        pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"),
+            cmd.getStringList("aliases")));
+      }
     }
 
     return pluginInfo;

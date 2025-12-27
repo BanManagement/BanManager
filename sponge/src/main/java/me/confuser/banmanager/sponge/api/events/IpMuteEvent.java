@@ -13,5 +13,3 @@ public class IpMuteEvent extends SilentCancellableEvent {
     }
 }
 
-
-

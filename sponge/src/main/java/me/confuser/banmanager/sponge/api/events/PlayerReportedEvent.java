@@ -13,5 +13,3 @@ public class PlayerReportedEvent extends SilentEvent {
     }
 }
 
-
-

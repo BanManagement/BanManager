@@ -63,16 +63,20 @@ public class UUIDUtils {
 
     HttpURLConnection connection = createConnection(url, "GET");
 
-    int status = connection.getResponseCode();
+    try {
+      int status = connection.getResponseCode();
 
-    plugin.getLogger().info(url + " " + status);
+      plugin.getLogger().info(url + " " + status);
 
-    if (status != 200) throw new Exception("Error retrieving UUID from " + url);
+      if (status != 200) throw new Exception("Error retrieving UUID from " + url);
 
-    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-        JsonObject.class);
-
-    return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+        return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
+      }
+    } finally {
+      connection.disconnect();
+    }
   }
 
   public static String getCurrentName(BanManagerPlugin plugin, UUID uuid) throws Exception {
@@ -82,16 +86,20 @@ public class UUIDUtils {
 
     HttpURLConnection connection = createConnection(url, "GET");
 
-    int status = connection.getResponseCode();
+    try {
+      int status = connection.getResponseCode();
 
-    plugin.getLogger().info(url + " " + status);
+      plugin.getLogger().info(url + " " + status);
 
-    if (status != 200) throw new Exception("Error retrieving name from " + url);
+      if (status != 200) throw new Exception("Error retrieving name from " + url);
 
-    JsonObject data = new Gson().fromJson(new InputStreamReader(connection.getInputStream()),
-        JsonObject.class);
-
-    return data.get(fetcher.getKey()).getAsString();
+      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
+        return data.get(fetcher.getKey()).getAsString();
+      }
+    } finally {
+      connection.disconnect();
+    }
   }
 
   public static UUID createOfflineUUID(String name) {

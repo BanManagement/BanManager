@@ -1,56 +1,51 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
-
+import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     `java-library`
     id("org.spongepowered.gradle.plugin")
     id("net.kyori.blossom") version "1.2.0"
-    `maven-publish`
-    signing
+    id("com.vanniktech.maven.publish")
 }
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-            pom {
-                name.set("BanManagerSponge7")
-                description.set("BanManager for Sponge API 7 (Legacy)")
-                url.set("https://github.com/BanManagement/BanManager/")
-                licenses {
-                    license {
-                        name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
-                        url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("confuser>")
-                        name.set("James Mortemore")
-                        email.set("jamesmortemore@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
-                    developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
-                    url.set("https://github.com/BanManagement/BanManager/")
-                }
+    configure(JavaLibrary(
+        javadocJar = JavadocJar.Javadoc(),
+        sourcesJar = true
+    ))
+
+    pom {
+        name.set("BanManagerSponge7")
+        description.set("BanManager for Sponge API 7 (Legacy)")
+        url.set("https://github.com/BanManagement/BanManager/")
+        licenses {
+            license {
+                name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
+                url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
             }
         }
-    }
-}
-
-signing {
-    val signingKey = findProperty("signingKey")?.toString()
-    if (!signingKey.isNullOrBlank()) {
-        useInMemoryPgpKeys(signingKey, findProperty("signingPassword")?.toString())
-        sign(publishing.publications["mavenJava"])
+        developers {
+            developer {
+                id.set("confuser")
+                name.set("James Mortemore")
+                email.set("jamesmortemore@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
+            developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
+            url.set("https://github.com/BanManagement/BanManager/")
+        }
     }
 }
 

@@ -18,8 +18,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 public class BMBukkitPlugin extends JavaPlugin {
@@ -84,31 +86,34 @@ public class BMBukkitPlugin extends JavaPlugin {
         this.saveResource(name, false);
       } else {
         File file = new File(getDataFolder(), name);
-        Reader defConfigStream = new InputStreamReader(getResource(file.getName()), "UTF8");
-
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-        conf.setDefaults(defConfig);
-        conf.options().copyDefaults(true);
-        conf.save(file);
+        try (InputStream in = getResource(file.getName());
+             Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+          YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+          YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+          conf.setDefaults(defConfig);
+          conf.options().copyDefaults(true);
+          conf.save(file);
+        }
       }
     }
 
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
-    Reader defConfigStream = new InputStreamReader(getResource("plugin.yml"), "UTF8");
-    YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
-    ConfigurationSection commands = conf.getConfigurationSection("commands");
-    String pluginName = conf.getString("name");
+    try (InputStream in = getResource("plugin.yml");
+         Reader defConfigStream = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+      YamlConfiguration conf = YamlConfiguration.loadConfiguration(defConfigStream);
+      ConfigurationSection commands = conf.getConfigurationSection("commands");
+      String pluginName = conf.getString("name");
 
-    if (!pluginName.equals("BanManager")) {
-      throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
-    }
+      if (!pluginName.equals("BanManager")) {
+        throw new IOException("Unable to start BanManager as " + pluginName + " has broken resource loading forcing BanManager to load their plugin.yml file; please alert the author to resolve this issue");
+      }
 
-    for (String command : commands.getKeys(false)) {
-      ConfigurationSection cmd = commands.getConfigurationSection(command);
+      for (String command : commands.getKeys(false)) {
+        ConfigurationSection cmd = commands.getConfigurationSection(command);
 
-      pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+        pluginInfo.setCommand(new PluginInfo.CommandInfo(command, cmd.getString("permission"), cmd.getString("usage"), cmd.getStringList("aliases")));
+      }
     }
 
     Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {

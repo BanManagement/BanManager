@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
@@ -275,56 +276,47 @@ public class CommonDiscordListener {
   }
 
   public void send(String url, String payload) {
-    BufferedReader reader = null;
-    OutputStream stream = null;
-
     if (plugin.getConfig().isDebugEnabled()) {
       plugin.getLogger().info("Sending Discord webhook to " + url + " with payload:" + payload);
     }
 
+    HttpsURLConnection connection = null;
     try {
-      HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
+      connection = (HttpsURLConnection) new URL(url).openConnection();
       connection.addRequestProperty("Content-Type", "application/json");
       connection.addRequestProperty("User-Agent", "BanManager");
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
 
-      stream = connection.getOutputStream();
-      stream.write(payload.getBytes());
-      stream.flush();
+      try (OutputStream stream = connection.getOutputStream()) {
+        stream.write(payload.getBytes());
+        stream.flush();
+      }
 
       int responseCode = connection.getResponseCode();
       if (responseCode > 299) {
         plugin.getLogger().warning("Failed to send Discord webhook");
         plugin.getLogger().warning("Response code: " + responseCode);
 
-        StringBuilder responseBody = new StringBuilder();
-        try {
-          reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch (IOException e) {
-          reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        InputStream errorStream = connection.getErrorStream();
+        if (errorStream != null) {
+          try (BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream))) {
+            StringBuilder responseBody = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+              responseBody.append(line);
+            }
+            plugin.getLogger().warning("Response body: " + responseBody.toString());
+          }
         }
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-          responseBody.append(line);
-        }
-
-        plugin.getLogger().warning("Response body: " + responseBody.toString());
       }
-
-      connection.getInputStream().close();
-      connection.disconnect();
     } catch (Exception e) {
       plugin.getLogger().warning("Failed to send Discord message with payload: " + payload);
       plugin.getLogger().warning("Error: " + e.getMessage());
       e.printStackTrace();
     } finally {
-      try {
-        if (reader != null) reader.close();
-        if (stream != null) stream.close();
-      } catch (IOException e) {
-        e.printStackTrace();
+      if (connection != null) {
+        connection.disconnect();
       }
     }
   }

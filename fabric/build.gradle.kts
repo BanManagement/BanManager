@@ -1,12 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.jvm.toolchain.JavaLanguageVersion
+import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
   `java-library`
-  `maven-publish`
-  `signing`
   `fabric-loom`
+  id("com.vanniktech.maven.publish")
 }
 
 // Read version-specific properties
@@ -38,44 +40,39 @@ java {
 // Stonecutter 0.7.11 handles source sets automatically with the "shared sources" fix
 // No custom source set configuration needed
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            artifactId = "BanManagerFabric-mc$minecraftVersion"
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-            pom {
-                name.set("BanManagerFabric")
-                description.set("BanManager for Fabric - Minecraft $minecraftVersion")
-                url.set("https://github.com/BanManagement/BanManager/")
-                licenses {
-                    license {
-                        name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
-                        url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("confuser")
-                        name.set("James Mortemore")
-                        email.set("jamesmortemore@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
-                    developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
-                    url.set("https://github.com/BanManagement/BanManager/")
-                }
+    configure(JavaLibrary(
+        javadocJar = JavadocJar.Javadoc(),
+        sourcesJar = true
+    ))
+
+    coordinates(artifactId = "BanManagerFabric-mc$minecraftVersion")
+
+    pom {
+        name.set("BanManagerFabric")
+        description.set("BanManager for Fabric - Minecraft $minecraftVersion")
+        url.set("https://github.com/BanManagement/BanManager/")
+        licenses {
+            license {
+                name.set("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
+                url.set("https://github.com/BanManagement/BanManager/blob/master/LICENCE")
             }
         }
-    }
-}
-
-signing {
-    val signingKey = findProperty("signingKey")?.toString()
-    if (!signingKey.isNullOrBlank()) {
-        useInMemoryPgpKeys(signingKey, findProperty("signingPassword")?.toString())
-        sign(publishing.publications["mavenJava"])
+        developers {
+            developer {
+                id.set("confuser")
+                name.set("James Mortemore")
+                email.set("jamesmortemore@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:git://github.com/BanManagement/BanManager.git")
+            developerConnection.set("scm:git:ssh://git@github.com/BanManagement/BanManager.git")
+            url.set("https://github.com/BanManagement/BanManager/")
+        }
     }
 }
 

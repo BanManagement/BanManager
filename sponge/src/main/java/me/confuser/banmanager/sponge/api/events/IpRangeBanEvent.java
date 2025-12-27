@@ -13,5 +13,3 @@ public class IpRangeBanEvent extends SilentCancellableEvent {
     }
 }
 
-
-
