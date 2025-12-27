@@ -309,6 +309,10 @@ public class CommonDiscordListener {
             plugin.getLogger().warning("Response body: " + responseBody.toString());
           }
         }
+      } else {
+        try (InputStream in = connection.getInputStream()) {
+          while (in.read() != -1) {}
+        }
       }
     } catch (Exception e) {
       plugin.getLogger().warning("Failed to send Discord message with payload: " + payload);
