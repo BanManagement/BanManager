@@ -18,7 +18,11 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+//? if >=1.21 {
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+//?} else {
+/*import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;*/
+//?}
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -32,7 +36,11 @@ public class FabricCommand {
   }
 
   public void register() {
+    //? if >=1.21 {
     CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+    //?} else {
+    /*CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {*/
+    //?}
       registerCommand(dispatcher, command.getCommandName());
 
       for (String alias : command.getAliases()) {
