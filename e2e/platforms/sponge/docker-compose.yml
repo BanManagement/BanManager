@@ -41,10 +41,13 @@ services:
       GENERATE_STRUCTURES: "false"
       COPY_MODS_SRC: "/mods-src"
       COPY_MODS_DEST: "/data/mods"
+      COPY_CONFIG_SRC: "/config-src"
+      COPY_CONFIG_DEST: "/data/config"
+      SYNC_SKIP_NEWER_IN_DESTINATION: "false"
     volumes:
       - ../../../sponge/build/libs/BanManagerSponge.jar:/mods-src/BanManager.jar:ro
-      - ./configs/banmanager:/data/config/banmanager
-      - ./configs/sponge:/data/config/sponge
+      - ./configs/banmanager:/config-src/banmanager:ro
+      - ./configs/sponge:/config-src/sponge:ro
       - sponge-data-${MC_VERSION:-1.20.6}:/data
     depends_on:
       mariadb:
