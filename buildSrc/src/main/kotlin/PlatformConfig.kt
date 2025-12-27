@@ -46,8 +46,14 @@ fun Project.applyPlatformAndCoreConfiguration() {
         }
     }
 
-    the<JavaPluginExtension>().withJavadocJar()
-    the<JavaPluginExtension>().withSourcesJar()
+    // Only create javadoc/sources jars if vanniktech plugin is not applied
+    // (vanniktech plugin handles these itself)
+    afterEvaluate {
+        if (!plugins.hasPlugin("com.vanniktech.maven.publish")) {
+            the<JavaPluginExtension>().withJavadocJar()
+            the<JavaPluginExtension>().withSourcesJar()
+        }
+    }
 }
 
 fun Project.applyShadowConfiguration() {
