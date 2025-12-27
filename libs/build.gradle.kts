@@ -87,6 +87,10 @@ tasks.named<ShadowJar>("jar") {
             include(dependency("com.google.guava:guava"))
         }
 
+        relocate("com.google.thirdparty", "me.confuser.banmanager.common.google.thirdparty") {
+            include(dependency("com.google.guava:guava"))
+        }
+
         relocate("com.googlecode.concurrenttrees", "me.confuser.banmanager.common.google.concurrenttrees") {
             include(dependency("com.googlecode.concurrent-trees:concurrent-trees"))
         }
