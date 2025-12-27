@@ -61,6 +61,10 @@ jobs:
       - name: Build all Fabric versions
         run: ./gradlew :fabric:1.20.1:remapJar :fabric:1.21.1:remapJar :fabric:1.21.4:remapJar --build-cache
 
+      # Build both Sponge modules (legacy API 7 and modern API 11+)
+      - name: Build Sponge modules
+        run: ./gradlew :BanManagerSponge:shadowJar :BanManagerSponge7:shadowJar --build-cache
+
       - name: Publish to Maven Central
         # only publish once
         if: github.ref == 'refs/heads/master' && matrix.java == '21' && matrix.storageType == 'mariadb'

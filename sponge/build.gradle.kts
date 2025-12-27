@@ -1,12 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.spongepowered.gradle.plugin.config.PluginLoaders
-import org.spongepowered.plugin.metadata.model.PluginDependency
-
 
 plugins {
     `java-library`
     id("org.spongepowered.gradle.plugin")
-    id("net.kyori.blossom") version "1.2.0"
     `maven-publish`
     signing
 }
@@ -21,7 +17,7 @@ publishing {
 
             pom {
                 name.set("BanManagerSponge")
-                description.set("BanManager for Sponge")
+                description.set("BanManager for Sponge API 11+")
                 url.set("https://github.com/BanManagement/BanManager/")
                 licenses {
                     license {
@@ -31,7 +27,7 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("confuser>")
+                        id.set("confuser")
                         name.set("James Mortemore")
                         email.set("jamesmortemore@gmail.com")
                     }
@@ -54,17 +50,12 @@ signing {
     }
 }
 
-blossom {
-    replaceToken("@projectVersion@", project.ext["internalVersion"])
-}
-
 sponge {
-    apiVersion("7.2.0")
+    apiVersion("11.0.0")
     loader {
-        name(PluginLoaders.JAVA_PLAIN)
+        name(org.spongepowered.gradle.plugin.config.PluginLoaders.JAVA_PLAIN)
         version("1.0")
     }
-
     license("Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales")
 
     plugin("banmanager") {
@@ -73,16 +64,16 @@ sponge {
         description("A database driven punishment system")
         links {
             homepage("https://banmanagement.com/")
-            source("https://github.com/BanManagment/BanManager")
-            issues("https://github.com/BanManagment/BanManager")
+            source("https://github.com/BanManagement/BanManager")
+            issues("https://github.com/BanManagement/BanManager/issues")
         }
         contributor("confuser") {
             description("Lead Developer")
         }
         dependency("spongeapi") {
-            loadOrder(PluginDependency.LoadOrder.AFTER)
+            loadOrder(org.spongepowered.plugin.metadata.model.PluginDependency.LoadOrder.AFTER)
             optional(false)
-            version("7.2.0")
+            version("11.0.0")
         }
     }
 }
@@ -90,18 +81,7 @@ sponge {
 repositories {
     maven {
         name = "sponge"
-        url = uri("https://repo.spongepowered.org/maven/")
-    }
-    maven {
-        name = "jitpack"
-        url = uri("https://jitpack.io/")
-        metadataSources {
-            artifact() //Look directly for artifact
-        }
-    }
-    maven {
-        name = "jcenter"
-        url = uri("https://jcenter.bintray.com/")
+        url = uri("https://repo.spongepowered.org/repository/maven-public/")
     }
 }
 
@@ -110,18 +90,22 @@ configurations {
 }
 
 dependencies {
-    compileOnly("org.spongepowered:spongeapi:7.2.0")
+    compileOnly("org.spongepowered:spongeapi:11.0.0")
 
     api(project(":BanManagerCommon")) {
         isTransitive = true
     }
-    "shadeOnly"("org.bstats:bstats-sponge:2.2.1")
+    "shadeOnly"("org.bstats:bstats-sponge:3.0.2")
 }
 
-val javaTarget = 8 // Sponge targets a minimum of Java 8
+// Sponge API 11+ requires Java 21
+// Override Java 8 defaults from CommonConfig.kt
 java {
-    sourceCompatibility = JavaVersion.toVersion(javaTarget)
-    targetCompatibility = JavaVersion.toVersion(javaTarget)
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 tasks.named<Copy>("processResources") {

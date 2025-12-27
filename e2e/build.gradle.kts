@@ -13,6 +13,17 @@ val fabricVersions = listOf(
     FabricVersion("1.21.4", "java21", "0.16.9")
 )
 
+// Sponge version configurations
+// Note: SPONGEVERSION format matches Sponge download API versions
+// See: https://dl-api.spongepowered.org/v2/groups/org.spongepowered/artifacts/spongevanilla/versions
+data class SpongeVersion(val mcVersion: String, val javaImage: String, val spongeVersion: String)
+
+val spongeVersions = listOf(
+    SpongeVersion("1.20.6", "java21", "1.20.6-11.0.0"),
+    SpongeVersion("1.21.1", "java21", "1.21.1-12.0.2"),
+    SpongeVersion("1.21.3", "java21", "1.21.3-13.0.0")
+)
+
 // Helper function to create platform test tasks
 fun createPlatformTestTask(
     taskName: String,
@@ -100,11 +111,52 @@ tasks.register("testFabricAll") {
     }
 }
 
+// Sponge version-specific E2E tests
+spongeVersions.forEach { version ->
+    val versionSuffix = version.mcVersion.replace(".", "_")
+
+    createPlatformTestTask(
+        "testSponge_${versionSuffix}",
+        "sponge",
+        ":BanManagerSponge:shadowJar",
+        "Run Sponge ${version.mcVersion} E2E tests in Docker",
+        mapOf(
+            "MC_VERSION" to version.mcVersion,
+            "JAVA_IMAGE" to version.javaImage,
+            "SPONGEVERSION" to version.spongeVersion
+        )
+    )
+}
+
+// Sponge E2E tests - runs default version (1.20.6 / API 11)
+createPlatformTestTask(
+    "testSponge",
+    "sponge",
+    ":BanManagerSponge:shadowJar",
+    "Run Sponge E2E tests in Docker (default: 1.20.6 / API 11)",
+    mapOf(
+        "MC_VERSION" to "1.20.6",
+        "JAVA_IMAGE" to "java21",
+        "SPONGEVERSION" to "1.20.6-11.0.0"
+    )
+)
+
+// Test all Sponge versions
+tasks.register("testSpongeAll") {
+    group = "verification"
+    description = "Run Sponge E2E tests for all supported API versions (11/12/13)"
+
+    spongeVersions.forEach { version ->
+        val versionSuffix = version.mcVersion.replace(".", "_")
+        dependsOn("testSponge_${versionSuffix}")
+    }
+}
+
 tasks.register("testAll") {
     group = "verification"
     description = "Run E2E tests for all platforms"
 
-    dependsOn("testBukkit", "testFabric")
+    dependsOn("testBukkit", "testFabric", "testSponge")
 }
 
 // Backward compatibility - "test" now runs Bukkit tests
@@ -219,10 +271,86 @@ tasks.register<Exec>("logsFabric") {
     commandLine("docker", "compose", "logs", "-f", "fabric")
 }
 
+// Helper function to create versioned Sponge debug tasks
+fun createSpongeDebugTasks(mcVersion: String, javaImage: String, spongeVersion: String) {
+    val versionSuffix = mcVersion.replace(".", "_")
+    val envVars = mapOf(
+        "MC_VERSION" to mcVersion,
+        "JAVA_IMAGE" to javaImage,
+        "SPONGEVERSION" to spongeVersion
+    )
+
+    tasks.register<Exec>("startSponge_${versionSuffix}") {
+        group = "verification"
+        description = "Start the Sponge $mcVersion test server without running tests (for debugging)"
+
+        dependsOn(":BanManagerSponge:shadowJar")
+
+        workingDir = file("platforms/sponge")
+        envVars.forEach { (key, value) -> environment(key, value) }
+        commandLine("docker", "compose", "up", "-d", "mariadb", "sponge")
+    }
+
+    tasks.register<Exec>("stopSponge_${versionSuffix}") {
+        group = "verification"
+        description = "Stop the Sponge $mcVersion test server"
+
+        workingDir = file("platforms/sponge")
+        envVars.forEach { (key, value) -> environment(key, value) }
+        commandLine("docker", "compose", "down", "-v")
+        isIgnoreExitValue = true
+    }
+
+    tasks.register<Exec>("logsSponge_${versionSuffix}") {
+        group = "verification"
+        description = "Show Sponge $mcVersion server logs"
+
+        workingDir = file("platforms/sponge")
+        envVars.forEach { (key, value) -> environment(key, value) }
+        commandLine("docker", "compose", "logs", "-f", "sponge")
+    }
+}
+
+// Create debug tasks for each Sponge version
+spongeVersions.forEach { version ->
+    createSpongeDebugTasks(version.mcVersion, version.javaImage, version.spongeVersion)
+}
+
+// Default Sponge debug tasks (API 11)
+tasks.register<Exec>("startSponge") {
+    group = "verification"
+    description = "Start the Sponge test server without running tests (for debugging) - default: 1.20.6"
+
+    dependsOn(":BanManagerSponge:shadowJar")
+
+    workingDir = file("platforms/sponge")
+    environment("MC_VERSION", "1.20.6")
+    environment("JAVA_IMAGE", "java21")
+    environment("SPONGEVERSION", "1.20.6-11.0.0")
+    commandLine("docker", "compose", "up", "-d", "mariadb", "sponge")
+}
+
+tasks.register<Exec>("stopSponge") {
+    group = "verification"
+    description = "Stop the Sponge test server"
+
+    workingDir = file("platforms/sponge")
+    commandLine("docker", "compose", "down", "-v")
+    isIgnoreExitValue = true
+}
+
+tasks.register<Exec>("logsSponge") {
+    group = "verification"
+    description = "Show Sponge server logs"
+
+    workingDir = file("platforms/sponge")
+    commandLine("docker", "compose", "logs", "-f", "sponge")
+}
+
 tasks.named("clean") {
     doLast {
         // Clean up all platform Docker resources
-        listOf("bukkit", "fabric").forEach { platform ->
+        listOf("bukkit", "fabric", "sponge").forEach { platform ->
             exec {
                 workingDir = file("platforms/$platform")
                 commandLine("docker", "compose", "down", "-v", "--rmi", "local")

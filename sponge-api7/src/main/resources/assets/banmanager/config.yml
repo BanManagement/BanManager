@@ -1,0 +1,232 @@
+debug: false
+databases:
+  # Local Database is always required. If not enabled, plugin will disable on startup.
+  local:
+    storageType: 'h2'
+    host: 127.0.0.1
+    port: 3306
+    name: local_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    useSSL: false
+    allowPublicKeyRetrieval: false
+    verifyServerCertificate: false
+    maxLifetime: 1800000
+    connectionTimeout: 30000
+    tables:
+      players: bm_players
+      playerBans: bm_player_bans
+      playerBanRecords: bm_player_ban_records
+      playerMutes: bm_player_mutes
+      playerMuteRecords: bm_player_mute_records
+      playerKicks: bm_player_kicks
+      playerNotes: bm_player_notes
+      playerHistory: bm_player_history
+      playerReports: bm_player_reports
+      playerReportLocations: bm_player_report_locations
+      playerReportStates: bm_player_report_states
+      playerReportCommands: bm_player_report_commands
+      playerReportComments: bm_player_report_comments
+      playerWarnings: bm_player_warnings
+      ipBans: bm_ip_bans
+      ipBanRecords: bm_ip_ban_records
+      ipMutes: bm_ip_mutes
+      ipMuteRecords: bm_ip_mute_records
+      ipRangeBans: bm_ip_range_bans
+      ipRangeBanRecords: bm_ip_range_ban_records
+      rollbacks: bm_rollbacks
+      nameBans: bm_name_bans
+      nameBanRecords: bm_name_ban_records
+
+  # Global is only required if you want to sync with other servers, but still have separate bans, mutes etc.
+  # This will enable /*all commands, e.g. /banall, /muteall
+  global:
+    enabled: false
+    storageType: 'mysql'
+    host: 127.0.0.1
+    port: 3306
+    name: global_bans
+    user: root
+    password: ''
+    maxConnections: 10
+    useSSL: false
+    allowPublicKeyRetrieval: false
+    verifyServerCertificate: false
+    # Used to detect slow running queries/unclosed resources
+    leakDetection: 3000
+    maxLifetime: 1800000
+    connectionTimeout: 30000
+    tables:
+      playerBans: bm_player_ban_all
+      playerUnbans: bm_player_unban_all
+      playerMutes: bm_player_mute_all
+      playerUnmutes: bm_player_unmute_all
+      playerNotes: bm_player_note_all
+      ipBans: bm_ip_ban_all
+      ipUnbans: bm_ip_unban_all
+
+# Aliases will be found and blocked automatically, e.g. msg will block tell
+mutedCommandBlacklist:
+- msg
+
+# Aliases will be found and blocked automatically, e.g. msg will block tell
+softMutedCommandBlacklist:
+- msg
+
+# Displays a warning to those with bm.notify.duplicateips permission if joining players have the same ip as a banned player
+duplicateIpCheck: true
+
+# A list of IPs to exclude from the banned player duplicate check
+bypassDuplicateChecks:
+- 0.0.0.0
+- 127.0.0.1
+
+# Log /kick to the database?
+logKicks: false
+
+# Log join/leave history of players
+# If disabled, only the most recent ip address will be stored
+logIps: true
+
+# Broadcasts events to those with bm.notify.X permissions, including command success
+displayNotifications: true
+
+# Broadcasts when new punishments are synced
+broadcastOnSync: false
+
+# Simply give the permission bm.timelimit.playerMutes.X or bm.timelimit.playerBans.X to apply the time limits
+# replace X with the group defined here, can be anything you like.
+timeLimits:
+  playerMutes:
+#    Moderator: 1h
+  playerBans:
+#    Moderator: 1d
+  playerWarnings:
+#    Moderator: 30d
+  ipBans:
+#    Moderator: 1d
+  ipMutes:
+#    Moderator: 1d
+  rollbacks:
+#    Moderator: 1d
+  nameBans:
+#    Moderator: 1d
+
+# To prevent duplicate punishments you can set a cooldown to limit the amount in seconds before a player can be punished again
+# Set to 0 to disable
+cooldowns:
+  ban: 10
+  tempban: 10
+  mute: 10
+  tempmute: 10
+  banip: 10
+  tempbanip: 10
+  warn: 10
+  tempwarn: 10
+  report: 10
+
+# Commands to execute when a player reaches a certain number of warning points
+warningActions:
+  enabled: false
+  actions:
+#    '10':
+#     - cmd: ban [player] [reason]
+# delays are in seconds
+#       delay: 10
+#     - cmd: mute [player] [reason]
+
+# Forces players to type the reason of their most recent warning before being allowed to speak in chat again
+# Removed on server restart or on player leave
+warningMute: false
+
+# This allows running commands before and after a punishment
+hooks:
+  enabled: false
+  # Can use ban, tempban, unban, mute, tempmute, unmute, warn, tempwarn, ipban, tempipban, unbanip, iprangeban,
+  # tempiprangeban, unbaniprange, note, report
+  events:
+#   ban:
+#     pre:
+#     - cmd: kick [player] [reason]
+# delays are in seconds
+#       delay: 10
+#     - cmd: banip [player] [reason]
+#     post:
+#     - cmd: broadcast [player] banned
+
+# Set to false to disable update checks
+checkForUpdates: true
+
+# Set to false to disable offline name completion
+offlineAutoComplete: true
+
+# Automatically apply punishments to alts on join
+# This is disabled by default as this could block siblings or those on shared networks
+punishAlts: false
+
+# Automatically deny players from joining that have the same ip address as a banned player
+denyAlts: false
+
+# Time period (in seconds) a player's ip should be classified as an alt of another player
+# Set to 0 for an ip address to always be associated to a player
+timeAssociatedAlts: 0
+
+# Keep records for number of days, use 0 to never delete
+cleanUp:
+  kicks: 30
+  banRecords: 0
+  ipBanRecords: 0
+  ipMuteRecords: 0
+  muteRecords: 0
+  readWarnings: 0
+  unreadWarnings: 0
+  playerHistory: 0 # Only purges ip addresses that are not actively banned
+
+# Maximum amount of players allowed from a single ip, set to 0 to disable
+maxOnlinePerIp: 0
+
+# Maximum amount of players allowed from a single ip (recently logged in), set to 0 to disable
+# The time interval to check is set with multiaccountsTime
+maxMultiaccountsRecently: 0
+
+# Time interval to look up for recently players (in seconds)
+# Used with maxMultiaccountsRecently > 0
+multiaccountsTime: 300
+
+# Whether to check the database to see if the player is banned on join or not
+# Recommended to be disabled, the schedule sync tasks should suffice
+checkOnJoin: false
+
+# Enables creation of notes based on text in between ( )
+# E.g. /ban confuser testing (too good) will ban for 'testing' and create a note 'too good'
+createNoteReasons: false
+
+# Disable for name case insensitive UUIDs instead of online UUIDs
+# If you are using bungeecord set to online mode, leave this as true
+onlineMode: true
+
+# Change if muted messages are still showing
+# Options:
+# lowest
+# low
+# normal
+# high
+# highest
+# monitor
+chatPriority: normal
+
+# Don't execute actions with an invalid reason. E.g. /ban confuser #speel-erorr will create a error.
+blockInvalidReasons: false
+
+# Used for online mode servers only
+uuidFetcher:
+  idToName:
+    url: 'https://sessionserver.mojang.com/session/minecraft/profile/[uuid]'
+    key: name
+  nameToId:
+    url: 'https://api.mojang.com/users/profiles/minecraft/[name]'
+    key: id
+
+# Allows supporting Bedrock names (via GeyserMC)
+geyserPrefix: '.'
