@@ -180,15 +180,10 @@ fun Project.applyLibrariesConfiguration() {
         }
     }
 
-    configure<SigningExtension> {
-        val pubExt = checkNotNull(extensions.findByType(PublishingExtension::class.java))
-        val publication = pubExt.publications["maven"]
-
-        val signingKey = findProperty("signingKey")?.toString()
-        if (!signingKey.isNullOrBlank()) {
-            useInMemoryPgpKeys(signingKey, findProperty("signingPassword")?.toString())
-            sign(publication)
-        }
+    // Configure vanniktech plugin for Central Portal publishing
+    configure<MavenPublishBaseExtension> {
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+        signAllPublications()
     }
 }
 
