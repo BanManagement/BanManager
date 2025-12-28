@@ -184,9 +184,6 @@ fun Project.applyLibrariesConfiguration() {
         publishToMavenCentral()
         signAllPublications()
     }
-
-    // Configure Jenkins artifact reporting for Maven Repository Plugin
-    configureJenkinsArtifactReporting()
 }
 
 internal open class LibsConfigPluginHack @Inject constructor(

@@ -54,9 +54,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
             the<JavaPluginExtension>().withSourcesJar()
         }
     }
-
-    // Configure Jenkins artifact reporting for Maven Repository Plugin
-    configureJenkinsArtifactReporting()
 }
 
 fun Project.applyShadowConfiguration() {
