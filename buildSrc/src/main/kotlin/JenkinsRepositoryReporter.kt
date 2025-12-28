@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 import java.io.File
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.security.MessageDigest
 
 /**
@@ -91,11 +91,19 @@ abstract class ReportArtifactsToJenkinsTask : DefaultTask() {
         logger.debug("Report data:\n$data")
 
         try {
-            val url = URL(endpoint)
-            val connection = url.openConnection() as HttpURLConnection
+            // Fetch CSRF crumb from Jenkins (required for POST requests)
+            val crumb = fetchJenkinsCrumb(jenkinsUrl)
+            
+            val connection = URI(endpoint).toURL().openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.doOutput = true
             connection.setRequestProperty("Content-Type", "text/plain")
+            
+            // Add crumb header if available
+            if (crumb != null) {
+                connection.setRequestProperty(crumb.first, crumb.second)
+                logger.debug("Added Jenkins crumb header: ${crumb.first}")
+            }
 
             connection.outputStream.use { os ->
                 os.write(data.toByteArray())
@@ -113,6 +121,41 @@ abstract class ReportArtifactsToJenkinsTask : DefaultTask() {
             }
         } catch (e: Exception) {
             logger.warn("Failed to report artifacts to Jenkins: ${e.message}")
+        }
+    }
+    
+    /**
+     * Fetches the Jenkins CSRF crumb for POST requests.
+     * Returns a Pair of (headerName, crumbValue) or null if crumb is not available.
+     */
+    private fun fetchJenkinsCrumb(jenkinsUrl: String): Pair<String, String>? {
+        return try {
+            val crumbUrl = "$jenkinsUrl/crumbIssuer/api/json"
+            val connection = URI(crumbUrl).toURL().openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 5000
+            connection.readTimeout = 5000
+            
+            if (connection.responseCode == 200) {
+                val response = connection.inputStream.bufferedReader().readText()
+                // Parse JSON response: {"_class":"...","crumb":"...","crumbRequestField":"Jenkins-Crumb"}
+                val crumbField = Regex(""""crumbRequestField"\s*:\s*"([^"]+)"""").find(response)?.groupValues?.get(1)
+                val crumbValue = Regex(""""crumb"\s*:\s*"([^"]+)"""").find(response)?.groupValues?.get(1)
+                
+                if (crumbField != null && crumbValue != null) {
+                    logger.debug("Fetched Jenkins crumb successfully")
+                    Pair(crumbField, crumbValue)
+                } else {
+                    logger.debug("Could not parse crumb from response")
+                    null
+                }
+            } else {
+                logger.debug("Crumb issuer returned ${connection.responseCode}, CSRF may be disabled")
+                null
+            }
+        } catch (e: Exception) {
+            logger.debug("Could not fetch Jenkins crumb: ${e.message}")
+            null
         }
     }
 
