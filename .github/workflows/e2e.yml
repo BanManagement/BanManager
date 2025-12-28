@@ -71,6 +71,13 @@ jobs:
             mc_version: "1.21.3"
             java_image: "java21"
             spongeversion: "1.21.3-13.0.0"
+          # Sponge API 7 (Legacy - MC 1.12.2, Java 8)
+          - platform: Sponge7-1.12.2
+            task: testSponge7
+            build_task: ":BanManagerSponge7:shadowJar"
+            compose_dir: platforms/sponge7
+            mc_version: "1.12.2"
+            java_image: "java8"
 
     steps:
       - uses: actions/checkout@v4

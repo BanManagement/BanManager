@@ -99,8 +99,11 @@ cooldowns:
   report: 0
 
 warningActions:
-  enabled: false
-  actions: {}
+  enabled: true
+  actions:
+    3:
+      - cmd: "say warning-action-triggered-[player]"
+        delay: 0
 
 warningMute: false
 

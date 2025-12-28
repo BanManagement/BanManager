@@ -53,8 +53,9 @@ export class TestBot {
 
       this.bot.once('kicked', (reason) => {
         clearTimeout(timeout)
-        console.log(`Bot ${this.username} was kicked: ${String(reason)}`)
-        reject(new Error(`Bot ${this.username} was kicked: ${String(reason)}`))
+        const reasonStr = typeof reason === 'object' ? JSON.stringify(reason) : String(reason)
+        console.log(`Bot ${this.username} was kicked: ${reasonStr}`)
+        reject(new Error(`Bot ${this.username} was kicked: ${reasonStr}`))
       })
 
       // Listen for chat messages

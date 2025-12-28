@@ -38,16 +38,19 @@ export async function disconnectRcon (): Promise<void> {
 }
 
 // Helper functions for common commands
+// Use BanManager-prefixed commands (bmban, bmmute, etc.) for cross-platform compatibility
+// This avoids conflicts with Sponge's built-in ban/mute services
+
 export async function reloadPlugin (): Promise<string> {
   return await sendCommand('bmreload')
 }
 
 export async function mutePlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
-  return await sendCommand(`mute ${player} ${reason}`)
+  return await sendCommand(`bmmute ${player} ${reason}`)
 }
 
 export async function unmutePlayer (player: string): Promise<string> {
-  return await sendCommand(`unmute ${player}`)
+  return await sendCommand(`bmunmute ${player}`)
 }
 
 export async function getPlayerList (): Promise<string> {
@@ -55,11 +58,20 @@ export async function getPlayerList (): Promise<string> {
 }
 
 export async function banPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
-  return await sendCommand(`ban ${player} ${reason}`)
+  return await sendCommand(`bmban ${player} ${reason}`)
 }
 
 export async function unbanPlayer (player: string): Promise<string> {
-  return await sendCommand(`unban ${player}`)
+  // First unban from BanManager
+  const bmResult = await sendCommand(`bmunban ${player}`)
+  // Also pardon from Sponge's built-in ban service (needed for Sponge compatibility)
+  // The pardon command may fail if the player isn't in Sponge's ban list, which is fine
+  try {
+    await sendCommand(`pardon ${player}`)
+  } catch {
+    // Ignore errors from pardon - player may not be in Sponge's ban list
+  }
+  return bmResult
 }
 
 export async function opPlayer (player: string): Promise<string> {
@@ -71,17 +83,39 @@ export async function deopPlayer (player: string): Promise<string> {
 }
 
 export async function warnPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
-  return await sendCommand(`warn ${player} ${reason}`)
+  return await sendCommand(`bmwarn ${player} ${reason}`)
 }
 
 export async function addNote (player: string, message: string = 'E2E Test Note'): Promise<string> {
+  // addnote is BanManager-only, no conflict with Sponge
   return await sendCommand(`addnote ${player} ${message}`)
 }
 
 export async function kickPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
-  return await sendCommand(`kick ${player} ${reason}`)
+  return await sendCommand(`bmkick ${player} ${reason}`)
 }
 
 export async function reportPlayer (player: string, reason: string = 'E2E Test Report'): Promise<string> {
-  return await sendCommand(`report ${player} ${reason}`)
+  return await sendCommand(`bmreport ${player} ${reason}`)
+}
+
+export async function tempBanPlayer (player: string, duration: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`bmtempban ${player} ${duration} ${reason}`)
+}
+
+export async function tempMutePlayer (player: string, duration: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`bmtempmute ${player} ${duration} ${reason}`)
+}
+
+export async function clearWarnings (player: string): Promise<string> {
+  return await sendCommand(`bmclear ${player} warnings`)
+}
+
+// Legacy aliases kept for backwards compatibility
+export async function bmBanPlayer (player: string, reason: string = 'E2E Test'): Promise<string> {
+  return await banPlayer(player, reason)
+}
+
+export async function bmUnbanPlayer (player: string): Promise<string> {
+  return await unbanPlayer(player)
 }

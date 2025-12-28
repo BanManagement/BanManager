@@ -34,7 +34,11 @@ public class SpongeCommand implements CommandCallable {
   }
 
   public void register() {
-    Sponge.getCommandManager().register(plugin, this, command.getCommandName());
+    // Register with primary command name and all aliases
+    java.util.List<String> allNames = new java.util.ArrayList<>();
+    allNames.add(command.getCommandName());
+    allNames.addAll(command.getAliases());
+    Sponge.getCommandManager().register(plugin, this, allNames);
   }
 
   @Override

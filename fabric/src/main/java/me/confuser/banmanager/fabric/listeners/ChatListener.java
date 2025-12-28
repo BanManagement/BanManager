@@ -20,15 +20,24 @@ public class ChatListener {
       }
 
       CommonPlayer player = plugin.getServer().getPlayer(sender.getUuid());
+
+      if (player == null) {
+        return true;
+      }
+
       ChatHandler handler = new ChatHandler();
-      boolean cancelled = listener.onPlayerChat(player, handler, message.getSignedContent()) || listener.onIpChat(player, player.getAddress(), handler, message.getSignedContent());
+      boolean cancelled = listener.onPlayerChat(player, handler, message.getSignedContent());
+
+      if (!cancelled && player.getAddress() != null) {
+        cancelled = listener.onIpChat(player, player.getAddress(), handler, message.getSignedContent());
+      }
 
       if (handler.isSoftMuted()) {
         sender.sendMessageToClient(params.applyChatDecoration(message.getContent()), false);
         return false;
       }
 
-      return cancelled ? false : true;
+      return !cancelled;
     });
   }
 
