@@ -1,0 +1,138 @@
+# BungeeCord Proxy E2E testing for BanManager
+# Architecture: Players -> BungeeCord (with BanManager) -> Paper backend
+
+name: bm-bungee
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banmanager
+      MYSQL_USER: banmanager
+      MYSQL_PASSWORD: banmanager
+    healthcheck:
+      test: ["CMD", "mariadb", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - banmanager
+
+  # Backend Paper server - minimal config, no BanManager
+  # BungeeCord forwards players here after ban checks
+  paper:
+    image: itzg/minecraft-server:java21
+    environment:
+      EULA: "TRUE"
+      TYPE: "PAPER"
+      VERSION: "1.21.4"
+      ONLINE_MODE: "false"
+      SKIP_SERVER_JAR_HASH_CHECK: "true"
+      MEMORY: "1G"
+      # Enable RCON for player list checks
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      # Performance optimizations for faster startup
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 4
+      SIMULATION_DISTANCE: 4
+      MAX_WORLD_SIZE: 100
+      LEVEL_TYPE: "flat"
+      GENERATE_STRUCTURES: "false"
+      # Disable connection throttling for e2e tests
+      BUKKIT_SETTINGS_CONNECTION_THROTTLE: -1
+      # Accept connections from BungeeCord proxy (legacy forwarding)
+      # Copy spigot.yml with bungeecord: true enabled
+      COPY_CONFIG_SRC: "/config-src"
+      COPY_CONFIG_DEST: "/data"
+      # Disable secure profile enforcement for offline mode bots (1.19.1+ chat signing)
+      ENFORCE_SECURE_PROFILE: "false"
+    volumes:
+      - ./configs/paper:/config-src:ro
+      - paper-data:/data
+    healthcheck:
+      test: ["CMD", "mc-health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    networks:
+      - banmanager
+
+  # BungeeCord proxy with BanManager plugin
+  bungee:
+    image: itzg/mc-proxy:java21
+    environment:
+      TYPE: "BUNGEECORD"
+      # Pin BungeeCord to version compatible with Paper 1.21.4 (build 1828 for 1.21.4)
+      BUNGEE_JAR_REVISION: "1.21-R0.4-SNAPSHOT"
+      # Enable RCON via BungeeRcon plugin
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      # Download LuckPerms for permission management via Modrinth
+      MODRINTH_PROJECTS: luckperms
+      MODRINTH_ALLOWED_VERSION_TYPE: release
+      # Minecraft version required for Modrinth plugin lookup
+      MINECRAFT_VERSION: "1.21.4"
+    volumes:
+      # BanManager BungeeCord plugin JAR (shadow JAR) - mounted directly to plugins dir
+      # Note: Not using :ro because itzg/mc-proxy needs to chown all plugin files
+      - ../../../bungee/build/libs/BanManagerBungeeCord.jar:/server/plugins/BanManager.jar
+      # BanManager plugin configs
+      - ./configs/banmanager:/server/plugins/BanManager
+      # LuckPerms config for permissions (lowercase directory name)
+      - ./configs/luckperms:/server/plugins/LuckPerms
+      # BungeeCord config
+      - ./configs/bungee/config.yml:/server/config.yml
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      paper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rcon-cli", "--password", "testing", "glist"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks:
+      - banmanager
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.tests
+    depends_on:
+      bungee:
+        condition: service_healthy
+    environment:
+      # Connect bots to BungeeCord proxy (default port 25577)
+      SERVER_HOST: bungee
+      SERVER_PORT: 25577
+      # RCON commands go to BungeeCord for BanManager commands
+      RCON_HOST: bungee
+      RCON_PORT: 25575
+      RCON_PASSWORD: testing
+      # Backend server RCON for 'list', 'op' commands (proxies don't have these)
+      BACKEND_RCON_HOST: paper
+      BACKEND_RCON_PORT: 25575
+      BACKEND_RCON_PASSWORD: testing
+      # Flag to indicate we're testing on a proxy
+      IS_PROXY: "true"
+      # Minecraft version for bot clients (must match backend server)
+      MC_VERSION: "1.21.4"
+    volumes:
+      - jest-cache:/tmp/jest_cache
+    networks:
+      - banmanager
+
+networks:
+  banmanager:
+    driver: bridge
+
+volumes:
+  paper-data:
+  jest-cache:

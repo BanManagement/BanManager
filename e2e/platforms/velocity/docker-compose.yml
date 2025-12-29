@@ -1,0 +1,136 @@
+# Velocity Proxy E2E testing for BanManager
+# Architecture: Players -> Velocity (with BanManager) -> Paper backend
+
+name: bm-velocity
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banmanager
+      MYSQL_USER: banmanager
+      MYSQL_PASSWORD: banmanager
+    healthcheck:
+      test: ["CMD", "mariadb", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - banmanager
+
+  # Backend Paper server - minimal config, no BanManager
+  # Velocity forwards players here after ban checks
+  paper:
+    image: itzg/minecraft-server:java21
+    environment:
+      EULA: "TRUE"
+      TYPE: "PAPER"
+      VERSION: "1.21.1"
+      ONLINE_MODE: "false"
+      SKIP_SERVER_JAR_HASH_CHECK: "true"
+      MEMORY: "1G"
+      # Enable RCON for player list checks
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      # Performance optimizations for faster startup
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 4
+      SIMULATION_DISTANCE: 4
+      MAX_WORLD_SIZE: 100
+      LEVEL_TYPE: "flat"
+      GENERATE_STRUCTURES: "false"
+      # Disable connection throttling for e2e tests
+      BUKKIT_SETTINGS_CONNECTION_THROTTLE: -1
+      # Accept connections from Velocity proxy
+      PAPER_VELOCITY_SECRET: "e2e-testing-secret"
+    volumes:
+      - ./configs/paper/paper-global.yml:/config/paper-global.yml:ro
+      - paper-data:/data
+    healthcheck:
+      test: ["CMD", "mc-health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    networks:
+      - banmanager
+
+  # Velocity proxy with BanManager plugin
+  velocity:
+    image: itzg/mc-proxy:java21
+    environment:
+      TYPE: "VELOCITY"
+      # Pin Velocity to version compatible with Paper 1.21.1 (build 436 was released around 1.21.1)
+      VELOCITY_VERSION: "3.3.0-SNAPSHOT"
+      VELOCITY_BUILD_ID: "436"
+      # Enable RCON via VelocityRcon plugin
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      # Download LuckPerms for permission management via Modrinth
+      MODRINTH_PROJECTS: luckperms
+      MODRINTH_ALLOWED_VERSION_TYPE: release
+      # Minecraft version required for Modrinth plugin lookup
+      MINECRAFT_VERSION: "1.21.1"
+    volumes:
+      # BanManager Velocity plugin JAR - mounted directly to plugins dir
+      # Note: Not using :ro because itzg/mc-proxy needs to chown all plugin files
+      - ../../../velocity/build/libs/BanManagerVelocity.jar:/server/plugins/BanManager.jar
+      # BanManager plugin configs
+      - ./configs/banmanager:/server/plugins/banmanager
+      # LuckPerms config for permissions (lowercase directory name)
+      - ./configs/luckperms:/server/plugins/luckperms
+      # Velocity server config (velocity.toml, forwarding.secret)
+      - ./configs/velocity/velocity.toml:/server/velocity.toml
+      - ./configs/velocity/forwarding.secret:/server/forwarding.secret
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      paper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rcon-cli", "--password", "testing", "glist"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks:
+      - banmanager
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.tests
+    depends_on:
+      velocity:
+        condition: service_healthy
+    environment:
+      # Connect bots to Velocity proxy (default port 25577)
+      SERVER_HOST: velocity
+      SERVER_PORT: 25577
+      # RCON commands go to Velocity for BanManager commands
+      RCON_HOST: velocity
+      RCON_PORT: 25575
+      RCON_PASSWORD: testing
+      # Backend server RCON for 'list', 'op' commands (proxies don't have these)
+      BACKEND_RCON_HOST: paper
+      BACKEND_RCON_PORT: 25575
+      BACKEND_RCON_PASSWORD: testing
+      # Flag to indicate we're testing on a proxy
+      IS_PROXY: "true"
+      # Pin Mineflayer to a specific Minecraft protocol version for Velocity
+      MC_VERSION: "1.21.1"
+    volumes:
+      - jest-cache:/tmp/jest_cache
+    networks:
+      - banmanager
+
+networks:
+  banmanager:
+    driver: bridge
+
+volumes:
+  paper-data:
+  jest-cache:

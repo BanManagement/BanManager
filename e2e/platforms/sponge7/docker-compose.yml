@@ -1,0 +1,87 @@
+# Sponge API 7 (Minecraft 1.12.2) E2E testing for BanManager
+# Note: This is a legacy platform for backwards compatibility testing
+
+name: bm-sponge7
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banmanager
+      MYSQL_USER: banmanager
+      MYSQL_PASSWORD: banmanager
+    healthcheck:
+      test: ["CMD", "mariadb", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - banmanager
+
+  sponge7:
+    image: itzg/minecraft-server:java8
+    environment:
+      EULA: "TRUE"
+      TYPE: "CUSTOM"
+      # SpongeVanilla 1.12.2-7.3.0 is the latest stable for API 7
+      CUSTOM_SERVER: "https://repo.spongepowered.org/repository/legacy-transfer/org/spongepowered/spongevanilla/1.12.2-7.3.0/spongevanilla-1.12.2-7.3.0.jar"
+      ONLINE_MODE: "false"
+      SKIP_SERVER_JAR_HASH_CHECK: "true"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "testing"
+      RCON_PORT: 25575
+      MEMORY: "2G"
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 4
+      MAX_WORLD_SIZE: 100
+      LEVEL_TYPE: "flat"
+      GENERATE_STRUCTURES: "false"
+      COPY_MODS_SRC: "/mods-src"
+      COPY_MODS_DEST: "/data/mods"
+      COPY_CONFIG_SRC: "/config-src"
+      COPY_CONFIG_DEST: "/data/config"
+      SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+    volumes:
+      - ../../../sponge-api7/build/libs/BanManagerSponge7.jar:/mods-src/BanManager.jar:ro
+      - ./configs/banmanager:/config-src/banmanager:ro
+      - ./configs/sponge:/config-src/sponge:ro
+      - sponge7-data:/data
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rcon-cli", "--password", "testing", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+    networks:
+      - banmanager
+
+  tests:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.tests
+    depends_on:
+      sponge7:
+        condition: service_healthy
+    environment:
+      SERVER_HOST: sponge7
+      SERVER_PORT: 25565
+      RCON_HOST: sponge7
+      RCON_PORT: 25575
+      RCON_PASSWORD: testing
+      MC_VERSION: "1.12.2"
+    volumes:
+      - jest-cache:/tmp/jest_cache
+    networks:
+      - banmanager
+
+networks:
+  banmanager:
+    driver: bridge
+
+volumes:
+  sponge7-data:
+  jest-cache:

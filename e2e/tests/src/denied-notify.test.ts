@@ -3,7 +3,8 @@ import {
   connectRcon,
   disconnectRcon,
   opPlayer,
-  sendCommand
+  sendCommand,
+  isPlayerInList
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
@@ -33,10 +34,7 @@ describe('Denied Notification Exemption Tests', () => {
 
     // Wait for bot to be fully registered
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(STAFF_USERNAME)
-      },
+      async () => isPlayerInList(STAFF_USERNAME),
       { timeout: 10000, interval: 500, message: 'Staff bot not in player list' }
     )
 

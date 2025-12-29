@@ -1,0 +1,24 @@
+# Default group for E2E testing
+# All players automatically have these permissions
+name: default
+permissions:
+  # BanManager notification permissions (for staff to receive notifications)
+  - bm.notify.ban
+  - bm.notify.tempban
+  - bm.notify.mute
+  - bm.notify.tempmute
+  - bm.notify.muted
+  - bm.notify.warn
+  - bm.notify.tempwarn
+  - bm.notify.notes
+  - bm.notify.notes.join
+  - bm.notify.report
+  - bm.notify.denied.player
+  - bm.notify.denied.ip
+  - bm.notify.kick
+  - bm.notify.unban
+  - bm.notify.unmute
+  - bm.notify.alts
+  - bm.notify.duplicateips
+  # Allow viewing player info
+  - bm.info

@@ -71,6 +71,23 @@ jobs:
             mc_version: "1.21.3"
             java_image: "java21"
             spongeversion: "1.21.3-13.0.0"
+          # Sponge API 7 (Legacy - MC 1.12.2, Java 8)
+          - platform: Sponge7-1.12.2
+            task: testSponge7
+            build_task: ":BanManagerSponge7:shadowJar"
+            compose_dir: platforms/sponge7
+            mc_version: "1.12.2"
+            java_image: "java8"
+          # Velocity Proxy
+          - platform: Velocity
+            task: testVelocity
+            build_task: ":BanManagerVelocity:shadowJar"
+            compose_dir: platforms/velocity
+          # BungeeCord Proxy
+          - platform: BungeeCord
+            task: testBungee
+            build_task: ":BanManagerBungee:shadowJar"
+            compose_dir: platforms/bungee
 
     steps:
       - uses: actions/checkout@v4

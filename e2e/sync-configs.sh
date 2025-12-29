@@ -21,11 +21,11 @@ SHARED_FILES=(
 # Platform config directories
 PLATFORM_CONFIGS=(
     "$SCRIPT_DIR/platforms/bukkit/configs"
-    # "$SCRIPT_DIR/platforms/sponge/configs"
-    # "$SCRIPT_DIR/platforms/bungeecord/configs/paper"
-    # "$SCRIPT_DIR/platforms/bungeecord/configs/bungeecord"
-    # "$SCRIPT_DIR/platforms/velocity/configs/paper"
-    # "$SCRIPT_DIR/platforms/velocity/configs/velocity"
+    "$SCRIPT_DIR/platforms/fabric/configs"
+    "$SCRIPT_DIR/platforms/sponge/configs/banmanager"
+    "$SCRIPT_DIR/platforms/sponge7/configs/banmanager"
+    "$SCRIPT_DIR/platforms/velocity/configs/banmanager"
+    "$SCRIPT_DIR/platforms/bungee/configs/banmanager"
 )
 
 echo "Syncing shared config files from common module..."

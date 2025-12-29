@@ -3,15 +3,13 @@ package me.confuser.banmanager.fabric.listeners;
 import java.sql.SQLException;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.listeners.CommonReportListener;
-import me.confuser.banmanager.common.util.UUIDUtils;
-import me.confuser.banmanager.fabric.BMFabricPlugin;
 import me.confuser.banmanager.fabric.BanManagerEvents;
 import me.confuser.banmanager.fabric.FabricServer;
-import me.confuser.banmanager.fabric.BanManagerEvents.SilentValue;
 import net.minecraft.server.network.ServerPlayerEntity;
-import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.data.PlayerReportLocationData;
 
 public class ReportListener {
 
@@ -24,18 +22,12 @@ public class ReportListener {
     this.plugin = plugin;
     this.server = server;
 
-    BanManagerEvents.PLAYER_REPORT_EVENT.register(this::notifyOnReport);
     BanManagerEvents.PLAYER_REPORTED_EVENT.register(this::notifyOnReported);
     BanManagerEvents.PLAYER_REPORT_DELETED_EVENT.register(this::notifyOnReportDeleted);
   }
 
-  private boolean notifyOnReport(PlayerReportData data, SilentValue silent) {
-    listener.notifyOnReport(data);
-
-    return true;
-  }
-
   private void notifyOnReported(PlayerReportData reportData, boolean silent) {
+    listener.notifyOnReport(reportData);
     ServerPlayerEntity player = this.server.getServer().getPlayerManager().getPlayer(reportData.getPlayer().getUUID());
     ServerPlayerEntity actor = this.server.getServer().getPlayerManager().getPlayer(reportData.getActor().getUUID());
 
