@@ -1,0 +1,11 @@
+# LuckPerms runtime dependencies (downloaded when container runs)
+**/luckperms/libs/
+
+# Node modules
+node_modules/
+
+# Jest cache
+.jest/
+
+# Docker volumes data
+**/data/
