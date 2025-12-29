@@ -19,6 +19,7 @@ import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
+import me.confuser.banmanager.common.util.DriverManagerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -282,6 +283,11 @@ public class BanManagerPlugin {
       globalConn = createConnection(config.getGlobalDb(), "bm-global");
     }
 
+    // Deregister BanManager's relocated drivers from DriverManager to prevent
+    // other plugins from accidentally using them. HikariCP caches drivers internally
+    // so this won't affect reconnections.
+    DriverManagerUtil.deregisterRelocatedDrivers();
+
     return true;
   }
 
@@ -309,6 +315,7 @@ public class BanManagerPlugin {
     DatabaseType databaseType;
 
     if (dbConfig.getStorageType().equals("mariadb")) {
+      ds.setDriverClassName("me.confuser.banmanager.common.mariadb.Driver");
       databaseType = new MariaDBDatabase();
     } else if (dbConfig.getStorageType().equals("mysql")) {
       // Forcefully specify the newer driver

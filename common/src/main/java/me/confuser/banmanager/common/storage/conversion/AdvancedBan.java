@@ -2,45 +2,41 @@ package me.confuser.banmanager.common.storage.conversion;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.BanIpCommand;
+import me.confuser.banmanager.common.configs.DatabaseConfig;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
-import me.confuser.banmanager.common.ormlite.jdbc.JdbcPooledConnectionSource;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
+import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 
+import java.io.File;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class AdvancedBan implements IConverter {
-  private JdbcPooledConnectionSource connection;
+  private ConnectionSource connection;
   private BanManagerPlugin plugin;
-  private String host;
-  private String port;
-  private String database;
-  private String username;
-  private String password;
 
   public AdvancedBan(BanManagerPlugin plugin, String[] args) {
     this.plugin = plugin;
-    this.host = args[1];
-    this.port = args[2];
-    this.database = args[3];
-    this.username = args[4];
 
-    if (args.length == 6) this.password = args[5];
+    String host = args[1];
+    int port = Integer.parseInt(args[2]);
+    String database = args[3];
+    String username = args[4];
+    String password = args.length == 6 ? args[5] : "";
+
+    AdvancedBanConfig config = new AdvancedBanConfig(
+        "mysql", host, port, database, username, password,
+        false, false, true, true, 2, 0, 1800000, 30000,
+        new HashMap<>(), plugin.getDataFolder()
+    );
 
     try {
-      connection = new JdbcPooledConnectionSource("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      plugin.getLogger().severe("Failed to connect to AdvancedBan database");
-      return;
-    }
-
-    connection.setMaxConnectionsFree(1);
-    try {
-      connection.initialize();
+      connection = plugin.createConnection(config, "advancedban-import");
     } catch (SQLException e) {
       e.printStackTrace();
       plugin.getLogger().severe("Failed to connect to AdvancedBan database");
@@ -188,5 +184,18 @@ public class AdvancedBan implements IConverter {
 
   @Override
   public void importIpRangeBans() {
+  }
+
+  /**
+   * Config class for AdvancedBan database connection.
+   */
+  static class AdvancedBanConfig extends DatabaseConfig {
+    public AdvancedBanConfig(String storageType, String host, int port, String name, String user, String password,
+                              boolean useSSL, boolean verifyServerCertificate, boolean allowPublicKeyRetrieval,
+                              boolean isEnabled, int maxConnections, int leakDetection, int maxLifetime,
+                              int connectionTimeout, HashMap<String, DatabaseTableConfig<?>> tables, File dataFolder) {
+      super(storageType, host, port, name, user, password, useSSL, verifyServerCertificate, allowPublicKeyRetrieval,
+          isEnabled, maxConnections, leakDetection, maxLifetime, connectionTimeout, tables, dataFolder);
+    }
   }
 }

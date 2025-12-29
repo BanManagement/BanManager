@@ -9,7 +9,6 @@ import me.confuser.banmanager.common.gson.stream.JsonReader;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.storage.conversion.AdvancedBan;
 import me.confuser.banmanager.common.storage.conversion.H2;
-import me.confuser.banmanager.common.storage.conversion.SimpleWarnings;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
@@ -31,7 +30,6 @@ public class ImportCommand extends CommonCommand {
     add("players");
     add("ip");
     add("ips");
-    add("simplewarnings");
     add("advancedban");
     add("h2");
   }};
@@ -66,8 +64,6 @@ public class ImportCommand extends CommonCommand {
         finishedMessage = Message.getString("import.ip.finished");
 
         importIps();
-      } else if (parser.args[0].startsWith("simplew")) {
-        new SimpleWarnings(getPlugin());
       } else if (parser.args[0].startsWith("advancedb")) {
         if (parser.args.length < 5) {
           sender.sendMessage("/bmimport advancedban <host> <port> <databaseName> [username] [password]");
