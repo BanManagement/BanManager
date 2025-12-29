@@ -5,7 +5,8 @@ import {
   reloadPlugin,
   mutePlayer,
   unmutePlayer,
-  sendCommand
+  sendCommand,
+  isPlayerInList
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
@@ -22,10 +23,7 @@ describe('BanManager E2E Tests', () => {
 
     // Wait for bot to be fully registered (poll for player in list)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(BOT_USERNAME)
-      },
+      async () => isPlayerInList(BOT_USERNAME),
       { timeout: 10000, interval: 500, message: 'Bot not in player list' }
     )
   }, 60000)

@@ -78,6 +78,16 @@ jobs:
             compose_dir: platforms/sponge7
             mc_version: "1.12.2"
             java_image: "java8"
+          # Velocity Proxy
+          - platform: Velocity
+            task: testVelocity
+            build_task: ":BanManagerVelocity:shadowJar"
+            compose_dir: platforms/velocity
+          # BungeeCord Proxy
+          - platform: BungeeCord
+            task: testBungee
+            build_task: ":BanManagerBungee:shadowJar"
+            compose_dir: platforms/bungee
 
     steps:
       - uses: actions/checkout@v4

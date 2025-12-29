@@ -164,11 +164,27 @@ createPlatformTestTask(
     )
 )
 
+// Velocity Proxy E2E tests
+createPlatformTestTask(
+    "testVelocity",
+    "velocity",
+    ":BanManagerVelocity:shadowJar",
+    "Run Velocity proxy E2E tests in Docker"
+)
+
+// BungeeCord Proxy E2E tests
+createPlatformTestTask(
+    "testBungee",
+    "bungee",
+    ":BanManagerBungee:shadowJar",
+    "Run BungeeCord proxy E2E tests in Docker"
+)
+
 tasks.register("testAll") {
     group = "verification"
     description = "Run E2E tests for all platforms"
 
-    dependsOn("testBukkit", "testFabric", "testSponge")
+    dependsOn("testBukkit", "testFabric", "testSponge", "testVelocity", "testBungee")
 }
 
 // Backward compatibility - "test" now runs Bukkit tests
@@ -387,10 +403,66 @@ tasks.register<Exec>("logsSponge7") {
     commandLine("docker", "compose", "logs", "-f", "sponge7")
 }
 
+// Velocity debug tasks
+tasks.register<Exec>("startVelocity") {
+    group = "verification"
+    description = "Start the Velocity proxy test environment without running tests (for debugging)"
+
+    dependsOn(":BanManagerVelocity:shadowJar")
+
+    workingDir = file("platforms/velocity")
+    commandLine("docker", "compose", "up", "-d", "mariadb", "paper", "velocity")
+}
+
+tasks.register<Exec>("stopVelocity") {
+    group = "verification"
+    description = "Stop the Velocity proxy test environment"
+
+    workingDir = file("platforms/velocity")
+    commandLine("docker", "compose", "down", "-v")
+    isIgnoreExitValue = true
+}
+
+tasks.register<Exec>("logsVelocity") {
+    group = "verification"
+    description = "Show Velocity proxy logs"
+
+    workingDir = file("platforms/velocity")
+    commandLine("docker", "compose", "logs", "-f", "velocity")
+}
+
+// BungeeCord debug tasks
+tasks.register<Exec>("startBungee") {
+    group = "verification"
+    description = "Start the BungeeCord proxy test environment without running tests (for debugging)"
+
+    dependsOn(":BanManagerBungee:shadowJar")
+
+    workingDir = file("platforms/bungee")
+    commandLine("docker", "compose", "up", "-d", "mariadb", "paper", "bungee")
+}
+
+tasks.register<Exec>("stopBungee") {
+    group = "verification"
+    description = "Stop the BungeeCord proxy test environment"
+
+    workingDir = file("platforms/bungee")
+    commandLine("docker", "compose", "down", "-v")
+    isIgnoreExitValue = true
+}
+
+tasks.register<Exec>("logsBungee") {
+    group = "verification"
+    description = "Show BungeeCord proxy logs"
+
+    workingDir = file("platforms/bungee")
+    commandLine("docker", "compose", "logs", "-f", "bungee")
+}
+
 tasks.named("clean") {
     doLast {
         // Clean up all platform Docker resources
-        listOf("bukkit", "fabric", "sponge", "sponge7").forEach { platform ->
+        listOf("bukkit", "fabric", "sponge", "sponge7", "velocity", "bungee").forEach { platform ->
             exec {
                 workingDir = file("platforms/$platform")
                 commandLine("docker", "compose", "down", "-v", "--rmi", "local")

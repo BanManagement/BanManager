@@ -3,11 +3,16 @@ import {
   connectRcon,
   disconnectRcon,
   opPlayer,
-  sendCommand
+  sendCommand,
+  isPlayerInList,
+  isProxy
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
-describe('Reports E2E Tests', () => {
+// Reports are disabled on proxies (Velocity, BungeeCord) - skip these tests
+const describeOrSkip = isProxy() ? describe.skip : describe
+
+describeOrSkip('Reports E2E Tests', () => {
   let staffBot: TestBot
   let targetBot: TestBot
   const STAFF_USERNAME = 'ReportStaff'
@@ -18,10 +23,7 @@ describe('Reports E2E Tests', () => {
 
     staffBot = await createBot(STAFF_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(STAFF_USERNAME)
-      },
+      async () => isPlayerInList(STAFF_USERNAME),
       { timeout: 10000, interval: 500, message: 'Staff bot not in player list' }
     )
 
@@ -30,10 +32,7 @@ describe('Reports E2E Tests', () => {
 
     targetBot = await createBot(TARGET_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(TARGET_USERNAME)
-      },
+      async () => isPlayerInList(TARGET_USERNAME),
       { timeout: 10000, interval: 500, message: 'Target bot not in player list' }
     )
 

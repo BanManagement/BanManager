@@ -1,0 +1,27 @@
+# LuckPerms Configuration for E2E Testing
+# Minimal config for BungeeCord proxy
+
+# The name of the server - used for context-specific permissions
+server: bungee
+
+# Storage settings - use YAML flat file for simplicity
+storage-method: yaml
+
+# Use case-insensitive usernames (for offline mode)
+use-server-uuid-cache: true
+
+# Inherit permissions from parent groups
+include-global: true
+include-global-world: true
+
+# Apply server and world permissions from parents
+apply-wildcards: true
+apply-regex: true
+apply-shorthand: true
+
+# Enable verbose logging for debugging
+verbose: false
+
+# Don't check for updates in e2e tests
+update-task:
+  enabled: false

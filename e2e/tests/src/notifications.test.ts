@@ -10,7 +10,9 @@ import {
   addNote,
   reportPlayer,
   opPlayer,
-  sendCommand
+  sendCommand,
+  isPlayerInList,
+  isProxy
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
@@ -25,22 +27,17 @@ describe('Notification Broadcast Tests', () => {
 
     staffBot = await createBot(STAFF_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(STAFF_USERNAME)
-      },
+      async () => isPlayerInList(STAFF_USERNAME),
       { timeout: 10000, interval: 500, message: 'Staff bot not in player list' }
     )
 
     await opPlayer(STAFF_USERNAME)
-    await sleep(3500)
+    // Extra wait for permissions to sync on proxies
+    await sleep(5000)
 
     targetBot = await createBot(TARGET_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(TARGET_USERNAME)
-      },
+      async () => isPlayerInList(TARGET_USERNAME),
       { timeout: 10000, interval: 500, message: 'Target bot not in player list' }
     )
 
@@ -143,7 +140,10 @@ describe('Notification Broadcast Tests', () => {
     expect(noteNotification).toBeDefined()
   }, 30000)
 
-  test('staff receives notification when a player is reported', async () => {
+  // Reports are disabled on proxies (Velocity, BungeeCord)
+  const testOrSkipReport = isProxy() ? test.skip : test
+
+  testOrSkipReport('staff receives notification when a player is reported', async () => {
     staffBot.clearSystemMessages()
 
     // Small delay before reporting to ensure previous test cleanup is complete

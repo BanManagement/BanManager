@@ -5,7 +5,8 @@ import {
   warnPlayer,
   opPlayer,
   sendCommand,
-  clearWarnings
+  clearWarnings,
+  isPlayerInList
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
@@ -20,10 +21,7 @@ describe('Warning Actions E2E Tests', () => {
 
     staffBot = await createBot(STAFF_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(STAFF_USERNAME)
-      },
+      async () => isPlayerInList(STAFF_USERNAME),
       { timeout: 10000, interval: 500, message: 'Staff bot not in player list' }
     )
 
@@ -32,10 +30,7 @@ describe('Warning Actions E2E Tests', () => {
 
     targetBot = await createBot(TARGET_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(TARGET_USERNAME)
-      },
+      async () => isPlayerInList(TARGET_USERNAME),
       { timeout: 10000, interval: 500, message: 'Target bot not in player list' }
     )
 
@@ -85,10 +80,11 @@ describe('Warning Actions E2E Tests', () => {
     staffBot.clearSystemMessages()
 
     // Issue 3 warnings to trigger the warning action
+    // Use longer delays to avoid "warned too recently" rate limiting
     await warnPlayer(TARGET_USERNAME, 'First warning')
-    await sleep(500)
+    await sleep(1500)
     await warnPlayer(TARGET_USERNAME, 'Second warning')
-    await sleep(500)
+    await sleep(1500)
     await warnPlayer(TARGET_USERNAME, 'Third warning')
 
     // Check for the warning action message

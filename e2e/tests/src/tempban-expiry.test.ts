@@ -5,7 +5,9 @@ import {
   tempBanPlayer,
   unbanPlayer,
   opPlayer,
-  sendCommand
+  sendCommand,
+  isPlayerInList,
+  isProxy
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
@@ -20,10 +22,7 @@ describe('Temp Ban Expiry E2E Tests', () => {
 
     staffBot = await createBot(STAFF_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(STAFF_USERNAME)
-      },
+      async () => isPlayerInList(STAFF_USERNAME),
       { timeout: 10000, interval: 500, message: 'Staff bot not in player list' }
     )
 
@@ -62,8 +61,11 @@ describe('Temp Ban Expiry E2E Tests', () => {
       await sleep(2000)
 
       // Check player list - banned player should NOT be there
-      const list = await sendCommand('list')
-      expect(list.includes(TARGET_USERNAME)).toBe(false)
+      // On proxies, we can't easily verify via the proxy's list command
+      if (!isProxy()) {
+        const list = await sendCommand('list')
+        expect(list.includes(TARGET_USERNAME)).toBe(false)
+      }
     } catch (err) {
       // Connection should fail or player should be kicked - this is expected
       expect(err).toBeDefined()
@@ -80,15 +82,14 @@ describe('Temp Ban Expiry E2E Tests', () => {
     // Now try to connect as the player
     targetBot = await createBot(TARGET_USERNAME)
     await waitFor(
-      async () => {
-        const list = await sendCommand('list')
-        return list.includes(TARGET_USERNAME)
-      },
+      async () => isPlayerInList(TARGET_USERNAME),
       { timeout: 10000, interval: 500, message: 'Player not in list after temp ban expired' }
     )
 
-    const list = await sendCommand('list')
-    expect(list.includes(TARGET_USERNAME)).toBe(true)
+    // On proxies, we can't verify via the proxy's list command - the bot spawn confirms connection
+    if (!isProxy()) {
+      const list = await sendCommand('list')
+      expect(list.includes(TARGET_USERNAME)).toBe(true)
+    }
   }, 60000)
 })
-

@@ -2,6 +2,8 @@ import mineflayer, { Bot } from 'mineflayer'
 
 const SERVER_HOST = process.env.SERVER_HOST ?? 'localhost'
 const SERVER_PORT = parseInt(process.env.SERVER_PORT ?? '25565', 10)
+// Specify Minecraft version to connect with (for proxy compatibility)
+const MC_VERSION = process.env.MC_VERSION ?? undefined
 
 export interface ChatMessage {
   username: string
@@ -33,7 +35,9 @@ export class TestBot {
         port: SERVER_PORT,
         username: this.username,
         auth: 'offline', // Offline mode for testing
-        hideErrors: false
+        hideErrors: false,
+        // Specify version for proxy compatibility (avoids version mismatch errors)
+        version: MC_VERSION
       })
 
       const timeout = setTimeout(() => {
