@@ -25,4 +25,3 @@ public class MuteListener extends Listener {
     listener.notifyOnMute(event.getMute(), event.isSilent());
   }
 }
-

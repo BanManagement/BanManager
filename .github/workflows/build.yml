@@ -64,22 +64,3 @@ jobs:
       # Build both Sponge modules (legacy API 7 and modern API 11+)
       - name: Build Sponge modules
         run: ./gradlew :BanManagerSponge:shadowJar :BanManagerSponge7:shadowJar --build-cache
-
-      - name: Publish to Maven Central
-        # only publish once
-        if: github.ref == 'refs/heads/master' && matrix.java == '21' && matrix.storageType == 'mariadb'
-        env:
-          # vanniktech plugin credential names
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
-        run: |
-          VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
-          if [[ "$VERSION" == *"SNAPSHOT"* ]]; then
-            # SNAPSHOT: publish to Central Portal snapshot repository
-            ./gradlew publishToMavenCentral
-          else
-            # Release: publish and release to Maven Central
-            ./gradlew publishAndReleaseToMavenCentral
-          fi
