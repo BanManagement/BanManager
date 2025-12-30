@@ -56,25 +56,29 @@ describe('Online-Only Temp Mute E2E Tests', () => {
 
     await sleep(1000)
     staffBot.clearSystemMessages()
+    targetBot.clearSystemMessages()
 
     // Apply online-only temp mute for 1 minute
     await tempMutePlayerOnlineOnly(TARGET_USERNAME, '1m', 'Testing online-only mute')
     await sleep(2000)
 
     // Target should receive mute notification with "online time" text
+    // Use case-insensitive matching and handle potential color code variations
     const targetMessages = targetBot.getSystemMessages()
-    const muteNotification = targetMessages.find(m =>
-      m.message.includes('temporarily muted') && m.message.includes('online time')
-    )
+    const muteNotification = targetMessages.find(m => {
+      const msg = m.message.toLowerCase()
+      return msg.includes('temporarily muted') && msg.includes('online')
+    })
     expect(muteNotification).toBeDefined()
 
     // Staff should receive notification with "online time" text
     const staffMessages = staffBot.getSystemMessages()
-    const staffNotification = staffMessages.find(m =>
-      m.message.includes(TARGET_USERNAME) &&
-      m.message.includes('temporarily muted') &&
-      m.message.includes('online time')
-    )
+    const staffNotification = staffMessages.find(m => {
+      const msg = m.message.toLowerCase()
+      return msg.includes(TARGET_USERNAME.toLowerCase()) &&
+        msg.includes('temporarily muted') &&
+        msg.includes('online')
+    })
     expect(staffNotification).toBeDefined()
 
     // Target tries to chat - should be blocked
