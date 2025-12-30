@@ -100,4 +100,25 @@ public abstract class DatabaseConfig {
   public void addTable(String key, DatabaseTableConfig<?> config) {
     tables.put(key, config);
   }
+
+  /**
+   * Returns the SQL expression for the current unix timestamp in seconds.
+   * This expression can be embedded directly in INSERT/UPDATE statements.
+   * Works with MySQL, MariaDB, and H2 (in MySQL compatibility mode).
+   *
+   * @return SQL expression that evaluates to current unix timestamp
+   */
+  public String getTimestampNow() {
+    return "UNIX_TIMESTAMP()";
+  }
+
+  /**
+   * Returns the SQL query to fetch the current unix timestamp.
+   * Works with MySQL, MariaDB, and H2 (in MySQL compatibility mode).
+   *
+   * @return SQL query that returns the current unix timestamp
+   */
+  public String getTimestampQuery() {
+    return "SELECT UNIX_TIMESTAMP()";
+  }
 }

@@ -2,21 +2,25 @@ package me.confuser.banmanager.common.storage.global;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.global.GlobalPlayerNoteData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.storage.BaseStorage;
 
 import java.sql.SQLException;
 
-public class GlobalPlayerNoteStorage extends BaseDaoImpl<GlobalPlayerNoteData, Integer> {
+public class GlobalPlayerNoteStorage extends BaseStorage<GlobalPlayerNoteData, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public GlobalPlayerNoteStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getGlobalConn(), (DatabaseTableConfig<GlobalPlayerNoteData>) plugin.getConfig()
+    super(plugin, plugin.getGlobalConn(), (DatabaseTableConfig<GlobalPlayerNoteData>) plugin.getConfig()
                                                                                    .getGlobalDb()
-                                                                                   .getTable("playerNotes"));
+                                                                                   .getTable("playerNotes"), plugin.getConfig().getGlobalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -33,10 +37,8 @@ public class GlobalPlayerNoteStorage extends BaseDaoImpl<GlobalPlayerNoteData, I
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<GlobalPlayerNoteData, Integer> query = queryBuilder();
-    query.setWhere(queryBuilder().where().ge("created", checkTime));
+    query.setWhere(queryBuilder().where().ge("created", fromTime));
 
     return query.iterator();
 

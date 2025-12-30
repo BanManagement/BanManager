@@ -22,3 +22,5 @@ permissions:
   - bm.notify.duplicateips
   # Allow viewing player info
   - bm.info
+
+

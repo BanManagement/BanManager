@@ -133,9 +133,10 @@ public class RollbackSyncTest extends BasePluginDbTest {
     PlayerData maliciousMod = testUtils.createRandomPlayer();
 
     // Create a ban with a timestamp in the past (simulating old ban)
+    // Use createPreservingTimestamps to keep the historical timestamp
     long oldTimestamp = (System.currentTimeMillis() / 1000L) - 86400; // 1 day ago
     PlayerBanData ban = new PlayerBanData(victim, maliciousMod, "old ban", false, 0, oldTimestamp);
-    plugin.getPlayerBanStorage().create(ban);
+    plugin.getPlayerBanStorage().createPreservingTimestamps(ban);
     plugin.getPlayerBanStorage().addBan(ban);
 
     assertTrue(plugin.getPlayerBanStorage().isBanned(victim.getUUID()));

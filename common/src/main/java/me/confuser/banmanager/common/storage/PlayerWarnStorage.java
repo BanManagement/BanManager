@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.google.guava.cache.Cache;
 import me.confuser.banmanager.common.google.guava.cache.CacheBuilder;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.field.SqlType;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
@@ -20,7 +19,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.io.IOException;
@@ -28,20 +26,22 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
+public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
 
-  private BanManagerPlugin plugin;
   private Cache<UUID, PlayerWarnData> muteWarnings = CacheBuilder.newBuilder()
       .expireAfterWrite(1, TimeUnit.DAYS)
       .concurrencyLevel(2)
       .maximumSize(200)
       .build();
 
-  public PlayerWarnStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerWarnData>) plugin.getConfig()
-        .getLocalDb().getTable("playerWarnings"));
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
-    this.plugin = plugin;
+  public PlayerWarnStorage(BanManagerPlugin plugin) throws SQLException {
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerWarnData>) plugin.getConfig()
+        .getLocalDb().getTable("playerWarnings"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -77,8 +77,8 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
     }
   }
 
-  public PlayerWarnStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerWarnData>) table);
+  public PlayerWarnStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerWarnData>) table, plugin.getConfig().getLocalDb());
   }
 
   public boolean isMuted(UUID uuid) {
@@ -193,11 +193,9 @@ public class PlayerWarnStorage extends BaseDaoImpl<PlayerWarnData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<PlayerWarnData, Integer> query = queryBuilder();
     Where<PlayerWarnData, Integer> where = query.where();
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 

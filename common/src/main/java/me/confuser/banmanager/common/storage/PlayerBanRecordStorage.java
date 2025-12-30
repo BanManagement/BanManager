@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
@@ -13,16 +12,20 @@ import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer> {
+public class PlayerBanRecordStorage extends BaseStorage<PlayerBanRecord, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public PlayerBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerBanRecord>) plugin.getConfig()
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerBanRecord>) plugin.getConfig()
         .getLocalDb()
-        .getTable("playerBanRecords"));
+        .getTable("playerBanRecords"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -49,8 +52,8 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
     }
   }
 
-  public PlayerBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerBanRecord>) table);
+  public PlayerBanRecordStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerBanRecord>) table, plugin.getConfig().getLocalDb());
   }
 
   public void addRecord(PlayerBanData ban, PlayerData actor, String reason) throws SQLException {
@@ -62,12 +65,10 @@ public class PlayerBanRecordStorage extends BaseDaoImpl<PlayerBanRecord, Integer
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<PlayerBanRecord, Integer> query = queryBuilder();
     Where<PlayerBanRecord, Integer> where = query.where();
 
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 

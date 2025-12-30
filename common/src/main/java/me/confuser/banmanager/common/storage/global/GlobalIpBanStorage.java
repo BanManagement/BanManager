@@ -2,20 +2,24 @@ package me.confuser.banmanager.common.storage.global;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.global.GlobalIpBanData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.storage.BaseStorage;
 
 import java.sql.SQLException;
 
-public class GlobalIpBanStorage extends BaseDaoImpl<GlobalIpBanData, Integer> {
+public class GlobalIpBanStorage extends BaseStorage<GlobalIpBanData, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public GlobalIpBanStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getGlobalConn(), (DatabaseTableConfig<GlobalIpBanData>) plugin.getConfig().getGlobalDb()
-                                                                              .getTable("ipBans"));
+    super(plugin, plugin.getGlobalConn(), (DatabaseTableConfig<GlobalIpBanData>) plugin.getConfig().getGlobalDb()
+                                                                              .getTable("ipBans"), plugin.getConfig().getGlobalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -35,10 +39,8 @@ public class GlobalIpBanStorage extends BaseDaoImpl<GlobalIpBanData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<GlobalIpBanData, Integer> query = queryBuilder();
-    query.setWhere(query.where().ge("created", checkTime));
+    query.setWhere(query.where().ge("created", fromTime));
 
     return query.iterator();
 

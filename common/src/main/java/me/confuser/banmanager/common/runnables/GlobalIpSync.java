@@ -2,9 +2,11 @@ package me.confuser.banmanager.common.runnables;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.configs.DatabaseConfig;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
+import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.storage.IpBanStorage;
 import me.confuser.banmanager.common.storage.global.GlobalIpBanRecordStorage;
@@ -26,6 +28,16 @@ public class GlobalIpSync extends BmRunnable {
     banStorage = plugin.getGlobalIpBanStorage();
     localBanStorage = plugin.getIpBanStorage();
     recordStorage = plugin.getGlobalIpBanRecordStorage();
+  }
+
+  @Override
+  protected DatabaseConfig getCheckpointDbConfig() {
+    return plugin.getConfig().getGlobalDb();
+  }
+
+  @Override
+  protected BaseDaoImpl<?, ?> getCheckpointDao() {
+    return banStorage;
   }
 
   @Override

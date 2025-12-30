@@ -4,22 +4,25 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.NameBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
+public class NameBanRecordStorage extends BaseStorage<NameBanRecord, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public NameBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<NameBanRecord>) plugin.getConfig()
-        .getLocalDb().getTable("nameBanRecords"));
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<NameBanRecord>) plugin.getConfig()
+        .getLocalDb().getTable("nameBanRecords"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -36,8 +39,8 @@ public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
     }
   }
 
-  public NameBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<NameBanRecord>) table);
+  public NameBanRecordStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<NameBanRecord>) table, plugin.getConfig().getLocalDb());
   }
 
   public void addRecord(NameBanData ban, PlayerData actor, String reason) throws SQLException {
@@ -49,12 +52,10 @@ public class NameBanRecordStorage extends BaseDaoImpl<NameBanRecord, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<NameBanRecord, Integer> query = queryBuilder();
     Where<NameBanRecord, Integer> where = query.where();
 
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 

@@ -6,23 +6,26 @@ import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.IpMuteRecord;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 
-public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
+public class IpMuteRecordStorage extends BaseStorage<IpMuteRecord, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public IpMuteRecordStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<IpMuteRecord>) plugin.getConfig().getLocalDb()
-        .getTable("ipMuteRecords"));
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<IpMuteRecord>) plugin.getConfig().getLocalDb()
+        .getTable("ipMuteRecords"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -45,8 +48,8 @@ public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
     }
   }
 
-  public IpMuteRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpMuteRecord>) table);
+  public IpMuteRecordStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<IpMuteRecord>) table, plugin.getConfig().getLocalDb());
   }
 
   public void addRecord(IpMuteData mute, PlayerData actor, String reason) throws SQLException {
@@ -58,12 +61,10 @@ public class IpMuteRecordStorage extends BaseDaoImpl<IpMuteRecord, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<IpMuteRecord, Integer> query = queryBuilder();
     Where<IpMuteRecord, Integer> where = query.where();
 
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 

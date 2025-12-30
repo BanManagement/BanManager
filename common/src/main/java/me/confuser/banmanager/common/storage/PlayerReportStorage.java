@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -18,15 +17,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> {
-
-  private BanManagerPlugin plugin;
+public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> {
 
   public PlayerReportStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerReportData>) plugin.getConfig()
-        .getLocalDb().getTable("playerReports"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerReportData>) plugin.getConfig()
+        .getLocalDb().getTable("playerReports"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -56,8 +51,8 @@ public class PlayerReportStorage extends BaseDaoImpl<PlayerReportData, Integer> 
     }
   }
 
-  public PlayerReportStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerReportData>) table);
+  public PlayerReportStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerReportData>) table, plugin.getConfig().getLocalDb());
   }
 
   public boolean report(PlayerReportData data, boolean isSilent) throws SQLException {

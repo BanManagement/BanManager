@@ -9,6 +9,7 @@ public class SchedulesConfig extends Config {
 
   private ConcurrentHashMap<String, Integer> schedules = new ConcurrentHashMap<>(13);
   private ConcurrentHashMap<String, Long> lastChecked = new ConcurrentHashMap<>(12);
+  private ConcurrentHashMap<String, Long> lastRunLocal = new ConcurrentHashMap<>(12);
 
   public SchedulesConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "schedules.yml", logger);
@@ -41,6 +42,15 @@ public class SchedulesConfig extends Config {
     lastChecked.put(key, value);
   }
 
+  public long getLastRunLocal(String taskName) {
+    Long runTime = lastRunLocal.get(taskName);
+    return runTime != null ? runTime : 0;
+  }
+
+  public void setLastRunLocal(String key, long value) {
+    lastRunLocal.put(key, value);
+  }
+
   @Override
   public void afterLoad() {
     for (String key : conf.getConfigurationSection("scheduler").getKeys(false)) {
@@ -50,7 +60,6 @@ public class SchedulesConfig extends Config {
     for (String key : conf.getConfigurationSection("lastChecked").getKeys(false)) {
       lastChecked.put(key, conf.getLong(("lastChecked." + key), 0));
     }
-
   }
 
   @Override

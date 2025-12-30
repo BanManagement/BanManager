@@ -68,29 +68,29 @@ public class H2 implements IConverter {
 
       // Setup data storage
       playerStorage = new PlayerStorage(connection, config.getTable("players"));
-      playerBanStorage = new PlayerBanStorage(connection, config.getTable("playerBans"));
-      playerBanRecordStorage = new PlayerBanRecordStorage(connection, config.getTable("playerBanRecords"));
-      playerMuteStorage = new PlayerMuteStorage(connection, config.getTable("playerMutes"));
-      playerMuteRecordStorage = new PlayerMuteRecordStorage(connection, config.getTable("playerMuteRecords"));
-      playerWarnStorage = new PlayerWarnStorage(connection, config.getTable("playerWarnings"));
-      playerKickStorage = new PlayerKickStorage(connection, config.getTable("playerKicks"));
-      playerNoteStorage = new PlayerNoteStorage(connection, config.getTable("playerNotes"));
+      playerBanStorage = new PlayerBanStorage(plugin, connection, config.getTable("playerBans"));
+      playerBanRecordStorage = new PlayerBanRecordStorage(plugin, connection, config.getTable("playerBanRecords"));
+      playerMuteStorage = new PlayerMuteStorage(plugin, connection, config.getTable("playerMutes"));
+      playerMuteRecordStorage = new PlayerMuteRecordStorage(plugin, connection, config.getTable("playerMuteRecords"));
+      playerWarnStorage = new PlayerWarnStorage(plugin, connection, config.getTable("playerWarnings"));
+      playerKickStorage = new PlayerKickStorage(plugin, connection, config.getTable("playerKicks"));
+      playerNoteStorage = new PlayerNoteStorage(plugin, connection, config.getTable("playerNotes"));
       playerHistoryStorage = new PlayerHistoryStorage(connection, config.getTable("playerHistory"));
       reportStateStorage = new ReportStateStorage(connection, config.getTable("playerReportStates"));
       playerReportCommandStorage = new PlayerReportCommandStorage(connection, config.getTable("playerReportCommands"));
       playerReportCommentStorage = new PlayerReportCommentStorage(connection, config.getTable("playerReportComments"));
-      playerReportStorage = new PlayerReportStorage(connection, config.getTable("playerReports"));
+      playerReportStorage = new PlayerReportStorage(plugin, connection, config.getTable("playerReports"));
       playerReportLocationStorage = new PlayerReportLocationStorage(connection, config.getTable("playerReportLocations"));
 
-      ipBanStorage = new IpBanStorage(connection, config.getTable("ipBans"));
-      ipBanRecordStorage = new IpBanRecordStorage(connection, config.getTable("ipBanRecords"));
-      ipMuteStorage = new IpMuteStorage(connection, config.getTable("ipMutes"));
-      ipMuteRecordStorage = new IpMuteRecordStorage(connection, config.getTable("ipMuteRecords"));
-      ipRangeBanStorage = new IpRangeBanStorage(connection, config.getTable("ipRangeBans"));
-      ipRangeBanRecordStorage = new IpRangeBanRecordStorage(connection, config.getTable("ipRangeBanRecords"));
+      ipBanStorage = new IpBanStorage(plugin, connection, config.getTable("ipBans"));
+      ipBanRecordStorage = new IpBanRecordStorage(plugin, connection, config.getTable("ipBanRecords"));
+      ipMuteStorage = new IpMuteStorage(plugin, connection, config.getTable("ipMutes"));
+      ipMuteRecordStorage = new IpMuteRecordStorage(plugin, connection, config.getTable("ipMuteRecords"));
+      ipRangeBanStorage = new IpRangeBanStorage(plugin, connection, config.getTable("ipRangeBans"));
+      ipRangeBanRecordStorage = new IpRangeBanRecordStorage(plugin, connection, config.getTable("ipRangeBanRecords"));
 
-      nameBanStorage = new NameBanStorage(connection, config.getTable("nameBans"));
-      nameBanRecordStorage = new NameBanRecordStorage(connection, config.getTable("nameBanRecords"));
+      nameBanStorage = new NameBanStorage(plugin, connection, config.getTable("nameBans"));
+      nameBanRecordStorage = new NameBanRecordStorage(plugin, connection, config.getTable("nameBanRecords"));
     } catch (SQLException e) {
       e.printStackTrace();
       return;
