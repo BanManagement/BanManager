@@ -4,6 +4,8 @@ import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressSeqRange;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.util.IPUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +13,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
@@ -49,11 +52,15 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldFailIfAlreadyBanned() throws SQLException {
-    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Cidr());
+    String cidr = faker.internet().ipV6Cidr();
+    IPAddressString ipString = new IPAddressString(cidr);
+    IPAddressSeqRange range = ipString.getSequentialRange();
+    IPAddress fromIp = range.getLower();
+    IPAddress toIp = range.getUpper();
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
-    String[] args = new String[]{ip.toString(), "test"};
+    String[] args = new String[]{cidr, "test"};
 
-    assert plugin.getIpRangeBanStorage().ban(new IpRangeBanData(ip.getLower(), ip.getUpper(), sender.getData(), args[1], true));
+    assert plugin.getIpRangeBanStorage().ban(new IpRangeBanData(fromIp, toIp, sender.getData(), args[1], true));
 
     when(sender.hasPermission(cmd.getPermission() + ".override")).thenReturn(false);
 
@@ -72,18 +79,24 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldBanRange() {
-    IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Cidr());
+    String cidr = faker.internet().ipV6Cidr();
+    IPAddressString ipString = new IPAddressString(cidr);
+    IPAddressSeqRange range = ipString.getSequentialRange();
+    IPAddress expectedFromIp = range.getLower();
+    IPAddress expectedToIp = range.getUpper();
+
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
-    String[] args = new String[]{ip.toString(), "test"};
+    String[] args = new String[]{cidr, "test"};
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
 
-    await().until(() -> plugin.getIpRangeBanStorage().isBanned(ip.getUpper()));
-    IpRangeBanData ban = plugin.getIpRangeBanStorage().getBan(ip.getUpper());
+    await().until(() -> plugin.getIpRangeBanStorage().isBanned(expectedToIp));
+    IpRangeBanData ban = plugin.getIpRangeBanStorage().getBan(expectedToIp);
 
-    assertEquals(ip.getLower(), ban.getFromIp());
-    assertEquals(ip.getUpper(), ban.getToIp());
+    // Compare byte arrays to avoid issues with IPAddress.equals() when objects are created differently
+    assertArrayEquals(expectedFromIp.getBytes(), ban.getFromIp().getBytes());
+    assertArrayEquals(expectedToIp.getBytes(), ban.getToIp().getBytes());
     assertEquals("test", ban.getReason());
     assertEquals(sender.getName(), ban.getActor().getName());
     assertFalse(ban.isSilent());
