@@ -121,7 +121,6 @@ public class WarnCommandTest extends BasePluginDbTest {
     ActionCommand commandWithOldTimeframe = new ActionCommand("kick", 0, "30d");
     WarningActionsConfig warningActionsConfig = spy(plugin.getConfig().getWarningActions());
 
-    // Use createPreservingTimestamps to keep the historical timestamps for this test
     PlayerWarnData oldWarning = new PlayerWarnData(player, sender.getData(), "testing", false, 0, DateUtils.parseDateDiff("31d", false));
     plugin.getPlayerWarnStorage().createPreservingTimestamps(oldWarning);
     PlayerWarnData recentWarning = new PlayerWarnData(player, sender.getData(), "testing", false, 0, DateUtils.parseDateDiff("1m", false));
