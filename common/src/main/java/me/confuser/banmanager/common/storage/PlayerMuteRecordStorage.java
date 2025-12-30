@@ -51,6 +51,15 @@ public class PlayerMuteRecordStorage extends BaseStorage<PlayerMuteRecord, Integ
         );
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `onlineOnly` TINYINT(1) NOT NULL DEFAULT 0");
+      } catch (SQLException e) {
+      }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `remainingOnlineTime` BIGINT UNSIGNED NOT NULL DEFAULT 0");
+      } catch (SQLException e) {
+      }
     }
   }
 

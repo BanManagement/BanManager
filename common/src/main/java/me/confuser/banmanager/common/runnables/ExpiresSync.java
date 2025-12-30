@@ -65,7 +65,7 @@ public class ExpiresSync extends BmRunnable {
       while (mutes.hasNext()) {
         PlayerMuteData mute = mutes.next();
 
-        muteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "");
+        muteStorage.unmuteIfExpired(mute, plugin.getPlayerStorage().getConsole());
       }
     } catch (SQLException e) {
       e.printStackTrace();

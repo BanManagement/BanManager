@@ -114,6 +114,10 @@ messages:
       permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'
       temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which
         expires in [expires]'
+      temporaryOnline: '&6Currently muted for &4[reason]&6 by [actor] at [created] which
+        expires in [expires] (online time)'
+      temporaryOnlinePaused: '&6Currently muted for &4[reason]&6 by [actor] at [created]
+        with [remaining] remaining (online time, paused)'
       dateTimeFormat: dd-MM-yyyy HH:mm:ss
     website:
       player: https://yourdomain.com/player/[uuid]
@@ -188,7 +192,10 @@ messages:
     player:
       disallowed: '&6You have been temporarily muted for &4[reason] &6by [actor] which
         expires in [expires]'
+      disallowedOnline: '&6You have been temporarily muted for &4[reason] &6by [actor] which
+        expires in [expires] (online time)'
     notify: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
+    notifyOnline: '&6[player] has been temporarily muted for [expires] (online time) by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
   tempmuteip:

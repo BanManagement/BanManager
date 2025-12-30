@@ -34,6 +34,13 @@ public class TempMuteCommand extends CommonCommand {
       return true;
     }
 
+    final boolean isOnlineOnly = parser.isOnlineOnly();
+
+    if (isOnlineOnly && !sender.hasPermission(getPermission() + ".online")) {
+      sender.sendMessage(Message.getString("sender.error.noPermission"));
+      return true;
+    }
+
     if (parser.args.length < 3) {
       return false;
     }
@@ -158,7 +165,17 @@ public class TempMuteCommand extends CommonCommand {
         }
       }
 
-      PlayerMuteData mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, expires);
+      PlayerMuteData mute;
+      long now = System.currentTimeMillis() / 1000L;
+      long durationSeconds = expires - now;
+
+      if (isOnlineOnly && onlinePlayer == null) {
+        mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, 0, true);
+        mute.setPausedRemaining(durationSeconds);
+      } else {
+        mute = new PlayerMuteData(player, actor, reason.getMessage(), isSilent, isSoft, expires, isOnlineOnly);
+      }
+
       boolean created;
 
       try {
@@ -179,14 +196,20 @@ public class TempMuteCommand extends CommonCommand {
 
       if (isSoft || onlinePlayer1 == null) return;
 
-      Message muteMessage = Message.get("tempmute.player.disallowed")
+      String messageKey = isOnlineOnly ? "tempmute.player.disallowedOnline" : "tempmute.player.disallowed";
+      Message muteMessage = Message.get(messageKey)
                                    .set("displayName", onlinePlayer1.getDisplayName())
                                    .set("player", player.getName())
                                    .set("playerId", player.getUUID().toString())
                                    .set("reason", mute.getReason())
                                    .set("actor", actor.getName())
-                                   .set("id", mute.getId())
-                                   .set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+                                   .set("id", mute.getId());
+
+      if (mute.isPaused()) {
+        muteMessage.set("expires", DateUtils.formatDifference(mute.getPausedRemaining()));
+      } else {
+        muteMessage.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+      }
 
       onlinePlayer1.sendMessage(muteMessage.toString());
 

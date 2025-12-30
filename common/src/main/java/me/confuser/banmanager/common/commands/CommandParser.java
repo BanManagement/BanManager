@@ -26,6 +26,10 @@ public class CommandParser {
   @Getter
   private boolean soft = false;
 
+  @Argument(alias = "o")
+  @Getter
+  private boolean onlineOnly = false;
+
   @Getter
   private Reason reason;
 

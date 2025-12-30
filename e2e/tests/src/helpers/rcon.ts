@@ -183,6 +183,10 @@ export async function tempMutePlayer (player: string, duration: string, reason: 
   return await sendCommand(`bmtempmute ${player} ${duration} ${reason}`)
 }
 
+export async function tempMutePlayerOnlineOnly (player: string, duration: string, reason: string = 'E2E Test'): Promise<string> {
+  return await sendCommand(`bmtempmute ${player} ${duration} -o ${reason}`)
+}
+
 export async function clearWarnings (player: string): Promise<string> {
   return await sendCommand(`bmclear ${player} warnings`)
 }

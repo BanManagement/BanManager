@@ -52,6 +52,14 @@ public class PlayerMuteRecord {
   @Getter
   private boolean silent = false;
 
+  @DatabaseField
+  @Getter
+  private boolean onlineOnly = false;
+
+  @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL DEFAULT 0")
+  @Getter
+  private long remainingOnlineTime = 0;
+
   PlayerMuteRecord() {
 
   }
@@ -64,6 +72,16 @@ public class PlayerMuteRecord {
     createdReason = reason;
     silent = mute.isSilent();
     soft = mute.isSoft();
+    onlineOnly = mute.isOnlineOnly();
+
+    if (mute.isOnlineOnly()) {
+      if (mute.isPaused()) {
+        remainingOnlineTime = mute.getPausedRemaining();
+      } else if (mute.getExpires() > 0) {
+        long now = System.currentTimeMillis() / 1000L;
+        remainingOnlineTime = Math.max(0, mute.getExpires() - now);
+      }
+    }
 
     this.reason = mute.getReason();
     this.actor = actor;
@@ -77,6 +95,16 @@ public class PlayerMuteRecord {
     pastCreated = mute.getCreated();
     silent = mute.isSilent();
     soft = mute.isSoft();
+    onlineOnly = mute.isOnlineOnly();
+
+    if (mute.isOnlineOnly()) {
+      if (mute.isPaused()) {
+        remainingOnlineTime = mute.getPausedRemaining();
+      } else if (mute.getExpires() > 0) {
+        long now = System.currentTimeMillis() / 1000L;
+        remainingOnlineTime = Math.max(0, mute.getExpires() - now);
+      }
+    }
 
     this.actor = actor;
     this.created = created;

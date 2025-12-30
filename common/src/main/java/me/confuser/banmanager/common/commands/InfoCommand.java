@@ -541,7 +541,13 @@ public class InfoCommand extends CommonCommand {
 
         Message message;
 
-        if (mute.getExpires() == 0) {
+        if (mute.isOnlineOnly() && mute.isPaused()) {
+          message = Message.get("info.mute.temporaryOnlinePaused");
+          message.set("remaining", DateUtils.formatDifference(mute.getPausedRemaining()));
+        } else if (mute.isOnlineOnly() && mute.getExpires() > 0) {
+          message = Message.get("info.mute.temporaryOnline");
+          message.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
+        } else if (mute.getExpires() == 0) {
           message = Message.get("info.mute.permanent");
         } else {
           message = Message.get("info.mute.temporary");

@@ -62,7 +62,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' AS type, p.name AS name, actor.name AS actor, created, '' AS name2" +
+            "    SELECT CASE WHEN onlineOnly = 1 THEN 'Mute (Online)' ELSE 'Mute' END AS type, p.name AS name, actor.name AS actor, created, '' AS name2" +
             "    FROM " + plugin.getPlayerMuteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -71,7 +71,7 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' AS type, p.name AS name, actor.name AS actor, pastCreated as created, '' AS name2" +
+            "    SELECT CASE WHEN onlineOnly = 1 THEN 'Mute (Online)' ELSE 'Mute' END AS type, p.name AS name, actor.name AS actor, pastCreated as created, '' AS name2" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
@@ -175,14 +175,14 @@ public class ActivityStorage {
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' AS type, p.name AS name, created, '' AS name2" +
+            "    SELECT CASE WHEN onlineOnly = 1 THEN 'Mute (Online)' ELSE 'Mute' END AS type, p.name AS name, created, '' AS name2" +
             "    FROM " + plugin.getPlayerMuteStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE created >= ? AND actor_id = ?" +
 
             "    UNION ALL" +
 
-            "    SELECT 'Mute' AS type, p.name AS name, pastCreated as created, '' AS name2" +
+            "    SELECT CASE WHEN onlineOnly = 1 THEN 'Mute (Online)' ELSE 'Mute' END AS type, p.name AS name, pastCreated as created, '' AS name2" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig().getTableName() + " p ON player_id = p.id" +
             "    WHERE pastCreated >= ? AND actor_id = ?" +
