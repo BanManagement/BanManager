@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerHistoryData;
+import me.confuser.banmanager.common.data.PlayerMuteData;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -32,6 +33,22 @@ public class CommonLeaveListener {
           e.printStackTrace();
         }
       });
+    }
+
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(id);
+    if (mute != null && mute.isOnlineOnly() && !mute.isPaused() && mute.getExpires() > 0) {
+      long now = System.currentTimeMillis() / 1000L;
+      long remaining = mute.getExpires() - now;
+
+      if (remaining > 0) {
+        plugin.getScheduler().runAsync(() -> {
+          try {
+            plugin.getPlayerMuteStorage().pauseMute(mute, remaining);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        });
+      }
     }
   }
 }

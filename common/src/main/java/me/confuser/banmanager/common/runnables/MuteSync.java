@@ -33,15 +33,27 @@ public class MuteSync extends BmRunnable {
       while (itr.hasNext()) {
         final PlayerMuteData mute = itr.next();
 
-        if (muteStorage.isMuted(mute.getPlayer().getUUID())) {
+        PlayerMuteData existingMute = muteStorage.getMute(mute.getPlayer().getUUID());
+
+        if (existingMute != null) {
           if (mute.getUpdated() < lastChecked) continue;
 
-          if (mute.equalsMute(muteStorage.getMute(mute.getPlayer().getUUID()))) {
+          if (mute.equalsMute(existingMute)) {
             continue;
           }
-        }
 
-        muteStorage.addMute(mute);
+          // Mute exists but has changed - check if it's just a pause/resume state change
+          // If core mute properties match but pause/resume state differs, update silently
+          if (isSameMuteWithStateChange(mute, existingMute)) {
+            muteStorage.updateMuteState(mute);
+          } else {
+            // Core mute changed (e.g., reason, actor, original duration) - fire event
+            muteStorage.addMute(mute);
+          }
+        } else {
+          // New mute - fire event
+          muteStorage.addMute(mute);
+        }
 
       }
     } catch (SQLException e) {
@@ -52,6 +64,21 @@ public class MuteSync extends BmRunnable {
 
   }
 
+  /**
+   * Checks if two mutes represent the same mute with only pause/resume state changes.
+   * Returns true if the core mute properties match (player, actor, reason, created, onlineOnly)
+   * but the state fields differ (expires, pausedRemaining, updated).
+   */
+  private boolean isSameMuteWithStateChange(PlayerMuteData newMute, PlayerMuteData existingMute) {
+    return newMute.getPlayer().getUUID().equals(existingMute.getPlayer().getUUID())
+        && newMute.getActor().getUUID().equals(existingMute.getActor().getUUID())
+        && newMute.getReason().equals(existingMute.getReason())
+        && newMute.getCreated() == existingMute.getCreated()
+        && newMute.isOnlineOnly() == existingMute.isOnlineOnly()
+        && newMute.isSilent() == existingMute.isSilent()
+        && newMute.isSoft() == existingMute.isSoft();
+  }
+
   private void newUnmutes() {
 
     CloseableIterator<PlayerMuteRecord> itr = null;
@@ -59,17 +86,18 @@ public class MuteSync extends BmRunnable {
       itr = plugin.getPlayerMuteRecordStorage().findUnmutes(lastChecked);
 
       while (itr.hasNext()) {
-        final PlayerMuteRecord mute = itr.next();
+        final PlayerMuteRecord record = itr.next();
 
-        if (!muteStorage.isMuted(mute.getPlayer().getUUID())) {
+        PlayerMuteData localMute = muteStorage.getMute(record.getPlayer().getUUID());
+        if (localMute == null) {
           continue;
         }
 
-        if (!mute.equalsMute(muteStorage.getMute(mute.getPlayer().getUUID()))) {
+        if (!record.equalsMute(localMute)) {
           continue;
         }
 
-        muteStorage.removeMute(mute.getPlayer().getUUID());
+        muteStorage.removeMute(record.getPlayer().getUUID());
 
       }
     } catch (SQLException e) {

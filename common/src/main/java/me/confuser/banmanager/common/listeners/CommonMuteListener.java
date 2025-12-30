@@ -21,9 +21,17 @@ public class CommonMuteListener {
     String broadcastPermission;
     Message message;
 
-    if (data.getExpires() == 0) {
+    if (data.getExpires() == 0 && !data.isOnlineOnly()) {
       broadcastPermission = "bm.notify.mute";
       message = Message.get("mute.notify");
+    } else if (data.isOnlineOnly()) {
+      broadcastPermission = "bm.notify.tempmute";
+      message = Message.get("tempmute.notifyOnline");
+      if (data.isPaused()) {
+        message.set("expires", DateUtils.formatDifference(data.getPausedRemaining()));
+      } else {
+        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+      }
     } else {
       broadcastPermission = "bm.notify.tempmute";
       message = Message.get("tempmute.notify");

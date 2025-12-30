@@ -62,6 +62,15 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
         );
       } catch (SQLException e) {
       }
+
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `onlineOnly` TINYINT(1) NOT NULL DEFAULT 0");
+      } catch (SQLException e) {
+      }
+      try {
+        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `pausedRemaining` BIGINT UNSIGNED NOT NULL DEFAULT 0");
+      } catch (SQLException e) {
+      }
     }
 
     loadAll();
@@ -86,7 +95,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
     StringBuilder sql = new StringBuilder();
 
     sql.append("SELECT t.id, p.id, p.name, p.ip, p.lastSeen, a.id, a.name, a.ip, a.lastSeen, t.reason,");
-    sql.append(" t.soft, t.expires, t.created, t.updated, t.silent");
+    sql.append(" t.soft, t.expires, t.created, t.updated, t.silent, t.onlineOnly, t.pausedRemaining");
     sql.append(" FROM ");
     sql.append(this.getTableInfo().getTableName());
     sql.append(" t LEFT JOIN ");
@@ -143,7 +152,9 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
             results.getBoolean(10),
             results.getLong(11),
             results.getLong(12),
-            results.getLong(13));
+            results.getLong(13),
+            results.getBoolean(15),
+            results.getLong(16));
 
         mutes.put(mute.getPlayer().getUUID(), mute);
       }
@@ -202,6 +213,16 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
     plugin.getServer().callEvent("PlayerMutedEvent", mute, mute.isSilent() || !plugin.getConfig().isBroadcastOnSync());
   }
 
+  /**
+   * Updates the in-memory mute state without firing PlayerMutedEvent.
+   * Used for syncing pause/resume state changes from other servers.
+   *
+   * @param mute the mute with updated state
+   */
+  public void updateMuteState(PlayerMuteData mute) {
+    mutes.put(mute.getPlayer().getUUID(), mute);
+  }
+
   public boolean mute(PlayerMuteData mute) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, mute.isSilent());
 
@@ -233,21 +254,65 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
     return unmute(mute, actor, reason, false);
   }
 
-  public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean delete) throws SQLException {
+  public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean skipRecord) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, reason);
 
     if (event.isCancelled()) {
       return false;
     }
 
-    TransactionHelper.runInTransaction(connectionSource, () -> {
-      delete(mute);
-      if (!delete) plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
-    });
+    int deleted = delete(mute);
 
+    // Always remove from cache to prevent stale entries
+    // (handles case where mute was already removed from DB but still in cache)
     mutes.remove(mute.getPlayer().getUUID());
 
+    if (deleted > 0) {
+      if (!skipRecord) {
+        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
+      }
+    }
+
+    // Return true if mute was deleted or if we at least cleared the cache
+    // This ensures the player is no longer considered muted
     return true;
+  }
+
+  /**
+   * Conditionally unmutes a mute only if it has truly expired (expires > 0 AND expires <= now).
+   * This prevents race conditions where a mute is paused (expires set to 0) between
+   * the ExpiresSync query and the delete operation.
+   * The delete and record creation are performed atomically in a transaction.
+   *
+   * @param mute the mute to expire
+   * @param actor the actor performing the unmute
+   * @return true if the mute was deleted, false if it was already paused/modified or event was cancelled
+   */
+  public boolean unmuteIfExpired(PlayerMuteData mute, PlayerData actor) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, "");
+
+    if (event.isCancelled()) {
+      return false;
+    }
+
+    final int[] rowsDeleted = {0};
+
+    TransactionHelper.runInTransaction(connectionSource, () -> {
+      String nowExpr = getDatabaseConfig().getTimestampNow();
+      String deleteSql = "DELETE FROM `" + getBmTableName() + "` WHERE `id` = ? AND `expires` > 0 AND `expires` <= " + nowExpr;
+      rowsDeleted[0] = executeRaw(deleteSql, String.valueOf(mute.getId()));
+
+      if (rowsDeleted[0] > 0) {
+        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, "");
+      }
+    });
+
+    if (rowsDeleted[0] > 0) {
+      mutes.remove(mute.getPlayer().getUUID());
+      return true;
+    }
+
+    return false;
   }
 
   public CloseableIterator<PlayerMuteData> findMutes(long fromTime) throws SQLException {
@@ -276,5 +341,49 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
         .eq("player_id", player).and()
         .ge("created", (System.currentTimeMillis() / 1000L) - cooldown)
         .countOf() > 0;
+  }
+
+  /**
+   * Pauses an online-only mute when the player goes offline.
+   * Uses conditional update with optimistic concurrency (updated timestamp) to prevent
+   * race conditions during fast server transfers.
+   *
+   * @param mute the mute to pause (must have current updated timestamp)
+   * @param remaining the remaining seconds to store
+   * @return true if the mute was paused, false if it was already paused, modified, or conditions not met
+   */
+  public boolean pauseMute(PlayerMuteData mute, long remaining) throws SQLException {
+    String nowExpr = getDatabaseConfig().getTimestampNow();
+    String sql = "UPDATE `" + getBmTableName() + "` " +
+        "SET `expires` = 0, `pausedRemaining` = ?, `updated` = " + nowExpr + " " +
+        "WHERE `id` = ? AND `pausedRemaining` = 0 AND `expires` > 0 AND `updated` = ?";
+    int rows = executeRaw(sql, String.valueOf(remaining), String.valueOf(mute.getId()), String.valueOf(mute.getUpdated()));
+    if (rows > 0) {
+      refresh(mute);
+      mutes.put(mute.getPlayer().getUUID(), mute);
+    }
+    return rows > 0;
+  }
+
+  /**
+   * Resumes an online-only mute when the player comes online.
+   * Uses conditional update with optimistic concurrency (updated timestamp) to prevent
+   * race conditions during fast server transfers.
+   * Uses database time (UNIX_TIMESTAMP()) to avoid JVM clock drift issues.
+   *
+   * @param mute the mute to resume (must have current updated timestamp)
+   * @return true if the mute was resumed, false if it was already active, modified, or conditions not met
+   */
+  public boolean resumeMute(PlayerMuteData mute) throws SQLException {
+    String nowExpr = getDatabaseConfig().getTimestampNow();
+    String sql = "UPDATE `" + getBmTableName() + "` " +
+        "SET `expires` = " + nowExpr + " + `pausedRemaining`, `pausedRemaining` = 0, `updated` = " + nowExpr + " " +
+        "WHERE `id` = ? AND `pausedRemaining` > 0 AND `updated` = ?";
+    int rows = executeRaw(sql, String.valueOf(mute.getId()), String.valueOf(mute.getUpdated()));
+    if (rows > 0) {
+      refresh(mute);
+      mutes.put(mute.getPlayer().getUUID(), mute);
+    }
+    return rows > 0;
   }
 }

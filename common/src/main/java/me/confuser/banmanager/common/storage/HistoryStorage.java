@@ -42,7 +42,7 @@ public class HistoryStorage {
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON pastActor_id = actor.id" +
             "    WHERE player_id = ?";
-    muteSql = "SELECT t.id, 'Mute' AS type, actor.name AS actor, pastCreated as created, reason, '' AS meta" +
+    muteSql = "SELECT t.id, 'Mute' AS type, actor.name AS actor, pastCreated as created, reason, CASE WHEN t.onlineOnly = 1 THEN '(online-only)' ELSE '' END AS meta" +
             "    FROM " + plugin.getPlayerMuteRecordStorage().getTableConfig().getTableName() + " t" +
             "    LEFT JOIN " + plugin.getPlayerStorage().getTableConfig()
                                      .getTableName() + " actor ON pastActor_id = actor.id" +

@@ -263,6 +263,16 @@ public class CommonJoinListener {
       }
 
       UUID id = player.getUniqueId();
+
+      PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(id);
+      if (mute != null && mute.isOnlineOnly() && mute.isPaused()) {
+        try {
+          plugin.getPlayerMuteStorage().resumeMute(mute);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
       CloseableIterator<PlayerNoteData> notesItr = null;
 
       try {
