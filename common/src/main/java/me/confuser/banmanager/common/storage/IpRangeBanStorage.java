@@ -8,7 +8,6 @@ import me.confuser.banmanager.common.google.guava.collect.Range;
 import me.confuser.banmanager.common.google.guava.collect.TreeRangeSet;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
@@ -19,7 +18,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.TransactionHelper;
@@ -29,17 +27,16 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
+public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
 
-  private BanManagerPlugin plugin;
-  private TreeRangeSet<IPAddress> ranges = TreeRangeSet.create();
+  // TreeRangeSet is not thread-safe, access must be synchronized via rangesLock
+  private final TreeRangeSet<IPAddress> ranges = TreeRangeSet.create();
+  private final Object rangesLock = new Object();
   private ConcurrentHashMap<Range<IPAddress>, IpRangeBanData> bans = new ConcurrentHashMap<>();
 
   public IpRangeBanStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanData>) plugin.getConfig().getLocalDb()
-        .getTable("ipRangeBans"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanData>) plugin.getConfig().getLocalDb()
+        .getTable("ipRangeBans"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -68,8 +65,8 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     plugin.getLogger().info("Loaded " + bans.size() + " ip range bans into memory");
   }
 
-  public IpRangeBanStorage(ConnectionSource connection, DatabaseTableConfig<?> ipRangeBans) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpRangeBanData>) ipRangeBans);
+  public IpRangeBanStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> ipRangeBans) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<IpRangeBanData>) ipRangeBans, plugin.getConfig().getLocalDb());
   }
 
   private void loadAll() throws SQLException {
@@ -135,7 +132,9 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
         Range<IPAddress> range = Range.closed(ban.getFromIp(), ban.getToIp());
 
         bans.put(range, ban);
-        ranges.add(range);
+        synchronized (rangesLock) {
+          ranges.add(range);
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -151,11 +150,15 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   }
 
   public boolean isBanned(IPAddress ip) {
-    return ranges.contains(ip);
+    synchronized (rangesLock) {
+      return ranges.contains(ip);
+    }
   }
 
   private Range getRange(IPAddress ip) {
-    return ranges.rangeContaining(ip);
+    synchronized (rangesLock) {
+      return ranges.rangeContaining(ip);
+    }
   }
 
   public boolean isBanned(Range range) {
@@ -200,7 +203,9 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   public void addBan(IpRangeBanData ban) {
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
 
-    ranges.add(range);
+    synchronized (rangesLock) {
+      ranges.add(range);
+    }
     bans.put(range, ban);
 
     plugin.getServer().callEvent("IpRangeBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
@@ -211,7 +216,9 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
   }
 
   public void removeBan(Range range) {
-    ranges.remove(range);
+    synchronized (rangesLock) {
+      ranges.remove(range);
+    }
     bans.remove(range);
   }
 
@@ -226,7 +233,9 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
 
     bans.put(range, ban);
-    ranges.add(range);
+    synchronized (rangesLock) {
+      ranges.add(range);
+    }
 
     plugin.getServer().callEvent("IpRangeBannedEvent", ban, event.isSilent());
 
@@ -251,7 +260,9 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
 
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
     bans.remove(range);
-    ranges.remove(range);
+    synchronized (rangesLock) {
+      ranges.remove(range);
+    }
 
     return true;
   }
@@ -261,14 +272,12 @@ public class IpRangeBanStorage extends BaseDaoImpl<IpRangeBanData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<IpRangeBanData, Integer> query = queryBuilder();
     Where<IpRangeBanData, Integer> where = query.where();
     where
-        .ge("created", checkTime)
+        .ge("created", fromTime)
         .or()
-        .ge("updated", checkTime);
+        .ge("updated", fromTime);
 
     query.setWhere(where);
 

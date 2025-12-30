@@ -21,15 +21,14 @@ public class Runner implements Runnable {
       if (!runner.shouldExecute()) continue;
 
       runner.beforeRun();
-
-      // Ensure runner exceptions are caught to still allow others to execute
       try {
         runner.run();
       } catch (Exception e) {
+        // Ensure runner exceptions are caught to still allow others to execute
         e.printStackTrace();
+      } finally {
+        runner.afterRun();
       }
-
-      runner.afterRun();
     }
   }
 

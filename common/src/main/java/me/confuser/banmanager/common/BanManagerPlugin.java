@@ -170,6 +170,7 @@ public class BanManagerPlugin {
         throw new Exception("Unable to connect to database, ensure local is enabled in config and your connection details are correct");
       }
 
+
       setupStorage();
     } catch (SQLException e) {
       e.printStackTrace();

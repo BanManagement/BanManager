@@ -43,7 +43,7 @@ public class SyncCommand extends CommonCommand {
 
       if (runner.isRunning()) continue;
 
-      runner.run();
+      runWithLifecycle(runner);
     }
   }
 
@@ -55,7 +55,20 @@ public class SyncCommand extends CommonCommand {
 
       if (runner.isRunning()) continue;
 
+      runWithLifecycle(runner);
+    }
+  }
+
+  /**
+   * Runs a BmRunnable with proper lifecycle management.
+   * Ensures beforeRun() captures DB checkpoint and afterRun() updates lastChecked.
+   */
+  private void runWithLifecycle(BmRunnable runner) {
+    runner.beforeRun();
+    try {
       runner.run();
+    } finally {
+      runner.afterRun();
     }
   }
 }

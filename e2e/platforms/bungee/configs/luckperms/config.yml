@@ -25,3 +25,5 @@ verbose: false
 # Don't check for updates in e2e tests
 update-task:
   enabled: false
+
+

@@ -1,9 +1,11 @@
 package me.confuser.banmanager.common.runnables;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.configs.DatabaseConfig;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerMuteData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerMuteRecordData;
+import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.storage.PlayerMuteStorage;
 import me.confuser.banmanager.common.storage.global.GlobalPlayerMuteRecordStorage;
@@ -23,6 +25,16 @@ public class GlobalMuteSync extends BmRunnable {
     localMuteStorage = plugin.getPlayerMuteStorage();
     muteStorage = plugin.getGlobalPlayerMuteStorage();
     recordStorage = plugin.getGlobalPlayerMuteRecordStorage();
+  }
+
+  @Override
+  protected DatabaseConfig getCheckpointDbConfig() {
+    return plugin.getConfig().getGlobalDb();
+  }
+
+  @Override
+  protected BaseDaoImpl<?, ?> getCheckpointDao() {
+    return muteStorage;
   }
 
   @Override

@@ -6,7 +6,6 @@ import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
@@ -17,7 +16,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.TransactionHelper;
@@ -28,16 +26,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
+public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
 
-  private BanManagerPlugin plugin;
   private ConcurrentHashMap<String, IpMuteData> mutes = new ConcurrentHashMap<>();
 
   public IpMuteStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<IpMuteData>) plugin.getConfig().getLocalDb()
-        .getTable("ipMutes"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<IpMuteData>) plugin.getConfig().getLocalDb()
+        .getTable("ipMutes"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -64,8 +59,8 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
     plugin.getLogger().info("Loaded " + mutes.size() + " ip mutes into memory");
   }
 
-  public IpMuteStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpMuteData>) table);
+  public IpMuteStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<IpMuteData>) table, plugin.getConfig().getLocalDb());
   }
 
   private void loadAll() throws SQLException {
@@ -218,14 +213,12 @@ public class IpMuteStorage extends BaseDaoImpl<IpMuteData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<IpMuteData, Integer> query = queryBuilder();
     Where<IpMuteData, Integer> where = query.where();
     where
-        .ge("created", checkTime)
+        .ge("created", fromTime)
         .or()
-        .ge("updated", checkTime);
+        .ge("updated", fromTime);
 
     query.setWhere(where);
 

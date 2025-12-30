@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
@@ -16,7 +15,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
@@ -26,15 +24,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
+public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
 
-  private BanManagerPlugin plugin;
   private ConcurrentHashMap<UUID, PlayerMuteData> mutes = new ConcurrentHashMap<>();
 
   public PlayerMuteStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerMuteData>) plugin.getConfig()
-        .getLocalDb().getTable("playerMutes"));
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerMuteData>) plugin.getConfig()
+        .getLocalDb().getTable("playerMutes"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -73,8 +69,8 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
     plugin.getLogger().info("Loaded " + mutes.size() + " mutes into memory");
   }
 
-  public PlayerMuteStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerMuteData>) table);
+  public PlayerMuteStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerMuteData>) table, plugin.getConfig().getLocalDb());
   }
 
   private void loadAll() throws SQLException {
@@ -259,14 +255,12 @@ public class PlayerMuteStorage extends BaseDaoImpl<PlayerMuteData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<PlayerMuteData, Integer> query = queryBuilder();
     Where<PlayerMuteData, Integer> where = query.where();
     where
-        .ge("created", checkTime)
+        .ge("created", fromTime)
         .or()
-        .ge("updated", checkTime);
+        .ge("updated", fromTime);
 
     query.setWhere(where);
 

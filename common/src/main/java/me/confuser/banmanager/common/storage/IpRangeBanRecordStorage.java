@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.IpRangeBanRecord;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.field.SqlType;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
@@ -14,16 +13,20 @@ import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 
-public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integer> {
+public class IpRangeBanRecordStorage extends BaseStorage<IpRangeBanRecord, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public IpRangeBanRecordStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanRecord>) plugin.getConfig().getLocalDb()
-        .getTable("ipRangeBanRecords"));
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<IpRangeBanRecord>) plugin.getConfig().getLocalDb()
+        .getTable("ipRangeBanRecords"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -54,8 +57,8 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
     }
   }
 
-  public IpRangeBanRecordStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<IpRangeBanRecord>) table);
+  public IpRangeBanRecordStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<IpRangeBanRecord>) table, plugin.getConfig().getLocalDb());
   }
 
   public void addRecord(IpRangeBanData ban, PlayerData actor, String reason) throws SQLException {
@@ -67,12 +70,10 @@ public class IpRangeBanRecordStorage extends BaseDaoImpl<IpRangeBanRecord, Integ
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<IpRangeBanRecord, Integer> query = queryBuilder();
     Where<IpRangeBanRecord, Integer> where = query.where();
 
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 

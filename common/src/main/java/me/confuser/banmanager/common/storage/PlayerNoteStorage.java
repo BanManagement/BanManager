@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -15,15 +14,16 @@ import me.confuser.banmanager.common.util.UUIDUtils;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
+public class PlayerNoteStorage extends BaseStorage<PlayerNoteData, Integer> {
 
-  private BanManagerPlugin plugin;
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public PlayerNoteStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerNoteData>) plugin.getConfig()
-        .getLocalDb().getTable("playerNotes"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerNoteData>) plugin.getConfig()
+        .getLocalDb().getTable("playerNotes"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -35,8 +35,8 @@ public class PlayerNoteStorage extends BaseDaoImpl<PlayerNoteData, Integer> {
     }
   }
 
-  public PlayerNoteStorage(ConnectionSource connection, DatabaseTableConfig<?> playerNotes) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerNoteData>) playerNotes);
+  public PlayerNoteStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> playerNotes) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerNoteData>) playerNotes, plugin.getConfig().getLocalDb());
   }
 
   public boolean addNote(PlayerNoteData data) throws SQLException {

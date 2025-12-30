@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerKickData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
@@ -12,14 +11,16 @@ import me.confuser.banmanager.common.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
-public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
-  private BanManagerPlugin plugin;
+public class PlayerKickStorage extends BaseStorage<PlayerKickData, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public PlayerKickStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerKickData>) plugin.getConfig()
-                                                                             .getLocalDb().getTable("playerKicks"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<PlayerKickData>) plugin.getConfig()
+                                                                             .getLocalDb().getTable("playerKicks"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -31,8 +32,8 @@ public class PlayerKickStorage extends BaseDaoImpl<PlayerKickData, Integer> {
     }
   }
 
-  public PlayerKickStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
-    super(connection, (DatabaseTableConfig<PlayerKickData>) table);
+  public PlayerKickStorage(BanManagerPlugin plugin, ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
+    super(plugin, connection, (DatabaseTableConfig<PlayerKickData>) table, plugin.getConfig().getLocalDb());
   }
 
   public boolean addKick(PlayerKickData data, boolean isSilent) throws SQLException {

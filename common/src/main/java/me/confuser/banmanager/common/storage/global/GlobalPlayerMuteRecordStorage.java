@@ -2,21 +2,25 @@ package me.confuser.banmanager.common.storage.global;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.global.GlobalPlayerMuteRecordData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
+import me.confuser.banmanager.common.storage.BaseStorage;
 
 import java.sql.SQLException;
 
-public class GlobalPlayerMuteRecordStorage extends BaseDaoImpl<GlobalPlayerMuteRecordData, Integer> {
+public class GlobalPlayerMuteRecordStorage extends BaseStorage<GlobalPlayerMuteRecordData, Integer> {
+
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public GlobalPlayerMuteRecordStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getGlobalConn(), (DatabaseTableConfig<GlobalPlayerMuteRecordData>) plugin.getConfig()
+    super(plugin, plugin.getGlobalConn(), (DatabaseTableConfig<GlobalPlayerMuteRecordData>) plugin.getConfig()
                                                                                          .getGlobalDb()
-                                                                                         .getTable("playerUnmutes"));
+                                                                                         .getTable("playerUnmutes"), plugin.getConfig().getGlobalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -33,10 +37,8 @@ public class GlobalPlayerMuteRecordStorage extends BaseDaoImpl<GlobalPlayerMuteR
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<GlobalPlayerMuteRecordData, Integer> query = queryBuilder();
-    query.setWhere(query.where().ge("created", checkTime));
+    query.setWhere(query.where().ge("created", fromTime));
 
     return query.iterator();
 

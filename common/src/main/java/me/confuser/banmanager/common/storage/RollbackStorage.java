@@ -2,25 +2,24 @@ package me.confuser.banmanager.common.storage;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.RollbackData;
-import me.confuser.banmanager.common.ormlite.dao.BaseDaoImpl;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.DateUtils;
 
 import java.sql.SQLException;
 
-public class RollbackStorage extends BaseDaoImpl<RollbackData, Integer> {
+public class RollbackStorage extends BaseStorage<RollbackData, Integer> {
 
-  private BanManagerPlugin plugin;
+  @Override
+  protected boolean hasUpdatedColumn() {
+    return false;
+  }
 
   public RollbackStorage(BanManagerPlugin plugin) throws SQLException {
-    super(plugin.getLocalConn(), (DatabaseTableConfig<RollbackData>) plugin.getConfig().getLocalDb()
-                                                                           .getTable("rollbacks"));
-
-    this.plugin = plugin;
+    super(plugin, plugin.getLocalConn(), (DatabaseTableConfig<RollbackData>) plugin.getConfig().getLocalDb()
+                                                                           .getTable("rollbacks"), plugin.getConfig().getLocalDb());
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
@@ -40,11 +39,9 @@ public class RollbackStorage extends BaseDaoImpl<RollbackData, Integer> {
       return iterator();
     }
 
-    long checkTime = fromTime + DateUtils.getTimeDiff();
-
     QueryBuilder<RollbackData, Integer> query = queryBuilder();
     Where<RollbackData, Integer> where = query.where();
-    where.ge("created", checkTime);
+    where.ge("created", fromTime);
 
     query.setWhere(where);
 
