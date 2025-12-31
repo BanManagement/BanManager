@@ -2,6 +2,7 @@ package me.confuser.banmanager.bukkit;
 
 import lombok.Getter;
 import me.confuser.banmanager.bukkit.listeners.*;
+import me.confuser.banmanager.bukkit.placeholders.PAPIPlaceholderResolver;
 import me.confuser.banmanager.bukkit.placeholders.PAPIPlaceholders;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -150,6 +151,8 @@ public class BMBukkitPlugin extends JavaPlugin {
 
     if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
       new PAPIPlaceholders(plugin).register();
+      plugin.setPlaceholderResolver(new PAPIPlaceholderResolver());
+      plugin.getLogger().info("PlaceholderAPI support enabled for messages");
     }
   }
 

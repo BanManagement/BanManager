@@ -2,8 +2,10 @@ package me.confuser.banmanager.common.util;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.PlaceholderResolver;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configs.Config;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
@@ -101,7 +103,13 @@ public class Message {
     if (player == null) return false;
     if (!player.isOnline()) return false;
 
-    player.sendMessage(message);
+    String resolved = message;
+    PlaceholderResolver resolver = BanManagerPlugin.getInstance().getPlaceholderResolver();
+    if (resolver != null) {
+      resolved = resolver.resolve(player, message);
+    }
+
+    player.sendMessage(resolved);
 
     return true;
   }
@@ -115,4 +123,3 @@ public class Message {
     return message;
   }
 }
-

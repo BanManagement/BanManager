@@ -148,6 +148,10 @@ public class BanManagerPlugin {
   @Getter
   private Runner syncRunner;
 
+  @Setter
+  @Getter
+  private PlaceholderResolver placeholderResolver;
+
   public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
     this.logger = logger;
