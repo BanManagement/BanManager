@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.mojang.serialization.JsonOps;
 
@@ -47,6 +49,10 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 public class FabricServer implements CommonServer {
+  // Pattern for &x&r&r&g&g&b&b format (Spigot-style hex)
+  private static final Pattern SPIGOT_HEX_PATTERN = Pattern.compile(
+      "&x(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])"
+  );
 
   private BanManagerPlugin plugin;
   @Getter
@@ -331,8 +337,26 @@ public class FabricServer implements CommonServer {
     }
   }
 
+  private static String preprocessSpigotHex(String message) {
+    Matcher matcher = SPIGOT_HEX_PATTERN.matcher(message);
+    StringBuffer result = new StringBuffer();
+    while (matcher.find()) {
+      String hex = matcher.group(1).substring(1) + matcher.group(2).substring(1) +
+                   matcher.group(3).substring(1) + matcher.group(4).substring(1) +
+                   matcher.group(5).substring(1) + matcher.group(6).substring(1);
+      matcher.appendReplacement(result, "&#" + hex);
+    }
+    matcher.appendTail(result);
+    return result.toString();
+  }
+
   public static Text formatMessage(String message) {
-    return formatMessage(LegacyComponentSerializer.legacy('&').deserialize(message));
+    String processed = preprocessSpigotHex(message);
+    return formatMessage(LegacyComponentSerializer.builder()
+        .character('&')
+        .hexColors()
+        .build()
+        .deserialize(processed));
   }
 
   public static Text formatMessage(Message message) {

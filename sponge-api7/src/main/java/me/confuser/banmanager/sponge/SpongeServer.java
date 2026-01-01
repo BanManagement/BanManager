@@ -5,6 +5,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.sponge.api.events.*;
 import org.spongepowered.api.Sponge;
@@ -74,7 +75,8 @@ public class SpongeServer implements CommonServer {
   }
 
   public static Text formatMessage(String message) {
-    return TextSerializers.FORMATTING_CODE.deserialize(message);
+    String json = ColorUtils.toDownsampledJson(message);
+    return TextSerializers.JSON.deserialize(json);
   }
 
   public CommonSender getConsoleSender() {

@@ -22,3 +22,6 @@ permissions:
   - bm.notify.duplicateips
   # Allow viewing player info
   - bm.info
+  # Command permissions for e2e testing
+  - bm.command.reload
+  - bm.command.*
