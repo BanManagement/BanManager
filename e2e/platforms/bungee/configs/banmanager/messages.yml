@@ -8,7 +8,7 @@
 messages:
   duplicateIP: '&cWarning: [player] has the same IP as the following banned players:\n&6[players]'
   duplicateIPAlts: '&cWarning: [player] has the same IP as the following players:\n&6[players]'
-  configReloaded: '&aConfiguration reloaded successfully!'
+  configReloaded: '&#00ff00Configuration &#ff5733reloaded &asuccessfully!'
   deniedNotify:
     player: '&cWarning: [player] attempted to join the server but was denied due to
       &4[reason]'
@@ -114,8 +114,8 @@ messages:
       permanent: '&6Currently muted for &4[reason]&6 by [actor] at [created]'
       temporary: '&6Currently muted for &4[reason]&6 by [actor] at [created] which
         expires in [expires]'
-      temporaryOnline: '&6Currently muted for &4[reason]&6 by [actor] at [created] which
-        expires in [expires] (online time)'
+      temporaryOnline: '&6Currently muted for &4[reason]&6 by [actor] at [created]
+        which expires in [expires] (online time)'
       temporaryOnlinePaused: '&6Currently muted for &4[reason]&6 by [actor] at [created]
         with [remaining] remaining (online time, paused)'
       dateTimeFormat: dd-MM-yyyy HH:mm:ss
@@ -192,10 +192,11 @@ messages:
     player:
       disallowed: '&6You have been temporarily muted for &4[reason] &6by [actor] which
         expires in [expires]'
-      disallowedOnline: '&6You have been temporarily muted for &4[reason] &6by [actor] which
-        expires in [expires] (online time)'
+      disallowedOnline: '&6You have been temporarily muted for &4[reason] &6by [actor]
+        which expires in [expires] (online time)'
     notify: '&6[player] has been temporarily muted for [expires] by [actor] for &4[reason]'
-    notifyOnline: '&6[player] has been temporarily muted for [expires] (online time) by [actor] for &4[reason]'
+    notifyOnline: '&6[player] has been temporarily muted for [expires] (online time)
+      by [actor] for &4[reason]'
     error:
       exists: '&c[player] is already muted'
   tempmuteip:

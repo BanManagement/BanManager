@@ -20,7 +20,6 @@ describe('Hex Color Support E2E Tests', () => {
       { timeout: 10000, interval: 500, message: 'Bot not in player list' }
     )
 
-    // Op the bot so it can run bmreload
     await opPlayer(BOT_USERNAME)
     await sleep(1000)
   }, 60000)
@@ -60,20 +59,22 @@ describe('Hex Color Support E2E Tests', () => {
     expect(reloadMessage?.message.toLowerCase()).toContain('reloaded')
     expect(reloadMessage?.message.toLowerCase()).toContain('successfully')
 
-    // Raw hex codes should be parsed, not displayed as text
+    // Raw hex codes (&#rrggbb format) should be parsed, not displayed as text
     expect(reloadMessage?.message).not.toContain('&#00ff00')
     expect(reloadMessage?.message).not.toContain('&#ff5733')
   }, 30000)
 
-  test('hex colors are downsampled to legacy codes', async () => {
-    // configReloaded mixes hex (&#00ff00, &#ff5733) and legacy (&a) codes
+  test('hex colors are processed correctly', async () => {
+    // configReloaded: '&#00ff00Configuration &#ff5733reloaded &asuccessfully!'
+    // - Bukkit/Bungee/Sponge: hex downsampled to legacy codes (&2, &c)
+    // - Velocity/Fabric: full hex preserved in JSON
     await bot.sendChat('/bmreload')
 
     await waitFor(
       () => bot.getSystemMessages().some(m =>
         m.message.toLowerCase().includes('successfully')
       ),
-      { timeout: 10000, interval: 200, message: 'Downsampled message not received' }
+      { timeout: 10000, interval: 200, message: 'Color message not received' }
     )
 
     const message = bot.getSystemMessages().find(m =>
@@ -82,15 +83,11 @@ describe('Hex Color Support E2E Tests', () => {
 
     expect(message).toBeDefined()
 
-    // Raw hex codes should be parsed
+    // Raw hex codes should always be parsed (never shown as text)
     expect(message?.message).not.toContain('&#00ff00')
     expect(message?.message).not.toContain('&#ff5733')
 
-    // Hex colors downsampled to nearest vanilla: &#00ff00 -> &2, &#ff5733 -> &c
-    expect(message?.message).toContain('&2')
-    expect(message?.message).toContain('&c')
-    expect(message?.message).toContain('&a')
-
+    // Text content preserved
     expect(message?.message.toLowerCase()).toContain('configuration')
     expect(message?.message.toLowerCase()).toContain('reloaded')
     expect(message?.message.toLowerCase()).toContain('successfully')
