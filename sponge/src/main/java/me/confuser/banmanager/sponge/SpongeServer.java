@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.sponge.api.events.*;
 import net.kyori.adventure.text.Component;
@@ -74,7 +75,8 @@ public class SpongeServer implements CommonServer {
     }
 
     public static Component formatMessage(String message) {
-        return formatMessage(LegacyComponentSerializer.legacy('&').deserialize(message));
+        String json = ColorUtils.toDownsampledJson(message);
+        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(json);
     }
 
     public static Component formatMessage(Message message) {

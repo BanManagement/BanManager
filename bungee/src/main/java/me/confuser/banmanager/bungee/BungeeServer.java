@@ -7,8 +7,8 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
+import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -224,7 +224,8 @@ public class BungeeServer implements CommonServer {
   }
 
   public static BaseComponent[] formatMessage(String message) {
-    return net.md_5.bungee.api.chat.TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
+    String json = ColorUtils.toDownsampledJson(message);
+    return ComponentSerializer.parse(json);
   }
 
   public static BaseComponent[] formatMessage(TextComponent message) {

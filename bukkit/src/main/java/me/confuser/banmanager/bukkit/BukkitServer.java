@@ -6,9 +6,9 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -87,8 +87,7 @@ public class BukkitServer implements CommonServer {
   }
 
   public static String formatMessage(String message) {
-    return ChatColor
-        .translateAlternateColorCodes('&', message.replace("\\n", "\n"));
+    return ColorUtils.toDownsampledLegacy(message);
   }
 
   @Override

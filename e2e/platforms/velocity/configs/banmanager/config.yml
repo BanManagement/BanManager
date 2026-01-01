@@ -1,4 +1,4 @@
-#
+# 
 # Aliases will be found and blocked automatically, e.g. msg will block tell
 debug: false
 databases:
@@ -63,13 +63,13 @@ databases:
       ipBans: bm_ip_ban_all
       ipUnbans: bm_ip_unban_all
 mutedCommandBlacklist:
-  - msg
+- msg
 softMutedCommandBlacklist:
-  - msg
+- msg
 duplicateIpCheck: false
 bypassDuplicateChecks:
-  - 0.0.0.0
-  - 127.0.0.0
+- 0.0.0.0
+- 127.0.0.0
 logKicks: false
 logIps: true
 displayNotifications: true
@@ -96,16 +96,16 @@ warningActions:
   enabled: true
   actions:
     '3':
-      - cmd: addnote [player] warning-action-triggered
-        delay: 0
+    - cmd: addnote [player] warning-action-triggered
+      delay: 0
 warningMute: false
 hooks:
   enabled: true
   events:
     mute:
       post:
-        - cmd: addnote [player] hook-fired-mute
-          delay: 2
+      - cmd: addnote [player] hook-fired-mute
+        delay: 2
 checkForUpdates: false
 offlineAutoComplete: true
 punishAlts: false
