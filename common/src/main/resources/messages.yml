@@ -54,6 +54,12 @@ messages:
   alts:
     header: 'Possible alts found:'
 
+  names:
+    header: 'Known names for [player]:'
+    row: '&e[name] &7(first: [firstSeen], last: [lastSeen])'
+    dateTimeFormat: 'dd-MM-yyyy'
+    none: '&7No name history found'
+
   export:
     error:
       inProgress: '&cAn export is already in progress, please wait'

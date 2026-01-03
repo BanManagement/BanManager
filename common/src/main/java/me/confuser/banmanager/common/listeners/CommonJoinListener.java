@@ -252,7 +252,11 @@ public class CommonJoinListener {
       return;
     }
 
-    if (plugin.getConfig().isLogIpsEnabled()) plugin.getPlayerHistoryStorage().create(player);
+    try {
+      plugin.getPlayerHistoryStorage().startSession(player, plugin.getConfig().isLogIpsEnabled());
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   public void onJoin(final CommonPlayer player) {

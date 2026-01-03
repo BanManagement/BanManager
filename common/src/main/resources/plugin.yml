@@ -259,6 +259,11 @@ commands:
     description: "BanManager utility commands"
     usage: "/bmutils help"
     permission: bm.command.bmutils
+  bmnames:
+    description: "View a player's name history"
+    usage: "/bmnames <player>"
+    aliases: [names]
+    permission: bm.command.bmnames
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
@@ -288,6 +293,8 @@ permissions:
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
+      bm.command.bminfo.names: true
+      bm.command.bmnames: true
       bm.command.banip: true
       bm.command.banip.override: true
       bm.command.baniprange: true
@@ -361,6 +368,8 @@ permissions:
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
+      bm.command.bminfo.names: true
+      bm.command.bmnames: true
       bm.command.banip: true
       bm.command.banip.override: true
       bm.command.baniprange: true
@@ -475,6 +484,7 @@ permissions:
       bm.command.bminfo.history.ips: true
       bm.command.bminfo.history.warnings: true
       bm.command.bminfo.history.notes: true
+      bm.command.bminfo.names: true
   bm.command.unban:
     description: Allows you to unban a player
     default: op
@@ -729,4 +739,10 @@ permissions:
     default: op
   bm.command.bmutils.duplicates:
     description: Allows resolving duplicate player names
+    default: op
+  bm.command.bmnames:
+    description: Allows you to view a player's name history
+    default: op
+  bm.command.bminfo.names:
+    description: Allows you to see player name history in bminfo
     default: op

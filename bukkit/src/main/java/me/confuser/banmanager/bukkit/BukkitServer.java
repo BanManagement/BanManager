@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -87,7 +88,7 @@ public class BukkitServer implements CommonServer {
   }
 
   public static String formatMessage(String message) {
-    return ColorUtils.toDownsampledLegacy(message);
+    return ChatColor.translateAlternateColorCodes('&', ColorUtils.toDownsampledLegacy(message));
   }
 
   @Override

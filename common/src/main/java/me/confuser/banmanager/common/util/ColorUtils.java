@@ -33,11 +33,10 @@ public class ColorUtils {
   /**
    * Convert Spigot-style &x&r&r&g&g&b&b to &#rrggbb format
    */
-  private static String preprocessSpigotHex(String message) {
+  public static String preprocessSpigotHex(String message) {
     Matcher matcher = SPIGOT_HEX_PATTERN.matcher(message);
     StringBuffer result = new StringBuffer();
     while (matcher.find()) {
-      // Extract each color char (removing the & prefix)
       String hex = matcher.group(1).substring(1) +
                    matcher.group(2).substring(1) +
                    matcher.group(3).substring(1) +
@@ -51,11 +50,27 @@ public class ColorUtils {
   }
 
   /**
+   * Preprocess message: converts \\n to newlines and Spigot hex to &#rrggbb format.
+   * Use this before passing to Adventure's LegacyComponentSerializer.
+   */
+  public static String preprocess(String message) {
+    return preprocessSpigotHex(message.replace("\\n", "\n"));
+  }
+
+  /**
+   * Strip all hex color codes (both &#rrggbb and &x&r&r&g&g&b&b formats).
+   * Useful for platforms that don't support hex colors.
+   */
+  public static String stripHexColors(String message) {
+    String stripped = SPIGOT_HEX_PATTERN.matcher(message).replaceAll("");
+    return stripped.replaceAll("&#[0-9a-fA-F]{6}", "");
+  }
+
+  /**
    * Parse message with hex color support (&#rrggbb and &x&r&r&g&g&b&b)
    */
   public static Component parse(String message) {
-    String processed = preprocessSpigotHex(message.replace("\\n", "\n"));
-    return HEX_PARSER.deserialize(processed);
+    return HEX_PARSER.deserialize(preprocess(message));
   }
 
   /**
