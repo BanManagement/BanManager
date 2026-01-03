@@ -10,6 +10,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.velocity.api.events.*;
 import net.kyori.adventure.text.Component;
@@ -20,16 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class VelocityServer implements CommonServer {
-  // Pattern for &x&r&r&g&g&b&b format (Spigot-style hex)
-  private static final Pattern SPIGOT_HEX_PATTERN = Pattern.compile(
-      "&x(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])(&[0-9a-fA-F])"
-  );
-
   private BanManagerPlugin plugin;
   private ProxyServer server;
 
@@ -234,26 +228,12 @@ public class VelocityServer implements CommonServer {
     return commonEvent;
   }
 
-  private static String preprocessSpigotHex(String message) {
-    Matcher matcher = SPIGOT_HEX_PATTERN.matcher(message);
-    StringBuffer result = new StringBuffer();
-    while (matcher.find()) {
-      String hex = matcher.group(1).substring(1) + matcher.group(2).substring(1) +
-                   matcher.group(3).substring(1) + matcher.group(4).substring(1) +
-                   matcher.group(5).substring(1) + matcher.group(6).substring(1);
-      matcher.appendReplacement(result, "&#" + hex);
-    }
-    matcher.appendTail(result);
-    return result.toString();
-  }
-
   public static @NotNull Component formatMessage(String message) {
-    String processed = preprocessSpigotHex(message);
     return LegacyComponentSerializer.builder()
         .character('&')
         .hexColors()
         .build()
-        .deserialize(processed);
+        .deserialize(ColorUtils.preprocess(message));
   }
 
   public static Component convert(me.confuser.banmanager.common.kyori.text.Component message) {

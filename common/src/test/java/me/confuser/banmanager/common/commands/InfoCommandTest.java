@@ -119,4 +119,38 @@ public class InfoCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new InfoCommandParser(plugin, args)));
     await().untilAsserted(() -> verify(sender).sendMessage("&c" + playerName + " not found, are you sure they exist?"));
   }
+
+  @Test
+  public void shouldShowKnownNames() throws SQLException {
+    PlayerData player = testUtils.createRandomPlayer();
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+
+    // Create a session record (which includes name)
+    testUtils.createSession(player, true);
+
+    when(sender.hasPermission("bm.command.bminfo.names")).thenReturn(true);
+
+    String[] args = new String[]{player.getName()};
+    assert (cmd.onCommand(sender, new InfoCommandParser(plugin, args)));
+
+    await().untilAsserted(() -> verify(sender, atLeastOnce()).sendMessage(contains("Known names")));
+  }
+
+  @Test
+  public void shouldHideNamesWithoutPermission() throws SQLException {
+    PlayerData player = testUtils.createRandomPlayer();
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+
+    // Create a session record (which includes name)
+    testUtils.createSession(player, true);
+
+    when(sender.hasPermission("bm.command.bminfo.names")).thenReturn(false);
+
+    String[] args = new String[]{player.getName()};
+    assert (cmd.onCommand(sender, new InfoCommandParser(plugin, args)));
+
+    await().untilAsserted(() -> verify(sender, never()).sendMessage(contains("Known names")));
+  }
 }

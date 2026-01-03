@@ -194,6 +194,60 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     assertFalse("Should allow login when count is within limit", loginDenied.get());
   }
 
+  @Test
+  public void shouldRecordSessionOnJoin() throws Exception {
+    // Create a player first
+    PlayerData existingPlayer = testUtils.createRandomPlayer();
+
+    // Create a fresh listener using the current plugin
+    CommonJoinListener testListener = new CommonJoinListener(plugin);
+
+    // Simulate join
+    testListener.onPreJoin(existingPlayer.getUUID(), existingPlayer.getName(), testIp);
+
+    // Session should be in DB and tracked in memory
+    assertTrue("Session should be active", plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()));
+
+    // Verify the session is in the database with correct data
+    java.util.List<me.confuser.banmanager.common.data.PlayerHistoryData> sessions = plugin.getPlayerHistoryStorage().queryForAll();
+    assertEquals("Should have one session", 1, sessions.size());
+    assertEquals("Recorded name should match", existingPlayer.getName(), sessions.get(0).getName());
+    assertNotNull("Session should have IP", sessions.get(0).getIp());
+
+    // Clean up - end the session
+    plugin.getPlayerHistoryStorage().endSession(existingPlayer.getUUID());
+  }
+
+  @Test
+  public void shouldRecordSessionWithoutIpWhenLogIpsDisabled() throws Exception {
+    DefaultConfig config = spy(plugin.getConfig());
+    when(config.isLogIpsEnabled()).thenReturn(false);
+
+    BanManagerPlugin spyPlugin = spy(plugin);
+    when(spyPlugin.getConfig()).thenReturn(config);
+    when(spyPlugin.getPlayerStorage()).thenReturn(plugin.getPlayerStorage());
+    when(spyPlugin.getPlayerHistoryStorage()).thenReturn(plugin.getPlayerHistoryStorage());
+
+    CommonJoinListener testListener = new CommonJoinListener(spyPlugin);
+
+    // Create a player first
+    PlayerData existingPlayer = testUtils.createRandomPlayer();
+
+    testListener.onPreJoin(existingPlayer.getUUID(), existingPlayer.getName(), testIp);
+
+    // Session should be active
+    assertTrue("Session should be active", plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()));
+
+    // Verify session has null IP in database
+    java.util.List<me.confuser.banmanager.common.data.PlayerHistoryData> sessions = plugin.getPlayerHistoryStorage().queryForAll();
+    assertEquals("Should have one session", 1, sessions.size());
+    assertEquals("Recorded name should match", existingPlayer.getName(), sessions.get(0).getName());
+    assertNull("Session should NOT have IP when logIps is disabled", sessions.get(0).getIp());
+
+    // Clean up - end the session
+    plugin.getPlayerHistoryStorage().endSession(existingPlayer.getUUID());
+  }
+
   // Helper methods
 
   private PlayerData createPlayerWithIp(String name, IPAddress ip) throws Exception {

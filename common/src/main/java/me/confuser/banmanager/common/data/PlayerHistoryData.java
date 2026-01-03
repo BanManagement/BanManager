@@ -14,28 +14,43 @@ public class PlayerHistoryData {
   @Getter
   @DatabaseField(generatedId = true)
   private int id;
+
   @Getter
   @DatabaseField(canBeNull = false, foreign = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   private PlayerData player;
+
   @Getter
-  @DatabaseField(index = true, persisterClass = IpAddress.class, canBeNull = false, columnDefinition = "VARBINARY(16) NOT NULL")
+  @DatabaseField(index = true, width = 16, columnDefinition = "VARCHAR(16) NOT NULL")
+  private String name;
+
+  @Getter
+  @DatabaseField(index = true, persisterClass = IpAddress.class, canBeNull = true, columnDefinition = "VARBINARY(16)")
   private IPAddress ip;
 
-  // Should always be database time
-  @Getter
-  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
-  private long join = System.currentTimeMillis() / 1000L;
   @Getter
   @Setter
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
-  private long leave = System.currentTimeMillis() / 1000L;
+  private long join = 0L;
+
+  @Getter
+  @Setter
+  @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
+  private long leave = 0L;
 
   PlayerHistoryData() {
-
   }
 
-  public PlayerHistoryData(PlayerData player) {
+  /**
+   * Create a session history record.
+   * Join time is set to the current time when the session is created.
+   *
+   * @param player The player data
+   * @param logIp Whether to record the IP address (false = ip will be null)
+   */
+  public PlayerHistoryData(PlayerData player, boolean logIp) {
     this.player = player;
-    this.ip = player.getIp();
+    this.name = player.getName();
+    this.ip = logIp ? player.getIp() : null;
+    this.join = System.currentTimeMillis() / 1000L;
   }
 }

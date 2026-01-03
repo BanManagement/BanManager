@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
+import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.util.DateUtils;
@@ -478,6 +479,31 @@ public class InfoCommand extends CommonCommand {
         }
       }
 
+      if (sender.hasPermission("bm.command.bminfo.names")) {
+        try {
+          List<PlayerNameSummary> playerNames = getPlugin().getPlayerHistoryStorage().getNamesSummary(player);
+
+          if (!playerNames.isEmpty()) {
+            messages.add(Message.get("names.header").set("player", player.getName()).toString());
+
+            String dateTimeFormat = Message.getString("names.dateTimeFormat");
+
+            if (!sender.isConsole()) {
+              messages.add(buildNamesComponent(playerNames, dateTimeFormat));
+            } else {
+              StringBuilder namesBuilder = new StringBuilder();
+              for (PlayerNameSummary nameData : playerNames) {
+                namesBuilder.append(nameData.getName()).append(", ");
+              }
+              if (namesBuilder.length() >= 2) namesBuilder.setLength(namesBuilder.length() - 2);
+              messages.add(namesBuilder.toString());
+            }
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
       if (sender.hasPermission("bm.command.bminfo.ipstats")) {
 
         long ipBanTotal = getPlugin().getIpBanRecordStorage().getCount(player.getIp());
@@ -617,5 +643,32 @@ public class InfoCommand extends CommonCommand {
     } finally {
       if (iterator != null) iterator.closeQuietly();
     }
+  }
+
+  private TextComponent buildNamesComponent(List<PlayerNameSummary> names, String dateTimeFormat) {
+    TextComponent.Builder message = Component.text();
+    int index = 0;
+
+    for (PlayerNameSummary nameData : names) {
+      String hoverText = Message.get("names.row")
+          .set("name", nameData.getName())
+          .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
+          .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+          .toString();
+
+      message.append(
+          Component.text(nameData.getName())
+              .color(NamedTextColor.YELLOW)
+              .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.getName()))
+              .hoverEvent(Component.text(hoverText)));
+
+      if (index != names.size() - 1) {
+        message.append(Component.text(", ").color(NamedTextColor.GRAY));
+      }
+
+      index++;
+    }
+
+    return message.build();
   }
 }

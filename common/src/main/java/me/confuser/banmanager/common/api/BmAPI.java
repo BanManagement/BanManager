@@ -11,6 +11,7 @@ import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -488,6 +489,57 @@ public class BmAPI {
   }
 
   /**
+   * Get all known names for a player (summary view with first/last seen).
+   * This method is not thread safe and should not be called on the main thread.
+   *
+   * @param uuid Player UUID
+   * @return List of PlayerNameSummary ordered by lastSeen descending (most recent first)
+   * @throws SQLException
+   */
+  public static List<PlayerNameSummary> getPlayerNames(UUID uuid) throws SQLException {
+    PlayerData player = getPlayer(uuid);
+
+    if (player == null) return new ArrayList<>();
+
+    return BanManagerPlugin.getInstance().getPlayerHistoryStorage().getNamesSummary(player);
+  }
+
+  /**
+   * Get the full session history for a player.
+   * This method is not thread safe and should not be called on the main thread.
+   *
+   * @param uuid Player UUID
+   * @param since Unix timestamp in seconds to get sessions since
+   * @param page Page number (0-indexed, 10 results per page)
+   * @return Iterator of PlayerHistoryData ordered by join descending (most recent first), null if player not found
+   * @throws SQLException
+   */
+  public static CloseableIterator<PlayerHistoryData> getPlayerHistory(UUID uuid, long since, int page) throws SQLException {
+    PlayerData player = getPlayer(uuid);
+
+    if (player == null) return null;
+
+    return BanManagerPlugin.getInstance().getPlayerHistoryStorage().getSince(player, since, page);
+  }
+
+  /**
+   * Get the name a player was using at a specific timestamp.
+   * This method is not thread safe and should not be called on the main thread.
+   *
+   * @param uuid Player UUID
+   * @param timestamp Unix timestamp in seconds
+   * @return The name at that time, or null if not found
+   * @throws SQLException
+   */
+  public static String getPlayerNameAt(UUID uuid, long timestamp) throws SQLException {
+    PlayerData player = getPlayer(uuid);
+
+    if (player == null) return null;
+
+    return BanManagerPlugin.getInstance().getPlayerHistoryStorage().getNameAt(player, timestamp);
+  }
+
+  /**
    * @param key The message config node within messages.yml, e.g. "ban.notify"
    * @return String
    */
@@ -503,4 +555,3 @@ public class BmAPI {
     return DateUtils.parseDateDiff(time, future);
   }
 }
-
