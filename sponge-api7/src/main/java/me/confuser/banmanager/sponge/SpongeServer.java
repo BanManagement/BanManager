@@ -76,7 +76,8 @@ public class SpongeServer implements CommonServer {
   }
 
   public static Text formatMessage(String message) {
-    return TextSerializers.FORMATTING_CODE.deserialize(ColorUtils.stripHexColors(message.replace("\\n", "\n")));
+    String processed = ColorUtils.stripHexColors(message.replace("\\n", "\n"));
+    return TextSerializers.formattingCode('&').deserialize(processed);
   }
 
   public static Text formatMessage(TextComponent message) {
