@@ -52,7 +52,7 @@ public class BMSpongePlugin {
     private String[] configs = new String[]{
         "config.yml",
         "console.yml",
-        "discord.yml",
+        "webhooks.yml",
         "exemptions.yml",
         "geoip.yml",
         "messages.yml",
@@ -205,8 +205,8 @@ public class BMSpongePlugin {
             Sponge.eventManager().registerListeners(pluginContainer, new ReportListener(plugin));
         }
 
-        if (plugin.getDiscordConfig().isHooksEnabled()) {
-            Sponge.eventManager().registerListeners(pluginContainer, new DiscordListener(plugin));
+        if (plugin.getWebhookConfig().isHooksEnabled()) {
+            Sponge.eventManager().registerListeners(pluginContainer, new WebhookListener(plugin));
         }
     }
 

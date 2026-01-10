@@ -46,7 +46,7 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
   private String[] configs = new String[] {
       "config.yml",
       "console.yml",
-      "discord.yml",
+      "webhooks.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
@@ -190,8 +190,8 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
       new ReportListener(plugin, this.server);
     }
 
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      new DiscordListener(plugin);
+    if (plugin.getWebhookConfig().isHooksEnabled()) {
+      new WebhookListener(plugin);
     }
   }
 

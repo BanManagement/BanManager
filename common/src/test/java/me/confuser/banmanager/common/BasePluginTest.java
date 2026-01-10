@@ -37,7 +37,7 @@ public abstract class BasePluginTest {
     String[] configs = new String[]{
         "config.yml",
         "console.yml",
-        "discord.yml",
+        "webhooks.yml",
         "exemptions.yml",
         "geoip.yml",
         "messages.yml",
