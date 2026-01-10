@@ -30,7 +30,7 @@ public class BMBungeePlugin extends Plugin {
       "config.yml",
       "bungeecord.yml",
       "console.yml",
-      "discord.yml",
+      "webhooks.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
@@ -166,8 +166,8 @@ public class BMBungeePlugin extends Plugin {
       registerEvent(new NoteListener(plugin));
     }
 
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      registerEvent(new DiscordListener(plugin));
+    if (plugin.getWebhookConfig().isHooksEnabled()) {
+      registerEvent(new WebhookListener(plugin));
     }
   }
 

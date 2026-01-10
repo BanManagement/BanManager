@@ -55,7 +55,7 @@ public class BMVelocityPlugin {
       "config.yml",
       "velocity.yml",
       "console.yml",
-      "discord.yml",
+      "webhooks.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
@@ -225,8 +225,8 @@ public class BMVelocityPlugin {
       registerEvent(new NoteListener(plugin));
     }
 
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      registerEvent(new DiscordListener(plugin));
+    if (plugin.getWebhookConfig().isHooksEnabled()) {
+      registerEvent(new WebhookListener(plugin));
     }
   }
 

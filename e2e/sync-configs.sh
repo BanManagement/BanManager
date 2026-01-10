@@ -10,7 +10,7 @@ COMMON_RESOURCES="$SCRIPT_DIR/../common/src/main/resources"
 # Files that are shared across platforms (don't need test-specific modifications)
 SHARED_FILES=(
     "console.yml"
-    "discord.yml"
+    "webhooks.yml"
     "exemptions.yml"
     "geoip.yml"
     "messages.yml"

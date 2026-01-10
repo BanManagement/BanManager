@@ -35,7 +35,7 @@ public class BMBukkitPlugin extends JavaPlugin {
   private String[] configs = new String[]{
       "config.yml",
       "console.yml",
-      "discord.yml",
+      "webhooks.yml",
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
@@ -145,8 +145,8 @@ public class BMBukkitPlugin extends JavaPlugin {
       registerEvent(new ReportListener(plugin));
     }
 
-    if (plugin.getDiscordConfig().isHooksEnabled()) {
-      registerEvent(new DiscordListener(plugin));
+    if (plugin.getWebhookConfig().isHooksEnabled()) {
+      registerEvent(new WebhookListener(plugin));
     }
 
     if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {

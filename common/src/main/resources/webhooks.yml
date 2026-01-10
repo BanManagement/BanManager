@@ -1,9 +1,34 @@
-# More info at https://banmanagement.com/docs/banmanager/configuration/discord-yml
+# Webhooks Configuration
+# More info at https://banmanagement.com/docs/banmanager/configuration/webhooks-yml
+#
+# Each punishment type can have multiple webhooks. Use the array format:
+#   ban:
+#     - name: discord
+#       url: 'https://discord.com/api/webhooks/...'
+#       method: POST
+#       headers: {}
+#       ignoreSilent: true
+#       payload: { ... }
+#     - name: custom-api
+#       url: 'https://my-api.com/events'
+#       method: POST
+#       headers:
+#         Authorization: 'Bearer [token]'
+#       payload: { ... }
+#
+# The legacy single-webhook format is also supported for backwards compatibility.
+#
+# Supported HTTP methods: GET, POST, PUT, PATCH, DELETE (defaults to POST)
+# Placeholders available in payload and headers:
+#   [player], [playerId], [actor], [actorId], [reason], [created], [expires], [id], [points]
+#
 hooks:
   enabled: false
   punishments:
     ban:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -21,6 +46,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     tempban:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -42,6 +69,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     unban:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -59,6 +88,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     banip:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -76,6 +107,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     tempbanip:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -97,6 +130,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     unbanip:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -114,6 +149,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     kick:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -131,6 +168,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     mute:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -148,6 +187,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     tempmute:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -169,6 +210,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     unmute:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -186,6 +229,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     tempwarning:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -210,6 +255,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     warning:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -231,6 +278,8 @@ hooks:
               url: 'https://crafthead.net/helm/[playerId]/128'
     report:
       url: 'https://discord.com/api/webhooks/changeMe'
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:

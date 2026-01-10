@@ -62,7 +62,7 @@ public class BanManagerPlugin {
   @Getter
   private GeoIpConfig geoIpConfig;
   @Getter
-  private DiscordConfig discordConfig;
+  private WebhookConfig webhookConfig;
 
   // Connections
   @Getter
@@ -220,7 +220,7 @@ public class BanManagerPlugin {
     if (metrics != null) {
       try {
         metrics.submitStorageType(config.getLocalDb().getStorageType());
-        metrics.submitDiscordMode(discordConfig.isHooksEnabled());
+        metrics.submitDiscordMode(webhookConfig.isHooksEnabled());
         metrics.submitGeoMode(geoIpConfig.isEnabled());
         metrics.submitGlobalMode(config.getGlobalDb().isEnabled());
         metrics.submitOnlineMode(config.isOnlineMode());
@@ -273,8 +273,8 @@ public class BanManagerPlugin {
     geoIpConfig = new GeoIpConfig(dataFolder, logger);
     geoIpConfig.load();
 
-    discordConfig = new DiscordConfig(dataFolder, logger);
-    discordConfig.load();
+    webhookConfig = new WebhookConfig(dataFolder, logger);
+    webhookConfig.load();
   }
 
   private void disableDatabaseLogging() {
