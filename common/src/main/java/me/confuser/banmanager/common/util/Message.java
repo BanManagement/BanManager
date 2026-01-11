@@ -54,10 +54,25 @@ public class Message {
 
   public static void load(YamlConfiguration config, CommonLogger commonLogger) {
     logger = commonLogger;
-    messages.clear();
 
+    if (config.getConfigurationSection("messages") == null) {
+      commonLogger.warning("Messages section not found in messages.yml, keeping previous messages");
+      return;
+    }
+
+    HashMap<String, String> newMessages = new HashMap<>(10);
     for (String key : config.getConfigurationSection("messages").getKeys(true)) {
-      messages.put(key, config.getString("messages." + key).replace("\\n", "\n"));
+      String value = config.getString("messages." + key);
+      if (value != null) {
+        newMessages.put(key, value.replace("\\n", "\n"));
+      }
+    }
+
+    if (!newMessages.isEmpty()) {
+      messages.clear();
+      messages.putAll(newMessages);
+    } else {
+      commonLogger.warning("No messages loaded from messages.yml, keeping previous messages");
     }
   }
 
