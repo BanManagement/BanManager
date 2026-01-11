@@ -253,28 +253,42 @@ public class BanManagerPlugin {
   }
 
   public void setupConfigs() {
-    new MessagesConfig(dataFolder, logger).load();
+    MessagesConfig newMessagesConfig = new MessagesConfig(dataFolder, logger);
+    if (!newMessagesConfig.load()) {
+      logger.warning("Failed to reload messages.yml, keeping previous messages");
+    }
 
-    config = new DefaultConfig(dataFolder, logger);
-    config.load();
+    config = reloadConfig(new DefaultConfig(dataFolder, logger), config, "config.yml");
+    consoleConfig = reloadConfig(new ConsoleConfig(dataFolder, logger), consoleConfig, "console.yml");
+    schedulesConfig = reloadConfig(new SchedulesConfig(dataFolder, logger), schedulesConfig, "schedules.yml");
+    exemptionsConfig = reloadConfig(new ExemptionsConfig(dataFolder, logger), exemptionsConfig, "exemptions.yml");
+    reasonsConfig = reloadConfig(new ReasonsConfig(dataFolder, logger), reasonsConfig, "reasons.yml");
+    geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger), geoIpConfig, "geoip.yml");
+    webhookConfig = reloadConfig(new WebhookConfig(dataFolder, logger), webhookConfig, "webhooks.yml");
+  }
 
-    consoleConfig = new ConsoleConfig(dataFolder, logger);
-    consoleConfig.load();
+  /**
+   * Attempts to load a new config. If loading succeeds, returns the new config.
+   * If loading fails and a previous config exists, logs a warning and returns the previous config.
+   * If loading fails and no previous config exists (first load), returns the new (failed) config.
+   *
+   * @param newConfig the newly created config to load
+   * @param currentConfig the current config (may be null on first load)
+   * @param fileName the config file name for logging
+   * @param <T> the config type
+   * @return the config to use
+   */
+  private <T extends Config> T reloadConfig(T newConfig, T currentConfig, String fileName) {
+    if (newConfig.load()) {
+      return newConfig;
+    }
 
-    schedulesConfig = new SchedulesConfig(dataFolder, logger);
-    schedulesConfig.load();
+    if (currentConfig != null) {
+      logger.warning("Failed to reload " + fileName + ", keeping previous settings");
+      return currentConfig;
+    }
 
-    exemptionsConfig = new ExemptionsConfig(dataFolder, logger);
-    exemptionsConfig.load();
-
-    reasonsConfig = new ReasonsConfig(dataFolder, logger);
-    reasonsConfig.load();
-
-    geoIpConfig = new GeoIpConfig(dataFolder, logger);
-    geoIpConfig.load();
-
-    webhookConfig = new WebhookConfig(dataFolder, logger);
-    webhookConfig.load();
+    return newConfig;
   }
 
   private void disableDatabaseLogging() {

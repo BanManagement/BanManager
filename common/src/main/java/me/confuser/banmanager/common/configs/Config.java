@@ -15,6 +15,8 @@ public abstract class Config {
   protected File dataFolder;
   @Getter
   protected CommonLogger logger;
+  @Getter
+  private boolean safeToSave = false;
 
   public Config(File dataFolder, File file, CommonLogger logger) {
     this.dataFolder = dataFolder;
@@ -46,18 +48,28 @@ public abstract class Config {
 
   /**
    * Lazy load
+   *
+   * @return true if the config was loaded successfully, false otherwise
    */
-  public void load() {
-    if (file != null) {
-      try {
-        onLoad(file);
-
-        afterLoad();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    } else {
+  public boolean load() {
+    if (file == null) {
       new InvalidConfigurationException("File cannot be null!").printStackTrace();
+      return false;
+    }
+
+    try {
+      if (!onLoad(file)) {
+        safeToSave = false;
+        return false;
+      }
+
+      afterLoad();
+      safeToSave = true;
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      safeToSave = false;
+      return false;
     }
   }
 
@@ -65,21 +77,33 @@ public abstract class Config {
 
   public abstract void onSave();
 
-  public void onLoad(File file) throws Exception {
+  /**
+   * Load configuration from file
+   *
+   * @param file the file to load
+   * @return true if the config was loaded successfully, false otherwise
+   * @throws Exception if the file does not exist
+   */
+  public boolean onLoad(File file) throws Exception {
     if (!file.exists()) {
       throw new Exception("File " + file.getName() + " does not exist");
     }
 
     try {
       conf.load(file);
+      return true;
     } catch (InvalidConfigurationException e) {
       logger.severe("Invalid yaml file " + file.getName());
-
-      return;
+      return false;
     }
   }
 
   public void save() {
+    if (!safeToSave) {
+      logger.warning("Skipping save for " + file.getName() + " - config was not loaded successfully");
+      return;
+    }
+
     onSave();
 
     try {
