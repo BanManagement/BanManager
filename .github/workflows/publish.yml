@@ -20,8 +20,9 @@ jobs:
         id: version
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.tag#v }}" >> $GITHUB_OUTPUT
-            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+            TAG="${{ github.event.inputs.tag }}"
+            echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
+            echo "TAG=$TAG" >> $GITHUB_OUTPUT
           else
             echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
             echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
