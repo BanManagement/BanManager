@@ -1,123 +1,200 @@
-name: Publish to Maven Central
+name: Publish Release
 
 on:
-  workflow_run:
-    workflows: ["Java CI", "E2E Tests"]
-    types: [completed]
-    branches: [master]
-
-permissions:
-  contents: read
-  actions: read
-
-# Prevent duplicate publish attempts for the same commit
-concurrency:
-  group: publish-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: false
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g., v7.10.0)"
+        required: true
+        type: string
 
 jobs:
-  publish:
+  download-assets:
     runs-on: ubuntu-latest
-    # Only consider successful completions on master from push events
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'master' &&
-      github.event.workflow_run.event == 'push'
-
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
     steps:
-      - name: Gate on Java CI + E2E success for same commit
-        id: gate
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const sha = context.payload.workflow_run.head_sha;
-            console.log(`Checking workflow status for commit: ${sha}`);
-
-            async function getWorkflowStatus(workflowFile) {
-              const runs = await github.rest.actions.listWorkflowRuns({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: workflowFile,
-                head_sha: sha,
-                per_page: 20,
-              });
-
-              const anySuccess = runs.data.workflow_runs.some(r => r.conclusion === 'success');
-              const anyInProgress = runs.data.workflow_runs.some(r => r.status !== 'completed');
-              return { anySuccess, anyInProgress, count: runs.data.workflow_runs.length };
-            }
-
-            const build = await getWorkflowStatus('build.yml');
-            const e2e = await getWorkflowStatus('e2e.yml');
-
-            console.log(`Java CI: success=${build.anySuccess}, inProgress=${build.anyInProgress}, runs=${build.count}`);
-            console.log(`E2E Tests: success=${e2e.anySuccess}, inProgress=${e2e.anyInProgress}, runs=${e2e.count}`);
-
-            if (!build.anySuccess || !e2e.anySuccess) {
-              // Not ready yet - exit gracefully so the next workflow completion can trigger publish
-              if (build.anyInProgress || e2e.anyInProgress) {
-                core.notice(`Not publishing yet for ${sha} - workflows still in progress. buildSuccess=${build.anySuccess}, e2eSuccess=${e2e.anySuccess}`);
-              } else {
-                core.notice(`Not publishing for ${sha} - one or more workflows failed. buildSuccess=${build.anySuccess}, e2eSuccess=${e2e.anySuccess}`);
-              }
-              core.setOutput('ready', 'false');
-              return;
-            }
-
-            console.log(`Both workflows passed for ${sha} - proceeding with publish`);
-            core.setOutput('ready', 'true');
-
-      - uses: actions/checkout@v4
-        if: steps.gate.outputs.ready == 'true'
-        with:
-          # Checkout the exact commit that was tested, not latest master
-          ref: ${{ github.event.workflow_run.head_sha }}
-
-      # Set up JDK 17 for Fabric 1.20.x builds (Gradle toolchain will use this)
-      - name: Set up JDK 17
-        if: steps.gate.outputs.ready == 'true'
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: "temurin"
-
-      # Set up JDK 21 as the primary JDK
-      - name: Set up JDK 21
-        if: steps.gate.outputs.ready == 'true'
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: "temurin"
-
-      - name: Setup Gradle
-        if: steps.gate.outputs.ready == 'true'
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-read-only: true
-
-      - name: Cache Loom
-        if: steps.gate.outputs.ready == 'true'
-        uses: actions/cache@v4
-        with:
-          path: |
-            .gradle/loom-cache
-          key: ${{ runner.os }}-loom-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-loom-
-
-      - name: Publish to Maven Central
-        if: steps.gate.outputs.ready == 'true'
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEUSERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPEPASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
+      - name: Get version from tag
+        id: version
         run: |
-          VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
-          echo "Publishing version: $VERSION (commit: ${{ github.event.workflow_run.head_sha }})"
-          if [[ "$VERSION" == *"SNAPSHOT"* ]]; then
-            # SNAPSHOT: publish to Central Portal snapshot repository
-            ./gradlew publishToMavenCentral
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.tag#v }}" >> $GITHUB_OUTPUT
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
           else
-            # Release: publish and release to Maven Central
-            ./gradlew publishAndReleaseToMavenCentral
+            echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Download release assets
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ steps.version.outputs.TAG }}
+          fileName: "*.jar"
+          out-file-path: "release-jars"
+
+      - name: List downloaded files
+        run: ls -la release-jars/
+
+      - name: Upload artifacts for other jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-jars
+          path: release-jars/
+          retention-days: 1
+
+  publish-modrinth:
+    needs: download-assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release jars
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jars
+          path: release-jars
+
+      - name: Get release body
+        id: release
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: |
+            release-jars/BanManagerFabric-mc1.20.1.jar
+            release-jars/BanManagerFabric-mc1.21.1.jar
+            release-jars/BanManagerFabric-mc1.21.4.jar
+          name: "BanManager v${{ needs.download-assets.outputs.version }}"
+          version: ${{ needs.download-assets.outputs.version }}
+          version-type: release
+          changelog: ${{ steps.release.outputs.body }}
+          loaders: fabric
+          game-versions: |
+            1.20.1
+            1.21.1
+            1.21.4
+          game-version-filter: releases
+          dependencies: |
+            fabric-api@* (required)
+
+  publish-curseforge:
+    needs: download-assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release jars
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jars
+          path: release-jars
+
+      - name: Get release body
+        id: release
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+
+      - name: Publish to CurseForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: release-jars/BanManagerBukkit.jar
+          name: "BanManager v${{ needs.download-assets.outputs.version }}"
+          version: ${{ needs.download-assets.outputs.version }}
+          version-type: release
+          changelog: ${{ steps.release.outputs.body }}
+          loaders: |
+            bukkit
+            spigot
+            paper
+          game-versions: |
+            1.17.1
+            1.18.2
+            1.19.4
+            1.20.1
+            1.20.4
+            1.20.6
+            1.21
+            1.21.1
+            1.21.4
+          game-version-filter: releases
+
+  publish-hangar:
+    needs: download-assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release jars
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jars
+          path: release-jars
+
+      - name: Get release body
+        id: release
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+
+      - name: Publish to Hangar
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          hangar-id: ${{ vars.HANGAR_PROJECT_ID }}
+          hangar-token: ${{ secrets.HANGAR_TOKEN }}
+          files: |
+            release-jars/BanManagerBukkit.jar
+            release-jars/BanManagerVelocity.jar
+          name: "BanManager v${{ needs.download-assets.outputs.version }}"
+          version: ${{ needs.download-assets.outputs.version }}
+          version-type: release
+          changelog: ${{ steps.release.outputs.body }}
+          loaders: |
+            paper
+            spigot
+            bukkit
+            velocity
+          game-versions: |
+            1.17.1
+            1.18.2
+            1.19.4
+            1.20.1
+            1.20.4
+            1.20.6
+            1.21
+            1.21.1
+            1.21.4
+          game-version-filter: releases
+
+  publish-sponge-ore:
+    needs: download-assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release jars
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jars
+          path: release-jars
+
+      - name: Publish Sponge API 8+ to Ore
+        run: |
+          curl -X POST "https://ore.spongepowered.org/api/v2/projects/BanManager/versions" \
+            -H "Authorization: OreApi apikey=${{ secrets.ORE_API_KEY }}" \
+            -F "plugin-info={\"recommended\": true, \"createForumPost\": false}" \
+            -F "plugin-file=@release-jars/BanManagerSponge.jar"
+
+      - name: Publish Sponge API 7 to Ore
+        run: |
+          curl -X POST "https://ore.spongepowered.org/api/v2/projects/BanManager/versions" \
+            -H "Authorization: OreApi apikey=${{ secrets.ORE_API_KEY }}" \
+            -F "plugin-info={\"recommended\": false, \"createForumPost\": false}" \
+            -F "plugin-file=@release-jars/BanManagerSponge7.jar"
