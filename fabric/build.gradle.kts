@@ -41,7 +41,9 @@ java {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    if (project.hasProperty("signingInMemoryKey")) {
+        signAllPublications()
+    }
 
     configure(JavaLibrary(
         javadocJar = JavadocJar.Javadoc(),

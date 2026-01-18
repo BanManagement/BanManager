@@ -182,7 +182,9 @@ fun Project.applyLibrariesConfiguration() {
     // Configure vanniktech plugin for Central Portal publishing
     configure<MavenPublishBaseExtension> {
         publishToMavenCentral()
-        signAllPublications()
+        if (project.hasProperty("signingInMemoryKey")) {
+            signAllPublications()
+        }
     }
 }
 
