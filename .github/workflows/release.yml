@@ -64,22 +64,19 @@ jobs:
           body: |
             ## What's New
 
-            <!-- Write your release notes here -->
+            <!-- Write your release notes here using - prefix for each item -->
+            <!-- Use **bold** for emphasis, it will render on the website -->
 
             ---
 
-            ### Downloads
-
-            | Platform | Download |
-            |----------|----------|
-            | Bukkit/Spigot/Paper | `BanManagerBukkit.jar` |
-            | BungeeCord | `BanManagerBungeeCord.jar` |
-            | Velocity | `BanManagerVelocity.jar` |
-            | Sponge API 8+ | `BanManagerSponge.jar` |
-            | Sponge API 7 | `BanManagerSponge7.jar` |
-            | Fabric 1.20.1 | `BanManagerFabric-mc1.20.1.jar` |
-            | Fabric 1.21.1 | `BanManagerFabric-mc1.21.1.jar` |
-            | Fabric 1.21.4 | `BanManagerFabric-mc1.21.4.jar` |
+            [Download Bukkit](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerBukkit.jar)
+            [Download BungeeCord](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerBungeeCord.jar)
+            [Download Velocity](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerVelocity.jar)
+            [Download Sponge](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerSponge.jar)
+            [Download Sponge 7](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerSponge7.jar)
+            [Download Fabric 1.20.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.20.1.jar)
+            [Download Fabric 1.21.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.1.jar)
+            [Download Fabric 1.21.4](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.4.jar)
           files: |
             bukkit/build/libs/BanManagerBukkit.jar
             bungee/build/libs/BanManagerBungeeCord.jar
