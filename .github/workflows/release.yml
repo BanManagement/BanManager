@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -56,21 +56,15 @@ jobs:
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog
-        id: changelog
-        uses: mikepenz/release-changelog-builder-action@v5
-        with:
-          configuration: ".github/changelog-config.json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create GitHub Draft Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           name: "v${{ steps.version.outputs.VERSION }}"
           body: |
-            ${{ steps.changelog.outputs.changelog }}
+            ## What's New
+
+            <!-- Write your release notes here -->
 
             ---
 
@@ -92,6 +86,6 @@ jobs:
             velocity/build/libs/BanManagerVelocity.jar
             sponge/build/libs/BanManagerSponge.jar
             sponge-api7/build/libs/BanManagerSponge7.jar
-            fabric/build/libs/BanManagerFabric-mc1.20.1.jar
-            fabric/build/libs/BanManagerFabric-mc1.21.1.jar
-            fabric/build/libs/BanManagerFabric-mc1.21.4.jar
+            fabric/versions/1.20.1/build/libs/BanManagerFabric-mc1.20.1.jar
+            fabric/versions/1.21.1/build/libs/BanManagerFabric-mc1.21.1.jar
+            fabric/versions/1.21.4/build/libs/BanManagerFabric-mc1.21.4.jar
