@@ -122,7 +122,7 @@ dependencies {
 tasks.named<Copy>("processResources") {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-    val internalVersion = project.ext["internalVersion"]
+    val internalVersion = project.ext["internalVersion"] as String
     val mixinJavaVersion = "JAVA_$javaVersion"
     val commandApiModule = if (isPreV21) "fabric-command-api-v1" else "fabric-command-api-v2"
 

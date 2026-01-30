@@ -106,7 +106,7 @@ java {
 }
 
 tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
+    val internalVersion = project.ext["internalVersion"] as String
 
     inputs.property("internalVersion", internalVersion)
 

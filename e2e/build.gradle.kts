@@ -53,11 +53,11 @@ fun createPlatformTestTask(
         )
 
         doLast {
-            exec {
+            providers.exec {
                 workingDir = file("platforms/$platformDir")
                 commandLine("docker", "compose", "down", "-v")
                 isIgnoreExitValue = true
-            }
+            }.result.get()
         }
     }
 }
@@ -463,11 +463,11 @@ tasks.named("clean") {
     doLast {
         // Clean up all platform Docker resources
         listOf("bukkit", "fabric", "sponge", "sponge7", "velocity", "bungee").forEach { platform ->
-            exec {
+            providers.exec {
                 workingDir = file("platforms/$platform")
                 commandLine("docker", "compose", "down", "-v", "--rmi", "local")
                 isIgnoreExitValue = true
-            }
+            }.result.get()
         }
     }
 }

@@ -39,9 +39,9 @@ stonecutter {
 
     shared {
         // Define version mappings for Fabric
-        vers("1.20.1", "1.20.1")
-        vers("1.21.1", "1.21.1")
-        vers("1.21.4", "1.21.4")
+        version("1.20.1", "1.20.1")
+        version("1.21.1", "1.21.1")
+        version("1.21.4", "1.21.4")
     }
 
     create(":fabric")
