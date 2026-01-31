@@ -41,10 +41,10 @@ public class JoinListener {
 
     ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
       listener.onJoin(
-          new FabricPlayer(handler.getPlayer(), handler.getPlayer().getServer(), plugin.getConfig().isOnlineMode()));
+          new FabricPlayer(handler.getPlayer(), server, plugin.getConfig().isOnlineMode()));
 
       listener.onPlayerLogin(
-          new FabricPlayer(handler.getPlayer(), handler.getPlayer().getServer(), plugin.getConfig().isOnlineMode()),
+          new FabricPlayer(handler.getPlayer(), server, plugin.getConfig().isOnlineMode()),
           new LoginHandler(handler.getPlayer()));
     });
   }

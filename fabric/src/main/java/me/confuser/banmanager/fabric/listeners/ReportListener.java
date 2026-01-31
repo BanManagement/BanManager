@@ -55,8 +55,12 @@ public class ReportListener {
 
     plugin.getPlayerReportLocationStorage()
         .create(new PlayerReportLocationData(report, playerData,
-            player.getWorld().getRegistryKey().getValue().toString(), player.getX(), player.getY(), player
-                .getZ(),
+                //? if >=1.21.11 {
+                player.getEntityWorld().getRegistryKey().getValue().toString(),
+                //? } else {
+                /*player.getWorld().getRegistryKey().getValue().toString(),
+                *///?}
+                player.getX(), player.getY(), player.getZ(),
             player.getPitch(), player.getYaw()));
   }
 }

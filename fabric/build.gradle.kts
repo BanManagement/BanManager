@@ -114,7 +114,12 @@ dependencies {
         modImplementation(fabricApi.module("fabric-command-api-v2", fabricApiVersion))
     }
 
-    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
+    if (mcVersion.second <= 21 && mcVersion.third < 6) {
+        modImplementation("me.lucko:fabric-permissions-api:0.3.1")
+    } else {
+        val permissionsVersion: String by project.extra { property("permissionsAPI") as String }
+        modImplementation("me.lucko:fabric-permissions-api:$permissionsVersion")
+    }
 
     api(project(":BanManagerCommon"))
 }

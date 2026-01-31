@@ -42,6 +42,7 @@ stonecutter {
         version("1.20.1", "1.20.1")
         version("1.21.1", "1.21.1")
         version("1.21.4", "1.21.4")
+        version("1.21.11", "1.21.11")
     }
 
     create(":fabric")
