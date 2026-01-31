@@ -157,8 +157,8 @@ tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     archiveBaseName.set("BanManagerFabric")
-    archiveClassifier.set("mc$minecraftVersion")
-    archiveVersion.set("")
+    archiveClassifier.set("dev")
+    archiveVersion.set("mc$minecraftVersion")
 
     dependencies {
         include(dependency(":BanManagerCommon"))
