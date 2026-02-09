@@ -53,4 +53,21 @@ public class PlayerHistoryData {
     this.ip = logIp ? player.getIp() : null;
     this.join = System.currentTimeMillis() / 1000L;
   }
+
+  /**
+   * Create a session history record with an explicit IP address and timestamps.
+   * Useful for importing data where the IP and timestamps are known.
+   *
+   * @param player The player data
+   * @param ip The IP address to record (can be null)
+   * @param join The join timestamp in seconds
+   * @param leave The leave timestamp in seconds
+   */
+  public PlayerHistoryData(PlayerData player, IPAddress ip, long join, long leave) {
+    this.player = player;
+    this.name = player.getName();
+    this.ip = ip;
+    this.join = join;
+    this.leave = leave;
+  }
 }

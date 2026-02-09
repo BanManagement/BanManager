@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.gson.stream.JsonReader;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.storage.conversion.AdvancedBan;
 import me.confuser.banmanager.common.storage.conversion.H2;
+import me.confuser.banmanager.common.storage.conversion.LiteBans;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
@@ -32,6 +33,7 @@ public class ImportCommand extends CommonCommand {
     add("ips");
     add("advancedban");
     add("h2");
+    add("litebans");
   }};
 
   public ImportCommand(BanManagerPlugin plugin) {
@@ -84,6 +86,16 @@ public class ImportCommand extends CommonCommand {
         finishedMessage = Message.getString("import.h2.finished");
 
         new H2(getPlugin(), parser.args[1]);
+      } else if (parser.args[0].equals("litebans")) {
+        if (parser.args.length < 5) {
+          sender.sendMessage("/bmimport litebans <host> <port> <databaseName> <username> [password] [tablePrefix]");
+          return;
+        }
+
+        sender.sendMessage(Message.getString("import.litebans.started"));
+        finishedMessage = Message.getString("import.litebans.finished");
+
+        new LiteBans(getPlugin(), parser.args);
       }
 
       if (sender != null) {
