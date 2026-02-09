@@ -85,6 +85,9 @@ messages:
     h2:
       started: '&aH2 import started'
       finished: '&aH2 import finished, please restart the server'
+    litebans:
+      started: '&aLiteBans import started'
+      finished: '&aLiteBans import finished'
 
   info:
     error:
