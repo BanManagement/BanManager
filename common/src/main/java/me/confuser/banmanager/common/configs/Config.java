@@ -63,8 +63,9 @@ public abstract class Config {
         return false;
       }
 
-      afterLoad();
+      // Allow configs to persist migrations/defaults during afterLoad().
       safeToSave = true;
+      afterLoad();
       return true;
     } catch (Exception e) {
       e.printStackTrace();

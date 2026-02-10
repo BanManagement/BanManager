@@ -245,6 +245,22 @@ public class ConfigReloadTest extends BasePluginTest {
     assertTrue("File should contain modified value", fileContent.contains("modifiedValue"));
   }
 
+  @Test
+  public void saveInAfterLoadPersistsChanges() throws IOException {
+    File configFile = new File(temporaryFolder.getRoot(), "self-save.yml");
+    try (FileWriter writer = new FileWriter(configFile)) {
+      writer.write("key: originalValue\n");
+    }
+
+    CommonLogger logger = new TestLogger();
+    SelfSavingTestConfig config = new SelfSavingTestConfig(temporaryFolder.getRoot(), configFile, logger);
+
+    assertTrue("Load should succeed for valid YAML", config.load());
+
+    String fileContent = new String(Files.readAllBytes(configFile.toPath()));
+    assertTrue("afterLoad() save should persist updated value", fileContent.contains("updatedInAfterLoad"));
+  }
+
   /**
    * Test config that tracks save behavior
    */
@@ -256,6 +272,26 @@ public class ConfigReloadTest extends BasePluginTest {
     @Override
     public void afterLoad() {
       // No-op
+    }
+
+    @Override
+    public void onSave() {
+      // No-op
+    }
+  }
+
+  /**
+   * Test config that mutates and saves during afterLoad.
+   */
+  private static class SelfSavingTestConfig extends Config {
+    public SelfSavingTestConfig(File dataFolder, File file, CommonLogger logger) {
+      super(dataFolder, file, logger);
+    }
+
+    @Override
+    public void afterLoad() {
+      conf.set("key", "updatedInAfterLoad");
+      save();
     }
 
     @Override

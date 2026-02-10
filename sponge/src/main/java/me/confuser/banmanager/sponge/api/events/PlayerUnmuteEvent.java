@@ -26,7 +26,3 @@ public class PlayerUnmuteEvent extends SilentCancellableEvent {
         this.reason = reason;
     }
 }
-
-
-
-

@@ -25,7 +25,3 @@ public class IpUnmutedEvent extends SilentCancellableEvent {
         this.reason = reason;
     }
 }
-
-
-
-

@@ -26,7 +26,3 @@ public class PlayerUnbanEvent extends SilentCancellableEvent {
         this.reason = reason;
     }
 }
-
-
-
-
