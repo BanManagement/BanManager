@@ -25,7 +25,3 @@ public class IpUnbanEvent extends SilentCancellableEvent {
         this.reason = reason;
     }
 }
-
-
-
-
