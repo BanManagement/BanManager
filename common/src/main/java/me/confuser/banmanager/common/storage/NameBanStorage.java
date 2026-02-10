@@ -176,7 +176,11 @@ public class NameBanStorage extends BaseStorage<NameBanData, Integer> {
   }
 
   public boolean unban(NameBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("NameUnbanEvent", ban, actor, reason);
+    return unban(ban, actor, reason, delete, false);
+  }
+
+  public boolean unban(NameBanData ban, PlayerData actor, String reason, boolean delete, boolean silent) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("NameUnbanEvent", ban, actor, reason, silent);
 
     if (event.isCancelled()) {
       return false;

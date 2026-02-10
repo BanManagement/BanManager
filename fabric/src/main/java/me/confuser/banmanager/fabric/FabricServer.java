@@ -138,8 +138,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "PlayerUnbanEvent":
-        BanManagerEvents.PLAYER_UNBAN_EVENT.invoker().onPlayerUnban((PlayerBanData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.PLAYER_UNBAN_EVENT.invoker().onPlayerUnban((PlayerBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "IpBanEvent":
@@ -152,8 +152,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "IpUnbanEvent":
-        BanManagerEvents.IP_UNBAN_EVENT.invoker().onIpUnban((IpBanData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.IP_UNBAN_EVENT.invoker().onIpUnban((IpBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "IpMuteEvent":
@@ -166,8 +166,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "IpUnmutedEvent":
-        BanManagerEvents.IP_UNMUTED_EVENT.invoker().onIpUnmuted((IpMuteData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.IP_UNMUTED_EVENT.invoker().onIpUnmuted((IpMuteData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "PlayerKickedEvent":
@@ -205,8 +205,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "NameUnbanEvent":
-        BanManagerEvents.NAME_UNBAN_EVENT.invoker().onNameUnban((NameBanData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.NAME_UNBAN_EVENT.invoker().onNameUnban((NameBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "PlayerWarnEvent":
@@ -229,8 +229,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "IpRangeUnbanEvent":
-        BanManagerEvents.IP_RANGE_UNBAN_EVENT.invoker().onIpRangeUnban((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.IP_RANGE_UNBAN_EVENT.invoker().onIpRangeUnban((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "PlayerMuteEvent":
@@ -243,8 +243,8 @@ public class FabricServer implements CommonServer {
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "PlayerUnmuteEvent":
-        BanManagerEvents.PLAYER_UNMUTE_EVENT.invoker().onPlayerUnmute((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
-        commonEvent = new CommonEvent(false, false);
+        BanManagerEvents.PLAYER_UNMUTE_EVENT.invoker().onPlayerUnmute((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
+        commonEvent = new CommonEvent(false, (boolean) args[3]);
         break;
 
       case "PluginReloadedEvent":

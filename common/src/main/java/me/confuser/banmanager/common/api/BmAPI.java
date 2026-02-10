@@ -123,6 +123,17 @@ public class BmAPI {
   }
 
   /**
+   * @param ban   The ban (can be retrieved via getBan)
+   * @param actor Who is unbanning the player
+   * @param silent Whether the unban should be treated as silent
+   * @return Returns true if the unban is successful
+   * @throws SQLException
+   */
+  public static boolean unban(PlayerBanData ban, PlayerData actor, boolean silent) throws SQLException {
+    return BanManagerPlugin.getInstance().getPlayerBanStorage().unban(ban, actor, "", false, silent);
+  }
+
+  /**
    * Thread safe
    *
    * @param uuid Player UUID
@@ -269,6 +280,17 @@ public class BmAPI {
   }
 
   /**
+   * @param mute  PlayerMuteData
+   * @param actor Who unmuted the player
+   * @param silent Whether the unmute should be treated as silent
+   * @return Returns true if unmute successful
+   * @throws SQLException
+   */
+  public static boolean unmute(PlayerMuteData mute, PlayerData actor, boolean silent) throws SQLException {
+    return BanManagerPlugin.getInstance().getPlayerMuteStorage().unmute(mute, actor, "", false, silent);
+  }
+
+  /**
    * @param mute   IP Mute record
    * @param actor Who unmuted the ip
    * @return Returns true if unmute is successful
@@ -276,6 +298,17 @@ public class BmAPI {
    */
   public static boolean unmute(IpMuteData mute, PlayerData actor) throws SQLException {
     return BanManagerPlugin.getInstance().getIpMuteStorage().unmute(mute, actor);
+  }
+
+  /**
+   * @param mute   IP Mute record
+   * @param actor Who unmuted the ip
+   * @param silent Whether the unmute should be treated as silent
+   * @return Returns true if unmute is successful
+   * @throws SQLException
+   */
+  public static boolean unmute(IpMuteData mute, PlayerData actor, boolean silent) throws SQLException {
+    return BanManagerPlugin.getInstance().getIpMuteStorage().unmute(mute, actor, "", silent);
   }
 
   /**
@@ -388,6 +421,17 @@ public class BmAPI {
    */
   public static boolean unban(IpBanData ban, PlayerData actor) throws SQLException {
     return BanManagerPlugin.getInstance().getIpBanStorage().unban(ban, actor);
+  }
+
+  /**
+   * @param ban   IP Ban record
+   * @param actor Who unbanned the ip
+   * @param silent Whether the unban should be treated as silent
+   * @return Returns true if unban is successful
+   * @throws SQLException
+   */
+  public static boolean unban(IpBanData ban, PlayerData actor, boolean silent) throws SQLException {
+    return BanManagerPlugin.getInstance().getIpBanStorage().unban(ban, actor, "", false, silent);
   }
 
   /**

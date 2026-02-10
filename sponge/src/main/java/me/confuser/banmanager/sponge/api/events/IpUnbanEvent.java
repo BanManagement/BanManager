@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 
-public class IpUnbanEvent extends CustomEvent {
+public class IpUnbanEvent extends SilentCancellableEvent {
     @Getter
     private IpBanData ban;
 
@@ -15,7 +15,11 @@ public class IpUnbanEvent extends CustomEvent {
     private String reason;
 
     public IpUnbanEvent(IpBanData ban, PlayerData actor, String reason) {
-        super();
+        this(ban, actor, reason, false);
+    }
+
+    public IpUnbanEvent(IpBanData ban, PlayerData actor, String reason, boolean silent) {
+        super(silent);
         this.ban = ban;
         this.actor = actor;
         this.reason = reason;

@@ -82,7 +82,7 @@ public class UnbanCommand extends CommonCommand {
       boolean unbanned;
 
       try {
-        unbanned = getPlugin().getPlayerBanStorage().unban(ban, actor, reason, isDelete);
+        unbanned = getPlugin().getPlayerBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

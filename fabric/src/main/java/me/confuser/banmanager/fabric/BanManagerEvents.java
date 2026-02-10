@@ -27,9 +27,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<PlayerUnbanEvent> PLAYER_UNBAN_EVENT = EventFactory.createArrayBacked(PlayerUnbanEvent.class,
-    (listeners) -> (banData, actor, reason) -> {
+    (listeners) -> (banData, actor, reason, silent) -> {
       for (PlayerUnbanEvent listener : listeners) {
-        listener.onPlayerUnban(banData, actor, reason);
+        listener.onPlayerUnban(banData, actor, reason, silent);
       }
     });
 
@@ -51,9 +51,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<IpUnbanEvent> IP_UNBAN_EVENT = EventFactory.createArrayBacked(IpUnbanEvent.class,
-    (listeners) -> (banData, actor, reason) -> {
+    (listeners) -> (banData, actor, reason, silent) -> {
       for (IpUnbanEvent listener : listeners) {
-        listener.onIpUnban(banData, actor, reason);
+        listener.onIpUnban(banData, actor, reason, silent);
       }
     });
 
@@ -75,9 +75,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<IpUnmutedEvent> IP_UNMUTED_EVENT = EventFactory.createArrayBacked(IpUnmutedEvent.class,
-    (listeners) -> (muteData, actor, reason) -> {
+    (listeners) -> (muteData, actor, reason, silent) -> {
       for (IpUnmutedEvent listener : listeners) {
-        listener.onIpUnmuted(muteData, actor, reason);
+        listener.onIpUnmuted(muteData, actor, reason, silent);
       }
     });
 
@@ -137,9 +137,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<NameUnbanEvent> NAME_UNBAN_EVENT = EventFactory.createArrayBacked(NameUnbanEvent.class,
-    (listeners) -> (banData, actor, reason) -> {
+    (listeners) -> (banData, actor, reason, silent) -> {
       for (NameUnbanEvent listener : listeners) {
-        listener.onNameUnban(banData, actor, reason);
+        listener.onNameUnban(banData, actor, reason, silent);
       }
     });
 
@@ -178,9 +178,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<IpRangeUnbanEvent> IP_RANGE_UNBAN_EVENT = EventFactory.createArrayBacked(IpRangeUnbanEvent.class,
-    (listeners) -> (banData, actor, reason) -> {
+    (listeners) -> (banData, actor, reason, silent) -> {
       for (IpRangeUnbanEvent listener : listeners) {
-        listener.onIpRangeUnban(banData, actor, reason);
+        listener.onIpRangeUnban(banData, actor, reason, silent);
       }
     });
 
@@ -202,9 +202,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<PlayerUnmuteEvent> PLAYER_UNMUTE_EVENT = EventFactory.createArrayBacked(PlayerUnmuteEvent.class,
-    (listeners) -> (muteData, actor, reason) -> {
+    (listeners) -> (muteData, actor, reason, silent) -> {
       for (PlayerUnmuteEvent listener : listeners) {
-        listener.onPlayerUnmute(muteData, actor, reason);
+        listener.onPlayerUnmute(muteData, actor, reason, silent);
       }
     });
 
@@ -234,7 +234,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface PlayerUnbanEvent {
-    void onPlayerUnban(PlayerBanData banData, PlayerData actor, String reason);
+    void onPlayerUnban(PlayerBanData banData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface
@@ -249,7 +249,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface IpUnbanEvent {
-    void onIpUnban(IpBanData banData, PlayerData actor, String reason);
+    void onIpUnban(IpBanData banData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface
@@ -264,7 +264,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface IpUnmutedEvent {
-    void onIpUnmuted(IpMuteData muteData, PlayerData actor, String reason);
+    void onIpUnmuted(IpMuteData muteData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface
@@ -304,7 +304,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface NameUnbanEvent {
-    void onNameUnban(NameBanData banData, PlayerData actor, String reason);
+    void onNameUnban(NameBanData banData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface
@@ -329,7 +329,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface IpRangeUnbanEvent {
-    void onIpRangeUnban(IpRangeBanData banData, PlayerData actor, String reason);
+    void onIpRangeUnban(IpRangeBanData banData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface
@@ -344,7 +344,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface PlayerUnmuteEvent {
-    void onPlayerUnmute(PlayerMuteData muteData, PlayerData actor, String reason);
+    void onPlayerUnmute(PlayerMuteData muteData, PlayerData actor, String reason, boolean silent);
   }
 
   @FunctionalInterface

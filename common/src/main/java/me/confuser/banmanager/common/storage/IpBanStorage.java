@@ -195,7 +195,11 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
   }
 
   public boolean unban(IpBanData ban, PlayerData actor, String reason, boolean delete) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpUnbanEvent", ban, actor, reason);
+    return unban(ban, actor, reason, delete, false);
+  }
+
+  public boolean unban(IpBanData ban, PlayerData actor, String reason, boolean delete, boolean silent) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("IpUnbanEvent", ban, actor, reason, silent);
 
     if (event.isCancelled()) {
       return false;
