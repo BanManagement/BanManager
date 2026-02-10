@@ -83,7 +83,7 @@ public class WebhookListener {
 
   private void sendAll(List<WebhookData> webhooks, boolean isSilent) {
     for (WebhookData data : webhooks) {
-      if (isSilent && !data.ignoreSilent) continue;
+      if (isSilent && data.ignoreSilent) continue;
       if (data.url == null || data.payload == null || data.url.isEmpty() || data.payload.isEmpty()) continue;
       listener.sendAsync(data);
     }
