@@ -117,7 +117,7 @@ public class BungeeServer implements CommonServer {
         event = new PlayerBannedEvent((PlayerBanData) args[0], (boolean) args[1]);
         break;
       case "PlayerUnbanEvent":
-        event = new PlayerUnbanEvent((PlayerBanData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new PlayerUnbanEvent((PlayerBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "IpBanEvent":
@@ -127,7 +127,7 @@ public class BungeeServer implements CommonServer {
         event = new IpBannedEvent((IpBanData) args[0], (boolean) args[1]);
         break;
       case "IpUnbanEvent":
-        event = new IpUnbanEvent((IpBanData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new IpUnbanEvent((IpBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "IpMuteEvent":
@@ -137,7 +137,7 @@ public class BungeeServer implements CommonServer {
         event = new IpMutedEvent((IpMuteData) args[0], (boolean) args[1]);
         break;
       case "IpUnmutedEvent":
-        event = new IpUnmutedEvent((IpMuteData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new IpUnmutedEvent((IpMuteData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "PlayerKickedEvent":
@@ -165,7 +165,7 @@ public class BungeeServer implements CommonServer {
         event = new NameBannedEvent((NameBanData) args[0], (boolean) args[1]);
         break;
       case "NameUnbanEvent":
-        event = new NameUnbanEvent((NameBanData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new NameUnbanEvent((NameBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "PlayerWarnEvent":
@@ -182,7 +182,7 @@ public class BungeeServer implements CommonServer {
         event = new IpRangeBannedEvent((IpRangeBanData) args[0], (boolean) args[1]);
         break;
       case "IpRangeUnbanEvent":
-        event = new IpRangeUnbanEvent((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new IpRangeUnbanEvent((IpRangeBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "PlayerMuteEvent":
@@ -192,7 +192,7 @@ public class BungeeServer implements CommonServer {
         event = new PlayerMutedEvent((PlayerMuteData) args[0], (boolean) args[1]);
         break;
       case "PlayerUnmuteEvent":
-        event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2]);
+        event = new PlayerUnmuteEvent((PlayerMuteData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
         break;
 
       case "PluginReloadedEvent":

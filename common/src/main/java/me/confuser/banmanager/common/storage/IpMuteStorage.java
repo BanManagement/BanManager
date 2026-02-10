@@ -192,7 +192,11 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
   }
 
   public boolean unmute(IpMuteData mute, PlayerData actor, String reason) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpUnmutedEvent", mute, actor, reason);
+    return unmute(mute, actor, reason, false);
+  }
+
+  public boolean unmute(IpMuteData mute, PlayerData actor, String reason, boolean silent) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("IpUnmutedEvent", mute, actor, reason, silent);
 
     if (event.isCancelled()) {
       return false;

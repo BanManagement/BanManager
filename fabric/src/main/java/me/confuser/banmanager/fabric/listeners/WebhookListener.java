@@ -51,19 +51,19 @@ public class WebhookListener {
     sendAll(webhooks, silent);
   }
 
-  private void notifyOnUnban(PlayerBanData banData, PlayerData actor, String reason) {
+  private void notifyOnUnban(PlayerBanData banData, PlayerData actor, String reason, boolean silent) {
     List<WebhookData> webhooks = listener.notifyOnUnban(banData, actor, reason);
-    sendAll(webhooks, false);
+    sendAll(webhooks, silent);
   }
 
-  private void notifyOnUnban(IpBanData banData, PlayerData actor, String reason) {
+  private void notifyOnUnban(IpBanData banData, PlayerData actor, String reason, boolean silent) {
     List<WebhookData> webhooks = listener.notifyOnUnban(banData, actor, reason);
-    sendAll(webhooks, false);
+    sendAll(webhooks, silent);
   }
 
-  private void notifyOnUnmute(PlayerMuteData muteData, PlayerData actor, String reason) {
+  private void notifyOnUnmute(PlayerMuteData muteData, PlayerData actor, String reason, boolean silent) {
     List<WebhookData> webhooks = listener.notifyOnUnmute(muteData, actor, reason);
-    sendAll(webhooks, false);
+    sendAll(webhooks, silent);
   }
 
   private void notifyOnReport(PlayerReportData reportData, boolean silent) {

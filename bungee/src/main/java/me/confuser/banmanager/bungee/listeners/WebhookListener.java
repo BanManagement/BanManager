@@ -50,19 +50,19 @@ public class WebhookListener implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST)
   public void notifyOnUnban(PlayerUnbanEvent event) {
     List<WebhookData> webhooks = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
-    sendAll(webhooks, false);
+    sendAll(webhooks, event.isSilent());
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void notifyOnUnban(IpUnbanEvent event) {
     List<WebhookData> webhooks = listener.notifyOnUnban(event.getBan(), event.getActor(), event.getReason());
-    sendAll(webhooks, false);
+    sendAll(webhooks, event.isSilent());
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void notifyOnUnmute(PlayerUnmuteEvent event) {
     List<WebhookData> webhooks = listener.notifyOnUnmute(event.getMute(), event.getActor(), event.getReason());
-    sendAll(webhooks, false);
+    sendAll(webhooks, event.isSilent());
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)

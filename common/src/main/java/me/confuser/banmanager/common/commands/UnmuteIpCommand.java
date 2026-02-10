@@ -75,7 +75,7 @@ public class UnmuteIpCommand extends CommonCommand {
       boolean unmuted;
 
       try {
-        unmuted = getPlugin().getIpMuteStorage().unmute(mute, actor, reason);
+        unmuted = getPlugin().getIpMuteStorage().unmute(mute, actor, reason, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

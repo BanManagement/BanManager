@@ -40,7 +40,7 @@ public class HookListener {
     listener.onBan(banData, silent);
   }
 
-  private void onUnban(PlayerBanData banData, PlayerData actor, String reason) {
+  private void onUnban(PlayerBanData banData, PlayerData actor, String reason, boolean silent) {
     listener.onUnban(banData, actor, reason);
   }
 
@@ -53,7 +53,7 @@ public class HookListener {
     listener.onMute(muteData, silent);
   }
 
-  private void onUnmute(PlayerMuteData muteData, PlayerData actor, String reason) {
+  private void onUnmute(PlayerMuteData muteData, PlayerData actor, String reason, boolean silent) {
     listener.onUnmute(muteData, actor, reason);
   }
 
@@ -66,7 +66,7 @@ public class HookListener {
     listener.onBan(banData, silent);
   }
 
-  private void onUnban(IpBanData banData, PlayerData actor, String reason) {
+  private void onUnban(IpBanData banData, PlayerData actor, String reason, boolean silent) {
     listener.onUnban(banData, actor, reason);
   }
 
@@ -79,7 +79,7 @@ public class HookListener {
     listener.onBan(banData, silent);
   }
 
-  private void onUnban(IpRangeBanData banData, PlayerData actor, String reason) {
+  private void onUnban(IpRangeBanData banData, PlayerData actor, String reason, boolean silent) {
     listener.onUnban(banData, actor, reason);
   }
 

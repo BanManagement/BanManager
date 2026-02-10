@@ -255,7 +255,11 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
   }
 
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean skipRecord) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, reason);
+    return unmute(mute, actor, reason, skipRecord, false);
+  }
+
+  public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean skipRecord, boolean silent) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, reason, silent);
 
     if (event.isCancelled()) {
       return false;
@@ -289,7 +293,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
    * @return true if the mute was deleted, false if it was already paused/modified or event was cancelled
    */
   public boolean unmuteIfExpired(PlayerMuteData mute, PlayerData actor) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, "");
+    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, "", false);
 
     if (event.isCancelled()) {
       return false;

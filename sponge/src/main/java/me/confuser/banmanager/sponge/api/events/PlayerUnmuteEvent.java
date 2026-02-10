@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 
-public class PlayerUnmuteEvent extends CustomEvent {
+public class PlayerUnmuteEvent extends SilentCancellableEvent {
 
     @Getter
     private PlayerMuteData mute;
@@ -16,7 +16,11 @@ public class PlayerUnmuteEvent extends CustomEvent {
     private String reason;
 
     public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason) {
-        super();
+        this(mute, actor, reason, false);
+    }
+
+    public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason, boolean silent) {
+        super(silent);
         this.mute = mute;
         this.actor = actor;
         this.reason = reason;

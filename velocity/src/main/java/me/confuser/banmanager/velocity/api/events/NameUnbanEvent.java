@@ -5,7 +5,7 @@ import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 
 
-public class NameUnbanEvent extends CustomCancellableEvent {
+public class NameUnbanEvent extends SilentCancellableEvent {
 
   @Getter
   private NameBanData ban;
@@ -13,9 +13,12 @@ public class NameUnbanEvent extends CustomCancellableEvent {
   private PlayerData actor;
   @Getter
   private String reason;
-
   public NameUnbanEvent(NameBanData ban, PlayerData actor, String reason) {
-    super();
+    this(ban, actor, reason, false);
+  }
+
+  public NameUnbanEvent(NameBanData ban, PlayerData actor, String reason, boolean silent) {
+    super(silent);
 
     this.ban = ban;
     this.actor = actor;

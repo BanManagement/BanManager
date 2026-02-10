@@ -87,7 +87,7 @@ public class UnbanIpCommand extends CommonCommand {
       boolean unbanned;
 
       try {
-        unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason, isDelete);
+        unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

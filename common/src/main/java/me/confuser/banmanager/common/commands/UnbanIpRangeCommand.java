@@ -74,7 +74,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
       boolean unbanned;
 
       try {
-        unbanned = getPlugin().getIpRangeBanStorage().unban(ban, actor, reason);
+        unbanned = getPlugin().getIpRangeBanStorage().unban(ban, actor, reason, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

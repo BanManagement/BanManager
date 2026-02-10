@@ -5,7 +5,7 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 
 
-public class PlayerUnmuteEvent extends CustomCancellableEvent {
+public class PlayerUnmuteEvent extends SilentCancellableEvent {
 
   @Getter
   private PlayerMuteData mute;
@@ -13,9 +13,12 @@ public class PlayerUnmuteEvent extends CustomCancellableEvent {
   private PlayerData actor;
   @Getter
   private String reason;
-
   public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason) {
-    super();
+    this(mute, actor, reason, false);
+  }
+
+  public PlayerUnmuteEvent(PlayerMuteData mute, PlayerData actor, String reason, boolean silent) {
+    super(silent);
 
     this.mute = mute;
     this.actor = actor;
