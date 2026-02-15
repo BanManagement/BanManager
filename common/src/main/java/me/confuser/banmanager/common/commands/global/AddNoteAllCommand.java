@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerNoteData;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -56,6 +57,9 @@ public class AddNoteAllCommand extends CommonCommand {
 
       try {
         created = getPlugin().getGlobalPlayerNoteStorage().create(note);
+        if (created == 1) {
+          new GlobalLocalApplyHelper(getPlugin()).applyNote(note, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

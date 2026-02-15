@@ -177,8 +177,9 @@ public class FabricServer implements CommonServer {
         break;
 
       case "PlayerNoteCreatedEvent":
-        BanManagerEvents.PLAYER_NOTE_CREATED_EVENT.invoker().onPlayerNoteCreated((PlayerNoteData) args[0]);
-        commonEvent = new CommonEvent(false, false);
+        boolean noteSilent = args.length > 1 && (boolean) args[1];
+        BanManagerEvents.PLAYER_NOTE_CREATED_EVENT.invoker().onPlayerNoteCreated((PlayerNoteData) args[0], noteSilent);
+        commonEvent = new CommonEvent(false, noteSilent);
         break;
 
       case "PlayerReportEvent":

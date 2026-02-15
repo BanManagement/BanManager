@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configs.TimeLimitType;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerMuteData;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
@@ -78,6 +79,9 @@ public class TempMuteAllCommand extends CommonCommand {
 
       try {
         created = getPlugin().getGlobalPlayerMuteStorage().create(mute);
+        if (created == 1) {
+          new GlobalLocalApplyHelper(getPlugin()).applyMute(mute, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

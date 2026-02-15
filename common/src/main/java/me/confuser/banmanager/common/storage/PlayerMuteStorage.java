@@ -224,6 +224,10 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
   }
 
   public boolean mute(PlayerMuteData mute) throws SQLException {
+    return mute(mute, false);
+  }
+
+  public boolean mute(PlayerMuteData mute, boolean fromSync) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, mute.isSilent());
 
     if (event.isCancelled()) {
@@ -233,7 +237,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
     create(mute);
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-    plugin.getServer().callEvent("PlayerMutedEvent", mute, event.isSilent());
+    plugin.getServer().callEvent("PlayerMutedEvent", mute, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
 
     return true;
   }

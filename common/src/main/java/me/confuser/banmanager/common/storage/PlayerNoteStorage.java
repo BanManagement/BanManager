@@ -40,7 +40,11 @@ public class PlayerNoteStorage extends BaseStorage<PlayerNoteData, Integer> {
   }
 
   public boolean addNote(PlayerNoteData data) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerNoteCreatedEvent", data);
+    return addNote(data, false);
+  }
+
+  public boolean addNote(PlayerNoteData data, boolean silent) throws SQLException {
+    CommonEvent event = plugin.getServer().callEvent("PlayerNoteCreatedEvent", data, silent);
 
     return !event.isCancelled() && create(data) == 1;
   }

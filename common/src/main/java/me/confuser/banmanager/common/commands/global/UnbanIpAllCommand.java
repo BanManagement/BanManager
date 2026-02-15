@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalIpBanRecordData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 
@@ -58,6 +59,9 @@ public class UnbanIpAllCommand extends CommonCommand {
 
       try {
         unbanned = getPlugin().getGlobalIpBanRecordStorage().create(record);
+        if (unbanned > 0) {
+          new GlobalLocalApplyHelper(getPlugin()).applyIpUnban(record, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("errorOccurred").toString());
         e.printStackTrace();

@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerMuteRecordData;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -65,6 +66,9 @@ public class UnmuteAllCommand extends CommonCommand {
 
       try {
         unmuted = getPlugin().getGlobalPlayerMuteRecordStorage().create(record);
+        if (unmuted > 0) {
+          new GlobalLocalApplyHelper(getPlugin()).applyUnmute(record, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("errorOccurred").toString());
         e.printStackTrace();

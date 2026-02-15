@@ -17,7 +17,7 @@ public class NoteListener extends Listener {
 
   @Subscribe(order = PostOrder.FIRST)
   public void notifyOnNote(PlayerNoteCreatedEvent event) {
-    listener.notifyOnNote(event.getNote());
+    listener.notifyOnNote(event.getNote(), event.isSilent());
   }
 
 }

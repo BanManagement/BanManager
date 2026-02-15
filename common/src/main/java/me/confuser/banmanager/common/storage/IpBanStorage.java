@@ -172,6 +172,10 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
   }
 
   public boolean ban(IpBanData ban) throws SQLException {
+    return ban(ban, false);
+  }
+
+  public boolean ban(IpBanData ban, boolean fromSync) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("IpBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
@@ -181,7 +185,7 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
     create(ban);
     bans.put(ban.getIp().toString(), ban);
 
-    plugin.getServer().callEvent("IpBannedEvent", ban, event.isSilent());
+    plugin.getServer().callEvent("IpBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
 
     return true;
   }

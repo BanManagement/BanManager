@@ -18,6 +18,7 @@ public class GlobalMuteSync extends BmRunnable {
   private GlobalPlayerMuteStorage muteStorage;
   private PlayerMuteStorage localMuteStorage;
   private GlobalPlayerMuteRecordStorage recordStorage;
+  private GlobalLocalApplyHelper applyHelper;
 
   public GlobalMuteSync(BanManagerPlugin plugin) {
     super(plugin, "externalPlayerMutes");
@@ -25,6 +26,7 @@ public class GlobalMuteSync extends BmRunnable {
     localMuteStorage = plugin.getPlayerMuteStorage();
     muteStorage = plugin.getGlobalPlayerMuteStorage();
     recordStorage = plugin.getGlobalPlayerMuteRecordStorage();
+    applyHelper = new GlobalLocalApplyHelper(plugin);
   }
 
   @Override
@@ -51,22 +53,7 @@ public class GlobalMuteSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerMuteData mute = itr.next();
 
-        PlayerMuteData localMute = localMuteStorage.retrieveMute(mute.getUUID());
-
-        if (localMute != null) {
-          if (localMute.equalsMute(mute.toLocal(plugin))) {
-            continue;
-          }
-
-          // Global mute overrides local - respect event cancellation
-          if (!localMuteStorage.unmute(localMute, mute.getActor(plugin))) {
-            continue;
-          }
-        } else if (localMuteStorage.isMuted(mute.getUUID())) {
-          localMuteStorage.removeMute(mute.getUUID());
-        }
-
-        if (!localMuteStorage.mute(mute.toLocal(plugin))) continue;
+        if (!applyHelper.applyMute(mute, true)) continue;
 
       }
     } catch (SQLException e) {
@@ -86,12 +73,7 @@ public class GlobalMuteSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerMuteRecordData record = itr.next();
 
-        PlayerMuteData localMute = localMuteStorage.getMute(record.getUUID());
-        if (localMute == null) {
-          continue;
-        }
-
-        localMuteStorage.unmute(localMute, record.getActor(plugin));
+        applyHelper.applyUnmute(record, true);
 
       }
     } catch (SQLException e) {

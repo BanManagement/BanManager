@@ -14,13 +14,13 @@ import java.sql.SQLException;
 public class GlobalNoteSync extends BmRunnable {
 
   private GlobalPlayerNoteStorage noteStorage;
-  private PlayerNoteStorage localNoteStorage;
+  private GlobalLocalApplyHelper applyHelper;
 
   public GlobalNoteSync(BanManagerPlugin plugin) {
     super(plugin, "externalPlayerNotes");
 
     noteStorage = plugin.getGlobalPlayerNoteStorage();
-    localNoteStorage = plugin.getPlayerNoteStorage();
+    applyHelper = new GlobalLocalApplyHelper(plugin);
   }
 
   @Override
@@ -47,27 +47,7 @@ public class GlobalNoteSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerNoteData note = itr.next();
 
-        final PlayerNoteData localNote = note.toLocal(plugin);
-
-        CloseableIterator<PlayerNoteData> notes = null;
-        boolean create = true;
-
-        try {
-          notes = localNoteStorage.getNotes(note.getUUID());
-
-          while (create && notes.hasNext()) {
-            PlayerNoteData check = notes.next();
-
-            if (check.equalsNote(localNote)) create = false;
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-          create = false;
-        } finally {
-          if (notes != null) notes.closeQuietly();
-        }
-
-        if (create) localNoteStorage.addNote(localNote);
+        applyHelper.applyNote(note, true);
 
       }
     } catch (SQLException e) {

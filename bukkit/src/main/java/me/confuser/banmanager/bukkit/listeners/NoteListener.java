@@ -17,7 +17,7 @@ public class NoteListener implements Listener {
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
   public void notifyOnNote(PlayerNoteCreatedEvent event) {
-    listener.notifyOnNote(event.getNote());
+    listener.notifyOnNote(event.getNote(), event.isSilent());
   }
 
 }

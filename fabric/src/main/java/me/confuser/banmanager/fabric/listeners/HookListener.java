@@ -32,76 +32,76 @@ public class HookListener {
   }
 
   private boolean onBan(PlayerBanData banData, BanManagerEvents.SilentValue silent) {
-    listener.onBan(banData, silent.isSilent());
+    listener.onBan(banData, true, silent.isSilent());
     return true;
   }
 
   private void onBan(PlayerBanData banData, boolean silent) {
-    listener.onBan(banData, silent);
+    listener.onBan(banData, false, silent);
   }
 
   private void onUnban(PlayerBanData banData, PlayerData actor, String reason, boolean silent) {
-    listener.onUnban(banData, actor, reason);
+    listener.onUnban(banData, actor, reason, silent);
   }
 
   private boolean onMute(PlayerMuteData muteData, BanManagerEvents.SilentValue silent) {
-    listener.onMute(muteData, silent.isSilent());
+    listener.onMute(muteData, true, silent.isSilent());
     return true;
   }
 
   private void onMute(PlayerMuteData muteData, boolean silent) {
-    listener.onMute(muteData, silent);
+    listener.onMute(muteData, false, silent);
   }
 
   private void onUnmute(PlayerMuteData muteData, PlayerData actor, String reason, boolean silent) {
-    listener.onUnmute(muteData, actor, reason);
+    listener.onUnmute(muteData, actor, reason, silent);
   }
 
   private boolean onBan(IpBanData banData, BanManagerEvents.SilentValue silent) {
-    listener.onBan(banData, silent.isSilent());
+    listener.onBan(banData, true, silent.isSilent());
     return true;
   }
 
   private void onBan(IpBanData banData, boolean silent) {
-    listener.onBan(banData, silent);
+    listener.onBan(banData, false, silent);
   }
 
   private void onUnban(IpBanData banData, PlayerData actor, String reason, boolean silent) {
-    listener.onUnban(banData, actor, reason);
+    listener.onUnban(banData, actor, reason, silent);
   }
 
   private boolean onBan(IpRangeBanData banData, BanManagerEvents.SilentValue silent) {
-    listener.onBan(banData, silent.isSilent());
+    listener.onBan(banData, true, silent.isSilent());
     return true;
   }
 
   private void onBan(IpRangeBanData banData, boolean silent) {
-    listener.onBan(banData, silent);
+    listener.onBan(banData, false, silent);
   }
 
   private void onUnban(IpRangeBanData banData, PlayerData actor, String reason, boolean silent) {
-    listener.onUnban(banData, actor, reason);
+    listener.onUnban(banData, actor, reason, silent);
   }
 
   private boolean onWarn(PlayerWarnData warnData, BanManagerEvents.SilentValue silent) {
-    listener.onWarn(warnData, silent.isSilent());
+    listener.onWarn(warnData, true, silent.isSilent());
     return true;
   }
 
   private void onWarn(PlayerWarnData warnData, boolean silent) {
-    listener.onWarn(warnData, silent);
+    listener.onWarn(warnData, false, silent);
   }
 
-  private void onNote(PlayerNoteData noteData) {
-    listener.onNote(noteData);
+  private void onNote(PlayerNoteData noteData, boolean silent) {
+    listener.onNote(noteData, silent);
   }
 
   private boolean onReport(PlayerReportData reportData, BanManagerEvents.SilentValue silent) {
-    listener.onReport(reportData, silent.isSilent());
+    listener.onReport(reportData, true, silent.isSilent());
     return true;
   }
 
   private void onReport(PlayerReportData reportData, boolean silent) {
-    listener.onReport(reportData, silent);
+    listener.onReport(reportData, false, silent);
   }
 }

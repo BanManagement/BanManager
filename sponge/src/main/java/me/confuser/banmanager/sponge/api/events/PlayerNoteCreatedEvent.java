@@ -3,12 +3,16 @@ package me.confuser.banmanager.sponge.api.events;
 import lombok.Getter;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 
-public class PlayerNoteCreatedEvent extends CustomEvent {
+public class PlayerNoteCreatedEvent extends SilentEvent {
     @Getter
     private PlayerNoteData note;
 
     public PlayerNoteCreatedEvent(PlayerNoteData note) {
-        super();
+        this(note, false);
+    }
+
+    public PlayerNoteCreatedEvent(PlayerNoteData note, boolean silent) {
+        super(silent);
         this.note = note;
     }
 }

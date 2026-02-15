@@ -15,6 +15,6 @@ public class NoteListener {
 
     @Listener(order = Order.POST)
     public void notifyOnNote(PlayerNoteCreatedEvent event) {
-        listener.notifyOnNote(event.getNote());
+        listener.notifyOnNote(event.getNote(), event.isSilent());
     }
 }

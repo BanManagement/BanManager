@@ -1,9 +1,12 @@
-# More info at https://banmanagement.com/docs/banmanager/configuration/discord-yml
+# Webhooks Configuration
+# More info at https://banmanagement.com/docs/banmanager/configuration/webhooks-yml
 hooks:
   enabled: false
   punishments:
     ban:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -21,6 +24,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     tempban:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -42,6 +47,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     unban:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -59,6 +66,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     banip:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -76,6 +85,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     tempbanip:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -97,6 +108,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     unbanip:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -114,6 +127,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     kick:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -131,6 +146,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     mute:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -148,6 +165,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     tempmute:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -169,6 +188,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     unmute:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -186,6 +207,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     tempwarning:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -210,6 +233,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     warning:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:
@@ -231,6 +256,8 @@ hooks:
             url: https://crafthead.net/helm/[playerId]/128
     report:
       url: https://discord.com/api/webhooks/changeMe
+      method: POST
+      headers: {}
       ignoreSilent: true
       payload:
         embeds:

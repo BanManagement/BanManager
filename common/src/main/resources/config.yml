@@ -147,6 +147,9 @@ hooks:
   # tempiprangeban, unbaniprange, note, report
   events:
 #   ban:
+#     # When true, silent punishments will skip these hook commands
+#     # Defaults to true
+#     ignoreSilent: true
 #     pre:
 #     - cmd: kick [player] [reason]
 # delays are in seconds

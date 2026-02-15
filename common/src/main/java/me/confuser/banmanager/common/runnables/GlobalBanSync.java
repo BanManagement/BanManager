@@ -21,6 +21,7 @@ public class GlobalBanSync extends BmRunnable {
   private GlobalPlayerBanStorage banStorage;
   private PlayerBanStorage localBanStorage;
   private GlobalPlayerBanRecordStorage recordStorage;
+  private GlobalLocalApplyHelper applyHelper;
 
   public GlobalBanSync(BanManagerPlugin plugin) {
     super(plugin, "externalPlayerBans");
@@ -28,6 +29,7 @@ public class GlobalBanSync extends BmRunnable {
     banStorage = plugin.getGlobalPlayerBanStorage();
     localBanStorage = plugin.getPlayerBanStorage();
     recordStorage = plugin.getGlobalPlayerBanRecordStorage();
+    applyHelper = new GlobalLocalApplyHelper(plugin);
   }
 
   @Override
@@ -55,25 +57,8 @@ public class GlobalBanSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerBanData ban = itr.next();
 
-        final PlayerBanData localBan = localBanStorage.retrieveBan(ban.getUUID());
-
-        if (localBan != null) {
-          if (localBan.equalsBan(ban.toLocal(plugin))) {
-            kickPlayer(localBan);
-            continue;
-          }
-
-          // Global ban overrides local - respect event cancellation
-          if (!localBanStorage.unban(localBan, ban.getActor(plugin))) {
-            continue;
-          }
-        } else if (localBanStorage.isBanned(ban.getUUID())) {
-          localBanStorage.removeBan(ban.getUUID());
-        }
-
-        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
-
-        final PlayerBanData globalBan = localBanStorage.getBan(ban.getUUID());
+        final PlayerBanData globalBan = applyHelper.applyBan(ban, true);
+        if (globalBan == null) continue;
 
         kickPlayer(globalBan);
 
@@ -119,11 +104,7 @@ public class GlobalBanSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalPlayerBanRecordData record = itr.next();
 
-        if (!localBanStorage.isBanned(record.getUUID())) {
-          continue;
-        }
-
-        localBanStorage.unban(localBanStorage.getBan(record.getUUID()), record.getActor(plugin));
+        applyHelper.applyUnban(record, true);
       }
     } catch (SQLException e) {
       e.printStackTrace();
