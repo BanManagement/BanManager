@@ -15,7 +15,7 @@ public class NoteListener {
     BanManagerEvents.PLAYER_NOTE_CREATED_EVENT.register(this::notifyOnNote);
   }
 
-  private void notifyOnNote(PlayerNoteData noteData) {
-    listener.notifyOnNote(noteData);
+  private void notifyOnNote(PlayerNoteData noteData, boolean silent) {
+    listener.notifyOnNote(noteData, silent);
   }
 }

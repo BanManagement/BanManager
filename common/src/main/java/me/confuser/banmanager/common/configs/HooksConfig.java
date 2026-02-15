@@ -60,8 +60,9 @@ public class HooksConfig {
 
       List<ActionCommand> preActionCommands = getActionCommands(event, eventsConf.getMapList(event + ".pre"));
       List<ActionCommand> postActionCommands = getActionCommands(event, eventsConf.getMapList(event + ".post"));
+      boolean ignoreSilent = eventsConf.getBoolean(event + ".ignoreSilent", true);
 
-      Hook hook = new Hook(preActionCommands, postActionCommands);
+      Hook hook = new Hook(preActionCommands, postActionCommands, ignoreSilent);
 
       hooks.put(event, hook);
     }

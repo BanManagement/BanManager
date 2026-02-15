@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerBanRecordData;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -65,6 +66,9 @@ public class UnbanAllCommand extends CommonCommand {
 
       try {
         unbanned = getPlugin().getGlobalPlayerBanRecordStorage().create(record);
+        if (unbanned > 0) {
+          new GlobalLocalApplyHelper(getPlugin()).applyUnban(record, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("errorOccurred").toString());
         e.printStackTrace();

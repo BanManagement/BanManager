@@ -8,6 +8,7 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configs.TimeLimitType;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.global.GlobalPlayerBanData;
+import me.confuser.banmanager.common.runnables.GlobalLocalApplyHelper;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
@@ -74,6 +75,9 @@ public class TempBanAllCommand extends CommonCommand {
 
       try {
         created = getPlugin().getGlobalPlayerBanStorage().create(ban);
+        if (created == 1) {
+          new GlobalLocalApplyHelper(getPlugin()).applyBan(ban, false);
+        }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
         e.printStackTrace();

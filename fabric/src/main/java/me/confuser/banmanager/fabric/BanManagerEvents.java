@@ -89,9 +89,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<PlayerNoteCreatedEvent> PLAYER_NOTE_CREATED_EVENT = EventFactory.createArrayBacked(PlayerNoteCreatedEvent.class,
-    (listeners) -> (noteData) -> {
+    (listeners) -> (noteData, silent) -> {
       for (PlayerNoteCreatedEvent listener : listeners) {
-        listener.onPlayerNoteCreated(noteData);
+        listener.onPlayerNoteCreated(noteData, silent);
       }
     });
 
@@ -274,7 +274,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface PlayerNoteCreatedEvent {
-    void onPlayerNoteCreated(PlayerNoteData noteData);
+    void onPlayerNoteCreated(PlayerNoteData noteData, boolean silent);
   }
 
   @FunctionalInterface

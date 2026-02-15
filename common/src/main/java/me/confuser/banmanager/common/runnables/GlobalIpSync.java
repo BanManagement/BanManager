@@ -21,6 +21,7 @@ public class GlobalIpSync extends BmRunnable {
   private GlobalIpBanStorage banStorage;
   private IpBanStorage localBanStorage;
   private GlobalIpBanRecordStorage recordStorage;
+  private GlobalLocalApplyHelper applyHelper;
 
   public GlobalIpSync(BanManagerPlugin plugin) {
     super(plugin, "externalIpBans");
@@ -28,6 +29,7 @@ public class GlobalIpSync extends BmRunnable {
     banStorage = plugin.getGlobalIpBanStorage();
     localBanStorage = plugin.getIpBanStorage();
     recordStorage = plugin.getGlobalIpBanRecordStorage();
+    applyHelper = new GlobalLocalApplyHelper(plugin);
   }
 
   @Override
@@ -55,25 +57,8 @@ public class GlobalIpSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalIpBanData ban = itr.next();
 
-        final IpBanData localBan = localBanStorage.retrieveBan(ban.getIp());
-
-        if (localBan != null) {
-          if (localBan.equalsBan(ban.toLocal(plugin))) {
-            kickPlayers(localBan);
-            continue;
-          }
-
-          // Global ban overrides local - respect event cancellation
-          if (!localBanStorage.unban(localBan, ban.getActor(plugin))) {
-            continue;
-          }
-        } else if (localBanStorage.isBanned(ban.getIp())) {
-          localBanStorage.removeBan(ban.getIp());
-        }
-
-        if (!localBanStorage.ban(ban.toLocal(plugin))) continue;
-
-        final IpBanData globalBan = localBanStorage.getBan(ban.getIp());
+        final IpBanData globalBan = applyHelper.applyIpBan(ban, true);
+        if (globalBan == null) continue;
 
         kickPlayers(globalBan);
       }
@@ -107,11 +92,7 @@ public class GlobalIpSync extends BmRunnable {
       while (itr.hasNext()) {
         GlobalIpBanRecordData record = itr.next();
 
-        if (!localBanStorage.isBanned(record.getIp())) {
-          continue;
-        }
-
-        localBanStorage.unban(localBanStorage.getBan(record.getIp()), record.getActor(plugin));
+        applyHelper.applyIpUnban(record, true);
       }
     } catch (SQLException e) {
       e.printStackTrace();

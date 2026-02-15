@@ -13,6 +13,11 @@ public class CommonNoteListener {
   }
 
   public void notifyOnNote(PlayerNoteData data) {
+    notifyOnNote(data, false);
+  }
+
+  public void notifyOnNote(PlayerNoteData data, boolean silent) {
+    final String broadcastPermission = "bm.notify.notes";
     Message message = Message.get("notes.notify");
 
     message.set("player", data.getPlayer().getName())
@@ -21,7 +26,12 @@ public class CommonNoteListener {
         .set("id", data.getId())
         .set("message", data.getMessage());
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.notes");
+    if (!silent) {
+      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+    } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
+      plugin.getServer().getConsoleSender().sendMessage(message);
+      return;
+    }
 
     // Check if the sender is online and does not have the
     // broadcastPermission
@@ -31,7 +41,7 @@ public class CommonNoteListener {
       return;
     }
 
-    if (!player.hasPermission("bm.notify.notes")) {
+    if (silent || !player.hasPermission(broadcastPermission)) {
       player.sendMessage(message);
     }
   }

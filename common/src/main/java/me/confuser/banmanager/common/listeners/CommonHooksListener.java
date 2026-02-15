@@ -18,11 +18,20 @@ public class CommonHooksListener {
     this.plugin = plugin;
   }
 
+  private boolean shouldSkip(Hook hook, boolean silent) {
+    return silent && hook.isIgnoreSilent();
+  }
+
   public void onBan(PlayerBanData data, boolean pre) {
+    onBan(data, pre, false);
+  }
+
+  public void onBan(PlayerBanData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = data.getExpires() == 0 ? config.getHook("ban") : config.getHook("tempban");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
@@ -38,10 +47,15 @@ public class CommonHooksListener {
   }
 
   public void onUnban(PlayerBanData data, PlayerData actor, String reason) {
+    onUnban(data, actor, reason, false);
+  }
+
+  public void onUnban(PlayerBanData data, PlayerData actor, String reason, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("unban");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
@@ -55,10 +69,15 @@ public class CommonHooksListener {
   }
 
   public void onMute(PlayerMuteData data, boolean pre) {
+    onMute(data, pre, false);
+  }
+
+  public void onMute(PlayerMuteData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = data.getExpires() == 0 ? config.getHook("mute") : config.getHook("tempmute");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
@@ -74,10 +93,15 @@ public class CommonHooksListener {
   }
 
   public void onUnmute(PlayerMuteData data, PlayerData actor, String reason) {
+    onUnmute(data, actor, reason, false);
+  }
+
+  public void onUnmute(PlayerMuteData data, PlayerData actor, String reason, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("unmute");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
@@ -91,10 +115,15 @@ public class CommonHooksListener {
   }
 
   public void onBan(IpBanData data, boolean pre) {
+    onBan(data, pre, false);
+  }
+
+  public void onBan(IpBanData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = data.getExpires() == 0 ? config.getHook("ipban") : config.getHook("tempipban");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
@@ -109,10 +138,15 @@ public class CommonHooksListener {
   }
 
   public void onUnban(IpBanData data, PlayerData actor, String reason) {
+    onUnban(data, actor, reason, false);
+  }
+
+  public void onUnban(IpBanData data, PlayerData actor, String reason, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("unbanip");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
@@ -125,11 +159,16 @@ public class CommonHooksListener {
   }
 
   public void onBan(IpRangeBanData data, boolean pre) {
+    onBan(data, pre, false);
+  }
+
+  public void onBan(IpRangeBanData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = data.getExpires() == 0 ? config.getHook("iprangeban") : config
         .getHook("temprangeipban");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
@@ -145,10 +184,15 @@ public class CommonHooksListener {
   }
 
   public void onUnban(IpRangeBanData data, PlayerData actor, String reason) {
+    onUnban(data, actor, reason, false);
+  }
+
+  public void onUnban(IpRangeBanData data, PlayerData actor, String reason, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("unbaniprange");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
@@ -162,10 +206,15 @@ public class CommonHooksListener {
   }
 
   public void onWarn(PlayerWarnData data, boolean pre) {
+    onWarn(data, pre, false);
+  }
+
+  public void onWarn(PlayerWarnData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("warn");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
@@ -181,10 +230,15 @@ public class CommonHooksListener {
   }
 
   public void onNote(PlayerNoteData data) {
+    onNote(data, false);
+  }
+
+  public void onNote(PlayerNoteData data, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("note");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     if (hook.getPost().size() != 0) {
       executeCommands(hook.getPost(), ImmutableMap.of(
@@ -197,14 +251,19 @@ public class CommonHooksListener {
   }
 
   public void onReport(PlayerReportData data, boolean pre) {
+    onReport(data, pre, false);
+  }
+
+  public void onReport(PlayerReportData data, boolean pre, boolean silent) {
     HooksConfig config = plugin.getConfig().getHooksConfig();
     final Hook hook = config.getHook("report");
 
     if (hook == null) return;
+    if (shouldSkip(hook, silent)) return;
 
     List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
 
-    if (hook.getPost().size() != 0) {
+    if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
           "id", String.valueOf(data.getId()),
           "player", data.getPlayer().getName()

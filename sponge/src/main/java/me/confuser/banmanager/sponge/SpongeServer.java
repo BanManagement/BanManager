@@ -159,7 +159,7 @@ public class SpongeServer implements CommonServer {
                 break;
 
             case "PlayerNoteCreatedEvent":
-                event = new PlayerNoteCreatedEvent((PlayerNoteData) args[0]);
+                event = new PlayerNoteCreatedEvent((PlayerNoteData) args[0], args.length > 1 && (boolean) args[1]);
                 break;
 
             case "PlayerReportEvent":

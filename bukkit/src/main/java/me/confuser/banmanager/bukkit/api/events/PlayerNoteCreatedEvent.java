@@ -4,13 +4,17 @@ import lombok.Getter;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 
 
-public class PlayerNoteCreatedEvent extends CustomCancellableEvent {
+public class PlayerNoteCreatedEvent extends SilentCancellableEvent {
 
   @Getter
   private PlayerNoteData note;
 
   public PlayerNoteCreatedEvent(PlayerNoteData note) {
-    super(true);
+    this(note, false);
+  }
+
+  public PlayerNoteCreatedEvent(PlayerNoteData note, boolean silent) {
+    super(silent, true);
     this.note = note;
   }
 }

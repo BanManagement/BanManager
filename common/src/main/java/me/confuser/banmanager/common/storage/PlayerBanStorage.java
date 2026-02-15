@@ -194,6 +194,10 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
   }
 
   public boolean ban(PlayerBanData ban) throws SQLException {
+    return ban(ban, false);
+  }
+
+  public boolean ban(PlayerBanData ban, boolean fromSync) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
@@ -203,7 +207,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
 
-    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent());
+    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
 
     return true;
   }
