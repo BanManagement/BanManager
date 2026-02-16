@@ -10,7 +10,8 @@ data class FabricVersion(val mcVersion: String, val javaImage: String, val fabri
 val fabricVersions = listOf(
     FabricVersion("1.20.1", "java17", "0.16.10"),
     FabricVersion("1.21.1", "java21", "0.16.9"),
-    FabricVersion("1.21.4", "java21", "0.16.9")
+    FabricVersion("1.21.4", "java21", "0.16.9"),
+    FabricVersion("1.21.11", "java21", "0.17.3")
 )
 
 // Sponge version configurations
@@ -87,16 +88,16 @@ fabricVersions.forEach { version ->
     )
 }
 
-// Fabric E2E tests - runs latest version (1.21.4)
+// Fabric E2E tests - runs latest version (1.21.11)
 createPlatformTestTask(
     "testFabric",
     "fabric",
-    ":fabric:1.21.4:remapJar",
-    "Run Fabric E2E tests in Docker (latest: 1.21.4)",
+    ":fabric:1.21.11:remapJar",
+    "Run Fabric E2E tests in Docker (latest: 1.21.11)",
     mapOf(
-        "MC_VERSION" to "1.21.4",
+        "MC_VERSION" to "1.21.11",
         "JAVA_IMAGE" to "java21",
-        "FABRIC_LOADER" to "0.16.9"
+        "FABRIC_LOADER" to "0.17.3"
     )
 )
 
