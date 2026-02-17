@@ -9,8 +9,8 @@
     "lint:fix": "ts-standard --fix"
   },
   "dependencies": {
-    "mineflayer": "^4.23.0",
-    "rcon-client": "^4.2.4"
+    "mineflayer": "^4.35.0",
+    "rcon-client": "^4.2.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

@@ -272,14 +272,14 @@ fabricVersions.forEach { version ->
 // Default Fabric debug tasks (latest version)
 tasks.register<Exec>("startFabric") {
     group = "verification"
-    description = "Start the Fabric test server without running tests (for debugging) - latest: 1.21.4"
+    description = "Start the Fabric test server without running tests (for debugging) - latest: 1.21.11"
 
-    dependsOn(":fabric:1.21.4:remapJar")
+    dependsOn(":fabric:1.21.11:remapJar")
 
     workingDir = file("platforms/fabric")
-    environment("MC_VERSION", "1.21.4")
+    environment("MC_VERSION", "1.21.11")
     environment("JAVA_IMAGE", "java21")
-    environment("FABRIC_LOADER", "0.16.9")
+    environment("FABRIC_LOADER", "0.17.3")
     commandLine("docker", "compose", "up", "-d", "mariadb", "fabric")
 }
 
