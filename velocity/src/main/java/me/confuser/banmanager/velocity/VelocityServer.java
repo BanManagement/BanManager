@@ -48,6 +48,11 @@ public class VelocityServer implements CommonServer {
   }
 
   @Override
+  public CommonPlayer getPlayerExact(String name) {
+    return getPlayer(name);
+  }
+
+  @Override
   public CommonPlayer[] getOnlinePlayers() {
       return server.getAllPlayers().stream()
           .map(player -> new VelocityPlayer(player, plugin.getConfig().isOnlineMode()))

@@ -52,6 +52,15 @@ public class BukkitServer implements CommonServer {
   }
 
   @Override
+  public CommonPlayer getPlayerExact(String name) {
+    Player player = Bukkit.getPlayerExact(name);
+
+    if (player == null) return null;
+
+    return new BukkitPlayer(player, plugin.getConfig().isOnlineMode());
+  }
+
+  @Override
   public CommonPlayer[] getOnlinePlayers() {
     return Bukkit.getOnlinePlayers().stream()
         .map(player -> new BukkitPlayer(player, plugin.getConfig().isOnlineMode()))

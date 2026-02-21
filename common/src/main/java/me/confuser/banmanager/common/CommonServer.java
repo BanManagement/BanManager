@@ -11,6 +11,8 @@ public interface CommonServer {
 
   CommonPlayer getPlayer(String name);
 
+  CommonPlayer getPlayerExact(String name);
+
   CommonPlayer[] getOnlinePlayers();
 
   void broadcast(String message, String permission);

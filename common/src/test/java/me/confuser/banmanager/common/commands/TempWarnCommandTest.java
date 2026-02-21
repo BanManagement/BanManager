@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
+import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.util.parsers.WarnCommandParser;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
@@ -84,7 +86,49 @@ public class TempWarnCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new WarnCommandParser(plugin, args, 2)));
     await().untilAsserted(() -> verify(sender).sendMessage("&c" + playerName + " not found, are you sure they exist?"));
   }
+
+  @Test
+  public void shouldFailIfAmbiguousPartialMatch() {
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    PlayerData offlinePlayer = testUtils.createPlayerWithName("Player");
+    String[] args = new String[]{offlinePlayer.getName(), "1h", "test"};
+
+    server.setUseStorageForOnlineLookups(false);
+    server.clearExactMatches();
+    server.clearPartialMatches();
+    server.setPartialMatch("Player", new TestPlayer(UUID.randomUUID(), "Player123", true));
+    when(sender.hasPermission("bm.command.tempwarn.offline")).thenReturn(false);
+
+    try {
+      assert (cmd.onCommand(sender, new WarnCommandParser(plugin, args, 2)));
+      verify(sender).sendMessage("&cMultiple players match \"" + offlinePlayer.getName() + "\". Please use their full name.");
+    } finally {
+      server.clearPartialMatches();
+      server.clearExactMatches();
+      server.setUseStorageForOnlineLookups(true);
+    }
+  }
+
+  @Test
+  public void shouldAllowPartialWhenNoExactCollision() throws SQLException {
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    PlayerData targetPlayer = testUtils.createPlayerWithName("Player123");
+    String[] args = new String[]{"Play", "1h", "test"};
+
+    server.setUseStorageForOnlineLookups(false);
+    server.clearExactMatches();
+    server.clearPartialMatches();
+    server.setPartialMatch("Play", new TestPlayer(targetPlayer.getUUID(), targetPlayer.getName(), true));
+    when(sender.hasPermission("bm.command.tempwarn.offline")).thenReturn(false);
+
+    try {
+      assert (cmd.onCommand(sender, new WarnCommandParser(plugin, args, 2)));
+      await().until(() -> plugin.getPlayerWarnStorage().getCount(targetPlayer) == 1);
+      verify(sender, never()).sendMessage("&cYou are not allowed to perform this action on an offline player");
+    } finally {
+      server.clearPartialMatches();
+      server.clearExactMatches();
+      server.setUseStorageForOnlineLookups(true);
+    }
+  }
 }
-
-
-

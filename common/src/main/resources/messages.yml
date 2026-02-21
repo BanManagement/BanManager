@@ -47,6 +47,7 @@ messages:
       exception: '&cAn error occured whilst attempting to perform this command. Please check the console for further details.'
       invalidIp: '&cInvalid IP address, expecting w.x.y.z format'
       offlinePermission: '&cYou are not allowed to perform this action on an offline player'
+      ambiguousPlayer: '&cMultiple players match "[player]". Please use their full name.'
       exempt: '&c[player] is exempt from that action'
       noPermission: '&cYou do not have permission to perform that action'
       invalidReason: '&c[reason] is no valid reason.'

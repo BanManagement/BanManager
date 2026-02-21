@@ -14,7 +14,6 @@ import me.confuser.banmanager.common.util.parsers.WarnCommandParser;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 
 public class TempWarnCommand extends CommonCommand {
 
@@ -49,28 +48,29 @@ public class TempWarnCommand extends CommonCommand {
       return true;
     }
 
-    if (parsedArgs[0].equalsIgnoreCase(sender.getName())) {
+    final String playerName = parsedArgs[0];
+    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+
+    if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
+      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      return true;
+    }
+
+    if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
+      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      return true;
+    }
+
+    CommonPlayer onlinePlayer = target.getOnlinePlayer();
+    final String targetName = target.getResolvedName() == null ? playerName : target.getResolvedName();
+
+    if (targetName.equalsIgnoreCase(sender.getName())
+        || (onlinePlayer != null && onlinePlayer.getName().equalsIgnoreCase(sender.getName()))) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
 
-    // Check if UUID vs name
-    final String playerName = parsedArgs[0];
-    final boolean isUUID = playerName.length() > 16;
-    CommonPlayer onlinePlayer;
-
-    if (isUUID) {
-      try {
-        onlinePlayer = getPlugin().getServer().getPlayer(UUID.fromString(playerName));
-      } catch (IllegalArgumentException e) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
-        return true;
-      }
-    } else {
-      onlinePlayer = getPlugin().getServer().getPlayer(playerName);
-    }
-
-    if (onlinePlayer == null) {
+    if (target.getStatus() != TargetResolver.TargetStatus.EXACT_ONLINE) {
       if (!sender.hasPermission("bm.command.tempwarn.offline")) {
         sender.sendMessage(Message.getString("sender.error.offlinePermission"));
         return true;
@@ -99,15 +99,15 @@ public class TempWarnCommand extends CommonCommand {
     final Reason reason = parser.getReason();
 
     getPlugin().getScheduler().runAsync(() -> {
-      final PlayerData player = getPlayer(sender, playerName, true);
+      final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "tempwarn")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
         return;
       }
 

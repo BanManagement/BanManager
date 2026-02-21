@@ -47,6 +47,11 @@ public class BungeeServer implements CommonServer {
   }
 
   @Override
+  public CommonPlayer getPlayerExact(String name) {
+    return getPlayer(name);
+  }
+
+  @Override
   public CommonPlayer[] getOnlinePlayers() {
     return ProxyServer.getInstance().getPlayers().stream()
         .map(player -> new BungeePlayer(player, plugin.getConfig().isOnlineMode()))
