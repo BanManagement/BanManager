@@ -1,10 +1,10 @@
 # Webhooks Configuration
 # More info at https://banmanagement.com/docs/banmanager/configuration/webhooks-yml
 hooks:
-  enabled: false
+  enabled: true
   punishments:
     ban:
-      url: https://discord.com/api/webhooks/changeMe
+      url: http://webhook-sink:8080/webhook
       method: POST
       headers: {}
       ignoreSilent: true
@@ -23,7 +23,7 @@ hooks:
           thumbnail:
             url: https://crafthead.net/helm/[playerId]/128
     tempban:
-      url: https://discord.com/api/webhooks/changeMe
+      url: http://webhook-sink:8080/webhook
       method: POST
       headers: {}
       ignoreSilent: true

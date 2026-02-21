@@ -4,6 +4,20 @@
 name: bm-bungee
 
 services:
+  webhook-sink:
+    image: node:22-alpine
+    working_dir: /app
+    command: ["node", "server.js"]
+    volumes:
+      - ../webhook-sink:/app:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - banmanager
+
   mariadb:
     image: mariadb:10.11
     environment:
@@ -88,6 +102,8 @@ services:
       # BungeeCord config
       - ./configs/bungee/config.yml:/server/config.yml
     depends_on:
+      webhook-sink:
+        condition: service_healthy
       mariadb:
         condition: service_healthy
       paper:
@@ -109,6 +125,8 @@ services:
     depends_on:
       bungee:
         condition: service_healthy
+      webhook-sink:
+        condition: service_healthy
     environment:
       # Connect bots to BungeeCord proxy (default port 25577)
       SERVER_HOST: bungee
@@ -125,6 +143,7 @@ services:
       IS_PROXY: "true"
       # Minecraft version for bot clients (must match backend server)
       MC_VERSION: "1.21.4"
+      WEBHOOK_SINK_URL: "http://webhook-sink:8080"
     volumes:
       - jest-cache:/tmp/jest_cache
     networks:

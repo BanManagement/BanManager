@@ -39,16 +39,16 @@ databases:
       nameBanRecords: bm_name_ban_records
 
   global:
-    enabled: false
+    enabled: true
     storageType: 'mysql'
-    host: 127.0.0.1
+    host: mariadb
     port: 3306
-    name: global_bans
-    user: root
-    password: ''
+    name: banmanager
+    user: banmanager
+    password: banmanager
     maxConnections: 10
     useSSL: false
-    allowPublicKeyRetrieval: false
+    allowPublicKeyRetrieval: true
     verifyServerCertificate: false
     leakDetection: 3000
     maxLifetime: 1800000

@@ -7,6 +7,20 @@
 name: bm-sponge
 
 services:
+  webhook-sink:
+    image: node:22-alpine
+    working_dir: /app
+    command: ["node", "server.js"]
+    volumes:
+      - ../webhook-sink:/app:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - banmanager
+
   mariadb:
     image: mariadb:10.11
     environment:
@@ -52,6 +66,8 @@ services:
       - ./configs/sponge:/config-src/sponge:ro
       - sponge-data-${MC_VERSION:-1.20.6}:/data
     depends_on:
+      webhook-sink:
+        condition: service_healthy
       mariadb:
         condition: service_healthy
     healthcheck:
@@ -71,6 +87,8 @@ services:
     depends_on:
       sponge:
         condition: service_healthy
+      webhook-sink:
+        condition: service_healthy
     environment:
       SERVER_HOST: sponge
       SERVER_PORT: 25565
@@ -78,6 +96,7 @@ services:
       RCON_PORT: 25575
       RCON_PASSWORD: testing
       MC_VERSION: "${MC_VERSION:-1.20.6}"
+      WEBHOOK_SINK_URL: "http://webhook-sink:8080"
     volumes:
       # Cache Jest/ts-jest transformations between runs
       - jest-cache:/tmp/jest_cache

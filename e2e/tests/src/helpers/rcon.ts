@@ -57,6 +57,36 @@ export async function sendCommand (command: string): Promise<string> {
   return response
 }
 
+function hasUnknownCommandError (response: string): boolean {
+  const lower = response.toLowerCase()
+  return lower.includes('no such command') || lower.includes('unknown or incomplete command')
+}
+
+/**
+ * Wait until BanManager commands are registered and available.
+ * This avoids flaky startup races where server RCON is online but plugin commands are not yet ready.
+ */
+export async function waitForBanManagerCommands (
+  options: { timeoutMs?: number, intervalMs?: number } = {}
+): Promise<void> {
+  const timeoutMs = options.timeoutMs ?? 60000
+  const intervalMs = options.intervalMs ?? 1000
+  const start = Date.now()
+
+  while (Date.now() - start < timeoutMs) {
+    const banallResponse = await sendCommand('banall')
+    const unbanResponse = await sendCommand('bmunban')
+
+    if (!hasUnknownCommandError(banallResponse) && !hasUnknownCommandError(unbanResponse)) {
+      return
+    }
+
+    await new Promise(resolve => setTimeout(resolve, intervalMs))
+  }
+
+  throw new Error(`Timeout after ${timeoutMs}ms waiting for BanManager commands to be ready`)
+}
+
 export async function disconnectRcon (): Promise<void> {
   if (rconClient != null) {
     await rconClient.end()
