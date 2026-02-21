@@ -4,7 +4,9 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.UUIDUtils;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -12,13 +14,33 @@ import java.util.UUID;
 
 public class TestServer implements CommonServer {
   private BanManagerPlugin plugin;
+  private boolean useStorageForOnlineLookups = true;
   private final Map<UUID, CommonPlayer> exactUuidMatches = new HashMap<>();
   private final Map<String, CommonPlayer> exactNameMatches = new HashMap<>();
   private final Map<String, CommonPlayer> partialMatches = new HashMap<>();
 
   @Override
   public CommonPlayer getPlayer(UUID uniqueId) {
-    return exactUuidMatches.get(uniqueId);
+    CommonPlayer exact = exactUuidMatches.get(uniqueId);
+    if (exact != null) {
+      return exact;
+    }
+
+    if (!useStorageForOnlineLookups) {
+      return null;
+    }
+
+    try {
+      PlayerData player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uniqueId));
+
+      if (player == null) return null;
+
+      return new TestPlayer(uniqueId, player.getName(), true);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 
   @Override
@@ -28,7 +50,19 @@ public class TestServer implements CommonServer {
       return exact;
     }
 
-    return partialMatches.get(name.toLowerCase(Locale.ROOT));
+    CommonPlayer partial = partialMatches.get(name.toLowerCase(Locale.ROOT));
+    if (partial != null) {
+      return partial;
+    }
+
+    if (!useStorageForOnlineLookups) {
+      return null;
+    }
+
+    PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
+    if (player == null) return null;
+
+    return new TestPlayer(player.getUUID(), player.getName(), true);
   }
 
   @Override
@@ -49,7 +83,7 @@ public class TestServer implements CommonServer {
   }
 
   public void setUseStorageForOnlineLookups(boolean useStorageForOnlineLookups) {
-    // No-op: online lookups are controlled via explicit exact/partial test mappings.
+    this.useStorageForOnlineLookups = useStorageForOnlineLookups;
   }
 
   public void clearPartialMatches() {
