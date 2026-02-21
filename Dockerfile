@@ -12,16 +12,22 @@ RUN chmod +x gradlew
 # Copy project sources.
 COPY . .
 
-# Generate aggregated Javadocs.
-RUN ./gradlew --no-daemon clean aggregateJavadocs
+# Generate API Javadocs using a minimal settings file
+# to avoid loading Fabric/Stonecutter projects.
+RUN cp settings-javadocs.gradle.kts settings.gradle.kts && \
+    ./gradlew --no-daemon :BanManagerCommon:javadoc
 
 # Normalize output path to /out.
 RUN set -eux; \
     mkdir -p /out; \
-    if [ -d build/docs/javadoc ]; then \
+    if [ -d common/build/docs/javadoc ]; then \
+      cp -a common/build/docs/javadoc/. /out/; \
+    elif [ -d build/docs/javadoc ]; then \
       cp -a build/docs/javadoc/. /out/; \
     elif [ -d build/docs/aggregateJavadoc ]; then \
       cp -a build/docs/aggregateJavadoc/. /out/; \
+    elif [ -d build/docs/aggregateJavadocs ]; then \
+      cp -a build/docs/aggregateJavadocs/. /out/; \
     else \
       echo "Javadocs output directory not found" >&2; \
       exit 1; \
