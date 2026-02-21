@@ -52,14 +52,31 @@ public class TempMuteCommand extends CommonCommand {
       return true;
     }
 
-    if (parser.args[0].equalsIgnoreCase(sender.getName())) {
+    final String playerName = parser.args[0];
+    final boolean isUUID = playerName.length() > 16;
+    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+
+    if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
+      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      return true;
+    }
+
+    if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
+      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      return true;
+    }
+
+    CommonPlayer onlinePlayer;
+    final String targetName = target.getResolvedName() == null ? playerName : target.getResolvedName();
+
+    onlinePlayer = target.getOnlinePlayer();
+
+    if (targetName.equalsIgnoreCase(sender.getName())
+        || (onlinePlayer != null && onlinePlayer.getName().equalsIgnoreCase(sender.getName()))) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
 
-    // Check if UUID vs name
-    final String playerName = parser.args[0];
-    final boolean isUUID = playerName.length() > 16;
     final boolean isMuted;
 
     if (isUUID) {
@@ -70,26 +87,18 @@ public class TempMuteCommand extends CommonCommand {
         return true;
       }
     } else {
-      isMuted = getPlugin().getPlayerMuteStorage().isMuted(playerName);
+      isMuted = getPlugin().getPlayerMuteStorage().isMuted(targetName);
     }
 
     if (isMuted && !sender.hasPermission("bm.command.tempmute.override")) {
       Message message = Message.get("mute.error.exists");
-      message.set("player", playerName);
+      message.set("player", targetName);
 
       sender.sendMessage(message.toString());
       return true;
     }
 
-    CommonPlayer onlinePlayer;
-
-    if (isUUID) {
-      onlinePlayer = getPlugin().getServer().getPlayer(UUID.fromString(playerName));
-    } else {
-      onlinePlayer = getPlugin().getServer().getPlayer(playerName);
-    }
-
-    if (onlinePlayer == null) {
+    if (target.getStatus() != TargetResolver.TargetStatus.EXACT_ONLINE) {
       if (!sender.hasPermission("bm.command.tempmute.offline")) {
         sender.sendMessage(Message.getString("sender.error.offlinePermission"));
         return true;
@@ -118,15 +127,15 @@ public class TempMuteCommand extends CommonCommand {
     final Reason reason = parser.getReason();
 
     getPlugin().getScheduler().runAsync(() -> {
-      final PlayerData player = getPlayer(sender, playerName, true);
+      final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "tempmute")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
         return;
       }
 
@@ -151,7 +160,7 @@ public class TempMuteCommand extends CommonCommand {
         if (isUUID) {
           mute = getPlugin().getPlayerMuteStorage().getMute(UUID.fromString(playerName));
         } else {
-          mute = getPlugin().getPlayerMuteStorage().getMute(playerName);
+          mute = getPlugin().getPlayerMuteStorage().getMute(targetName);
         }
 
         if (mute != null) {
@@ -182,7 +191,7 @@ public class TempMuteCommand extends CommonCommand {
         created = getPlugin().getPlayerMuteStorage().mute(mute);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("mute.error.exists").set("player",
-                playerName));
+                targetName));
         return;
       }
 

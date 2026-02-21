@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class ReportCommand extends CommonCommand {
 
@@ -35,24 +34,29 @@ public class ReportCommand extends CommonCommand {
       return true;
     }
 
-    if (parser.args[0].equalsIgnoreCase(sender.getName())) {
+    final String playerName = parser.args[0];
+    final TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+
+    if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
+      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      return true;
+    }
+
+    if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
+      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      return true;
+    }
+
+    CommonPlayer onlinePlayer = target.getOnlinePlayer();
+    final String targetName = target.getResolvedName() == null ? playerName : target.getResolvedName();
+
+    if (targetName.equalsIgnoreCase(sender.getName())
+        || (onlinePlayer != null && onlinePlayer.getName().equalsIgnoreCase(sender.getName()))) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
 
-    // Check if UUID vs name
-    final String playerName = parser.args[0];
-    final boolean isUUID = playerName.length() > 16;
-
-    CommonPlayer onlinePlayer;
-
-    if (isUUID) {
-      onlinePlayer = getPlugin().getServer().getPlayer(UUID.fromString(playerName));
-    } else {
-      onlinePlayer = getPlugin().getServer().getPlayer(playerName);
-    }
-
-    if (onlinePlayer == null) {
+    if (target.getStatus() != TargetResolver.TargetStatus.EXACT_ONLINE) {
       if (!sender.hasPermission("bm.command.report.offline")) {
         sender.sendMessage(Message.getString("sender.error.offlinePermission"));
         return true;
@@ -65,15 +69,15 @@ public class ReportCommand extends CommonCommand {
     final String reason = parser.getReason().getMessage();
 
     getPlugin().getScheduler().runAsync(() -> {
-      final PlayerData player = getPlayer(sender, playerName, false);
+      final PlayerData player = getPlayer(sender, targetName, false);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
         return;
       }
 
-      if (getPlugin().getExemptionsConfig().isExempt(player, "ban")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+      if (getPlugin().getExemptionsConfig().isExempt(player, "report")) {
+        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
         return;
       }
 

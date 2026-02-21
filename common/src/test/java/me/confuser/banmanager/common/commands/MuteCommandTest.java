@@ -3,13 +3,14 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.configs.ExemptionsConfig;
+import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
@@ -82,11 +83,57 @@ public class MuteCommandTest extends BasePluginDbTest {
   }
 
   @Test
+  public void shouldFailIfAmbiguousPartialMatch() {
+    PlayerData offlinePlayer = testUtils.createPlayerWithName("Player");
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    String[] args = new String[]{offlinePlayer.getName(), "test"};
+
+    server.setUseStorageForOnlineLookups(false);
+    server.clearExactMatches();
+    server.clearPartialMatches();
+    server.setPartialMatch("Player", new TestPlayer(UUID.randomUUID(), "Player123", true));
+    when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
+
+    try {
+      assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+      verify(sender).sendMessage("&cMultiple players match \"" + offlinePlayer.getName() + "\". Please use their full name.");
+    } finally {
+      server.clearPartialMatches();
+      server.clearExactMatches();
+      server.setUseStorageForOnlineLookups(true);
+    }
+  }
+
+  @Test
+  public void shouldAllowPartialWhenNoExactCollision() {
+    PlayerData targetPlayer = testUtils.createPlayerWithName("Player123");
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    String[] args = new String[]{"Play", "test"};
+
+    server.setUseStorageForOnlineLookups(false);
+    server.clearExactMatches();
+    server.clearPartialMatches();
+    server.setPartialMatch("Play", new TestPlayer(targetPlayer.getUUID(), targetPlayer.getName(), true));
+    when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
+
+    try {
+      assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
+      await().until(() -> plugin.getPlayerMuteStorage().isMuted(targetPlayer.getUUID()));
+      verify(sender, never()).sendMessage("&cYou are not allowed to perform this action on an offline player");
+    } finally {
+      server.clearPartialMatches();
+      server.clearExactMatches();
+      server.setUseStorageForOnlineLookups(true);
+    }
+  }
+
+  @Test
   public void shouldFailIfExempt() {
     PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
-    CommonPlayer commonPlayer = spy(server.getPlayer(player.getName()));
+    CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
+    this.server.setExactMatch(player.getName(), commonPlayer);
     String[] args = new String[]{player.getName(), "test"};
 
     when(sender.hasPermission("bm.exempt.override.mute")).thenReturn(false);
@@ -110,11 +157,12 @@ public class MuteCommandTest extends BasePluginDbTest {
     PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = spy(plugin.getServer());
     CommonSender sender = spy(server.getConsoleSender());
-    ExemptionsConfig config = spy(plugin.getExemptionsConfig());
+    CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
+    this.server.setExactMatch(player.getName(), commonPlayer);
     String[] args = new String[]{player.getName(), "test"};
 
     when(sender.hasPermission("bm.exempt.override.mute")).thenReturn(false);
-    when(config.isExempt(player, "mute")).thenReturn(true);
+    when(commonPlayer.hasPermission("bm.exempt.mute")).thenReturn(true);
 
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 1)));
     verify(sender).sendMessage("&c" + player.getName() + " is exempt from that action");

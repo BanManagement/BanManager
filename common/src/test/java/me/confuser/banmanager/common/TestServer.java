@@ -4,36 +4,61 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
-import me.confuser.banmanager.common.util.UUIDUtils;
 
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class TestServer implements CommonServer {
   private BanManagerPlugin plugin;
+  private final Map<UUID, CommonPlayer> exactUuidMatches = new HashMap<>();
+  private final Map<String, CommonPlayer> exactNameMatches = new HashMap<>();
+  private final Map<String, CommonPlayer> partialMatches = new HashMap<>();
 
   @Override
   public CommonPlayer getPlayer(UUID uniqueId) {
-    try {
-      PlayerData player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uniqueId));
-
-      if (player == null) return null;
-
-      return new TestPlayer(uniqueId, player.getName(), true);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-
-    return null;
+    return exactUuidMatches.get(uniqueId);
   }
 
   @Override
   public CommonPlayer getPlayer(String name) {
-    PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
+    CommonPlayer exact = getPlayerExact(name);
+    if (exact != null) {
+      return exact;
+    }
 
-    if (player == null) return null;
+    return partialMatches.get(name.toLowerCase(Locale.ROOT));
+  }
 
-    return new TestPlayer(player.getUUID(), player.getName(), true);
+  @Override
+  public CommonPlayer getPlayerExact(String name) {
+    return exactNameMatches.get(name.toLowerCase(Locale.ROOT));
+  }
+
+  public void setPartialMatch(String input, CommonPlayer player) {
+    partialMatches.put(input.toLowerCase(Locale.ROOT), player);
+  }
+
+  public void setExactMatch(String input, CommonPlayer player) {
+    exactNameMatches.put(input.toLowerCase(Locale.ROOT), player);
+  }
+
+  public void setExactMatch(UUID uuid, CommonPlayer player) {
+    exactUuidMatches.put(uuid, player);
+  }
+
+  public void setUseStorageForOnlineLookups(boolean useStorageForOnlineLookups) {
+    // No-op: online lookups are controlled via explicit exact/partial test mappings.
+  }
+
+  public void clearPartialMatches() {
+    partialMatches.clear();
+  }
+
+  public void clearExactMatches() {
+    exactNameMatches.clear();
+    exactUuidMatches.clear();
   }
 
   @Override

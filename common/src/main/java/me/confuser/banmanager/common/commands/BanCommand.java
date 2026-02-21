@@ -35,14 +35,29 @@ public class BanCommand extends CommonCommand {
       return true;
     }
 
-    if (parser.args[0].equalsIgnoreCase(sender.getName())) {
+    final String playerName = parser.args[0];
+    final boolean isUUID = isUUID(playerName);
+    final TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+
+    if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
+      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      return true;
+    }
+
+    if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
+      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      return true;
+    }
+
+    final CommonPlayer onlinePlayer = target.getOnlinePlayer();
+    final String targetName = target.getResolvedName() == null ? playerName : target.getResolvedName();
+
+    if (targetName.equalsIgnoreCase(sender.getName())
+        || (onlinePlayer != null && onlinePlayer.getName().equalsIgnoreCase(sender.getName()))) {
       sender.sendMessage(Message.getString("sender.error.noSelf"));
       return true;
     }
 
-    // Check if UUID vs name
-    final String playerName = parser.args[0];
-    final boolean isUUID = isUUID(playerName);
     final boolean isBanned;
 
     if (isUUID) {
@@ -53,26 +68,18 @@ public class BanCommand extends CommonCommand {
         return true;
       }
     } else {
-      isBanned = getPlugin().getPlayerBanStorage().isBanned(playerName);
+      isBanned = getPlugin().getPlayerBanStorage().isBanned(targetName);
     }
 
     if (isBanned && !sender.hasPermission("bm.command.ban.override")) {
       Message message = Message.get("ban.error.exists");
-      message.set("player", playerName);
+      message.set("player", targetName);
 
       sender.sendMessage(message.toString());
       return true;
     }
 
-    final CommonPlayer onlinePlayer;
-
-    if (isUUID) {
-      onlinePlayer = getPlugin().getServer().getPlayer(UUID.fromString(playerName));
-    } else {
-      onlinePlayer = getPlugin().getServer().getPlayer(playerName);
-    }
-
-    if (onlinePlayer == null) {
+    if (target.getStatus() != TargetResolver.TargetStatus.EXACT_ONLINE) {
       if (!sender.hasPermission("bm.command.ban.offline")) {
         sender.sendMessage(Message.getString("sender.error.offlinePermission"));
         return true;
@@ -83,15 +90,15 @@ public class BanCommand extends CommonCommand {
     }
 
     getPlugin().getScheduler().runAsync(() -> {
-      final PlayerData player = getPlayer(sender, playerName, true);
+      final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "ban")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", playerName).toString());
+        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
         return;
       }
 
@@ -116,7 +123,7 @@ public class BanCommand extends CommonCommand {
         if (isUUID) {
           ban = getPlugin().getPlayerBanStorage().getBan(UUID.fromString(playerName));
         } else {
-          ban = getPlugin().getPlayerBanStorage().getBan(playerName);
+          ban = getPlugin().getPlayerBanStorage().getBan(targetName);
         }
 
         if (ban != null) {
@@ -137,7 +144,7 @@ public class BanCommand extends CommonCommand {
         created = getPlugin().getPlayerBanStorage().ban(ban);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("ban.error.exists").set("player",
-                playerName));
+                targetName));
         return;
       }
 

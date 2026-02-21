@@ -76,6 +76,11 @@ public class FabricServer implements CommonServer {
     return new FabricPlayer(player, this.server, plugin.getConfig().isOnlineMode());
   }
 
+  @Override
+  public CommonPlayer getPlayerExact(String name) {
+    return getPlayer(name);
+  }
+
   public CommonPlayer[] getOnlinePlayers() {
     return this.server.getPlayerManager().getPlayerList().stream()
       .map(player -> new FabricPlayer(player, this.server, plugin.getConfig().isOnlineMode()))

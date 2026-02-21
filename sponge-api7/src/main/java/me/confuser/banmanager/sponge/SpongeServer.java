@@ -43,6 +43,11 @@ public class SpongeServer implements CommonServer {
   }
 
   @Override
+  public CommonPlayer getPlayerExact(String name) {
+    return getPlayer(name);
+  }
+
+  @Override
   public CommonPlayer[] getOnlinePlayers() {
     return Sponge.getServer().getOnlinePlayers().stream()
         .map(player -> new SpongePlayer(player, plugin.getConfig().isOnlineMode()))
