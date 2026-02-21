@@ -37,7 +37,10 @@ fun createPlatformTestTask(
         group = "verification"
         this.description = description
 
-        dependsOn(pluginTask)
+        val skipPluginBuild = System.getenv("BM_E2E_SKIP_PLUGIN_BUILD")?.equals("true", ignoreCase = true) == true
+        if (!skipPluginBuild) {
+            dependsOn(pluginTask)
+        }
 
         workingDir = file("platforms/$platformDir")
 
@@ -46,12 +49,13 @@ fun createPlatformTestTask(
             environment(key, value)
         }
 
-        commandLine(
-            "docker", "compose", "up",
-            "--build",
-            "--abort-on-container-exit",
-            "--exit-code-from", "tests"
-        )
+        val composeArgs = mutableListOf("docker", "compose", "up")
+        val forceComposeBuild = System.getenv("BM_E2E_COMPOSE_BUILD")?.equals("true", ignoreCase = true) == true
+        if (forceComposeBuild) {
+            composeArgs.add("--build")
+        }
+        composeArgs.addAll(listOf("--abort-on-container-exit", "--exit-code-from", "tests"))
+        commandLine(*composeArgs.toTypedArray())
 
         doLast {
             providers.exec {

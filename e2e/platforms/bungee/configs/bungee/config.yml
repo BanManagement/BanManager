@@ -1,38 +1,9 @@
 network_compression_threshold: 256
 remote_ping_timeout: 5000
-online_mode: false
 remote_ping_cache: -1
+online_mode: false
 forge_support: false
 max_packets_per_second: 4096
-ip_forward: true
-disabled_commands:
-- disabledcommandhere
-max_packets_data_per_second: 33554432
-player_limit: -1
-reject_transfers: false
-log_commands: false
-connection_throttle_limit: 3
-prevent_proxy_connections: false
-connection_throttle: -1
-log_pings: false
-groups:
-  admin:
-  - admin
-stats: 00000000-0000-0000-0000-000000000000
-servers:
-  paper:
-    motd: Paper Backend
-    address: paper:25565
-    restricted: false
-permissions:
-  default:
-  - bungeecord.command.server
-  - bungeecord.command.list
-  admin:
-  - bungeecord.command.alert
-  - bungeecord.command.end
-  - bungeecord.command.ip
-  - bungeecord.command.reload
 listeners:
 - query_port: 25577
   motd: BanManager E2E Test Server
@@ -49,6 +20,35 @@ listeners:
   max_players: 100
   tab_size: 60
   force_default_server: true
+disabled_commands:
+- disabledcommandhere
+max_packets_data_per_second: 33554432
+reject_transfers: false
+player_limit: -1
+connection_throttle: -1
+connection_throttle_limit: 3
+prevent_proxy_connections: false
+log_commands: false
+log_pings: false
+stats: 00000000-0000-0000-0000-000000000000
+groups:
+  admin:
+  - admin
+servers:
+  paper:
+    motd: Paper Backend
+    address: paper:25565
+    restricted: false
+permissions:
+  default:
+  - bungeecord.command.server
+  - bungeecord.command.list
+  admin:
+  - bungeecord.command.alert
+  - bungeecord.command.end
+  - bungeecord.command.ip
+  - bungeecord.command.reload
+ip_forward: true
 enforce_secure_profile: false
 server_connect_timeout: 5000
 timeout: 30000

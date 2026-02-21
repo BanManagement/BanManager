@@ -64,6 +64,7 @@ services:
       - banmanager
 
   tests:
+    image: ${E2E_TEST_IMAGE:-ghcr.io/banmanagement/banmanager-e2e-tests:main}
     build:
       context: ../..
       dockerfile: Dockerfile.tests

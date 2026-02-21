@@ -1,0 +1,52 @@
+name: Cleanup E2E GHCR Images
+
+on:
+  schedule:
+    - cron: "30 4 * * 0" # weekly, after rebuild
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  cleanup:
+    name: Prune old sha-tagged images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old sha-tagged package versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_NAME: banmanager-e2e-tests
+          KEEP_SHA_VERSIONS: "20"
+        run: |
+          set -euo pipefail
+
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          API_PATH="/orgs/${OWNER}/packages/container/${PACKAGE_NAME}/versions?per_page=100"
+
+          VERSIONS="$(gh api "$API_PATH")"
+
+          DELETE_IDS="$(echo "$VERSIONS" | jq -r --argjson keep "$KEEP_SHA_VERSIONS" '
+            map(
+              . as $v
+              | ($v.metadata.container.tags // []) as $tags
+              | select(($tags | index("main")) | not)
+              | select(($tags | length) > 0)
+              | select(($tags | all(test("^sha-"))))
+            )
+            | sort_by(.created_at) | reverse
+            | .[$keep:]
+            | .[].id
+          ')"
+
+          if [[ -z "$DELETE_IDS" ]]; then
+            echo "No old sha-tagged versions to delete."
+            exit 0
+          fi
+
+          while read -r version_id; do
+            [[ -z "$version_id" ]] && continue
+            echo "Deleting package version ${version_id}"
+            gh api --method DELETE "/orgs/${OWNER}/packages/container/${PACKAGE_NAME}/versions/${version_id}"
+          done <<< "$DELETE_IDS"
