@@ -13,7 +13,7 @@ RUN chmod +x gradlew
 COPY . .
 
 # Generate aggregated Javadocs.
-RUN ./gradlew --no-daemon clean aggregateJavadoc
+RUN ./gradlew --no-daemon clean aggregateJavadocs
 
 # Normalize output path to /out.
 RUN set -eux; \
