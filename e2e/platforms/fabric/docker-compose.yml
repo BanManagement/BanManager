@@ -1,6 +1,6 @@
 # Parameterized Fabric E2E testing
 # Environment variables:
-#   MC_VERSION: Minecraft version (default: 1.21.4)
+#   MC_VERSION: Minecraft version (default: 1.21.11)
 #   JAVA_IMAGE: Java image tag (default: java21, use java17 for 1.20.x)
 #   FABRIC_LOADER: Fabric loader version (default: 0.16.9)
 
@@ -27,8 +27,8 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: "FABRIC"
-      VERSION: "${MC_VERSION:-1.21.4}"
-      FABRIC_LOADER_VERSION: "${FABRIC_LOADER:-0.16.9}"
+      VERSION: "${MC_VERSION:-1.21.11}"
+      FABRIC_LOADER_VERSION: "${FABRIC_LOADER:-0.17.3}"
       ONLINE_MODE: "false"
       # Skip re-downloading server JAR just to verify hash (speeds up cached runs)
       SKIP_SERVER_JAR_HASH_CHECK: "true"
@@ -54,11 +54,11 @@ services:
     volumes:
       # Mount the mod JAR to a source directory (will be copied on startup)
       # Uses versioned jar name from Stonecutter build
-      - ../../../fabric/versions/${MC_VERSION:-1.21.4}/build/libs/BanManagerFabric-mc${MC_VERSION:-1.21.4}.jar:/mods-src/BanManager.jar:ro
+      - ../../../fabric/versions/${MC_VERSION:-1.21.11}/build/libs/BanManagerFabric-mc${MC_VERSION:-1.21.11}.jar:/mods-src/BanManager.jar:ro
       # Mount the plugin config source (will be copied on startup)
       - ./configs:/config:ro
       # Cache server data between runs (Fabric JAR, world data)
-      - fabric-data-${MC_VERSION:-1.21.4}:/data
+      - fabric-data-${MC_VERSION:-1.21.11}:/data
     # Note: No host port mappings - tests use Docker network, avoids conflicts with other platforms
     depends_on:
       mariadb:
@@ -85,7 +85,7 @@ services:
       RCON_HOST: fabric
       RCON_PORT: 25575
       RCON_PASSWORD: testing
-      MC_VERSION: "${MC_VERSION:-1.21.4}"
+      MC_VERSION: "${MC_VERSION:-1.21.11}"
     volumes:
       # Cache Jest/ts-jest transformations between runs
       - jest-cache:/tmp/jest_cache
@@ -100,4 +100,5 @@ volumes:
   fabric-data-1.20.1:
   fabric-data-1.21.1:
   fabric-data-1.21.4:
+  fabric-data-1.21.11:
   jest-cache:

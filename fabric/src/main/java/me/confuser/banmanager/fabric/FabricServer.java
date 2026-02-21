@@ -108,8 +108,11 @@ public class FabricServer implements CommonServer {
   }
 
   public boolean dispatchCommand(CommonSender consoleSender, String command) {
-    this.server.getCommandManager().executeWithPrefix(this.server.getCommandSource(), command);
-
+    //? if >=1.21.11 {
+    this.server.getCommandManager().parseAndExecute(this.server.getCommandSource(), command);
+    //?} else {
+    /*this.server.getCommandManager().executeWithPrefix(this.server.getCommandSource(), command);
+    *///?}
     return true;
   }
 

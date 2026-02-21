@@ -10,7 +10,8 @@ data class FabricVersion(val mcVersion: String, val javaImage: String, val fabri
 val fabricVersions = listOf(
     FabricVersion("1.20.1", "java17", "0.16.10"),
     FabricVersion("1.21.1", "java21", "0.16.9"),
-    FabricVersion("1.21.4", "java21", "0.16.9")
+    FabricVersion("1.21.4", "java21", "0.16.9"),
+    FabricVersion("1.21.11", "java21", "0.17.3")
 )
 
 // Sponge version configurations
@@ -53,11 +54,11 @@ fun createPlatformTestTask(
         )
 
         doLast {
-            exec {
+            providers.exec {
                 workingDir = file("platforms/$platformDir")
                 commandLine("docker", "compose", "down", "-v")
                 isIgnoreExitValue = true
-            }
+            }.result.get()
         }
     }
 }
@@ -87,16 +88,16 @@ fabricVersions.forEach { version ->
     )
 }
 
-// Fabric E2E tests - runs latest version (1.21.4)
+// Fabric E2E tests - runs latest version (1.21.11)
 createPlatformTestTask(
     "testFabric",
     "fabric",
-    ":fabric:1.21.4:remapJar",
-    "Run Fabric E2E tests in Docker (latest: 1.21.4)",
+    ":fabric:1.21.11:remapJar",
+    "Run Fabric E2E tests in Docker (latest: 1.21.11)",
     mapOf(
-        "MC_VERSION" to "1.21.4",
+        "MC_VERSION" to "1.21.11",
         "JAVA_IMAGE" to "java21",
-        "FABRIC_LOADER" to "0.16.9"
+        "FABRIC_LOADER" to "0.17.3"
     )
 )
 
@@ -271,14 +272,14 @@ fabricVersions.forEach { version ->
 // Default Fabric debug tasks (latest version)
 tasks.register<Exec>("startFabric") {
     group = "verification"
-    description = "Start the Fabric test server without running tests (for debugging) - latest: 1.21.4"
+    description = "Start the Fabric test server without running tests (for debugging) - latest: 1.21.11"
 
-    dependsOn(":fabric:1.21.4:remapJar")
+    dependsOn(":fabric:1.21.11:remapJar")
 
     workingDir = file("platforms/fabric")
-    environment("MC_VERSION", "1.21.4")
+    environment("MC_VERSION", "1.21.11")
     environment("JAVA_IMAGE", "java21")
-    environment("FABRIC_LOADER", "0.16.9")
+    environment("FABRIC_LOADER", "0.17.3")
     commandLine("docker", "compose", "up", "-d", "mariadb", "fabric")
 }
 
@@ -463,11 +464,11 @@ tasks.named("clean") {
     doLast {
         // Clean up all platform Docker resources
         listOf("bukkit", "fabric", "sponge", "sponge7", "velocity", "bungee").forEach { platform ->
-            exec {
+            providers.exec {
                 workingDir = file("platforms/$platform")
                 commandLine("docker", "compose", "down", "-v", "--rmi", "local")
                 isIgnoreExitValue = true
-            }
+            }.result.get()
         }
     }
 }

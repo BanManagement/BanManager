@@ -7,7 +7,7 @@ import com.vanniktech.maven.publish.JavadocJar
 plugins {
     `java-library`
     id("org.spongepowered.gradle.plugin")
-    id("net.kyori.blossom") version "1.2.0"
+    id("net.kyori.blossom") version "2.2.0"
     id("com.vanniktech.maven.publish")
 }
 
@@ -50,8 +50,14 @@ mavenPublishing {
     }
 }
 
-blossom {
-    replaceToken("@projectVersion@", project.ext["internalVersion"])
+sourceSets {
+    main {
+        blossom {
+            resources {
+                property("@projectVersion@", (project.ext["internalVersion"] as String))
+            }
+        }
+    }
 }
 
 sponge {
@@ -121,7 +127,7 @@ java {
 }
 
 tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
+    val internalVersion = project.ext["internalVersion"] as String
 
     inputs.property("internalVersion", internalVersion)
 

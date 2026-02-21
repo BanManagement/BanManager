@@ -31,3 +31,6 @@ e2e/tests/*.log
 e2e/tests/coverage/
 
 dependency-reduced-pom.xml
+
+#run dirs
+/fabric/versions/*/run
