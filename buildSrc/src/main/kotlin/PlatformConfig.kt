@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import org.gradle.api.Project
-import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.publish.PublishingExtension
@@ -58,6 +58,10 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
 fun Project.applyShadowConfiguration() {
     apply(plugin = "com.gradleup.shadow")
+    configure<ShadowExtension> {
+        addShadowVariantIntoJavaComponent.set(false)
+        addTargetJvmVersionAttribute.set(false)
+    }
     tasks.named<ShadowJar>("shadowJar") {
         archiveClassifier.set("dist")
         dependencies {
@@ -66,9 +70,5 @@ fun Project.applyShadowConfiguration() {
         exclude("GradleStart**")
         exclude(".cache")
         exclude("LICENSE*")
-    }
-    val javaComponent = components["java"] as AdhocComponentWithVariants
-    javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
-        skip()
     }
 }
