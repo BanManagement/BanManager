@@ -1,0 +1,57 @@
+name: Publish E2E Test Runner Image
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "e2e/Dockerfile.tests"
+      - "e2e/tests/package.json"
+      - "e2e/tests/package-lock.json"
+      - ".github/workflows/e2e-images.yml"
+  schedule:
+    - cron: "0 4 * * 0" # weekly rebuild
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Publish GHCR E2E test image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute image repository
+        id: vars
+        run: echo "image_repo=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/banmanager-e2e-tests" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.vars.outputs.image_repo }}
+          tags: |
+            type=raw,value=main
+            type=sha,format=short,prefix=sha-
+
+      - name: Build and push test runner image
+        uses: docker/build-push-action@v6
+        with:
+          context: e2e
+          file: e2e/Dockerfile.tests
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=e2e-tests-runner
+          cache-to: type=gha,mode=max,scope=e2e-tests-runner

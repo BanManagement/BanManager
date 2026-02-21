@@ -1,0 +1,91 @@
+name: E2E Metrics Snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  snapshot:
+    name: Capture PR E2E metrics
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Collect latest 20 completed PR runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          RUNS_JSON="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/e2e.yml/runs?event=pull_request&status=completed&per_page=100")"
+
+          SELECTED_RUNS="$(echo "$RUNS_JSON" | jq '
+            .workflow_runs
+            | map({
+                id,
+                html_url,
+                head_sha,
+                conclusion,
+                run_started_at,
+                updated_at,
+                duration_seconds: ((.updated_at | fromdateiso8601) - (.run_started_at | fromdateiso8601))
+              })
+            | sort_by(.run_started_at) | reverse
+            | .[:20]
+          ')"
+
+          RUN_COUNT="$(echo "$SELECTED_RUNS" | jq 'length')"
+          if [[ "$RUN_COUNT" -lt 20 ]]; then
+            echo "Expected at least 20 completed pull_request runs for e2e.yml, found $RUN_COUNT." >&2
+            exit 1
+          fi
+
+          FAILURE_RATE="$(echo "$SELECTED_RUNS" | jq '
+            (map(select(.conclusion != "success")) | length) as $failures
+            | ($failures / length) * 100
+          ')"
+
+          MEDIAN_DURATION="$(echo "$SELECTED_RUNS" | jq '
+            [.[].duration_seconds] | sort
+            | if (length % 2) == 1
+              then .[length / 2]
+              else ((.[(length / 2) - 1] + .[length / 2]) / 2)
+              end
+          ')"
+
+          AVG_DURATION="$(echo "$SELECTED_RUNS" | jq '[.[].duration_seconds] | add / length')"
+
+          SNAPSHOT_FILE="e2e-metrics-snapshot.json"
+          jq -n \
+            --arg generated_at "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+            --argjson run_count "$RUN_COUNT" \
+            --argjson median_duration_seconds "$MEDIAN_DURATION" \
+            --argjson average_duration_seconds "$AVG_DURATION" \
+            --argjson failure_rate_percent "$FAILURE_RATE" \
+            --argjson runs "$SELECTED_RUNS" \
+            '{
+              generated_at,
+              run_count,
+              median_duration_seconds,
+              average_duration_seconds,
+              failure_rate_percent,
+              runs
+            }' > "$SNAPSHOT_FILE"
+
+          {
+            echo "## E2E PR Metrics (Latest 20 Runs)"
+            echo ""
+            echo "- Median duration: ${MEDIAN_DURATION}s"
+            echo "- Average duration: ${AVG_DURATION}s"
+            echo "- Failure rate: ${FAILURE_RATE}%"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload metrics snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-metrics-snapshot
+          path: e2e-metrics-snapshot.json
+          retention-days: 30

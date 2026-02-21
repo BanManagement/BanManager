@@ -2,6 +2,7 @@ name: E2E Tests
 
 permissions:
   contents: read
+  packages: read
 
 on:
   pull_request:
@@ -11,106 +12,24 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  e2e:
+  build-jars:
     runs-on: ubuntu-latest
-    name: E2E - ${{ matrix.platform }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Bukkit/Paper
-          - platform: Bukkit
-            task: testBukkit
-            build_task: ":BanManagerBukkit:shadowJar"
-            compose_dir: platforms/bukkit
-          # Fabric 1.20.1 (legacy modded, Java 17)
-          - platform: Fabric-1.20.1
-            task: testFabric_1_20_1
-            build_task: ":fabric:1.20.1:remapJar"
-            compose_dir: platforms/fabric
-            mc_version: "1.20.1"
-            java_image: "java17"
-            fabric_loader: "0.16.10"
-          # Fabric 1.21.1 (stable 1.21, Java 21)
-          - platform: Fabric-1.21.1
-            task: testFabric_1_21_1
-            build_task: ":fabric:1.21.1:remapJar"
-            compose_dir: platforms/fabric
-            mc_version: "1.21.1"
-            java_image: "java21"
-            fabric_loader: "0.16.9"
-          # Fabric 1.21.4 (Java 21)
-          - platform: Fabric-1.21.4
-            task: testFabric_1_21_4
-            build_task: ":fabric:1.21.4:remapJar"
-            compose_dir: platforms/fabric
-            mc_version: "1.21.4"
-            java_image: "java21"
-            fabric_loader: "0.16.9"
-          # Fabric 1.21.11 (current latest, Java 21)
-          - platform: Fabric-1.21.11
-            task: testFabric_1_21_11
-            build_task: ":fabric:1.21.11:remapJar"
-            compose_dir: platforms/fabric
-            mc_version: "1.21.11"
-            java_image: "java21"
-            fabric_loader: "0.17.3"
-          # Sponge API 11 (MC 1.20.6, Java 21)
-          - platform: Sponge-1.20.6
-            task: testSponge_1_20_6
-            build_task: ":BanManagerSponge:shadowJar"
-            compose_dir: platforms/sponge
-            mc_version: "1.20.6"
-            java_image: "java21"
-            spongeversion: "1.20.6-11.0.0"
-          # Sponge API 12 (MC 1.21.1, Java 21)
-          - platform: Sponge-1.21.1
-            task: testSponge_1_21_1
-            build_task: ":BanManagerSponge:shadowJar"
-            compose_dir: platforms/sponge
-            mc_version: "1.21.1"
-            java_image: "java21"
-            spongeversion: "1.21.1-12.0.2"
-          # Sponge API 13 (MC 1.21.3, Java 21)
-          - platform: Sponge-1.21.3
-            task: testSponge_1_21_3
-            build_task: ":BanManagerSponge:shadowJar"
-            compose_dir: platforms/sponge
-            mc_version: "1.21.3"
-            java_image: "java21"
-            spongeversion: "1.21.3-13.0.0"
-          # Sponge API 7 (Legacy - MC 1.12.2, Java 8)
-          - platform: Sponge7-1.12.2
-            task: testSponge7
-            build_task: ":BanManagerSponge7:shadowJar"
-            compose_dir: platforms/sponge7
-            mc_version: "1.12.2"
-            java_image: "java8"
-          # Velocity Proxy
-          - platform: Velocity
-            task: testVelocity
-            build_task: ":BanManagerVelocity:shadowJar"
-            compose_dir: platforms/velocity
-          # BungeeCord Proxy
-          - platform: BungeeCord
-            task: testBungee
-            build_task: ":BanManagerBungee:shadowJar"
-            compose_dir: platforms/bungee
+    name: Build plugin artifacts
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: "temurin"
 
       # Also set up JDK 17 for Fabric 1.20.x builds
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: "temurin"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
           distribution: "temurin"
 
       # Ensure JDK 21 is the default
@@ -129,44 +48,187 @@ jobs:
           key: ${{ runner.os }}-loom-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-loom-
 
-      # Docker Buildx for better caching
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Cache Docker layers for test runner image
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-e2e-${{ hashFiles('e2e/Dockerfile.tests', 'e2e/tests/package*.json') }}
-          restore-keys: |
-            ${{ runner.os }}-docker-e2e-
-
-      # Pre-build the test runner image with cache
-      - name: Build test runner image
-        uses: docker/build-push-action@v5
-        with:
-          context: e2e
-          file: e2e/Dockerfile.tests
-          push: false
-          load: true
-          tags: e2e-tests:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      # Move cache to avoid ever-growing cache
-      - name: Move Docker cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
       - name: Build plugin JARs
-        run: ./gradlew ${{ matrix.build_task }} --build-cache
+        run: >
+          ./gradlew
+          :BanManagerBukkit:shadowJar
+          :BanManagerBungee:shadowJar
+          :BanManagerVelocity:shadowJar
+          :BanManagerSponge:shadowJar
+          :BanManagerSponge7:shadowJar
+          :fabric:1.20.1:remapJar
+          :fabric:1.21.1:remapJar
+          :fabric:1.21.4:remapJar
+          :fabric:1.21.11:remapJar
+          --build-cache
+
+      - name: Upload plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-plugin-jars
+          path: |
+            bukkit/build/libs/BanManagerBukkit.jar
+            bungee/build/libs/BanManagerBungeeCord.jar
+            velocity/build/libs/BanManagerVelocity.jar
+            sponge/build/libs/BanManagerSponge.jar
+            sponge-api7/build/libs/BanManagerSponge7.jar
+            fabric/versions/1.20.1/build/libs/BanManagerFabric-mc1.20.1.jar
+            fabric/versions/1.21.1/build/libs/BanManagerFabric-mc1.21.1.jar
+            fabric/versions/1.21.4/build/libs/BanManagerFabric-mc1.21.4.jar
+            fabric/versions/1.21.11/build/libs/BanManagerFabric-mc1.21.11.jar
+          retention-days: 7
+
+  e2e:
+    needs: build-jars
+    runs-on: ubuntu-latest
+    name: E2E - ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Bukkit/Paper
+          - platform: Bukkit
+            task: testBukkit
+            compose_dir: platforms/bukkit
+          # Fabric 1.20.1 (legacy modded, Java 17)
+          - platform: Fabric-1.20.1
+            task: testFabric_1_20_1
+            compose_dir: platforms/fabric
+            mc_version: "1.20.1"
+            java_image: "java17"
+            fabric_loader: "0.16.10"
+          # Fabric 1.21.1 (stable 1.21, Java 21)
+          - platform: Fabric-1.21.1
+            task: testFabric_1_21_1
+            compose_dir: platforms/fabric
+            mc_version: "1.21.1"
+            java_image: "java21"
+            fabric_loader: "0.16.9"
+          # Fabric 1.21.4 (current latest, Java 21)
+          - platform: Fabric-1.21.4
+            task: testFabric_1_21_4
+            compose_dir: platforms/fabric
+            mc_version: "1.21.4"
+            java_image: "java21"
+            fabric_loader: "0.16.9"
+          # Fabric 1.21.11 (current latest, Java 21)
+          - platform: Fabric-1.21.11
+            task: testFabric_1_21_11
+            compose_dir: platforms/fabric
+            mc_version: "1.21.11"
+            java_image: "java21"
+            fabric_loader: "0.17.3"
+          # Sponge API 11 (MC 1.20.6, Java 21)
+          - platform: Sponge-1.20.6
+            task: testSponge_1_20_6
+            compose_dir: platforms/sponge
+            mc_version: "1.20.6"
+            java_image: "java21"
+            spongeversion: "1.20.6-11.0.0"
+          # Sponge API 12 (MC 1.21.1, Java 21)
+          - platform: Sponge-1.21.1
+            task: testSponge_1_21_1
+            compose_dir: platforms/sponge
+            mc_version: "1.21.1"
+            java_image: "java21"
+            spongeversion: "1.21.1-12.0.2"
+          # Sponge API 13 (MC 1.21.3, Java 21)
+          - platform: Sponge-1.21.3
+            task: testSponge_1_21_3
+            compose_dir: platforms/sponge
+            mc_version: "1.21.3"
+            java_image: "java21"
+            spongeversion: "1.21.3-13.0.0"
+          # Sponge API 7 (Legacy - MC 1.12.2, Java 8)
+          - platform: Sponge7-1.12.2
+            task: testSponge7
+            compose_dir: platforms/sponge7
+            mc_version: "1.12.2"
+            java_image: "java8"
+          # Velocity Proxy
+          - platform: Velocity
+            task: testVelocity
+            compose_dir: platforms/velocity
+          # BungeeCord Proxy
+          - platform: BungeeCord
+            task: testBungee
+            compose_dir: platforms/bungee
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download plugin artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-plugin-jars
+          path: .
+
+      - name: Detect E2E runner image input changes
+        id: runner_changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            runner_image_inputs:
+              - "e2e/Dockerfile.tests"
+              - "e2e/tests/**"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+
+      - name: Resolve test runner image
+        run: |
+          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/banmanager-e2e-tests"
+          echo "E2E_IMAGE_REPO=$IMAGE_REPO" >> "$GITHUB_ENV"
+
+          if [[ "${{ steps.runner_changes.outputs.runner_image_inputs }}" == "true" ]]; then
+            echo "E2E_TEST_IMAGE_MODE=local" >> "$GITHUB_ENV"
+            echo "E2E_TEST_IMAGE=e2e-tests:local-${GITHUB_SHA}" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/master" ]]; then
+            SHORT_SHA="${GITHUB_SHA::7}"
+            echo "E2E_TEST_IMAGE=${IMAGE_REPO}:sha-${SHORT_SHA}" >> "$GITHUB_ENV"
+          else
+            echo "E2E_TEST_IMAGE=${IMAGE_REPO}:main" >> "$GITHUB_ENV"
+          fi
+
+          echo "E2E_TEST_IMAGE_MODE=registry" >> "$GITHUB_ENV"
+
+      - name: Pull test runner image from GHCR
+        if: env.E2E_TEST_IMAGE_MODE == 'registry'
+        run: |
+          if docker pull "$E2E_TEST_IMAGE"; then
+            exit 0
+          fi
+
+          FALLBACK_IMAGE="${E2E_IMAGE_REPO}:main"
+          if docker pull "$FALLBACK_IMAGE"; then
+            echo "E2E_TEST_IMAGE=$FALLBACK_IMAGE" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          echo "E2E_TEST_IMAGE_MODE=local" >> "$GITHUB_ENV"
+          echo "E2E_TEST_IMAGE=e2e-tests:local-${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      - name: Build local test runner image when needed
+        if: env.E2E_TEST_IMAGE_MODE == 'local'
+        run: docker build -t "$E2E_TEST_IMAGE" -f e2e/Dockerfile.tests e2e
 
       - name: Run E2E tests
         run: ./gradlew :BanManagerE2E:${{ matrix.task }}
         timeout-minutes: 15
         env:
+          BM_E2E_SKIP_PLUGIN_BUILD: "true"
+          E2E_TEST_IMAGE: ${{ env.E2E_TEST_IMAGE }}
           MC_VERSION: ${{ matrix.mc_version }}
           JAVA_IMAGE: ${{ matrix.java_image }}
           FABRIC_LOADER: ${{ matrix.fabric_loader }}
