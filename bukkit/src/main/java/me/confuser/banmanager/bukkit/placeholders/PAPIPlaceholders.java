@@ -5,9 +5,12 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerBanData;
+import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
+import me.confuser.banmanager.common.util.UUIDUtils;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -24,6 +27,11 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
     registerPlaceholder("ip_bans", (player) -> String.valueOf(plugin.getIpBanStorage().getBans().size()));
     registerPlaceholder("ip_mutes", (player) -> String.valueOf(plugin.getIpMuteStorage().getMutes().size()));
     registerPlaceholder("iprange_bans", (player) -> String.valueOf(plugin.getIpRangeBanStorage().getBans().size()));
+
+    registerPlaceholder("banrecord_count", player -> getPlayerCount(player, p -> plugin.getPlayerBanRecordStorage().getCount(p)));
+    registerPlaceholder("muterecord_count", player -> getPlayerCount(player, p -> plugin.getPlayerMuteRecordStorage().getCount(p)));
+    registerPlaceholder("warning_count", player -> getPlayerCount(player, p -> plugin.getPlayerWarnStorage().getCount(p)));
+    registerPlaceholder("kick_count", player -> getPlayerCount(player, p -> plugin.getPlayerKickStorage().getCount(p)));
 
     registerBanPlaceholder("currentban_id", (player, data) -> String.valueOf(data.getId()));
     registerBanPlaceholder("currentban_created", (player, data) -> String.valueOf(data.getCreated()));
@@ -54,6 +62,24 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
     registerIpMutePlaceholder("currentipmute_actor_id", (player, data) -> data.getActor().getUUID().toString());
     registerIpMutePlaceholder("currentipmute_actor_name", (player, data) -> data.getActor().getName());
     registerIpMutePlaceholder("currentipmute_ip", (player, data) -> data.getIp().toString());
+  }
+
+  @FunctionalInterface
+  private interface PlayerDataCount {
+    long count(PlayerData playerData) throws SQLException;
+  }
+
+  private String getPlayerCount(Player player, PlayerDataCount counter) {
+    try {
+      PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player.getUniqueId()));
+
+      if (playerData == null) return "0";
+
+      return String.valueOf(counter.count(playerData));
+    } catch (SQLException e) {
+      plugin.getLogger().warning("Failed to retrieve placeholder count: " + e.getMessage());
+      return "";
+    }
   }
 
   public void registerPlaceholder(String identifier, final Function<Player, String> fn) {
