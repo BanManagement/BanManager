@@ -9,7 +9,14 @@ import {
   isPlayerInList,
   isProxy
 } from './helpers/rcon'
-import { sleep, waitFor } from './helpers/config'
+import { sleep, waitFor, waitForOrFalse } from './helpers/config'
+
+function hasNotification (bot: TestBot, ...keywords: string[]): boolean {
+  return bot.getSystemMessages().some(m => {
+    const lower = m.message.toLowerCase()
+    return keywords.every(k => lower.includes(k.toLowerCase()))
+  })
+}
 
 describe('Ban/Unban E2E Tests', () => {
   let staffBot: TestBot
@@ -45,13 +52,22 @@ describe('Ban/Unban E2E Tests', () => {
 
     try { await unbanPlayer(TARGET_USERNAME) } catch { /* ignore */ }
 
-    await sleep(500)
+    // Wait for async unban to complete if player was banned
+    await waitForOrFalse(
+      () => hasNotification(staffBot, 'unban', TARGET_USERNAME),
+      { timeout: 5000, interval: 200 }
+    )
+
+    staffBot.clearSystemMessages()
   })
 
   test('banned player cannot join server', async () => {
-    // First, ban the target
     await banPlayer(TARGET_USERNAME, 'Testing ban')
-    await sleep(1000)
+
+    await waitFor(
+      () => hasNotification(staffBot, 'ban', TARGET_USERNAME),
+      { timeout: 10000, interval: 200, message: 'Ban notification not received' }
+    )
 
     // Try to connect as the banned player
     try {
@@ -73,12 +89,21 @@ describe('Ban/Unban E2E Tests', () => {
   }, 60000)
 
   test('unbanned player can join server', async () => {
-    // First, ban and then unban the target
     await banPlayer(TARGET_USERNAME, 'Testing ban')
-    await sleep(1000)
+
+    await waitFor(
+      () => hasNotification(staffBot, 'ban', TARGET_USERNAME),
+      { timeout: 10000, interval: 200, message: 'Ban notification not received' }
+    )
+
+    staffBot.clearSystemMessages()
+
     await unbanPlayer(TARGET_USERNAME)
-    // Allow extra time for async unban processing (especially on Sponge)
-    await sleep(2000)
+
+    await waitFor(
+      () => hasNotification(staffBot, 'unban', TARGET_USERNAME),
+      { timeout: 10000, interval: 200, message: 'Unban notification not received' }
+    )
 
     // Now try to connect as the unbanned player
     targetBot = await createBot(TARGET_USERNAME)
