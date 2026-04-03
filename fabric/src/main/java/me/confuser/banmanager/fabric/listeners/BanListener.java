@@ -2,6 +2,7 @@ package me.confuser.banmanager.fabric.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonBanListener;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.fabric.BanManagerEvents;
 import me.confuser.banmanager.common.data.*;
 
@@ -18,7 +19,7 @@ public class BanListener {
     BanManagerEvents.NAME_BANNED_EVENT.register(this::notifyOnNameBan);
   }
 
-  private void notifyOnBan(PlayerBanData banData, boolean silent) {
+  private void notifyOnBan(PlayerBanData banData, boolean silent, Message kickMessage) {
     listener.notifyOnBan(banData, silent);
   }
 

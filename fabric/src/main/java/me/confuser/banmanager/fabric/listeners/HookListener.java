@@ -2,6 +2,7 @@ package me.confuser.banmanager.fabric.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonHooksListener;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.fabric.BanManagerEvents;
 import me.confuser.banmanager.common.data.*;
 
@@ -36,7 +37,7 @@ public class HookListener {
     return true;
   }
 
-  private void onBan(PlayerBanData banData, boolean silent) {
+  private void onBan(PlayerBanData banData, boolean silent, Message kickMessage) {
     listener.onBan(banData, false, silent);
   }
 

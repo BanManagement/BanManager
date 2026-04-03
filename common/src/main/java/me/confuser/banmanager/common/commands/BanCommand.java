@@ -140,8 +140,18 @@ public class BanCommand extends CommonCommand {
       final PlayerBanData ban = new PlayerBanData(player, actor, parser.getReason().getMessage(), isSilent);
       boolean created;
 
+      Message kickMessage = null;
+      if (onlinePlayer != null) {
+        kickMessage = Message.get("ban.player.kick")
+                             .set("displayName", onlinePlayer.getDisplayName())
+                             .set("player", player.getName())
+                             .set("playerId", player.getUUID().toString())
+                             .set("reason", ban.getReason())
+                             .set("actor", actor.getName());
+      }
+
       try {
-        created = getPlugin().getPlayerBanStorage().ban(ban);
+        created = getPlugin().getPlayerBanStorage().ban(ban, false, kickMessage);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("ban.error.exists").set("player",
                 targetName));
@@ -154,19 +164,12 @@ public class BanCommand extends CommonCommand {
 
       handlePrivateNotes(player, actor, parser.getReason());
 
-      getPlugin().getScheduler().runSync(() -> {
-        if (onlinePlayer == null) return;
-
-        Message kickMessage = Message.get("ban.player.kick")
-                                     .set("displayName", onlinePlayer.getDisplayName())
-                                     .set("player", player.getName())
-                                     .set("playerId", player.getUUID().toString())
-                                     .set("reason", ban.getReason())
-                                     .set("id", ban.getId())
-                                     .set("actor", actor.getName());
-
-        onlinePlayer.kick(kickMessage.toString());
-      });
+      if (onlinePlayer != null) {
+        final Message finalKickMessage = kickMessage;
+        getPlugin().getScheduler().runSync(() -> {
+          onlinePlayer.kick(finalKickMessage.toString());
+        });
+      }
     });
 
     return true;

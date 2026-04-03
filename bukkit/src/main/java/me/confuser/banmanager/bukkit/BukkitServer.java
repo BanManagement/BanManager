@@ -138,7 +138,11 @@ public class BukkitServer implements CommonServer {
         event = new PlayerBanEvent((PlayerBanData) args[0], (boolean) args[1]);
         break;
       case "PlayerBannedEvent":
-        event = new PlayerBannedEvent((PlayerBanData) args[0], (boolean) args[1]);
+        PlayerBannedEvent bannedEvent = new PlayerBannedEvent((PlayerBanData) args[0], (boolean) args[1]);
+        if (args.length > 2 && args[2] instanceof Message) {
+          bannedEvent.setKickMessage((Message) args[2]);
+        }
+        event = bannedEvent;
         break;
       case "PlayerUnbanEvent":
         event = new PlayerUnbanEvent((PlayerBanData) args[0], (PlayerData) args[1], (String) args[2], (boolean) args[3]);
