@@ -162,8 +162,19 @@ public class TempBanCommand extends CommonCommand {
         final PlayerBanData ban = new PlayerBanData(player, actor, reason.getMessage(), isSilent, expires);
         boolean created;
 
+        Message kickMessage = null;
+        if (onlinePlayer != null) {
+          kickMessage = Message.get("tempban.player.kick")
+              .set("displayName", onlinePlayer.getDisplayName())
+              .set("player", player.getName())
+              .set("playerId", player.getUUID().toString())
+              .set("reason", ban.getReason())
+              .set("actor", actor.getName())
+              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+        }
+
         try {
-          created = getPlugin().getPlayerBanStorage().ban(ban);
+          created = getPlugin().getPlayerBanStorage().ban(ban, false, kickMessage);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("ban.error.exists").set("player",
               targetName));
@@ -176,20 +187,12 @@ public class TempBanCommand extends CommonCommand {
 
         handlePrivateNotes(player, actor, reason);
 
-        getPlugin().getScheduler().runSync(() -> {
-          if (onlinePlayer == null) return;
-
-          Message kickMessage = Message.get("tempban.player.kick")
-              .set("displayName", onlinePlayer.getDisplayName())
-              .set("player", player.getName())
-              .set("playerId", player.getUUID().toString())
-              .set("reason", ban.getReason())
-              .set("actor", actor.getName())
-              .set("id", ban.getId())
-              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-
-          onlinePlayer.kick(kickMessage.toString());
-        });
+        if (onlinePlayer != null) {
+          final Message finalKickMessage = kickMessage;
+          getPlugin().getScheduler().runSync(() -> {
+            onlinePlayer.kick(finalKickMessage.toString());
+          });
+        }
 
       }
 

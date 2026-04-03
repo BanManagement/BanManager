@@ -3,6 +3,7 @@ package me.confuser.banmanager.fabric.listeners;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonWebhookListener;
 import me.confuser.banmanager.common.listeners.CommonWebhookListener.WebhookData;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.fabric.BanManagerEvents;
 import me.confuser.banmanager.common.data.*;
 
@@ -26,7 +27,7 @@ public class WebhookListener {
     BanManagerEvents.PLAYER_REPORTED_EVENT.register(this::notifyOnReport);
   }
 
-  private void notifyOnBan(PlayerBanData banData, boolean silent) {
+  private void notifyOnBan(PlayerBanData banData, boolean silent, Message kickMessage) {
     List<WebhookData> webhooks = listener.notifyOnBan(banData);
     sendAll(webhooks, silent);
   }

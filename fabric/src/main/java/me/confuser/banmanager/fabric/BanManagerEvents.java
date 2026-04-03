@@ -20,9 +20,9 @@ public class BanManagerEvents {
     });
 
   public static final Event<PlayerBannedEvent> PLAYER_BANNED_EVENT = EventFactory.createArrayBacked(PlayerBannedEvent.class,
-    (listeners) -> (banData, silent) -> {
+    (listeners) -> (banData, silent, kickMessage) -> {
       for (PlayerBannedEvent listener : listeners) {
-        listener.onPlayerBanned(banData, silent);
+        listener.onPlayerBanned(banData, silent, kickMessage);
       }
     });
 
@@ -229,7 +229,7 @@ public class BanManagerEvents {
 
   @FunctionalInterface
   public interface PlayerBannedEvent {
-    void onPlayerBanned(PlayerBanData banData, boolean silent);
+    void onPlayerBanned(PlayerBanData banData, boolean silent, Message kickMessage);
   }
 
   @FunctionalInterface

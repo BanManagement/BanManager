@@ -142,7 +142,8 @@ public class FabricServer implements CommonServer {
         break;
       case "PlayerBannedEvent":
         silentValue = new BanManagerEvents.SilentValue((boolean) args[1]);
-        BanManagerEvents.PLAYER_BANNED_EVENT.invoker().onPlayerBanned((PlayerBanData) args[0], silentValue.isSilent());
+        Message bannedKickMessage = args.length > 2 && args[2] instanceof Message ? (Message) args[2] : null;
+        BanManagerEvents.PLAYER_BANNED_EVENT.invoker().onPlayerBanned((PlayerBanData) args[0], silentValue.isSilent(), bannedKickMessage);
         commonEvent = new CommonEvent(false, silentValue.isSilent());
         break;
       case "PlayerUnbanEvent":

@@ -17,6 +17,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -198,6 +199,10 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
   }
 
   public boolean ban(PlayerBanData ban, boolean fromSync) throws SQLException {
+    return ban(ban, fromSync, null);
+  }
+
+  public boolean ban(PlayerBanData ban, boolean fromSync, Message kickMessage) throws SQLException {
     CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, ban.isSilent());
 
     if (event.isCancelled()) {
@@ -207,7 +212,11 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
 
-    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
+    if (kickMessage != null) {
+      kickMessage.set("id", ban.getId());
+    }
+
+    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()), kickMessage);
 
     return true;
   }

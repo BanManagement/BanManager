@@ -11,6 +11,26 @@ import {
 } from './helpers/rcon'
 import { sleep, waitFor } from './helpers/config'
 
+async function createBotWithRetry (
+  username: string,
+  maxAttempts: number = 5,
+  retryDelay: number = 3000
+): Promise<TestBot> {
+  let lastError: Error | null = null
+
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      return await createBot(username)
+    } catch (err) {
+      lastError = err as Error
+      console.log(`Bot connection attempt ${i + 1}/${maxAttempts} failed: ${lastError.message}`)
+      if (i < maxAttempts - 1) await sleep(retryDelay)
+    }
+  }
+
+  throw lastError ?? new Error(`Failed to connect after ${maxAttempts} attempts`)
+}
+
 describe('Ban/Unban E2E Tests', () => {
   let staffBot: TestBot
   let targetBot: TestBot | null = null
@@ -45,13 +65,12 @@ describe('Ban/Unban E2E Tests', () => {
 
     try { await unbanPlayer(TARGET_USERNAME) } catch { /* ignore */ }
 
-    await sleep(500)
+    await sleep(3000)
   })
 
   test('banned player cannot join server', async () => {
-    // First, ban the target
     await banPlayer(TARGET_USERNAME, 'Testing ban')
-    await sleep(1000)
+    await sleep(3000)
 
     // Try to connect as the banned player
     try {
@@ -73,15 +92,12 @@ describe('Ban/Unban E2E Tests', () => {
   }, 60000)
 
   test('unbanned player can join server', async () => {
-    // First, ban and then unban the target
     await banPlayer(TARGET_USERNAME, 'Testing ban')
-    await sleep(1000)
+    await sleep(3000)
     await unbanPlayer(TARGET_USERNAME)
-    // Allow extra time for async unban processing (especially on Sponge)
-    await sleep(2000)
 
-    // Now try to connect as the unbanned player
-    targetBot = await createBot(TARGET_USERNAME)
+    // Retry connection -- async unban may still be processing
+    targetBot = await createBotWithRetry(TARGET_USERNAME)
     await waitFor(
       async () => isPlayerInList(TARGET_USERNAME),
       { timeout: 10000, interval: 500, message: 'Unbanned player not in player list' }
