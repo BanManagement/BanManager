@@ -175,6 +175,12 @@ public class BmAPI {
   }
 
   /**
+   * Retrieve previous ban records for a player.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
+   *
    * @param player BanManager's player record
    * @return An iterator of ban records
    * @throws SQLException
@@ -215,7 +221,7 @@ public class BmAPI {
    *
    * @param player Player to mute
    * @param actor  Who the mute is by
-   * @param reason Why they are mutened
+   * @param reason Why they are muted
    * @param silent Whether the mute should be broadcast
    * @return Returns true if mute is successful
    * @throws SQLException
@@ -230,7 +236,7 @@ public class BmAPI {
    *
    * @param player Player to mute
    * @param actor  Who the mute is by
-   * @param reason Why they are mutened
+   * @param reason Why they are muted
    * @param silent Whether the mute should be broadcast
    * @param isSoft Whether the player should be aware they are muted; they will still see their own messages but nobody else will
    * @return Returns true if the mute is successful
@@ -247,7 +253,7 @@ public class BmAPI {
    *
    * @param player  Player to mute
    * @param actor   Who the mute is by
-   * @param reason  Why they are mutened
+   * @param reason  Why they are muted
    * @param silent Whether the mute should be broadcast
    * @param isSoft Whether the player should be aware they are muted; they will still see their own messages but nobody else will
    * @param expires Unix Timestamp in seconds stating the time of when the mute ends
@@ -362,6 +368,12 @@ public class BmAPI {
   }
 
   /**
+   * Retrieve previous mute records for a player.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
+   *
    * @param player Player record
    * @return Iterator of previous mutes
    * @throws SQLException
@@ -437,7 +449,7 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param ip IP to ban, use toIp to convert x.x.x.x to IPAddress
+   * @param ip IP address to check, use toIp to convert x.x.x.x to IPAddress
    * @return Returns true if ip is banned
    */
   public static boolean isBanned(IPAddress ip) {
@@ -447,16 +459,22 @@ public class BmAPI {
   /**
    * Thread safe
    *
-   * @param ip IP to ban, use toIp to convert x.x.x.x to IPAddress
-   * @return Returns the active ban of an ip if the ip is not banned this returns null
+   * @param ip IP address to check, use toIp to convert x.x.x.x to IPAddress
+   * @return Returns the active ban of an ip; if the ip is not banned this returns null
    */
   public static IpBanData getCurrentBan(IPAddress ip) {
     return BanManagerPlugin.getInstance().getIpBanStorage().getBan(ip);
   }
 
   /**
-   * @param ip IP to ban, use toIp to convert x.x.x.x to IPAddress
-   * @return Returns previous bans of an ip
+   * Retrieve previous bans of an IP address.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
+   *
+   * @param ip IP address to look up, use toIp to convert x.x.x.x to IPAddress
+   * @return Iterator of previous bans for the ip
    * @throws SQLException
    */
   public static CloseableIterator<IpBanRecord> getBanRecords(IPAddress ip) throws SQLException {
@@ -522,10 +540,13 @@ public class BmAPI {
 
   /**
    * Retrieve past warnings of a player.
-   * This method is not thread safe and should not be called on the main thread.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
    *
    * @param player Player record
-   * @return Iterator containing previous player warningss
+   * @return Iterator containing previous player warnings
    * @throws SQLException
    */
   public static CloseableIterator<PlayerWarnData> getWarnings(PlayerData player) throws SQLException {
@@ -534,7 +555,10 @@ public class BmAPI {
 
   /**
    * Get all known names for a player (summary view with first/last seen).
-   * This method is not thread safe and should not be called on the main thread.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
    *
    * @param uuid Player UUID
    * @return List of PlayerNameSummary ordered by lastSeen descending (most recent first)
@@ -550,7 +574,10 @@ public class BmAPI {
 
   /**
    * Get the full session history for a player.
-   * This method is not thread safe and should not be called on the main thread.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
    *
    * @param uuid Player UUID
    * @param since Unix timestamp in seconds to get sessions since
@@ -568,7 +595,10 @@ public class BmAPI {
 
   /**
    * Get the name a player was using at a specific timestamp.
-   * This method is not thread safe and should not be called on the main thread.
+   * <p>This method performs blocking database I/O and should not be called
+   * from the main server thread. Use an asynchronous task instead.</p>
+   * <p>This method is not internally synchronized. If called concurrently
+   * from multiple threads, the caller is responsible for synchronization.</p>
    *
    * @param uuid Player UUID
    * @param timestamp Unix timestamp in seconds
