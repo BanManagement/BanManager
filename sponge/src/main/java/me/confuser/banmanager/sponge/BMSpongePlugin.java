@@ -198,6 +198,8 @@ public class BMSpongePlugin {
 
         registerChatListener();
 
+        Sponge.eventManager().registerListeners(pluginContainer, new ReloadListener(this));
+
         if (plugin.getConfig().isDisplayNotificationsEnabled()) {
             Sponge.eventManager().registerListeners(pluginContainer, new BanListener(plugin));
             Sponge.eventManager().registerListeners(pluginContainer, new MuteListener(plugin));

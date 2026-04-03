@@ -39,7 +39,6 @@ public class JoinListener {
                 new BanJoinHandler(plugin, event)
             );
         } catch (Exception e) {
-            plugin.getLogger().warning("Error during banCheck: " + e.getMessage());
             plugin.getLogger().warning("Error during banCheck", e);
         }
     }

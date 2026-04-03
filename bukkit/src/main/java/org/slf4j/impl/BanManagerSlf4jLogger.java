@@ -92,7 +92,7 @@ public class BanManagerSlf4jLogger extends MarkerIgnoringBase {
   public void trace(String msg, Throwable t) {
     if (!isTraceEnabled()) return;
     CommonLogger l = logger();
-    if (l != null) l.info("[TRACE] " + msg);
+    if (l != null) l.warning("[TRACE] " + msg, t);
   }
 
   // --- DEBUG ------------------------------------------------------------------
@@ -129,7 +129,7 @@ public class BanManagerSlf4jLogger extends MarkerIgnoringBase {
   public void debug(String msg, Throwable t) {
     if (!isDebugEnabled()) return;
     CommonLogger l = logger();
-    if (l != null) l.info("[DEBUG] " + msg);
+    if (l != null) l.warning("[DEBUG] " + msg, t);
   }
 
   // --- INFO -------------------------------------------------------------------
@@ -166,7 +166,7 @@ public class BanManagerSlf4jLogger extends MarkerIgnoringBase {
   public void info(String msg, Throwable t) {
     if (!isInfoEnabled()) return;
     CommonLogger l = logger();
-    if (l != null) l.info(msg);
+    if (l != null) l.warning(msg, t);
   }
 
   // --- WARN -------------------------------------------------------------------
