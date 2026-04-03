@@ -64,7 +64,7 @@ public class Message {
     for (String key : config.getConfigurationSection("messages").getKeys(true)) {
       String value = config.getString("messages." + key);
       if (value != null) {
-        newMessages.put(key, value.replace("\\n", "\n"));
+        newMessages.put(key, value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " "));
       }
     }
 
