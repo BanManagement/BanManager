@@ -52,7 +52,7 @@ public class BMBukkitPlugin extends JavaPlugin {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
       getPluginLoader().disablePlugin(this);
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
       return;
     }
 
@@ -65,7 +65,7 @@ public class BMBukkitPlugin extends JavaPlugin {
       plugin.enable();
     } catch (Exception e) {
       getPluginLoader().disablePlugin(this);
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to enable BanManager", e);
       return;
     }
 

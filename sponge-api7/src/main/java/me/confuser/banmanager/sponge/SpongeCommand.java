@@ -63,7 +63,7 @@ public class SpongeCommand implements CommandCallable {
         return true;
       }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | ArgumentParseException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to execute command", e);
     }
 
     return false;

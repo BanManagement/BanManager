@@ -33,7 +33,7 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
         return true;
       }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
     }
 
     return false;

@@ -44,7 +44,7 @@ public class IpRangeSync extends BmRunnable {
         banStorage.addBan(ban);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync new IP range bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -73,7 +73,7 @@ public class IpRangeSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync IP range ban removals", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

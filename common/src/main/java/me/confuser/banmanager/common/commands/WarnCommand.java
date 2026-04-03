@@ -99,7 +99,7 @@ public class WarnCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute warn command", e);
         return;
       }
 
@@ -116,7 +116,7 @@ public class WarnCommand extends CommonCommand {
         created = getPlugin().getPlayerWarnStorage().addWarning(warning, isSilent);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute warn command", e);
         return;
       }
 
@@ -158,7 +158,7 @@ public class WarnCommand extends CommonCommand {
       try {
         actionCommands = getPlugin().getConfig().getWarningActions().getCommands(player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute warn command", e);
         return;
       }
 

@@ -2,6 +2,7 @@ package me.confuser.banmanager.bungee;
 
 import me.confuser.banmanager.common.CommonLogger;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PluginLogger implements CommonLogger {
@@ -25,5 +26,15 @@ public class PluginLogger implements CommonLogger {
   @Override
   public void severe(String msg) {
     logger.severe(msg);
+  }
+
+  @Override
+  public void severe(String msg, Throwable t) {
+    logger.log(Level.SEVERE, msg, t);
+  }
+
+  @Override
+  public void warning(String msg, Throwable t) {
+    logger.log(Level.WARNING, msg, t);
   }
 }

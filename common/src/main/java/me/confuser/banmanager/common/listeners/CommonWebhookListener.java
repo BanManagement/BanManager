@@ -232,7 +232,7 @@ public class CommonWebhookListener {
     try {
       locations = plugin.getPlayerReportLocationStorage().getByReport(report);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to send webhook", e);
     }
 
     Map<String, String> replacements = new HashMap<>();
@@ -355,9 +355,7 @@ public class CommonWebhookListener {
     } catch (Exception e) {
       plugin.getLogger().warning("Failed to send webhook '" + data.name + "'");
       plugin.getLogger().warning("Error: " + e.getMessage());
-      if (plugin.getConfig().isDebugEnabled()) {
-        e.printStackTrace();
-      }
+      plugin.getLogger().warning("Failed to send webhook", e);
     } finally {
       if (connection != null) {
         connection.disconnect();

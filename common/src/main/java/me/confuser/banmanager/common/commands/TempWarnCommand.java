@@ -118,7 +118,7 @@ public class TempWarnCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;
       }
 
@@ -135,7 +135,7 @@ public class TempWarnCommand extends CommonCommand {
         created = getPlugin().getPlayerWarnStorage().addWarning(warning, isSilent);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;
       }
 
@@ -179,7 +179,7 @@ public class TempWarnCommand extends CommonCommand {
       try {
         actionCommands = getPlugin().getConfig().getWarningActions().getCommands(player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;
       }
 

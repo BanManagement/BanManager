@@ -85,7 +85,7 @@ public class UnbanCommand extends CommonCommand {
         unbanned = getPlugin().getPlayerBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute unban command", e);
         return;
       }
 

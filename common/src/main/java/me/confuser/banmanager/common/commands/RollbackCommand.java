@@ -103,7 +103,7 @@ public class RollbackCommand extends CommonCommand {
                 .create(new RollbackData(player, sender.getData(), type, expires, now));
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute rollback command", e);
             return;
           }
         }
@@ -139,7 +139,7 @@ public class RollbackCommand extends CommonCommand {
                   getPlugin().getPlayerBanRecordStorage().delete(record);
                 } catch (SQLException e) {
                   sender.sendMessage(Message.get("sender.error.exception").toString());
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
                   return;
                 }
               }
@@ -174,7 +174,7 @@ public class RollbackCommand extends CommonCommand {
                   getPlugin().getIpBanRecordStorage().delete(record);
                 } catch (SQLException e) {
                   sender.sendMessage(Message.get("sender.error.exception").toString());
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
                   return;
                 }
               }
@@ -216,7 +216,7 @@ public class RollbackCommand extends CommonCommand {
                   getPlugin().getPlayerMuteRecordStorage().delete(record);
                 } catch (SQLException e) {
                   sender.sendMessage(Message.get("sender.error.exception").toString());
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
                   return;
                 }
               }
@@ -250,7 +250,7 @@ public class RollbackCommand extends CommonCommand {
                   getPlugin().getIpMuteRecordStorage().delete(record);
                 } catch (SQLException e) {
                   sender.sendMessage(Message.get("sender.error.exception").toString());
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
                   return;
                 }
               }
@@ -285,7 +285,7 @@ public class RollbackCommand extends CommonCommand {
           }
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute rollback command", e);
           return;
         }
 

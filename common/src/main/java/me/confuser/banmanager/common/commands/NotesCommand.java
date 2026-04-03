@@ -78,7 +78,7 @@ public class NotesCommand extends CommonCommand {
           }
 
         } catch (SQLException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute notes command", e);
         } finally {
           if (notesItr != null) notesItr.closeQuietly();
         }
@@ -129,7 +129,7 @@ public class NotesCommand extends CommonCommand {
             }
 
           } catch (SQLException e) {
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute notes command", e);
           } finally {
             if (notesItr != null) notesItr.closeQuietly();
           }

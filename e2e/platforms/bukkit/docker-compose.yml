@@ -108,6 +108,8 @@ services:
     volumes:
       # Cache Jest/ts-jest transformations between runs
       - jest-cache:/tmp/jest_cache
+      # Allow tests to inspect server logs for stderr regression checks
+      - paper-data:/server-data:ro
     networks:
       - banmanager
 

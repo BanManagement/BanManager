@@ -177,7 +177,7 @@ public class BanManagerPlugin {
 
       setupStorage();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.severe("An error occurred attempting to make a database connection", e);
       throw new Exception("An error occurred attempting to make a database connection, please see stack trace below");
     }
 
@@ -291,6 +291,9 @@ public class BanManagerPlugin {
     return newConfig;
   }
 
+  // Only effective on platforms where ORMLite falls back to LocalLog (no SLF4J/Log4j2
+  // on the classpath). On Bukkit, ORMLite auto-detects the shaded SLF4J and level
+  // filtering is handled by BanManagerSlf4jLogger instead.
   private void disableDatabaseLogging() {
     System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "WARNING");
   }
@@ -374,7 +377,7 @@ public class BanManagerPlugin {
       try (DatabaseConnection conn = getLocalConn().getReadWriteConnection("")) {
         conn.executeStatement("CREATE ALIAS IF NOT EXISTS INET6_NTOA FOR \"me.confuser.banmanager.common.util.IPUtils.toString\"", DatabaseConnection.DEFAULT_RESULT_FLAGS);
       } catch (IOException | SQLException e) {
-        e.printStackTrace();
+        logger.severe("An error occurred setting up H2 storage", e);
       }
     }
 

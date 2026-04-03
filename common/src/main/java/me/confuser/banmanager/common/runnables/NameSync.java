@@ -67,7 +67,7 @@ public class NameSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync name bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -95,7 +95,7 @@ public class NameSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync name bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

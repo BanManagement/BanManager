@@ -79,7 +79,7 @@ public class SpongeCommand {
                 return CommandResult.success();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Failed to execute command", e);
             return CommandResult.error(Component.text("An error occurred: " + e.getMessage()));
         }
     }

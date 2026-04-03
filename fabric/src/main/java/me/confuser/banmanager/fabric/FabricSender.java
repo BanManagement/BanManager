@@ -52,7 +52,7 @@ public class FabricSender implements CommonSender {
     try {
       return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes((sender.getPlayer().getUuid())));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to load player data", e);
       sendMessage(Message.get("sender.error.exception"));
       return null;
     }

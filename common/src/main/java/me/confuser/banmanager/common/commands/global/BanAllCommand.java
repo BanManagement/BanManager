@@ -62,7 +62,7 @@ public class BanAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute banall command", e);
         return;
       }
 

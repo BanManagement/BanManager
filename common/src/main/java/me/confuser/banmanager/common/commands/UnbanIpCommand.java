@@ -62,7 +62,7 @@ public class UnbanIpCommand extends CommonCommand {
           ip = new IPAddressString(ipStr).toAddress();
         } catch (AddressStringException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute unbanip command", e);
           return;
         }
       }
@@ -90,7 +90,7 @@ public class UnbanIpCommand extends CommonCommand {
         unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute unbanip command", e);
         return;
       }
 

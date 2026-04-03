@@ -95,7 +95,7 @@ public class HistoryStorage {
     try {
       connection = plugin.getLocalConn().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       return null;
     }
@@ -159,12 +159,12 @@ public class HistoryStorage {
 
       result = statement.runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       try {
         plugin.getLocalConn().releaseConnection(connection);
       } catch (SQLException e1) {
-        e1.printStackTrace();
+        plugin.getLogger().warning("Failed to process history operation", e1);
       }
 
       return null;
@@ -187,7 +187,7 @@ public class HistoryStorage {
         });
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     } finally {
       result.closeQuietly();
     }
@@ -195,7 +195,7 @@ public class HistoryStorage {
     try {
       plugin.getLocalConn().releaseConnection(connection);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     }
 
     return results;
@@ -207,7 +207,7 @@ public class HistoryStorage {
     try {
       connection = plugin.getLocalConn().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       return null;
     }
@@ -265,12 +265,12 @@ public class HistoryStorage {
 
       result = statement.runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       try {
         plugin.getLocalConn().releaseConnection(connection);
       } catch (SQLException e1) {
-        e1.printStackTrace();
+        plugin.getLogger().warning("Failed to process history operation", e1);
       }
 
       return null;
@@ -293,7 +293,7 @@ public class HistoryStorage {
         });
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     } finally {
       result.closeQuietly();
     }
@@ -301,7 +301,7 @@ public class HistoryStorage {
     try {
       plugin.getLocalConn().releaseConnection(connection);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     }
 
     return results;
@@ -313,7 +313,7 @@ public class HistoryStorage {
     try {
       connection = plugin.getLocalConn().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       return null;
     }
@@ -357,12 +357,12 @@ public class HistoryStorage {
 
       result = statement.runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       try {
         plugin.getLocalConn().releaseConnection(connection);
       } catch (SQLException e1) {
-        e1.printStackTrace();
+        plugin.getLogger().warning("Failed to process history operation", e1);
       }
 
       return null;
@@ -385,7 +385,7 @@ public class HistoryStorage {
         });
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     } finally {
       result.closeQuietly();
     }
@@ -393,7 +393,7 @@ public class HistoryStorage {
     try {
       plugin.getLocalConn().releaseConnection(connection);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     }
 
     return results;
@@ -405,7 +405,7 @@ public class HistoryStorage {
     try {
       connection = plugin.getLocalConn().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       return null;
     }
@@ -446,12 +446,12 @@ public class HistoryStorage {
 
       result = statement.runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
 
       try {
         plugin.getLocalConn().releaseConnection(connection);
       } catch (SQLException e1) {
-        e1.printStackTrace();
+        plugin.getLogger().warning("Failed to process history operation", e1);
       }
 
       return null;
@@ -474,7 +474,7 @@ public class HistoryStorage {
         });
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     } finally {
       result.closeQuietly();
     }
@@ -482,7 +482,7 @@ public class HistoryStorage {
     try {
       plugin.getLocalConn().releaseConnection(connection);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process history operation", e);
     }
 
     return results;

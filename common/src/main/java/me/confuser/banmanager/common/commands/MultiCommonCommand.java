@@ -77,7 +77,7 @@ public abstract class MultiCommonCommand extends CommonCommand {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      getPlugin().getLogger().warning("Failed to execute command", e);
       sender.sendMessage(errorOccuredMessage);
       sender.sendMessage(commandTypeHelpMessage);
     }

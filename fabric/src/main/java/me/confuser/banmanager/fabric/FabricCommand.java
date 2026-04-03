@@ -83,7 +83,7 @@ public class FabricCommand {
         return 1;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
     }
 
     return 0;

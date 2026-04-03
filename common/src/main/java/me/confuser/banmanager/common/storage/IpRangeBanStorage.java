@@ -75,7 +75,7 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
     try {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP range ban operation", e);
       plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
       return;
     }
@@ -95,7 +95,7 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP range ban operation", e);
       getConnectionSource().releaseConnection(connection);
 
       plugin.getLogger().warning("Failed to retrieve ip range bans into memory");
@@ -137,7 +137,7 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
         }
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP range ban operation", e);
     } finally {
       if (results != null) results.closeQuietly();
 

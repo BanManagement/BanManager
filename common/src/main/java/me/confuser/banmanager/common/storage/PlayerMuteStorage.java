@@ -88,7 +88,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
     try {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player mute operation", e);
       plugin.getLogger().warning("Failed to retrieve mutes into memory");
       return;
     }
@@ -111,7 +111,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player mute operation", e);
       getConnectionSource().releaseConnection(connection);
 
       plugin.getLogger().warning("Failed to retrieve mutes into memory");
@@ -159,7 +159,7 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
         mutes.put(mute.getPlayer().getUUID(), mute);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player mute operation", e);
     } finally {
       if (results != null) results.closeQuietly();
 

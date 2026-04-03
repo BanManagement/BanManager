@@ -57,7 +57,7 @@ public class MuteSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync new mutes", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -101,7 +101,7 @@ public class MuteSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync mute removals", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

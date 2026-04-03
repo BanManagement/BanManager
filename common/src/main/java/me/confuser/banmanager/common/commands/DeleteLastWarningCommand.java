@@ -35,7 +35,7 @@ public class DeleteLastWarningCommand extends CommonCommand {
       try {
         updated = getPlugin().getPlayerWarnStorage().deleteRecent(player);
       } catch (SQLException e) {
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute dwarn command", e);
       }
 
       if (updated == 0) {

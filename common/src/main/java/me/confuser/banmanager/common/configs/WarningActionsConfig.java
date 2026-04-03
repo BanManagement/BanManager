@@ -107,7 +107,7 @@ public class WarningActionsConfig {
           try {
             totalPoints = BanManagerPlugin.getInstance().getPlayerWarnStorage().getPointsCount(player, DateUtils.parseDateDiff(actionCommand.getPointsTimeframe(), false));
           } catch (Exception e) {
-            e.printStackTrace();
+            BanManagerPlugin.getInstance().getLogger().warning("Failed to calculate warning points", e);
           }
         }
 

@@ -50,7 +50,7 @@ public class ExportCommand extends CommonCommand {
           exportPlayers(fileName);
         } catch (IOException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute export command", e);
           return;
         }
       } else if (parser.args[0].startsWith("ip")) {
@@ -65,7 +65,7 @@ public class ExportCommand extends CommonCommand {
           exportIps(fileName);
         } catch (IOException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute export command", e);
           return;
         }
       } else {

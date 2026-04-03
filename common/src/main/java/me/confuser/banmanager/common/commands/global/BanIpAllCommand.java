@@ -60,7 +60,7 @@ public class BanIpAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute banipall command", e);
         return;
       }
 

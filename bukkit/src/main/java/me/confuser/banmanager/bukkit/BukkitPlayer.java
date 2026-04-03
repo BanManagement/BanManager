@@ -76,7 +76,7 @@ public class BukkitPlayer implements CommonPlayer {
     try {
       return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
     } catch (SQLException e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to load player data", e);
       sendMessage(Message.get("sender.error.exception").toString());
       return null;
     }

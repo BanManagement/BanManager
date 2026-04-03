@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common.configs;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
@@ -54,7 +55,7 @@ public class TimeLimitsConfig {
             return true;
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          BanManagerPlugin.getInstance().getLogger().warning("Failed to parse time limit", e);
         }
       }
     }

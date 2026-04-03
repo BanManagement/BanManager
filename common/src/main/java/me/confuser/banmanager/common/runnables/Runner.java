@@ -25,7 +25,7 @@ public class Runner implements Runnable {
         runner.run();
       } catch (Exception e) {
         // Ensure runner exceptions are caught to still allow others to execute
-        e.printStackTrace();
+        runner.plugin.getLogger().warning("Runner task failed", e);
       } finally {
         runner.afterRun();
       }

@@ -41,13 +41,13 @@ public class ReportListener implements Listener {
     try {
       createLocation(report, player);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for reported player", e);
     }
 
     try {
       createLocation(report, actor);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for actor", e);
     }
   }
 

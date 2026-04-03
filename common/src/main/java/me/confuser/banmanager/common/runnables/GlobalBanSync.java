@@ -64,7 +64,7 @@ public class GlobalBanSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -107,7 +107,7 @@ public class GlobalBanSync extends BmRunnable {
         applyHelper.applyUnban(record, true);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global unbans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

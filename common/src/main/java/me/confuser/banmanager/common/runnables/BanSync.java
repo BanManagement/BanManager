@@ -71,7 +71,7 @@ public class BanSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -99,7 +99,7 @@ public class BanSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

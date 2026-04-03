@@ -103,7 +103,7 @@ public class FindAltsCommand extends CommonCommand {
             colour = NamedTextColor.YELLOW;
           }
         } catch (SQLException e) {
-          e.printStackTrace();
+          BanManagerPlugin.getInstance().getLogger().warning("Failed to execute findalts command", e);
         }
       }
 

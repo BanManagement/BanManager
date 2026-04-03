@@ -63,7 +63,7 @@ public class CommonJoinListener {
 
           if (ban != null) plugin.getIpBanStorage().addBan(ban);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 
@@ -73,7 +73,7 @@ public class CommonJoinListener {
 
           if (ban != null) plugin.getPlayerBanStorage().addBan(ban);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 
@@ -83,7 +83,7 @@ public class CommonJoinListener {
 
           if (mute != null) plugin.getPlayerMuteStorage().addMute(mute);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
     }
@@ -95,7 +95,7 @@ public class CommonJoinListener {
         try {
           plugin.getIpRangeBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
 
         return;
@@ -137,7 +137,7 @@ public class CommonJoinListener {
         try {
           plugin.getIpBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
 
         return;
@@ -174,7 +174,7 @@ public class CommonJoinListener {
         try {
           plugin.getNameBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
 
         return;
@@ -209,7 +209,7 @@ public class CommonJoinListener {
       try {
         plugin.getPlayerBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
       } catch (SQLException e) {
-        e.printStackTrace();
+        plugin.getLogger().warning("Failed to process player join", e);
       }
 
       return;
@@ -248,14 +248,14 @@ public class CommonJoinListener {
     try {
       plugin.getPlayerStorage().createOrUpdate(player);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player join", e);
       return;
     }
 
     try {
       plugin.getPlayerHistoryStorage().startSession(player, plugin.getConfig().isLogIpsEnabled());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player join", e);
     }
   }
 
@@ -273,7 +273,7 @@ public class CommonJoinListener {
         try {
           plugin.getPlayerMuteStorage().resumeMute(mute);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 
@@ -315,7 +315,7 @@ public class CommonJoinListener {
 
         }
       } catch (SQLException e) {
-        e.printStackTrace();
+        plugin.getLogger().warning("Failed to process player join", e);
       } finally {
         if (notesItr != null) notesItr.closeQuietly();
       }
@@ -340,7 +340,7 @@ public class CommonJoinListener {
           plugin.getPlayerWarnStorage().update(warning);
         }
       } catch (SQLException e) {
-        e.printStackTrace();
+        plugin.getLogger().warning("Failed to process player join", e);
       } finally {
         if (warnings != null) warnings.closeQuietly();
       }
@@ -353,7 +353,7 @@ public class CommonJoinListener {
             openReports.send(plugin.getServer().getPlayer(player.getUniqueId()), 1);
           }
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 
@@ -365,7 +365,7 @@ public class CommonJoinListener {
             assignedReports.send(plugin.getServer().getPlayer(player.getUniqueId()), 1);
           }
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 
@@ -443,7 +443,7 @@ public class CommonJoinListener {
         try {
           punishAlts(duplicates, uuid);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player join", e);
         }
       }
 

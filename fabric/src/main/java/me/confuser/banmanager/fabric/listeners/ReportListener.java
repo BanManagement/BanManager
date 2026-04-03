@@ -34,13 +34,13 @@ public class ReportListener {
     try {
       createLocation(reportData, player, reportData.getPlayer());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for reported player", e);
     }
 
     try {
       createLocation(reportData, actor, reportData.getActor());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for actor", e);
     }
   }
 

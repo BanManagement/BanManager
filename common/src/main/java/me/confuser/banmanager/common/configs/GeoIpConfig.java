@@ -70,8 +70,7 @@ public class GeoIpConfig extends Config {
         downloadDatabase(cityDownloadUrl, cityFile);
       } catch (IOException e) {
         enabled = false;
-        logger.severe("Unable to download city database");
-        e.printStackTrace();
+        logger.severe("Unable to download city database", e);
         return;
       }
     }
@@ -82,8 +81,7 @@ public class GeoIpConfig extends Config {
         downloadDatabase(countryDownloadUrl, countryFile);
       } catch (IOException e) {
         enabled = false;
-        logger.severe("Unable to download country database");
-        e.printStackTrace();
+        logger.severe("Unable to download country database", e);
         return;
       }
     }
@@ -93,9 +91,8 @@ public class GeoIpConfig extends Config {
       try {
         cityDatabase =  new Reader(cityFile, Reader.FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
-        logger.severe("Failed loading city database");
+        logger.severe("Failed loading city database", e);
         enabled = false;
-        e.printStackTrace();
         return;
       }
     }
@@ -105,9 +102,8 @@ public class GeoIpConfig extends Config {
       try {
         countryDatabase = new Reader(cityFile, Reader.FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
-        logger.severe("Failed loading country database");
+        logger.severe("Failed loading country database", e);
         enabled = false;
-        e.printStackTrace();
         return;
       }
     }

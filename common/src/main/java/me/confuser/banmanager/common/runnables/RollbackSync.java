@@ -167,7 +167,7 @@ public class RollbackSync extends BmRunnable {
       }
 
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync rollbacks", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

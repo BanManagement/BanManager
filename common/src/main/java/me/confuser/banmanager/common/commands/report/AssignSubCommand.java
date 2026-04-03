@@ -45,7 +45,7 @@ public class AssignSubCommand extends CommonSubCommand {
         data = getPlugin().getPlayerReportStorage().queryForId(id);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report assign", e);
         return;
       }
 
@@ -62,7 +62,7 @@ public class AssignSubCommand extends CommonSubCommand {
           player = getPlugin().getPlayerStorage().queryForId(UUIDUtils.toBytes(sender.getData().getUUID()));
         } catch (SQLException e) {
           sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute report assign", e);
           return;
         }
       }
@@ -79,7 +79,7 @@ public class AssignSubCommand extends CommonSubCommand {
         getPlugin().getPlayerReportStorage().update(data);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report assign", e);
         return;
       }
 

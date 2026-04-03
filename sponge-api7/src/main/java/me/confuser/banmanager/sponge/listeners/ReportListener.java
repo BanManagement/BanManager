@@ -46,13 +46,13 @@ public class ReportListener {
     try {
       if (player.isPresent()) createLocation(report, player.get());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for reported player", e);
     }
 
     try {
       if (actor.isPresent()) createLocation(report, actor.get());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to store report location for actor", e);
     }
   }
 

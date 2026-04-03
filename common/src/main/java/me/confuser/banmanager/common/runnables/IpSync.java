@@ -51,7 +51,7 @@ public class IpSync extends BmRunnable {
         banStorage.addBan(ban);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync new IP bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -82,7 +82,7 @@ public class IpSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync IP ban removals", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -109,7 +109,7 @@ public class IpSync extends BmRunnable {
         muteStorage.addMute(mute);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync new IP mutes", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -139,7 +139,7 @@ public class IpSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync IP mute removals", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

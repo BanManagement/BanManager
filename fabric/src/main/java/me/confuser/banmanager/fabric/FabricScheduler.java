@@ -1,5 +1,6 @@
 package me.confuser.banmanager.fabric;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonScheduler;
 import net.minecraft.server.MinecraftServer;
 
@@ -32,7 +33,7 @@ public class FabricScheduler implements CommonScheduler {
           worker.setName("banmanager-worker-" + worker.getPoolIndex());
           return worker;
         },
-        (t, e) -> e.printStackTrace(),
+        (t, e) -> BanManagerPlugin.getInstance().getLogger().warning("Uncaught exception in scheduler worker thread", e),
         false);
   }
 
@@ -46,7 +47,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Exception in async task", e);
       }
     });
   }
@@ -57,7 +58,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed async task", e);
       }
     }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
@@ -68,7 +69,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Exception in sync task", e);
       }
     });
   }
@@ -79,7 +80,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed sync task", e);
       }
     }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
@@ -90,7 +91,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Exception in repeating async task", e);
       }
     }), initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
   }

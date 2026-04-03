@@ -33,7 +33,7 @@ public class BungeeCommand extends Command implements TabExecutor {
     try {
       success = this.command.onCommand(commonSender, this.command.getParser(args));
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-      e.printStackTrace();
+      plugin.getPlugin().getLogger().warning("Failed to execute command", e);
     }
 
     if (!success) {

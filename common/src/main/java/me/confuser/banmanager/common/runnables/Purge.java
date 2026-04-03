@@ -22,43 +22,43 @@ public class Purge implements Runnable {
     try {
       plugin.getPlayerKickStorage().purge(cleanUps.get("kicks"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge kicks", e);
     }
 
     try {
       plugin.getPlayerBanRecordStorage().purge(cleanUps.get("banRecords"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge ban records", e);
     }
 
     try {
       plugin.getIpBanRecordStorage().purge(cleanUps.get("ipBanRecords"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge IP ban records", e);
     }
 
     try {
       plugin.getPlayerMuteRecordStorage().purge(cleanUps.get("muteRecords"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge mute records", e);
     }
 
     try {
       plugin.getPlayerWarnStorage().purge(cleanUps.get("readWarnings"), true);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge read warnings", e);
     }
 
     try {
       plugin.getPlayerWarnStorage().purge(cleanUps.get("unreadWarnings"), false);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge unread warnings", e);
     }
 
     try {
       plugin.getPlayerHistoryStorage().purge(cleanUps.get("playerHistory"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to purge player history", e);
     }
   }
 }

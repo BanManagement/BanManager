@@ -40,7 +40,7 @@ public class TeleportSubCommand extends CommonSubCommand {
         data = getPlugin().getPlayerReportLocationStorage().getByReportId(id);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report teleport", e);
         return;
       }
 

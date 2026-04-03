@@ -71,7 +71,7 @@ public class UnbanAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("errorOccurred").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute unbanall command", e);
         return;
       }
 

@@ -38,7 +38,7 @@ public abstract class Config {
   public Config setFile(File input) {
     // handle the File
     if (input == null) {
-      new InvalidConfigurationException("File cannot be null!").printStackTrace();
+      logger.warning("Invalid configuration", new InvalidConfigurationException("File cannot be null!"));
     }
 
     file = input;
@@ -53,7 +53,7 @@ public abstract class Config {
    */
   public boolean load() {
     if (file == null) {
-      new InvalidConfigurationException("File cannot be null!").printStackTrace();
+      logger.warning("Invalid configuration", new InvalidConfigurationException("File cannot be null!"));
       return false;
     }
 
@@ -68,7 +68,7 @@ public abstract class Config {
       afterLoad();
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.warning("Failed to load config", e);
       safeToSave = false;
       return false;
     }
@@ -110,7 +110,7 @@ public abstract class Config {
     try {
       conf.save(file);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.warning("Failed to save config", e);
     }
 
   }

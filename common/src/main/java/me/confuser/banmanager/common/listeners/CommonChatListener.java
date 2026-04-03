@@ -46,7 +46,7 @@ public class CommonChatListener {
         try {
           plugin.getPlayerMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process chat event", e);
         }
       });
 
@@ -104,7 +104,7 @@ public class CommonChatListener {
         try {
           plugin.getIpMuteStorage().unmute(mute, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process chat event", e);
         }
       });
 

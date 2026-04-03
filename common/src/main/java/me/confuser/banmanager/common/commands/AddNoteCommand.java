@@ -50,7 +50,7 @@ public class AddNoteCommand extends CommonCommand {
         getPlugin().getPlayerNoteStorage().addNote(warning);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute addnote command", e);
       }
     });
 

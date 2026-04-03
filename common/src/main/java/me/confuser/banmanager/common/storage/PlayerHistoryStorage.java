@@ -25,12 +25,14 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
   private final ConcurrentHashMap<UUID, Integer> activeSessions = new ConcurrentHashMap<>();
   private final DatabaseConfig dbConfig;
+  private final BanManagerPlugin plugin;
 
   public PlayerHistoryStorage(BanManagerPlugin plugin) throws SQLException {
     super(plugin.getLocalConn(), (DatabaseTableConfig<PlayerHistoryData>) plugin.getConfig()
         .getLocalDb()
         .getTable("playerHistory"));
 
+    this.plugin = plugin;
     this.dbConfig = plugin.getConfig().getLocalDb();
 
     if (!this.isTableExists()) {
@@ -73,6 +75,7 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
    */
   public PlayerHistoryStorage(ConnectionSource connection, DatabaseTableConfig<?> table) throws SQLException {
     super(connection, (DatabaseTableConfig<PlayerHistoryData>) table);
+    this.plugin = null;
     this.dbConfig = null;
   }
 
@@ -252,7 +255,7 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
         updateRaw("UPDATE `" + table + "` SET `leave` = " + nowExpr + " WHERE `id` = ?",
             String.valueOf(entry.getValue()));
       } catch (SQLException e) {
-        e.printStackTrace();
+        plugin.getLogger().warning("Failed to process player history operation", e);
         break;
       }
     }

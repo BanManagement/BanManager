@@ -251,7 +251,7 @@ public class ActivityStorage {
     try {
       connection = plugin.getLocalConn().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process activity operation", e);
 
       return null;
     }
@@ -275,12 +275,12 @@ public class ActivityStorage {
       }
       result = statement.runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process activity operation", e);
 
       try {
         plugin.getLocalConn().releaseConnection(connection);
       } catch (SQLException e1) {
-        e1.printStackTrace();
+        plugin.getLogger().warning("Failed to process activity operation", e1);
       }
 
       return null;
@@ -315,7 +315,7 @@ public class ActivityStorage {
         results.add(map);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process activity operation", e);
     } finally {
       result.closeQuietly();
     }
@@ -323,7 +323,7 @@ public class ActivityStorage {
     try {
       plugin.getLocalConn().releaseConnection(connection);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process activity operation", e);
     }
 
     return results;

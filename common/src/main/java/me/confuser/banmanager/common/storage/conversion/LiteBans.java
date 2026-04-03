@@ -78,7 +78,7 @@ public class LiteBans implements IConverter {
     try {
       connection = plugin.createConnection(config, "litebans-import");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to connect to LiteBans database");
       return;
     }
@@ -225,7 +225,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for player bans import");
       return;
     }
@@ -240,7 +240,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans bans table for player bans");
       read.closeQuietly();
       return;
@@ -251,7 +251,7 @@ public class LiteBans implements IConverter {
         processPlayerBanRow(results);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -322,7 +322,7 @@ public class LiteBans implements IConverter {
         skipped++;
       } catch (SQLException e) {
         plugin.getLogger().severe("Failed to import player ban record " + id + ": " + e.getMessage());
-        e.printStackTrace();
+        plugin.getLogger().warning("Failed during LiteBans import", e);
       }
     }
   }
@@ -335,7 +335,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for IP bans import");
       return;
     }
@@ -350,7 +350,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans bans table for IP bans");
       read.closeQuietly();
       return;
@@ -361,7 +361,7 @@ public class LiteBans implements IConverter {
         processIpBanRow(results);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -434,7 +434,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for IP range bans import");
       return;
     }
@@ -449,7 +449,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans bans table for IP range bans");
       read.closeQuietly();
       return;
@@ -460,7 +460,7 @@ public class LiteBans implements IConverter {
         processIpRangeBanRow(results);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -536,7 +536,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for player mutes import");
       return;
     }
@@ -551,7 +551,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans mutes table for player mutes");
       read.closeQuietly();
       return;
@@ -562,7 +562,7 @@ public class LiteBans implements IConverter {
         processPlayerMuteRow(results);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -648,7 +648,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for IP mutes import");
       return;
     }
@@ -663,7 +663,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans mutes table for IP mutes");
       read.closeQuietly();
       return;
@@ -674,7 +674,7 @@ public class LiteBans implements IConverter {
         processIpMuteRow(results);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -747,7 +747,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for warnings import");
       return;
     }
@@ -760,7 +760,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans warnings table");
       read.closeQuietly();
       return;
@@ -816,7 +816,7 @@ public class LiteBans implements IConverter {
         }
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -833,7 +833,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for kicks import");
       return;
     }
@@ -846,7 +846,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans kicks table");
       read.closeQuietly();
       return;
@@ -898,7 +898,7 @@ public class LiteBans implements IConverter {
         }
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();
@@ -915,7 +915,7 @@ public class LiteBans implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to get database connection for history import");
       return;
     }
@@ -927,7 +927,7 @@ public class LiteBans implements IConverter {
       results = read.compileStatement(sql, StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false).runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
       plugin.getLogger().severe("Failed to query LiteBans history table");
       read.closeQuietly();
       return;
@@ -982,7 +982,7 @@ public class LiteBans implements IConverter {
         }
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during LiteBans import", e);
     } finally {
       results.closeQuietly();
       read.closeQuietly();

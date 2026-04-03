@@ -57,7 +57,7 @@ public class GlobalMuteSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global mutes", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -77,7 +77,7 @@ public class GlobalMuteSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global unmutes", e);
     } finally {
       if (itr != null)
         itr.closeQuietly();

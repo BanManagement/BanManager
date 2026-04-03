@@ -75,7 +75,7 @@ public class BMSpongePlugin {
             pluginInfo = setupConfigs();
         } catch (IOException e) {
             this.logger.severe("Failed to setup configs: " + e.getMessage());
-            e.printStackTrace();
+            this.logger.warning("Failed to set up plugin configuration", e);
             return;
         }
 
@@ -87,7 +87,7 @@ public class BMSpongePlugin {
             plugin.enable();
         } catch (Exception e) {
             logger.severe("Unable to start BanManager");
-            e.printStackTrace();
+            logger.warning("Failed to enable BanManager", e);
             return;
         }
 
@@ -154,7 +154,7 @@ public class BMSpongePlugin {
                         Files.copy(in, file.toPath());
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    this.logger.warning("Failed to copy default config file", e);
                 }
             } else {
                 try (InputStream in = getResourceAsStream(name);
@@ -197,6 +197,8 @@ public class BMSpongePlugin {
         Sponge.eventManager().registerListeners(pluginContainer, new HookListener(plugin));
 
         registerChatListener();
+
+        Sponge.eventManager().registerListeners(pluginContainer, new ReloadListener(this));
 
         if (plugin.getConfig().isDisplayNotificationsEnabled()) {
             Sponge.eventManager().registerListeners(pluginContainer, new BanListener(plugin));

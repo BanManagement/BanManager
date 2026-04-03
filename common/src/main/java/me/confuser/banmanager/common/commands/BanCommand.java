@@ -109,7 +109,7 @@ public class BanCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute ban command", e);
         return;
       }
 
@@ -131,7 +131,7 @@ public class BanCommand extends CommonCommand {
             getPlugin().getPlayerBanStorage().unban(ban, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute ban command", e);
             return;
           }
         }
