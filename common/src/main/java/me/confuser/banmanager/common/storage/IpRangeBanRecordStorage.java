@@ -13,7 +13,6 @@ import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 
@@ -30,30 +29,6 @@ public class IpRangeBanRecordStorage extends BaseStorage<IpRangeBanRecord, Integ
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      // Attempt to add new columns
-      try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "fromIp");
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "toIp");
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `pastCreated` `pastCreated` BIGINT UNSIGNED,"
-          + " CHANGE `expired` `expired` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

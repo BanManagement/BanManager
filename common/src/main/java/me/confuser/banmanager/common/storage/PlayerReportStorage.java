@@ -25,29 +25,6 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " ADD COLUMN `state_id` INT(11) NOT NULL DEFAULT 1," +
-            " ADD COLUMN `assignee_id` BINARY(16)," +
-            " ADD KEY `" + tableConfig.getTableName() + "_state_id_idx` (`state_id`)," +
-            " ADD KEY `" + tableConfig.getTableName() + "_assignee_id_idx` (`assignee_id`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " MODIFY assignee_id BINARY(16) NULL";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `updated` `updated` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

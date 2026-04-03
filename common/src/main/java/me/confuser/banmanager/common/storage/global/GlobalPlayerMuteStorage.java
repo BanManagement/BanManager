@@ -24,23 +24,6 @@ public class GlobalPlayerMuteStorage extends BaseStorage<GlobalPlayerMuteData, I
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      // Attempt to add new columns
-      try {
-        String update = "ALTER TABLE " + tableConfig
-                .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
-                " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

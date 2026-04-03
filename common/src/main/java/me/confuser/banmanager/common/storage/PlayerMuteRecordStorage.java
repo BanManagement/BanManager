@@ -29,37 +29,6 @@ public class PlayerMuteRecordStorage extends BaseStorage<PlayerMuteRecord, Integ
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      // Attempt to add new columns
-      try {
-        String update = "ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `createdReason` VARCHAR(255), "
-            + " ADD COLUMN `soft` TINYINT(1)," +
-            " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `pastCreated` `pastCreated` BIGINT UNSIGNED,"
-          + " CHANGE `expired` `expired` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `onlineOnly` TINYINT(1) NOT NULL DEFAULT 0");
-      } catch (SQLException e) {
-      }
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `remainingOnlineTime` BIGINT UNSIGNED NOT NULL DEFAULT 0");
-      } catch (SQLException e) {
-      }
     }
   }
 

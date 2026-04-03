@@ -23,14 +23,6 @@ public class GlobalIpBanStorage extends BaseStorage<GlobalIpBanData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

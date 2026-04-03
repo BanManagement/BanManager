@@ -34,43 +34,6 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      // Attempt to add new columns
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " ADD COLUMN `soft` TINYINT(1)," +
-            " ADD KEY `" + tableConfig.getTableName() + "_soft_idx` (`soft`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " ADD UNIQUE KEY `" + tableConfig.getTableName() + "_player_idx` (`player_id`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `updated` `updated` BIGINT UNSIGNED,"
-          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `onlineOnly` TINYINT(1) NOT NULL DEFAULT 0");
-      } catch (SQLException e) {
-      }
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `pausedRemaining` BIGINT UNSIGNED NOT NULL DEFAULT 0");
-      } catch (SQLException e) {
-      }
     }
 
     loadAll();

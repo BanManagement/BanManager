@@ -19,7 +19,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.IPUtils;
-import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -40,24 +39,6 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-      return;
-    } else {
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "fromIp");
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "toIp");
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `updated` `updated` BIGINT UNSIGNED,"
-          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
 
     loadAll();
