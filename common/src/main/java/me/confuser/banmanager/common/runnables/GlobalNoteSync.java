@@ -51,7 +51,7 @@ public class GlobalNoteSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global notes", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

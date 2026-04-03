@@ -69,7 +69,7 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
     try {
       connection = this.getConnectionSource().getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP mute operation", e);
       plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
       return;
     }
@@ -89,7 +89,7 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP mute operation", e);
       getConnectionSource().releaseConnection(connection);
 
       plugin.getLogger().warning("Failed to retrieve ip mutes into memory");
@@ -122,7 +122,7 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
         mutes.put(mute.getIp().toString(), mute);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process IP mute operation", e);
     } finally {
       if (results != null) results.closeQuietly();
 

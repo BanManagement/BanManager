@@ -63,7 +63,7 @@ public class GlobalIpSync extends BmRunnable {
         kickPlayers(globalBan);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global IP bans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -95,7 +95,7 @@ public class GlobalIpSync extends BmRunnable {
         applyHelper.applyIpUnban(record, true);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync global IP unbans", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

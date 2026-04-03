@@ -90,7 +90,7 @@ public class UnmuteCommand extends CommonCommand {
           unmuted = getPlugin().getPlayerMuteStorage().unmute(mute, actor, reason, isDelete, parser.isSilent());
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute unmute command", e);
           return;
         }
 

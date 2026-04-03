@@ -137,7 +137,7 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
 
       if (results.next()) return results.getDouble(0);
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player warn operation", e);
     }
 
     return 0;
@@ -156,7 +156,7 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
 
       if (results.next()) return results.getDouble(0);
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player warn operation", e);
     }
 
     return 0;

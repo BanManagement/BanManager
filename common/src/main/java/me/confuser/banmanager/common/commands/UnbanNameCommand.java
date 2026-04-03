@@ -54,7 +54,7 @@ public class UnbanNameCommand extends CommonCommand {
         unbanned = getPlugin().getNameBanStorage().unban(ban, actor, reason, false, parser.isSilent());
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute unbanname command", e);
         return;
       }
 

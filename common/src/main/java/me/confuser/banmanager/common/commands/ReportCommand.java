@@ -88,7 +88,7 @@ public class ReportCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report command", e);
         return;
       }
 
@@ -102,7 +102,7 @@ public class ReportCommand extends CommonCommand {
         getPlugin().getPlayerReportStorage().report(report, isSilent);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report command", e);
       }
 
     });

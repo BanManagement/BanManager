@@ -88,7 +88,7 @@ public class BMVelocityPlugin {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
       getPlugin().disable();
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
       return;
     }
 
@@ -100,7 +100,7 @@ public class BMVelocityPlugin {
       plugin.enable();
     } catch (Exception e) {
       getPlugin().disable();
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to enable BanManager", e);
       return;
     }
 
@@ -179,7 +179,7 @@ public class BMVelocityPlugin {
         try (InputStream in = getResourceAsStream(name)) {
           Files.copy(in, file.toPath());
         } catch (IOException e) {
-          e.printStackTrace();
+          BanManagerPlugin.getInstance().getLogger().warning("Failed to copy default config file", e);
         }
       } else {
         try (InputStream in = getResourceAsStream(file.getName());

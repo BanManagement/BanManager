@@ -48,7 +48,7 @@ public class ActivityCommand extends CommonCommand {
           try {
             player = getPlugin().getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(parser.args[1])));
           } catch (SQLException e) {
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute activity command", e);
           }
         } else {
           player = getPlugin().getPlayerStorage().retrieve(parser.args[1], false);

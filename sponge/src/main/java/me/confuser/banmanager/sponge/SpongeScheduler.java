@@ -1,5 +1,6 @@
 package me.confuser.banmanager.sponge;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonScheduler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
@@ -36,7 +37,7 @@ public class SpongeScheduler implements CommonScheduler {
                 worker.setName("banmanager-worker-" + worker.getPoolIndex());
                 return worker;
             },
-            (t, e) -> e.printStackTrace(),
+            (t, e) -> BanManagerPlugin.getInstance().getLogger().warning("Uncaught exception in scheduler worker thread", e),
             false);
     }
 
@@ -46,7 +47,7 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                e.printStackTrace();
+                BanManagerPlugin.getInstance().getLogger().warning("Exception in async task", e);
             }
         });
     }
@@ -57,7 +58,7 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                e.printStackTrace();
+                BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed async task", e);
             }
         }), delay.toMillis(), TimeUnit.MILLISECONDS);
     }
@@ -71,7 +72,7 @@ public class SpongeScheduler implements CommonScheduler {
                     try {
                         task.run();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        BanManagerPlugin.getInstance().getLogger().warning("Exception in sync task", e);
                     }
                 })
                 .build()
@@ -89,7 +90,7 @@ public class SpongeScheduler implements CommonScheduler {
                     try {
                         task.run();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed sync task", e);
                     }
                 })
                 .build()
@@ -102,7 +103,7 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                e.printStackTrace();
+                BanManagerPlugin.getInstance().getLogger().warning("Exception in repeating async task", e);
             }
         }), initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
     }

@@ -140,7 +140,7 @@ public class ImportCommand extends CommonCommand {
               try {
                 created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
               } catch (ParseException e) {
-                e.printStackTrace();
+                getPlugin().getLogger().warning("Failed to execute import command", e);
 
                 continue;
               }
@@ -167,7 +167,7 @@ public class ImportCommand extends CommonCommand {
                 try {
                   expires = dateFormat.parse(expiresStr).getTime() / 1000L;
                 } catch (ParseException e) {
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute import command", e);
 
                   continue;
                 }
@@ -206,14 +206,14 @@ public class ImportCommand extends CommonCommand {
         try {
           getPlugin().getPlayerBanStorage().create(ban);
         } catch (SQLException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute import command", e);
           continue;
         }
       }
 
       reader.endArray();
     } catch (IOException | SQLException e) {
-      e.printStackTrace();
+      getPlugin().getLogger().warning("Failed to execute import command", e);
     }
 
     importInProgress = false;
@@ -250,7 +250,7 @@ public class ImportCommand extends CommonCommand {
               try {
                 created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
               } catch (ParseException e) {
-                e.printStackTrace();
+                getPlugin().getLogger().warning("Failed to execute import command", e);
 
                 continue;
               }
@@ -277,7 +277,7 @@ public class ImportCommand extends CommonCommand {
                 try {
                   created = dateFormat.parse(reader.nextString()).getTime() / 1000L;
                 } catch (ParseException e) {
-                  e.printStackTrace();
+                  getPlugin().getLogger().warning("Failed to execute import command", e);
 
                   continue;
                 }
@@ -309,14 +309,14 @@ public class ImportCommand extends CommonCommand {
         try {
           getPlugin().getIpBanStorage().create(ban);
         } catch (SQLException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute import command", e);
           continue;
         }
       }
 
       reader.endArray();
     } catch (IOException e) {
-      e.printStackTrace();
+      getPlugin().getLogger().warning("Failed to execute import command", e);
     }
 
     importInProgress = false;

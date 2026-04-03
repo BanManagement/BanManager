@@ -73,7 +73,7 @@ public class InfoCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute info command", e);
         return;
       }
     });
@@ -172,7 +172,7 @@ public class InfoCommand extends CommonCommand {
             messages.add(message.toString());
           }
         } catch (IOException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute info command", e);
         }
       }
 
@@ -454,7 +454,7 @@ public class InfoCommand extends CommonCommand {
             messages.add(message.toString());
           }
         } catch (IOException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute info command", e);
         }
 
       }
@@ -500,7 +500,7 @@ public class InfoCommand extends CommonCommand {
             }
           }
         } catch (SQLException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute info command", e);
         }
       }
 
@@ -639,7 +639,7 @@ public class InfoCommand extends CommonCommand {
             .toString());
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      getPlugin().getLogger().warning("Failed to execute info command", e);
     } finally {
       if (iterator != null) iterator.closeQuietly();
     }

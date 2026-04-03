@@ -97,7 +97,7 @@ public class SpongeSender implements CommonSender {
             try {
                 return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(player.uniqueId()));
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().warning("Failed to load player data", e);
                 sendMessage(Message.get("sender.error.exception").toString());
                 return null;
             }

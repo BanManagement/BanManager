@@ -60,7 +60,7 @@ public class BanNameCommand extends CommonCommand {
             getPlugin().getNameBanStorage().unban(ban, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute banname command", e);
             return;
           }
         }

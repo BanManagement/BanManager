@@ -40,7 +40,7 @@ public class CloseSubCommand extends CommonSubCommand {
         data = getPlugin().getPlayerReportStorage().queryForId(id);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report close", e);
         return;
       }
 
@@ -54,7 +54,7 @@ public class CloseSubCommand extends CommonSubCommand {
         getPlugin().getPlayerReportStorage().update(data);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report close", e);
         return;
       }
 
@@ -86,7 +86,7 @@ public class CloseSubCommand extends CommonSubCommand {
           getPlugin().getPlayerReportCommandStorage().create(commandData);
         } catch (SQLException e) {
           sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute report close", e);
           return;
         }
 
@@ -109,7 +109,7 @@ public class CloseSubCommand extends CommonSubCommand {
           getPlugin().getPlayerReportCommentStorage().create(commentData);
         } catch (SQLException e) {
           sender.sendMessage(Message.getString("sender.error.exception"));
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute report close", e);
           return;
         }
 

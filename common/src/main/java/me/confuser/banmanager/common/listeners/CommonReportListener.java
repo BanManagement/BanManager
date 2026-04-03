@@ -55,7 +55,7 @@ public class CommonReportListener {
       comments.where().eq("report_id", id);
       comments.delete();
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process report", e);
     }
   }
 }

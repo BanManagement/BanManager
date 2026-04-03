@@ -64,7 +64,7 @@ public class UnbanIpAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("errorOccurred").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute unbanipall command", e);
         return;
       }
 

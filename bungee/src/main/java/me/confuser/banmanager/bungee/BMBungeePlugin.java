@@ -47,7 +47,7 @@ public class BMBungeePlugin extends Plugin {
     try {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
       return;
     }
 
@@ -61,7 +61,7 @@ public class BMBungeePlugin extends Plugin {
     } catch (Exception e) {
       if (plugin != null) plugin.disable();
 
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to enable BanManager", e);
       return;
     }
 
@@ -115,7 +115,7 @@ public class BMBungeePlugin extends Plugin {
         try (InputStream in = getResourceAsStream(name)) {
           Files.copy(in, file.toPath());
         } catch (IOException e) {
-          e.printStackTrace();
+          BanManagerPlugin.getInstance().getLogger().warning("Failed to copy default config file", e);
         }
       } else {
         try (InputStream in = getResourceAsStream(file.getName());

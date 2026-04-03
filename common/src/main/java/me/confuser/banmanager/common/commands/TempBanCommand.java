@@ -131,7 +131,7 @@ public class TempBanCommand extends CommonCommand {
           }
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception").toString());
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to execute tempban command", e);
           return;
         }
 
@@ -153,7 +153,7 @@ public class TempBanCommand extends CommonCommand {
               getPlugin().getPlayerBanStorage().unban(ban, actor);
             } catch (SQLException e) {
               sender.sendMessage(Message.get("sender.error.exception").toString());
-              e.printStackTrace();
+              getPlugin().getLogger().warning("Failed to execute tempban command", e);
               return;
             }
           }

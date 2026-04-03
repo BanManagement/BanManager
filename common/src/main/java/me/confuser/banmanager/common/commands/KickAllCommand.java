@@ -55,7 +55,7 @@ public class KickAllCommand extends CommonCommand {
             getPlugin().getPlayerKickStorage().addKick(data, isSilent);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute kickall command", e);
           }
         }
       }

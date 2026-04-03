@@ -87,7 +87,7 @@ public class BanIpCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute banip command", e);
         return;
       }
 
@@ -101,7 +101,7 @@ public class BanIpCommand extends CommonCommand {
             getPlugin().getIpBanStorage().unban(ban, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute banip command", e);
             return;
           }
         }

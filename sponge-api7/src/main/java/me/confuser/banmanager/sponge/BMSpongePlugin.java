@@ -87,7 +87,7 @@ public class BMSpongePlugin {
     try {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.warning("Failed to set up plugin configuration", e);
       return;
     }
 
@@ -99,7 +99,7 @@ public class BMSpongePlugin {
       plugin.enable();
     } catch (Exception e) {
       logger.severe("Unable to start BanManager");
-      e.printStackTrace();
+      logger.warning("Failed to enable BanManager", e);
       return;
     }
 

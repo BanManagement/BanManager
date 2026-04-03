@@ -22,4 +22,14 @@ public class PluginLogger implements CommonLogger {
     public void severe(String msg) {
         logger.error(msg);
     }
+
+    @Override
+    public void severe(String msg, Throwable t) {
+        logger.error(msg, t);
+    }
+
+    @Override
+    public void warning(String msg, Throwable t) {
+        logger.warn(msg, t);
+    }
 }

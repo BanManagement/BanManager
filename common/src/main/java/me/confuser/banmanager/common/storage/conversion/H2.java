@@ -92,7 +92,7 @@ public class H2 implements IConverter {
       nameBanStorage = new NameBanStorage(plugin, connection, config.getTable("nameBans"));
       nameBanRecordStorage = new NameBanRecordStorage(plugin, connection, config.getTable("nameBanRecords"));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
       return;
     }
 
@@ -122,12 +122,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player " + data.getUUID());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing players");
@@ -144,12 +144,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerBanStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player ban " + data.getPlayer().getUUID());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player bans");
@@ -163,12 +163,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerBanRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player ban record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player ban records");
@@ -185,12 +185,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerMuteStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player mute " + data.getPlayer().getUUID());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player mutes");
@@ -204,12 +204,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerMuteRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player mute record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player mute records");
@@ -226,12 +226,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerWarnStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player warning " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player warnings");
@@ -247,12 +247,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerKickStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player kick " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player kicks");
@@ -268,12 +268,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerNoteStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player note " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player notes");
@@ -289,12 +289,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerHistoryStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player note " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player history");
@@ -322,12 +322,12 @@ public class H2 implements IConverter {
           // Store the mapping of H2 state ID to MySQL state
           stateIdMapping.put(h2State.getId(), mysqlState);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player report state " + h2State.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player report states");
@@ -341,12 +341,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerReportCommandStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player report state " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player report commands");
@@ -360,12 +360,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerReportCommentStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player report comment " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player report comments");
@@ -406,12 +406,12 @@ public class H2 implements IConverter {
 
           plugin.getPlayerReportStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player report " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player reports");
@@ -425,12 +425,12 @@ public class H2 implements IConverter {
         try {
           plugin.getPlayerReportLocationStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import player report location " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing player report locations");
@@ -447,12 +447,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpBanStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip ban " + data.getIp());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip bans");
@@ -466,12 +466,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpBanRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip ban record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip ban records");
@@ -487,12 +487,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpMuteStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip mute " + data.getIp());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip mutes");
@@ -506,12 +506,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpMuteRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip mute record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip mute records");
@@ -528,12 +528,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpRangeBanStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip range ban " + data.getFromIp() + " - " + data.getToIp());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip range bans");
@@ -547,12 +547,12 @@ public class H2 implements IConverter {
         try {
           plugin.getIpRangeBanRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import ip range ban record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing ip range ban records");
@@ -568,12 +568,12 @@ public class H2 implements IConverter {
         try {
           plugin.getNameBanStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import name ban " + data.getName());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing name bans");
@@ -587,12 +587,12 @@ public class H2 implements IConverter {
         try {
           plugin.getNameBanRecordStorage().createIfNotExists(data);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed during H2 conversion", e);
           plugin.getLogger().severe("Failed to import name ban record " + data.getId());
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
     plugin.getLogger().info("Finished importing name ban records");

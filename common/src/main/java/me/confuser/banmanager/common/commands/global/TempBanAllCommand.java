@@ -80,7 +80,7 @@ public class TempBanAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempbanall command", e);
         return;
       }
 

@@ -45,7 +45,7 @@ public class MissingPlayersSubCommand extends CommonSubCommand {
       try {
         connection = getPlugin().getLocalConn().getReadOnlyConnection("");
       } catch (SQLException e) {
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to process missing players", e);
 
         Message.get("sender.error.exception").sendTo(sender);
 
@@ -70,7 +70,7 @@ public class MissingPlayersSubCommand extends CommonSubCommand {
             players.add(UUIDUtils.fromBytes(result.getBytes(0)));
           }
         } catch (SQLException e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to process missing players", e);
 
           Message.get("sender.error.exception").sendTo(sender);
         } finally {
@@ -81,7 +81,7 @@ public class MissingPlayersSubCommand extends CommonSubCommand {
       try {
         getPlugin().getLocalConn().releaseConnection(connection);
       } catch (SQLException e) {
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to process missing players", e);
       }
 
       if (players.size() == 0) {
@@ -105,7 +105,7 @@ public class MissingPlayersSubCommand extends CommonSubCommand {
 
           count++;
         } catch (Exception e) {
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to process missing players", e);
 
           Message.get("bmutils.missingplayers.failedLookup").set("uuid", uuid.toString()).sendTo(sender);
         }

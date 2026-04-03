@@ -90,7 +90,7 @@ public abstract class CommonCommand {
         player = BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
       }
     } else {
       player = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(playerName, mojangLookup);
@@ -107,7 +107,7 @@ public abstract class CommonCommand {
     }
 
     Message.get("sender.error.exception").sendTo(sender);
-    e.printStackTrace();
+    BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
   }
 
   public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
@@ -118,7 +118,7 @@ public abstract class CommonCommand {
       try {
         BanManagerPlugin.getInstance().getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
       } catch (SQLException e) {
-        e.printStackTrace();
+        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
       }
     }
 

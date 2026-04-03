@@ -48,7 +48,7 @@ public class NamesCommand extends CommonCommand {
         names = getPlugin().getPlayerHistoryStorage().getNamesSummary(player);
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute names command", e);
         return;
       }
 

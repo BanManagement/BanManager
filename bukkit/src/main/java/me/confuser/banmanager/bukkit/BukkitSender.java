@@ -52,7 +52,7 @@ public class BukkitSender implements CommonSender {
     try {
       return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(((Player) sender).getUniqueId()));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to load player data", e);
       sender.sendMessage(Message.get("sender.error.exception").toString());
       return null;
     }

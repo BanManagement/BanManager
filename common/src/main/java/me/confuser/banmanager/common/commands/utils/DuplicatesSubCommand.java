@@ -107,7 +107,7 @@ public class DuplicatesSubCommand extends CommonSubCommand {
           sender.sendMessage(Message.get("bmutils.duplicates.success").set("player", newName));
         } catch (SQLException e) {
           sender.sendMessage(Message.get("sender.error.exception"));
-          e.printStackTrace();
+          getPlugin().getLogger().warning("Failed to process duplicates", e);
           return;
         }
       }

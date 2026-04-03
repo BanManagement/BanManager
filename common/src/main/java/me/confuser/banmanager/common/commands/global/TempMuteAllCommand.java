@@ -84,7 +84,7 @@ public class TempMuteAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempmuteall command", e);
         return;
       }
 

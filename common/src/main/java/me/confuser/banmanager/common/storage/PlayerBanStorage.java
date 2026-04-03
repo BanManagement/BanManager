@@ -70,7 +70,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
     try {
       connection = this.getConnectionSource().getReadOnlyConnection(getTableName());
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player ban operation", e);
       plugin.getLogger().warning("Failed to retrieve bans into memory");
       return;
     }
@@ -93,7 +93,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
       statement = connection.compileStatement(sql.toString(), StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player ban operation", e);
       this.getConnectionSource().releaseConnection(connection);
 
       plugin.getLogger().warning("Failed to retrieve bans into memory");
@@ -138,7 +138,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
         bans.put(ban.getPlayer().getUUID(), ban);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player ban operation", e);
     } finally {
       if (results != null) results.closeQuietly();
 
@@ -285,7 +285,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
 
       query.leftJoin(playerQuery);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player ban operation", e);
       return players;
     }
 
@@ -297,7 +297,7 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
         players.add(itr.next().getPlayer());
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player ban operation", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

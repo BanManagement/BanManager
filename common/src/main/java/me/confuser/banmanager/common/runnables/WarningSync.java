@@ -55,7 +55,7 @@ public class WarningSync extends BmRunnable {
             try {
               plugin.getPlayerWarnStorage().update(warn);
             } catch (SQLException e) {
-              e.printStackTrace();
+              plugin.getLogger().warning("Failed to sync warnings", e);
             }
           });
 
@@ -63,7 +63,7 @@ public class WarningSync extends BmRunnable {
 
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to sync warnings", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

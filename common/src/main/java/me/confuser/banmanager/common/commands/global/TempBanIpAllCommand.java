@@ -78,7 +78,7 @@ public class TempBanIpAllCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempbanipall command", e);
         return;
       }
 

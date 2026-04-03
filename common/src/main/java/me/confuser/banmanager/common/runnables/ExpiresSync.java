@@ -53,7 +53,7 @@ public class ExpiresSync extends BmRunnable {
         banStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire bans", e);
     } finally {
       if (bans != null) bans.closeQuietly();
     }
@@ -68,7 +68,7 @@ public class ExpiresSync extends BmRunnable {
         muteStorage.unmuteIfExpired(mute, plugin.getPlayerStorage().getConsole());
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire mutes", e);
     } finally {
       if (mutes != null) mutes.closeQuietly();
     }
@@ -84,7 +84,7 @@ public class ExpiresSync extends BmRunnable {
         warnStorage.delete(warning);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire warnings", e);
     } finally {
       if (warnings != null) warnings.closeQuietly();
     }
@@ -100,7 +100,7 @@ public class ExpiresSync extends BmRunnable {
         ipBanStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire IP bans", e);
     } finally {
       if (ipBans != null) ipBans.closeQuietly();
     }
@@ -115,7 +115,7 @@ public class ExpiresSync extends BmRunnable {
         ipMuteStorage.unmute(mute, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire IP mutes", e);
     } finally {
       if (ipMutes != null) ipMutes.closeQuietly();
     }
@@ -131,7 +131,7 @@ public class ExpiresSync extends BmRunnable {
         ipRangeBanStorage.unban(ban, plugin.getPlayerStorage().getConsole(), "");
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to expire IP range bans", e);
     } finally {
       if (ipRangeBans != null) ipRangeBans.closeQuietly();
     }

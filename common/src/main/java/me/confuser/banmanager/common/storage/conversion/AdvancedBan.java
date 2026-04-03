@@ -38,7 +38,7 @@ public class AdvancedBan implements IConverter {
     try {
       connection = plugin.createConnection(config, "advancedban-import");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during AdvancedBan import", e);
       plugin.getLogger().severe("Failed to connect to AdvancedBan database");
       return;
     }
@@ -55,7 +55,7 @@ public class AdvancedBan implements IConverter {
     try {
       read = connection.getReadOnlyConnection("");
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during AdvancedBan import", e);
       plugin.getLogger().severe("Failed to connect to AdvancedBan database");
       return;
     }
@@ -68,7 +68,7 @@ public class AdvancedBan implements IConverter {
               .StatementType.SELECT, null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false)
           .runQuery(null);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during AdvancedBan import", e);
       return;
     }
 
@@ -157,7 +157,7 @@ public class AdvancedBan implements IConverter {
         count++;
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed during AdvancedBan import", e);
     } finally {
       results.closeQuietly();
     }

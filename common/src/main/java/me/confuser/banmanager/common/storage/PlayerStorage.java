@@ -100,7 +100,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -189,7 +189,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         return results.get(0);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     }
 
     if (!mojangLookup) {
@@ -210,7 +210,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
       return data;
     } catch (Exception e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     }
 
     return null;
@@ -220,7 +220,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     try {
       return queryForEq("name", new SelectArg(name));
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     }
 
     return null;
@@ -241,7 +241,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
         duplicates.put(values[0], new AbstractMap.SimpleEntry(Integer.parseInt(values[1]), results));
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }
@@ -272,7 +272,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
       query.setWhere(where);
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
       return players;
     }
 
@@ -288,7 +288,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
       }
 
     } catch (SQLException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process player storage operation", e);
     } finally {
       if (itr != null) itr.closeQuietly();
     }

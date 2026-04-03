@@ -115,7 +115,7 @@ public class StorageUtils {
         }
       }
     } catch (SQLException | IOException e) {
-      e.printStackTrace();
+      plugin.getLogger().warning("Failed to process storage operation", e);
     }
   }
 }

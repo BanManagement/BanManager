@@ -40,7 +40,7 @@ public class JoinListener {
             );
         } catch (Exception e) {
             plugin.getLogger().warning("Error during banCheck: " + e.getMessage());
-            e.printStackTrace();
+            plugin.getLogger().warning("Error during banCheck", e);
         }
     }
 

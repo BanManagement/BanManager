@@ -36,7 +36,7 @@ public class UnassignSubCommand extends CommonSubCommand {
         data = getPlugin().getPlayerReportStorage().queryForId(id);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report unassign", e);
         return;
       }
 
@@ -52,7 +52,7 @@ public class UnassignSubCommand extends CommonSubCommand {
         getPlugin().getPlayerReportStorage().update(data);
       } catch (SQLException e) {
         sender.sendMessage(Message.getString("sender.error.exception"));
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute report unassign", e);
         return;
       }
 

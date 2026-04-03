@@ -101,7 +101,7 @@ public class TempIpBanCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute tempbanip command", e);
         return;
       }
 
@@ -117,7 +117,7 @@ public class TempIpBanCommand extends CommonCommand {
             getPlugin().getIpBanStorage().unban(ban, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute tempbanip command", e);
             return;
           }
         }

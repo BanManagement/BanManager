@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common.configuration.file;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configuration.Configuration;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.InvalidConfigurationException;
@@ -42,7 +43,7 @@ public class YamlConfiguration extends FileConfiguration {
     try {
       config.load(file);
     } catch ( IOException |InvalidConfigurationException e){
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to load YAML configuration", e);
     }
 
     return config;
@@ -65,7 +66,7 @@ public class YamlConfiguration extends FileConfiguration {
     try {
       config.load(reader);
     } catch (InvalidConfigurationException | IOException e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to load YAML configuration", e);
     }
 
     return config;

@@ -24,7 +24,7 @@ public class CommonLeaveListener {
         try {
           plugin.getPlayerHistoryStorage().endSessionById(sessionId);
         } catch (SQLException e) {
-          e.printStackTrace();
+          plugin.getLogger().warning("Failed to process player leave", e);
         }
       });
     }
@@ -39,7 +39,7 @@ public class CommonLeaveListener {
           try {
             plugin.getPlayerMuteStorage().pauseMute(mute, remaining);
           } catch (SQLException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Failed to process player leave", e);
           }
         });
       }

@@ -117,7 +117,7 @@ public class TempIpMuteCommand extends CommonCommand {
             getPlugin().getIpMuteStorage().unmute(mute, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute tempmuteip command", e);
             return;
           }
         }

@@ -120,7 +120,7 @@ public class MuteCommand extends CommonCommand {
         }
       } catch (SQLException e) {
         sender.sendMessage(Message.get("sender.error.exception").toString());
-        e.printStackTrace();
+        getPlugin().getLogger().warning("Failed to execute mute command", e);
         return;
       }
 
@@ -140,7 +140,7 @@ public class MuteCommand extends CommonCommand {
             getPlugin().getPlayerMuteStorage().unmute(mute, actor);
           } catch (SQLException e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
-            e.printStackTrace();
+            getPlugin().getLogger().warning("Failed to execute mute command", e);
             return;
           }
         }

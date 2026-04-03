@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.ipaddr.AddressStringException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ipaddr.IPAddressString;
@@ -45,7 +46,7 @@ public class PlayerData {
     try {
       this.ip = new IPAddressString("127.0.0.1").toAddress();
     } catch (AddressStringException e) {
-      e.printStackTrace();
+      BanManagerPlugin.getInstance().getLogger().warning("Failed to process player data", e);
     }
 
     this.lastSeen = System.currentTimeMillis() / 1000L;
