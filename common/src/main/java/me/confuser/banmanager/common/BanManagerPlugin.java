@@ -17,6 +17,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.runnables.Runner;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;
+import me.confuser.banmanager.common.storage.migration.MigrationRunner;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.common.util.DriverManagerUtil;
@@ -174,6 +175,17 @@ public class BanManagerPlugin {
         throw new Exception("Unable to connect to database, ensure local is enabled in config and your connection details are correct");
       }
 
+      ClassLoader cl = MigrationRunner.class.getClassLoader();
+
+      MigrationRunner localMigrations = new MigrationRunner(
+          this, localConn, config.getLocalDb(), "local", "players", cl);
+      localMigrations.migrate();
+
+      if (globalConn != null) {
+        MigrationRunner globalMigrations = new MigrationRunner(
+            this, globalConn, config.getGlobalDb(), "global", "playerBans", cl);
+        globalMigrations.migrate();
+      }
 
       setupStorage();
     } catch (SQLException e) {

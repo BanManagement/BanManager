@@ -41,6 +41,8 @@ public abstract class DatabaseConfig {
   @Getter
   private int connectionTimeout;
   @Getter
+  private String instanceId;
+  @Getter
   private HashMap<String, DatabaseTableConfig<?>> tables = new HashMap<>();
 
   private File dataFolder;
@@ -62,6 +64,7 @@ public abstract class DatabaseConfig {
     verifyServerCertificate = conf.getBoolean("verifyServerCertificate", false);
     maxLifetime = conf.getInt("maxLifetime", 1800000);
     connectionTimeout = conf.getInt("connectionTimeout", 30000);
+    instanceId = conf.getString("instanceId", "");
 
     if (maxConnections > 30) maxConnections = 30;
   }

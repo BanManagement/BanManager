@@ -45,35 +45,6 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      // Attempt to add new columns
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " ADD COLUMN `expires` INT(10) NOT NULL DEFAULT 0," +
-            " ADD KEY `" + tableConfig.getTableName() + "_expires_idx` (`expires`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " ADD COLUMN `points` INT(10) NOT NULL DEFAULT 1," +
-            " ADD KEY `" + tableConfig.getTableName() + "_points_idx` (`points`)";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        String update = "ALTER TABLE " + tableConfig
-            .getTableName() + " MODIFY COLUMN `points` DECIMAL(60,2) NOT NULL DEFAULT 1";
-        executeRawNoArgs(update);
-      } catch (SQLException e) {
-      }
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `expires` `expires` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

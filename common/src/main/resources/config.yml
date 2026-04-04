@@ -14,6 +14,8 @@ databases:
     verifyServerCertificate: false
     maxLifetime: 1800000
     connectionTimeout: 30000
+    # Set a unique id when multiple BanManager instances share the same database
+    # instanceId: ''
     tables:
       players: bm_players
       playerBans: bm_player_bans

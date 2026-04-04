@@ -11,7 +11,6 @@ import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,35 +36,6 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `join` `join` BIGINT UNSIGNED,"
-          + " CHANGE `leave` `leave` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " MODIFY `ip` VARBINARY(16) NULL"
-        );
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " ADD COLUMN `name` VARCHAR(16) NOT NULL DEFAULT '' AFTER `player_id`"
-        );
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("CREATE INDEX idx_playerhistory_name ON " + tableConfig.getTableName() + " (name)");
-      } catch (SQLException e) {
-      }
-
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
     }
   }
 

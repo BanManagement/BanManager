@@ -16,7 +16,6 @@ import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.UUIDProfile;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -42,13 +41,6 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
 
     if (!isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " CHANGE `lastSeen` `lastSeen` BIGINT UNSIGNED");
-      } catch (SQLException e) {
-      }
-
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip", "bytes");
     }
 
     setupConsole();

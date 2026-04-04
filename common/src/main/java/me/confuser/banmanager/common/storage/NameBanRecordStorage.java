@@ -26,16 +26,6 @@ public class NameBanRecordStorage extends BaseStorage<NameBanRecord, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-      return;
-    } else {
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `pastCreated` `pastCreated` BIGINT UNSIGNED,"
-          + " CHANGE `expired` `expired` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 

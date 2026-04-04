@@ -12,7 +12,6 @@ import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
-import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.sql.SQLException;
 
@@ -29,22 +28,6 @@ public class IpMuteRecordStorage extends BaseStorage<IpMuteRecord, Integer> {
 
     if (!this.isTableExists()) {
       TableUtils.createTable(connectionSource, tableConfig);
-    } else {
-      StorageUtils.convertIpColumn(plugin, tableConfig.getTableName(), "ip");
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName() + " ADD COLUMN `silent` TINYINT(1)");
-      } catch (SQLException e) {
-      }
-
-      try {
-        executeRawNoArgs("ALTER TABLE " + tableConfig.getTableName()
-          + " CHANGE `created` `created` BIGINT UNSIGNED,"
-          + " CHANGE `pastCreated` `pastCreated` BIGINT UNSIGNED,"
-          + " CHANGE `expired` `expired` BIGINT UNSIGNED"
-        );
-      } catch (SQLException e) {
-      }
     }
   }
 
