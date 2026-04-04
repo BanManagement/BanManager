@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.IPUtils;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -246,86 +247,62 @@ public class ActivityStorage {
   }
 
   public List<Map<String, Object>> getSince(long since, PlayerData actor) {
-    DatabaseConnection connection;
-
-    try {
-      connection = plugin.getLocalConn().getReadOnlyConnection("");
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process activity operation", e);
-
-      return null;
-    }
-
-    final DatabaseResults result;
     boolean hasActor = actor != null;
 
-    try {
+    try (DatabaseConnection connection = plugin.getLocalConn().getReadOnlyConnection("")) {
       CompiledStatement statement = connection
               .compileStatement(hasActor ? sincePlayerSql : sinceSql, StatementBuilder.StatementType.SELECT, null,
                       DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
 
-      int maxItems = hasActor ? 28 : 14;
-
-      for (int i = 0; i < maxItems; i++) {
-        statement.setObject(i, since, SqlType.LONG);
-        if (hasActor) {
-          i++;
-          statement.setObject(i, actor.getId(), SqlType.BYTE_ARRAY);
-        }
-      }
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process activity operation", e);
-
+      List<Map<String, Object>> results = new ArrayList<>();
       try {
-        plugin.getLocalConn().releaseConnection(connection);
-      } catch (SQLException e1) {
-        plugin.getLogger().warning("Failed to process activity operation", e1);
+        int maxItems = hasActor ? 28 : 14;
+
+        for (int i = 0; i < maxItems; i++) {
+          statement.setObject(i, since, SqlType.LONG);
+          if (hasActor) {
+            i++;
+            statement.setObject(i, actor.getId(), SqlType.BYTE_ARRAY);
+          }
+        }
+
+        DatabaseResults result = statement.runQuery(null);
+        try {
+          while (result.next()) {
+            Map<String, Object> map = new HashMap<>(hasActor ? 3 : 4);
+
+            int ipIndex = 3;
+            map.put("type", result.getString(0));
+
+            if (hasActor) {
+              map.put("created", result.getLong(2));
+            } else {
+              map.put("actor", result.getString(2));
+              map.put("created", result.getLong(3));
+              ipIndex = 4;
+            }
+
+            String ip = result.getString(1);
+
+            if (!result.getString(ipIndex).isEmpty()) {
+              ip = ip + " - " + result.getString(ipIndex);
+            }
+
+            map.put("player", ip);
+
+            results.add(map);
+          }
+        } finally {
+          result.closeQuietly();
+        }
+      } finally {
+        try { statement.close(); } catch (IOException ignored) { }
       }
 
+      return results;
+    } catch (SQLException | IOException e) {
+      plugin.getLogger().warning("Failed to process activity operation", e);
       return null;
     }
-
-    List<Map<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        Map<String, Object> map = new HashMap<>(hasActor ? 3 : 4);
-
-        int ipIndex = 3;
-        map.put("type", result.getString(0));
-
-        if (hasActor) {
-          map.put("created", result.getLong(2));
-        } else {
-          map.put("actor", result.getString(2));
-          map.put("created", result.getLong(3));
-          ipIndex = 4;
-        }
-
-        // ip or name
-        String ip = result.getString(1);
-
-        if (!result.getString(ipIndex).isEmpty()) {
-          ip = ip + " - " + result.getString(ipIndex);
-        }
-
-        map.put("player", ip);
-
-        results.add(map);
-      }
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process activity operation", e);
-    } finally {
-      result.closeQuietly();
-    }
-
-    try {
-      plugin.getLocalConn().releaseConnection(connection);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process activity operation", e);
-    }
-
-    return results;
   }
 }

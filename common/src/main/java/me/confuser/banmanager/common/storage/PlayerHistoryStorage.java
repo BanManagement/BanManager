@@ -12,13 +12,19 @@ import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 
+import me.confuser.banmanager.common.ormlite.field.SqlType;
+import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer> {
 
@@ -147,39 +153,37 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
    * @throws SQLException if database error occurs
    */
   public List<PlayerNameSummary> getNamesSummary(PlayerData player) throws SQLException {
-    List<PlayerHistoryData> sessions = queryBuilder()
-        .where()
-        .eq("player_id", player)
-        .query();
-
-    if (sessions.isEmpty()) {
-      return new ArrayList<>();
-    }
-
-    Map<String, long[]> nameStats = new HashMap<>();
-
-    for (PlayerHistoryData session : sessions) {
-      String name = session.getName();
-      if (name == null || name.isEmpty()) continue;
-
-      long joinTime = session.getJoin();
-      long leaveTime = session.getLeave();
-
-      if (!nameStats.containsKey(name)) {
-        nameStats.put(name, new long[]{joinTime, leaveTime});
-      } else {
-        long[] stats = nameStats.get(name);
-        stats[0] = Math.min(stats[0], joinTime);
-        stats[1] = Math.max(stats[1], leaveTime);
-      }
-    }
+    String table = getTableInfo().getTableName();
+    String sql = "SELECT `name`, MIN(`join`) AS firstSeen, MAX(`leave`) AS lastSeen"
+        + " FROM `" + table + "`"
+        + " WHERE `player_id` = ? AND `name` IS NOT NULL AND `name` != ''"
+        + " GROUP BY `name` ORDER BY lastSeen DESC";
 
     List<PlayerNameSummary> summaries = new ArrayList<>();
-    for (Map.Entry<String, long[]> entry : nameStats.entrySet()) {
-      summaries.add(new PlayerNameSummary(entry.getKey(), entry.getValue()[0], entry.getValue()[1]));
-    }
 
-    summaries.sort((a, b) -> Long.compare(b.getLastSeen(), a.getLastSeen()));
+    try (DatabaseConnection connection = connectionSource.getReadOnlyConnection(table)) {
+      CompiledStatement statement = connection.compileStatement(
+          sql, StatementBuilder.StatementType.SELECT, null,
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+      try {
+        statement.setObject(0, player.getId(), SqlType.BYTE_ARRAY);
+        DatabaseResults results = statement.runQuery(null);
+        try {
+          while (results.next()) {
+            summaries.add(new PlayerNameSummary(
+                results.getString(0),
+                results.getLong(1),
+                results.getLong(2)));
+          }
+        } finally {
+          try { results.close(); } catch (IOException ignored) { }
+        }
+      } finally {
+        try { statement.close(); } catch (IOException ignored) { }
+      }
+    } catch (IOException e) {
+      throw new SQLException("Failed to query name summary", e);
+    }
 
     return summaries;
   }
@@ -220,15 +224,20 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     String table = getTableInfo().getTableName();
     String nowExpr = dbConfig.getTimestampNow();
 
-    for (Map.Entry<UUID, Integer> entry : activeSessions.entrySet()) {
+    List<Integer> ids = new ArrayList<>(activeSessions.values());
+
+    for (int i = 0; i < ids.size(); i += 500) {
+      List<Integer> batch = ids.subList(i, Math.min(i + 500, ids.size()));
+      String csv = batch.stream().map(String::valueOf).collect(Collectors.joining(","));
       try {
-        updateRaw("UPDATE `" + table + "` SET `leave` = " + nowExpr + " WHERE `id` = ?",
-            String.valueOf(entry.getValue()));
+        updateRaw("UPDATE `" + table + "` SET `leave` = " + nowExpr
+            + " WHERE `id` IN (" + csv + ")");
       } catch (SQLException e) {
         plugin.getLogger().warning("Failed to process player history operation", e);
         break;
       }
     }
+
     activeSessions.clear();
   }
 
@@ -242,24 +251,18 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
   public void purge(CleanUp cleanup) throws SQLException {
     if (cleanup.getDays() == 0) return;
 
+    String table = getTableInfo().getTableName();
     String banTable = BanManagerPlugin.getInstance().getIpBanStorage()
         .getTableInfo()
         .getTableName();
 
-    // Note: INTERVAL syntax doesn't support parameterization in most databases
-    // cleanup.getDays() is from config (integer), not user input, so safe to concatenate
-    String sql = "SELECT ph.id FROM " + getTableInfo().getTableName() + " AS ph " +
-        "LEFT JOIN " + banTable + " b ON ph.ip = b.ip " +
-        "WHERE (ph.ip IS NULL OR b.ip IS NULL) " +
-        "AND ph.`leave` < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL " + cleanup.getDays() + " DAY)";
+    String sql = "DELETE FROM `" + table + "` WHERE `id` IN ("
+        + "SELECT ph.id FROM (SELECT p.id FROM `" + table + "` p "
+        + "LEFT JOIN `" + banTable + "` b ON p.ip = b.ip "
+        + "WHERE (p.ip IS NULL OR b.ip IS NULL) "
+        + "AND p.`leave` < UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL "
+        + cleanup.getDays() + " DAY)) AS ph)";
 
-    CloseableIterator<String[]> results = queryRaw(sql).closeableIterator();
-
-    while (results.hasNext()) {
-      int id = Integer.parseInt(results.next()[0]);
-      deleteById(id);
-    }
-
-    results.closeQuietly();
+    updateRaw(sql);
   }
 }

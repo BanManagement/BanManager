@@ -7,6 +7,8 @@ import me.confuser.banmanager.common.data.PlayerKickData;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KickAllCommand extends CommonCommand {
 
@@ -40,20 +42,28 @@ public class KickAllCommand extends CommonCommand {
       CommonPlayer[] onlinePlayers = getPlugin().getServer().getOnlinePlayers();
 
       if (getPlugin().getConfig().isKickLoggingEnabled()) {
+        List<PlayerKickData> kicks = new ArrayList<>();
+
         for (CommonPlayer player : onlinePlayers) {
           if (!sender.hasPermission("bm.exempt.override.kick") && player.hasPermission("bm.exempt.kick")) {
             continue;
           }
 
           PlayerData playerData = player.getData();
-
           if (playerData == null) continue;
 
-          PlayerKickData data = new PlayerKickData(playerData, actor, reason);
+          kicks.add(new PlayerKickData(playerData, actor, reason));
+        }
 
+        if (!kicks.isEmpty()) {
           try {
-            getPlugin().getPlayerKickStorage().addKick(data, isSilent);
-          } catch (SQLException e) {
+            getPlugin().getPlayerKickStorage().callBatchTasks(() -> {
+              for (PlayerKickData data : kicks) {
+                getPlugin().getPlayerKickStorage().addKick(data, isSilent);
+              }
+              return null;
+            });
+          } catch (Exception e) {
             sender.sendMessage(Message.get("sender.error.exception").toString());
             getPlugin().getLogger().warning("Failed to execute kickall command", e);
           }

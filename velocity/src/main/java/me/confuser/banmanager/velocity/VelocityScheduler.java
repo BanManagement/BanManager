@@ -1,14 +1,18 @@
 package me.confuser.banmanager.velocity;
 
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import me.confuser.banmanager.common.CommonScheduler;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class VelocityScheduler implements CommonScheduler {
   private Object plugin;
   private ProxyServer server;
+  private final List<ScheduledTask> repeatingTasks = new CopyOnWriteArrayList<>();
 
   public VelocityScheduler(Object plugin, ProxyServer server) {
     this.plugin = plugin;
@@ -37,6 +41,14 @@ public class VelocityScheduler implements CommonScheduler {
 
   @Override
   public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
-    server.getScheduler().buildTask(plugin, task).delay(initialDelay).repeat(period).schedule();
+    repeatingTasks.add(server.getScheduler().buildTask(plugin, task).delay(initialDelay).repeat(period).schedule());
+  }
+
+  @Override
+  public void cancelAll() {
+    for (ScheduledTask task : repeatingTasks) {
+      task.cancel();
+    }
+    repeatingTasks.clear();
   }
 }

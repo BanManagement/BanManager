@@ -2,11 +2,7 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.data.PlayerBanData;
-import me.confuser.banmanager.common.data.PlayerBanRecord;
-import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.data.PlayerMuteData;
-import me.confuser.banmanager.common.data.PlayerMuteRecord;
+import me.confuser.banmanager.common.data.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -371,5 +367,35 @@ public class RollbackCommandTest extends BasePluginDbTest {
     // Verify mute was NOT restored
     assertNull(plugin.getPlayerMuteStorage().retrieveMute(victim.getUUID()));
     assertFalse(plugin.getPlayerMuteStorage().isMuted(victim.getUUID()));
+  }
+
+  @Test
+  public void shouldRollbackReportsAndFireEvents() throws SQLException {
+    PlayerData victim = testUtils.createRandomPlayer();
+    PlayerData maliciousMod = testUtils.createRandomPlayer();
+    ReportState openState = plugin.getReportStateStorage().queryForId(1);
+
+    PlayerReportData report1 = new PlayerReportData(victim, maliciousMod, "bad report 1", openState);
+    plugin.getPlayerReportStorage().create(report1);
+    PlayerReportData report2 = new PlayerReportData(victim, maliciousMod, "bad report 2", openState);
+    plugin.getPlayerReportStorage().create(report2);
+
+    assertEquals(2, plugin.getPlayerReportStorage().getCount(victim));
+
+    CommonSender sender = spy(plugin.getServer().getConsoleSender());
+    String[] args = new String[]{maliciousMod.getName(), "1d", "reports"};
+
+    assertTrue(cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
+
+    await().until(() -> {
+      try {
+        return plugin.getPlayerReportStorage().getCount(victim) == 0;
+      } catch (SQLException e) {
+        return false;
+      }
+    });
+
+    assertEquals(0, plugin.getPlayerReportStorage().getCount(victim));
+    verify(server, times(2)).callEvent(eq("PlayerReportDeletedEvent"), any(PlayerReportData.class));
   }
 }

@@ -5,9 +5,11 @@ import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class RollbackSync extends BmRunnable {
 
@@ -26,142 +28,64 @@ public class RollbackSync extends BmRunnable {
         final RollbackData data = itr.next();
 
         switch (data.getType()) {
-          // @TODO Refactor/Clean up
           case "bans":
-            for (Iterator<Map.Entry<UUID, PlayerBanData>> it = plugin.getPlayerBanStorage().getBans().entrySet()
-                .iterator(); it.hasNext(); ) {
-              Map.Entry<UUID, PlayerBanData> entry = it.next();
-
-              if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
-              if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                  .getExpires())) continue;
-
-              it.remove();
-            }
+            evictFromCache(plugin.getPlayerBanStorage().getBans(),
+                v -> v.getActor().getUUID(), PlayerBanData::getCreated, data);
             break;
 
           case "ipbans":
-            for (Iterator<Map.Entry<String, IpBanData>> it = plugin.getIpBanStorage().getBans().entrySet().iterator(); it
-                .hasNext(); ) {
-              Map.Entry<String, IpBanData> entry = it.next();
-
-              if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
-              if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                  .getExpires())) continue;
-
-              it.remove();
-            }
+            evictFromCache(plugin.getIpBanStorage().getBans(),
+                v -> v.getActor().getUUID(), IpBanData::getCreated, data);
             break;
 
           case "ipmutes":
-            for (Iterator<Map.Entry<String, IpMuteData>> it = plugin.getIpMuteStorage().getMutes().entrySet()
-                .iterator(); it.hasNext(); ) {
-              Map.Entry<String, IpMuteData> entry = it.next();
-
-              if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
-              if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                  .getExpires())) continue;
-
-              it.remove();
-            }
+            evictFromCache(plugin.getIpMuteStorage().getMutes(),
+                v -> v.getActor().getUUID(), IpMuteData::getCreated, data);
             break;
 
           case "mutes":
-            for (Iterator<Map.Entry<UUID, PlayerMuteData>> it = plugin.getPlayerMuteStorage().getMutes().entrySet()
-                .iterator(); it.hasNext(); ) {
-              Map.Entry<UUID, PlayerMuteData> entry = it.next();
-
-              if (!entry.getValue().getActor().getUUID().equals(data.getPlayer().getUUID())) continue;
-              if (!(entry.getValue().getCreated() <= data.getCreated() && entry.getValue().getCreated() >= data
-                  .getExpires())) continue;
-
-              it.remove();
-            }
+            evictFromCache(plugin.getPlayerMuteStorage().getMutes(),
+                v -> v.getActor().getUUID(), PlayerMuteData::getCreated, data);
             break;
 
           case "banrecords":
-            // Sync restored bans to in-memory cache
-            // Query for bans that were restored (created within rollback timeframe)
-            CloseableIterator<PlayerBanData> restoredBans = plugin.getPlayerBanStorage()
-                .queryBuilder()
-                .where()
+            restoreToCache(plugin.getPlayerBanStorage()
+                .queryBuilder().where()
                 .le("created", data.getCreated())
                 .and().ge("created", data.getExpires())
-                .iterator();
-
-            try {
-              while (restoredBans.hasNext()) {
-                PlayerBanData ban = restoredBans.next();
-                if (!plugin.getPlayerBanStorage().isBanned(ban.getPlayer().getUUID())) {
-                  plugin.getPlayerBanStorage().addBan(ban);
-                }
-              }
-            } finally {
-              restoredBans.closeQuietly();
-            }
+                .iterator(),
+                ban -> !plugin.getPlayerBanStorage().isBanned(ban.getPlayer().getUUID()),
+                ban -> plugin.getPlayerBanStorage().addBan(ban));
             break;
 
           case "ipbanrecords":
-            // Sync restored IP bans to in-memory cache
-            CloseableIterator<IpBanData> restoredIpBans = plugin.getIpBanStorage()
-                .queryBuilder()
-                .where()
+            restoreToCache(plugin.getIpBanStorage()
+                .queryBuilder().where()
                 .le("created", data.getCreated())
                 .and().ge("created", data.getExpires())
-                .iterator();
-
-            try {
-              while (restoredIpBans.hasNext()) {
-                IpBanData ban = restoredIpBans.next();
-                if (!plugin.getIpBanStorage().isBanned(ban.getIp())) {
-                  plugin.getIpBanStorage().addBan(ban);
-                }
-              }
-            } finally {
-              restoredIpBans.closeQuietly();
-            }
+                .iterator(),
+                ban -> !plugin.getIpBanStorage().isBanned(ban.getIp()),
+                ban -> plugin.getIpBanStorage().addBan(ban));
             break;
 
           case "muterecords":
-            // Sync restored mutes to in-memory cache
-            CloseableIterator<PlayerMuteData> restoredMutes = plugin.getPlayerMuteStorage()
-                .queryBuilder()
-                .where()
+            restoreToCache(plugin.getPlayerMuteStorage()
+                .queryBuilder().where()
                 .le("created", data.getCreated())
                 .and().ge("created", data.getExpires())
-                .iterator();
-
-            try {
-              while (restoredMutes.hasNext()) {
-                PlayerMuteData mute = restoredMutes.next();
-                if (!plugin.getPlayerMuteStorage().isMuted(mute.getPlayer().getUUID())) {
-                  plugin.getPlayerMuteStorage().addMute(mute);
-                }
-              }
-            } finally {
-              restoredMutes.closeQuietly();
-            }
+                .iterator(),
+                mute -> !plugin.getPlayerMuteStorage().isMuted(mute.getPlayer().getUUID()),
+                mute -> plugin.getPlayerMuteStorage().addMute(mute));
             break;
 
           case "ipmuterecords":
-            // Sync restored IP mutes to in-memory cache
-            CloseableIterator<IpMuteData> restoredIpMutes = plugin.getIpMuteStorage()
-                .queryBuilder()
-                .where()
+            restoreToCache(plugin.getIpMuteStorage()
+                .queryBuilder().where()
                 .le("created", data.getCreated())
                 .and().ge("created", data.getExpires())
-                .iterator();
-
-            try {
-              while (restoredIpMutes.hasNext()) {
-                IpMuteData mute = restoredIpMutes.next();
-                if (!plugin.getIpMuteStorage().isMuted(mute.getIp())) {
-                  plugin.getIpMuteStorage().addMute(mute);
-                }
-              }
-            } finally {
-              restoredIpMutes.closeQuietly();
-            }
+                .iterator(),
+                mute -> !plugin.getIpMuteStorage().isMuted(mute.getIp()),
+                mute -> plugin.getIpMuteStorage().addMute(mute));
             break;
         }
       }
@@ -170,6 +94,35 @@ public class RollbackSync extends BmRunnable {
       plugin.getLogger().warning("Failed to sync rollbacks", e);
     } finally {
       if (itr != null) itr.closeQuietly();
+    }
+  }
+
+  private <K, V> void evictFromCache(Map<K, V> cache, Function<V, UUID> getActor,
+      Function<V, Long> getCreated, RollbackData data) {
+    UUID actorUUID = data.getPlayer().getUUID();
+    long created = data.getCreated();
+    long expires = data.getExpires();
+
+    cache.entrySet().removeIf(entry -> {
+      V value = entry.getValue();
+      long entryCreated = getCreated.apply(value);
+      return getActor.apply(value).equals(actorUUID)
+          && entryCreated <= created
+          && entryCreated >= expires;
+    });
+  }
+
+  private <T> void restoreToCache(CloseableIterator<T> itr,
+      Predicate<T> shouldRestore, Consumer<T> action) {
+    try {
+      while (itr.hasNext()) {
+        T item = itr.next();
+        if (shouldRestore.test(item)) {
+          action.accept(item);
+        }
+      }
+    } finally {
+      itr.closeQuietly();
     }
   }
 }

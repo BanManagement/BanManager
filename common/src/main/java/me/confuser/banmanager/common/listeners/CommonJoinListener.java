@@ -88,12 +88,11 @@ public class CommonJoinListener {
       }
     }
 
-    if (plugin.getIpRangeBanStorage().isBanned(address)) {
-      IpRangeBanData data = plugin.getIpRangeBanStorage().getBan(address);
-
-      if (data.hasExpired()) {
+    IpRangeBanData ipRangeBan = plugin.getIpRangeBanStorage().getBan(address);
+    if (ipRangeBan != null) {
+      if (ipRangeBan.hasExpired()) {
         try {
-          plugin.getIpRangeBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+          plugin.getIpRangeBanStorage().unban(ipRangeBan, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
           plugin.getLogger().warning("Failed to process player join", e);
         }
@@ -101,41 +100,40 @@ public class CommonJoinListener {
         return;
       }
 
-      if (data.getExpires() == 0 && plugin.getExemptionsConfig().isExempt(id, "baniprange")) {
+      if (ipRangeBan.getExpires() == 0 && plugin.getExemptionsConfig().isExempt(id, "baniprange")) {
         return;
-      } else if (data.getExpires() != 0 && plugin.getExemptionsConfig().isExempt(id, "tempbaniprange")) {
+      } else if (ipRangeBan.getExpires() != 0 && plugin.getExemptionsConfig().isExempt(id, "tempbaniprange")) {
         return;
       }
 
       String dateTimeFormat;
       Message message;
 
-      if (data.getExpires() == 0) {
+      if (ipRangeBan.getExpires() == 0) {
         message = Message.get("baniprange.ip.disallowed");
         dateTimeFormat = Message.getString("baniprange.ip.dateTimeFormat");
       } else {
         message = Message.get("tempbaniprange.ip.disallowed");
-        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+        message.set("expires", DateUtils.getDifferenceFormat(ipRangeBan.getExpires()));
 
         dateTimeFormat = Message.getString("tempbaniprange.ip.dateTimeFormat");
       }
 
-      message.set("id", data.getId());
+      message.set("id", ipRangeBan.getId());
       message.set("ip", address.toString());
-      message.set("reason", data.getReason());
-      message.set("actor", data.getActor().getName());
-      message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
+      message.set("reason", ipRangeBan.getReason());
+      message.set("actor", ipRangeBan.getActor().getName());
+      message.set("created", DateUtils.format(dateTimeFormat, ipRangeBan.getCreated()));
 
       handler.handleDeny(message);
       return;
     }
 
-    if (plugin.getIpBanStorage().isBanned(address)) {
-      IpBanData data = plugin.getIpBanStorage().getBan(address);
-
-      if (data.hasExpired()) {
+    IpBanData ipBan = plugin.getIpBanStorage().getBan(address);
+    if (ipBan != null) {
+      if (ipBan.hasExpired()) {
         try {
-          plugin.getIpBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+          plugin.getIpBanStorage().unban(ipBan, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
           plugin.getLogger().warning("Failed to process player join", e);
         }
@@ -146,33 +144,32 @@ public class CommonJoinListener {
       String dateTimeFormat;
       Message message;
 
-      if (data.getExpires() == 0) {
+      if (ipBan.getExpires() == 0) {
         message = Message.get("banip.ip.disallowed");
         dateTimeFormat = Message.getString("banip.ip.dateTimeFormat");
       } else {
         message = Message.get("tempbanip.ip.disallowed");
-        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+        message.set("expires", DateUtils.getDifferenceFormat(ipBan.getExpires()));
 
         dateTimeFormat = Message.getString("tempbanip.ip.dateTimeFormat");
       }
 
-      message.set("id", data.getId());
+      message.set("id", ipBan.getId());
       message.set("ip", address.toString());
-      message.set("reason", data.getReason());
-      message.set("actor", data.getActor().getName());
-      message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
+      message.set("reason", ipBan.getReason());
+      message.set("actor", ipBan.getActor().getName());
+      message.set("created", DateUtils.format(dateTimeFormat, ipBan.getCreated()));
 
       handler.handleDeny(message);
-      handleJoinDeny(address.toString(), data.getActor(), data.getReason());
+      handleJoinDeny(address.toString(), ipBan.getActor(), ipBan.getReason());
       return;
     }
 
-    if (plugin.getNameBanStorage().isBanned(name)) {
-      NameBanData data = plugin.getNameBanStorage().getBan(name);
-
-      if (data.hasExpired()) {
+    NameBanData nameBan = plugin.getNameBanStorage().getBan(name);
+    if (nameBan != null) {
+      if (nameBan.hasExpired()) {
         try {
-          plugin.getNameBanStorage().unban(data, plugin.getPlayerStorage().getConsole());
+          plugin.getNameBanStorage().unban(nameBan, plugin.getPlayerStorage().getConsole());
         } catch (SQLException e) {
           plugin.getLogger().warning("Failed to process player join", e);
         }
@@ -183,21 +180,21 @@ public class CommonJoinListener {
       String dateTimeFormat;
       Message message;
 
-      if (data.getExpires() == 0) {
+      if (nameBan.getExpires() == 0) {
         message = Message.get("banname.name.disallowed");
         dateTimeFormat = Message.getString("banname.name.dateTimeFormat");
       } else {
         message = Message.get("tempbanname.name.disallowed");
-        message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+        message.set("expires", DateUtils.getDifferenceFormat(nameBan.getExpires()));
 
         dateTimeFormat = Message.getString("tempbanname.name.dateTimeFormat");
       }
 
-      message.set("id", data.getId());
+      message.set("id", nameBan.getId());
       message.set("name", name);
-      message.set("reason", data.getReason());
-      message.set("actor", data.getActor().getName());
-      message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
+      message.set("reason", nameBan.getReason());
+      message.set("actor", nameBan.getActor().getName());
+      message.set("created", DateUtils.format(dateTimeFormat, nameBan.getCreated()));
 
       handler.handleDeny(message);
       return;
@@ -323,8 +320,10 @@ public class CommonJoinListener {
       CloseableIterator<PlayerWarnData> warnings = null;
       try {
         warnings = plugin.getPlayerWarnStorage().getUnreadWarnings(id);
+        boolean hasWarnings = false;
 
         while (warnings.hasNext()) {
+          hasWarnings = true;
           PlayerWarnData warning = warnings.next();
 
           Message.get("warn.player.warned")
@@ -334,10 +333,10 @@ public class CommonJoinListener {
               .set("actor", warning.getActor().getName())
               .set("id", warning.getId())
               .sendTo(plugin.getServer().getPlayer(player.getUniqueId()));
+        }
 
-          warning.setRead(true);
-          // TODO Move to one update query to set all warnings for player to read
-          plugin.getPlayerWarnStorage().update(warning);
+        if (hasWarnings) {
+          plugin.getPlayerWarnStorage().markAllRead(id);
         }
       } catch (SQLException e) {
         plugin.getLogger().warning("Failed to process player join", e);
@@ -559,8 +558,10 @@ public class CommonJoinListener {
   }
 
   private void punishAlts(List<PlayerData> duplicates, UUID uuid) throws SQLException {
+    PlayerData targetPlayer = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid));
+    PlayerData console = plugin.getPlayerStorage().getConsole();
+
     if (!plugin.getPlayerBanStorage().isBanned(uuid)) {
-      // Auto ban
       for (PlayerData player : duplicates) {
         if (player.getUUID().equals(uuid)) {
           continue;
@@ -571,8 +572,7 @@ public class CommonJoinListener {
         if (ban == null) continue;
         if (ban.hasExpired()) continue;
 
-        final PlayerBanData newBan = new PlayerBanData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
-            plugin.getPlayerStorage().getConsole(),
+        final PlayerBanData newBan = new PlayerBanData(targetPlayer, console,
             ban.getReason(),
             ban.isSilent(),
             ban.getExpires());
@@ -580,7 +580,6 @@ public class CommonJoinListener {
         try {
             plugin.getPlayerBanStorage().ban(newBan);
         } catch (SQLIntegrityConstraintViolationException e) {
-          // Ignore duplicate entry errors
           plugin.getPlayerBanStorage().addBan(newBan);
         }
 
@@ -598,7 +597,6 @@ public class CommonJoinListener {
         });
       }
     } else if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {
-      // Auto mute
       for (PlayerData player : duplicates) {
         if (player.getUUID().equals(uuid)) {
           continue;
@@ -609,8 +607,7 @@ public class CommonJoinListener {
         if (mute == null) continue;
         if (mute.hasExpired()) continue;
 
-        PlayerMuteData newMute = new PlayerMuteData(plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(uuid)),
-            plugin.getPlayerStorage().getConsole(),
+        PlayerMuteData newMute = new PlayerMuteData(targetPlayer, console,
             mute.getReason(),
             mute.isSilent(),
             mute.isSoft(),
@@ -619,7 +616,6 @@ public class CommonJoinListener {
         try {
           plugin.getPlayerMuteStorage().mute(newMute);
         } catch (SQLIntegrityConstraintViolationException e) {
-          // Ignore duplicate entry errors
           plugin.getPlayerMuteStorage().addMute(newMute);
         }
       }

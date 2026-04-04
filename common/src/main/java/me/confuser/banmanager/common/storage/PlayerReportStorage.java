@@ -4,6 +4,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -80,12 +81,15 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
 
   public int deleteAll(PlayerData player) throws SQLException {
     List<PlayerReportData> reports = queryForEq("player_id", player);
+    if (reports.isEmpty()) return 0;
 
     for (PlayerReportData report : reports) {
-      deleteById(report.getId());
+      plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
     }
 
-    return reports.size();
+    DeleteBuilder<PlayerReportData, Integer> builder = deleteBuilder();
+    builder.where().eq("player_id", player);
+    return builder.delete();
   }
 
   public boolean isRecentlyReported(PlayerData player, long cooldown) throws SQLException {
@@ -114,13 +118,16 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
   public int deleteIds(Collection<Integer> ids) throws SQLException {
     if (ids == null || ids.isEmpty()) return 0;
 
-    int count = 0;
-
     for (Integer id : ids) {
-      if (deleteById(id) != 0) count++;
+      PlayerReportData report = queryForId(id);
+      if (report != null) {
+        plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
+      }
     }
 
-    return count;
+    DeleteBuilder<PlayerReportData, Integer> builder = deleteBuilder();
+    builder.where().in("id", ids);
+    return builder.delete();
   }
 
   public long getCount(PlayerData player) throws SQLException {

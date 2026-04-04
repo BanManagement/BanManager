@@ -48,6 +48,7 @@ public class BMSpongePlugin {
   private BanManagerPlugin plugin;
   private Metrics metrics;
   private ChatListener chatListener;
+  private SpongeScheduler scheduler;
 
   @Inject
   @ConfigDir(sharedRoot = false)
@@ -75,7 +76,7 @@ public class BMSpongePlugin {
 
   @Listener
   public void onDisable(GameStoppingServerEvent event) {
-    // @TODO Disable scheduled tasks somehow
+    scheduler.cancelAll();
 
     if (plugin != null) plugin.disable();
   }
@@ -91,7 +92,8 @@ public class BMSpongePlugin {
       return;
     }
 
-    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), new SpongeScheduler(this), server, new SpongeMetrics(metrics));
+    this.scheduler = new SpongeScheduler(this);
+    this.plugin = new BanManagerPlugin(pluginInfo, this.logger, dataFolder.toFile(), scheduler, server, new SpongeMetrics(metrics));
 
     server.enable(plugin);
 

@@ -49,6 +49,7 @@ import java.time.Duration;
 public class BMVelocityPlugin {
   @Getter
   private BanManagerPlugin plugin;
+  private VelocityScheduler scheduler;
   @Getter
   private VelocityConfig velocityConfig;
   private final String[] configs = new String[]{
@@ -92,7 +93,8 @@ public class BMVelocityPlugin {
       return;
     }
 
-    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, new VelocityScheduler(this, this.server), server, new VelocityMetrics(metrics));
+    this.scheduler = new VelocityScheduler(this, this.server);
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(logger), dataDirectory, scheduler, server, new VelocityMetrics(metrics));
 
     server.enable(plugin, this.server);
 
@@ -123,6 +125,7 @@ public class BMVelocityPlugin {
 
   @Subscribe
   public void onProxyShutdown(ProxyShutdownEvent event) {
+    if (scheduler != null) scheduler.cancelAll();
     if (plugin != null) plugin.disable();
   }
 

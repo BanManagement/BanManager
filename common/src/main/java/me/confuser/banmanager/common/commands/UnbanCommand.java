@@ -55,6 +55,8 @@ public class UnbanCommand extends CommonCommand {
     }
 
     final String reason = parser.getReason().getMessage();
+    final boolean canOverride = sender.hasPermission("bm.exempt.override.ban");
+    final boolean isOwnOnly = sender.hasPermission("bm.command.unban.own");
 
     getPlugin().getScheduler().runAsync(() -> {
       PlayerBanData ban;
@@ -72,9 +74,7 @@ public class UnbanCommand extends CommonCommand {
 
       final PlayerData actor = sender.getData();
 
-      //TODO refactor if async perm check is problem
-      if (!actor.getUUID().equals(ban.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.ban")
-              && sender.hasPermission("bm.command.unban.own")) {
+      if (!actor.getUUID().equals(ban.getActor().getUUID()) && !canOverride && isOwnOnly) {
         Message.get("unban.error.notOwn").set("player", ban.getPlayer().getName()).sendTo(sender);
         return;
       }

@@ -12,6 +12,7 @@ import me.confuser.banmanager.common.ormlite.field.SqlType;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.stmt.UpdateBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
 import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -144,12 +145,32 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
         .countOf() > 0;
   }
 
-  public int deleteRecent(PlayerData player) throws SQLException {
-    // TODO use a raw DELETE query to reduce to one query
-    PlayerWarnData warning = queryBuilder().limit(1L).orderBy("created", false).where().eq("player_id", player)
-        .queryForFirst();
+  public int markAllRead(UUID playerId) throws SQLException {
+    UpdateBuilder<PlayerWarnData, Integer> builder = updateBuilder();
+    builder.updateColumnValue("read", true);
+    builder.where().eq("player_id", UUIDUtils.toBytes(playerId)).and().eq("read", false);
+    return builder.update();
+  }
 
-    return delete(warning);
+  public int deleteRecent(PlayerData player) throws SQLException {
+    String table = getTableName();
+
+    try (DatabaseConnection connection = connectionSource.getReadWriteConnection(table)) {
+      CompiledStatement statement = connection.compileStatement(
+          "DELETE FROM `" + table + "` WHERE `id` = ("
+              + "SELECT `id` FROM (SELECT `id` FROM `" + table
+              + "` WHERE `player_id` = ? ORDER BY `created` DESC LIMIT 1) AS tmp)",
+          StatementBuilder.StatementType.UPDATE, null,
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+      try {
+        statement.setObject(0, player.getId(), SqlType.BYTE_ARRAY);
+        return statement.runUpdate();
+      } finally {
+        try { statement.close(); } catch (IOException ignored) { }
+      }
+    } catch (IOException e) {
+      throw new SQLException("Failed to delete recent warning", e);
+    }
   }
 
   public void purge(CleanUp cleanup, boolean read) throws SQLException {

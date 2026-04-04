@@ -56,6 +56,8 @@ public class UnmuteCommand extends CommonCommand {
     }
 
     final String reason = parser.getReason().getMessage();
+    final boolean canOverride = sender.hasPermission("bm.exempt.override.mute");
+    final boolean isOwnOnly = sender.hasPermission("bm.command.unmute.own");
 
     getPlugin().getScheduler().runAsync(new Runnable() {
 
@@ -77,9 +79,7 @@ public class UnmuteCommand extends CommonCommand {
 
         final PlayerData actor = sender.getData();
 
-        //TODO refactor if async perm check is problem
-        if (!actor.getUUID().equals(mute.getActor().getUUID()) && !sender.hasPermission("bm.exempt.override.mute")
-                && sender.hasPermission("bm.command.unmute.own")) {
+        if (!actor.getUUID().equals(mute.getActor().getUUID()) && !canOverride && isOwnOnly) {
           Message.get("unmute.error.notOwn").set("player", mute.getPlayer().getName()).sendTo(sender);
           return;
         }

@@ -6,9 +6,12 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpongeScheduler implements CommonScheduler {
     private Object plugin;
+    private final List<Task> repeatingTasks = new CopyOnWriteArrayList<>();
 
     public SpongeScheduler(Object plugin) {
         this.plugin = plugin;
@@ -45,6 +48,14 @@ public class SpongeScheduler implements CommonScheduler {
         long initialTicks = SchedulerTime.durationToTicksCeil(initialDelay);
         long periodTicks = SchedulerTime.durationToTicksCeil(period);
         Task.Builder builder = Sponge.getGame().getScheduler().createTaskBuilder();
-        builder.async().execute(task).delayTicks(initialTicks).intervalTicks(periodTicks).submit(plugin);
+        repeatingTasks.add(builder.async().execute(task).delayTicks(initialTicks).intervalTicks(periodTicks).submit(plugin));
+    }
+
+    @Override
+    public void cancelAll() {
+        for (Task task : repeatingTasks) {
+            task.cancel();
+        }
+        repeatingTasks.clear();
     }
 }
