@@ -28,7 +28,9 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   private BanManagerPlugin plugin;
 
   @Getter
-  private RadixTree<VoidValue> autoCompleteTree;
+  private RadixTree<VoidValue> autoCompleteTree = new ConcurrentRadixTree<>(new SmartArrayBasedNodeFactory());
+
+  private volatile boolean shuttingDown = false;
 
   @Getter
   private PlayerData console;
@@ -46,8 +48,7 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     setupConsole();
 
     if (plugin.getConfig().isOfflineAutoComplete()) {
-      // @TODO run in a separate thread to speed up start up
-      setupAutoComplete();
+      plugin.getScheduler().runAsync(this::setupAutoComplete);
     }
   }
 
@@ -82,21 +83,25 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   }
 
   public void setupAutoComplete() {
-    autoCompleteTree = new ConcurrentRadixTree<>(new SmartArrayBasedNodeFactory());
     CloseableIterator<PlayerData> itr = null;
 
     try {
       itr = this.queryBuilder().selectColumns("name").iterator();
 
-      while (itr.hasNext()) {
+      while (!shuttingDown && itr.hasNext()) {
         autoCompleteTree.put(itr.next().getName(), VoidValue.SINGLETON);
       }
     } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process player storage operation", e);
+      if (!shuttingDown) {
+        plugin.getLogger().warning("Failed to process player storage operation", e);
+      }
     } finally {
       if (itr != null) itr.closeQuietly();
     }
+  }
 
+  public void shutdown() {
+    shuttingDown = true;
   }
 
   public CreateOrUpdateStatus upsert(PlayerData data) throws SQLException {

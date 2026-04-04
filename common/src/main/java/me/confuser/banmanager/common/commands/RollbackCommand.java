@@ -5,8 +5,11 @@ import me.confuser.banmanager.common.configs.TimeLimitType;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
+
+import java.util.List;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.TransactionHelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -97,203 +100,174 @@ public class RollbackCommand extends CommonCommand {
         if (!RollbackCommand.types.contains(type)) {
           Message.get("bmrollback.error.invalid").set("type", type).set("types", String.join(",", types)).sendTo(sender);
           return;
-        } else if (sender.hasPermission("bm.command.bmrollback." + type)) {
-          try {
-            getPlugin().getRollbackStorage()
-                .create(new RollbackData(player, sender.getData(), type, expires, now));
-          } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
-            getPlugin().getLogger().warning("Failed to execute rollback command", e);
-            return;
-          }
         }
       }
 
-      // Forces running in order
-      // I.e bans must be executed before banrecords etc
-      for (String type : RollbackCommand.types) {
-        if (!types.contains(type)) continue;
+      try {
+        TransactionHelper.runInTransaction(getPlugin().getLocalConn(), () -> {
+          for (String type : types) {
+            if (sender.hasPermission("bm.command.bmrollback." + type)) {
+              getPlugin().getRollbackStorage()
+                  .create(new RollbackData(player, sender.getData(), type, expires, now));
+            }
+          }
 
-        // @TODO Transactions for robustness
-        try {
-          switch (type) {
-            case "bans":
-              DeleteBuilder<PlayerBanData, Integer> bans = getPlugin().getPlayerBanStorage().deleteBuilder();
-              bans.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              bans.delete();
-              break;
+          for (String type : RollbackCommand.types) {
+            if (!types.contains(type)) continue;
 
-            case "banrecords":
-              QueryBuilder<PlayerBanRecord, Integer> banRecords = getPlugin().getPlayerBanRecordStorage()
-                  .queryBuilder();
-              banRecords.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+            switch (type) {
+              case "bans":
+                DeleteBuilder<PlayerBanData, Integer> bans = getPlugin().getPlayerBanStorage().deleteBuilder();
+                bans.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                bans.delete();
+                break;
 
-              for (PlayerBanRecord record : banRecords.query()) {
-                try {
-                  // Only restore if the original ban wasn't also by the malicious mod
+              case "banrecords":
+                QueryBuilder<PlayerBanRecord, Integer> banRecords = getPlugin().getPlayerBanRecordStorage()
+                    .queryBuilder();
+                banRecords.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+
+                for (PlayerBanRecord record : banRecords.query()) {
                   if (getPlugin().getPlayerBanStorage().retrieveBan(record.getPlayer().getUUID()) == null
                       && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getPlayerBanStorage().create(new PlayerBanData(record));
                   }
 
                   getPlugin().getPlayerBanRecordStorage().delete(record);
-                } catch (SQLException e) {
-                  sender.sendMessage(Message.get("sender.error.exception").toString());
-                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
-                  return;
                 }
-              }
 
-              // Also delete records where the malicious mod was the original banner (pastActor)
-              // These are bans made by the malicious mod that were later legitimately unbanned
-              DeleteBuilder<PlayerBanRecord, Integer> maliciousBanRecords = getPlugin().getPlayerBanRecordStorage().deleteBuilder();
-              maliciousBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
-              maliciousBanRecords.delete();
+                DeleteBuilder<PlayerBanRecord, Integer> maliciousBanRecords = getPlugin().getPlayerBanRecordStorage().deleteBuilder();
+                maliciousBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+                maliciousBanRecords.delete();
 
-              break;
+                break;
 
-            case "ipbans":
-              DeleteBuilder<IpBanData, Integer> ipBans = getPlugin().getIpBanStorage().deleteBuilder();
-              ipBans.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              ipBans.delete();
-              break;
+              case "ipbans":
+                DeleteBuilder<IpBanData, Integer> ipBans = getPlugin().getIpBanStorage().deleteBuilder();
+                ipBans.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                ipBans.delete();
+                break;
 
-            case "ipbanrecords":
-              QueryBuilder<IpBanRecord, Integer> ipBanRecords = getPlugin().getIpBanRecordStorage().queryBuilder();
-              ipBanRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                  .ge("created", expires);
+              case "ipbanrecords":
+                QueryBuilder<IpBanRecord, Integer> ipBanRecords = getPlugin().getIpBanRecordStorage().queryBuilder();
+                ipBanRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
+                    .ge("created", expires);
 
-              for (IpBanRecord record : ipBanRecords.query()) {
-                try {
-                  // Only restore if the original ban wasn't also by the malicious mod
+                for (IpBanRecord record : ipBanRecords.query()) {
                   if (getPlugin().getIpBanStorage().retrieveBan(record.getIp()) == null
                       && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getIpBanStorage().create(new IpBanData(record));
                   }
 
                   getPlugin().getIpBanRecordStorage().delete(record);
-                } catch (SQLException e) {
-                  sender.sendMessage(Message.get("sender.error.exception").toString());
-                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
-                  return;
                 }
-              }
 
-              // Also delete records where the malicious mod was the original banner (pastActor)
-              DeleteBuilder<IpBanRecord, Integer> maliciousIpBanRecords = getPlugin().getIpBanRecordStorage().deleteBuilder();
-              maliciousIpBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
-              maliciousIpBanRecords.delete();
+                DeleteBuilder<IpBanRecord, Integer> maliciousIpBanRecords = getPlugin().getIpBanRecordStorage().deleteBuilder();
+                maliciousIpBanRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+                maliciousIpBanRecords.delete();
 
-              break;
+                break;
 
-            case "kicks":
-              DeleteBuilder<PlayerKickData, Integer> kicks = getPlugin().getPlayerKickStorage().deleteBuilder();
-              kicks.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              kicks.delete();
+              case "kicks":
+                DeleteBuilder<PlayerKickData, Integer> kicks = getPlugin().getPlayerKickStorage().deleteBuilder();
+                kicks.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                kicks.delete();
+                break;
 
-              break;
+              case "mutes":
+                DeleteBuilder<PlayerMuteData, Integer> mutes = getPlugin().getPlayerMuteStorage().deleteBuilder();
+                mutes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                mutes.delete();
+                break;
 
-            case "mutes":
-              DeleteBuilder<PlayerMuteData, Integer> mutes = getPlugin().getPlayerMuteStorage().deleteBuilder();
-              mutes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              mutes.delete();
-              break;
+              case "muterecords":
+                QueryBuilder<PlayerMuteRecord, Integer> muteRecords = getPlugin().getPlayerMuteRecordStorage()
+                    .queryBuilder();
+                muteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
+                    .ge("created", expires);
 
-            case "muterecords":
-              QueryBuilder<PlayerMuteRecord, Integer> muteRecords = getPlugin().getPlayerMuteRecordStorage()
-                  .queryBuilder();
-              muteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                  .ge("created", expires);
-
-              for (PlayerMuteRecord record : muteRecords.query()) {
-                try {
-                  // Only restore if the original mute wasn't also by the malicious mod
+                for (PlayerMuteRecord record : muteRecords.query()) {
                   if (getPlugin().getPlayerMuteStorage().retrieveMute(record.getPlayer().getUUID()) == null
                       && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getPlayerMuteStorage().create(new PlayerMuteData(record));
                   }
 
                   getPlugin().getPlayerMuteRecordStorage().delete(record);
-                } catch (SQLException e) {
-                  sender.sendMessage(Message.get("sender.error.exception").toString());
-                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
-                  return;
                 }
-              }
 
-              // Also delete records where the malicious mod was the original muter (pastActor)
-              DeleteBuilder<PlayerMuteRecord, Integer> maliciousMuteRecords = getPlugin().getPlayerMuteRecordStorage().deleteBuilder();
-              maliciousMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
-              maliciousMuteRecords.delete();
+                DeleteBuilder<PlayerMuteRecord, Integer> maliciousMuteRecords = getPlugin().getPlayerMuteRecordStorage().deleteBuilder();
+                maliciousMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+                maliciousMuteRecords.delete();
 
-              break;
+                break;
 
-            case "ipmutes":
-              DeleteBuilder<IpMuteData, Integer> ipMutes = getPlugin().getIpMuteStorage().deleteBuilder();
-              ipMutes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              ipMutes.delete();
-              break;
+              case "ipmutes":
+                DeleteBuilder<IpMuteData, Integer> ipMutes = getPlugin().getIpMuteStorage().deleteBuilder();
+                ipMutes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                ipMutes.delete();
+                break;
 
-            case "ipmuterecords":
-              QueryBuilder<IpMuteRecord, Integer> ipMuteRecords = getPlugin().getIpMuteRecordStorage().queryBuilder();
-              ipMuteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
-                  .ge("created", expires);
+              case "ipmuterecords":
+                QueryBuilder<IpMuteRecord, Integer> ipMuteRecords = getPlugin().getIpMuteRecordStorage().queryBuilder();
+                ipMuteRecords.where().eq("actor_id", player.getId()).and().le("created", now).and()
+                    .ge("created", expires);
 
-              for (IpMuteRecord record : ipMuteRecords.query()) {
-                try {
-                  // Only restore if the original mute wasn't also by the malicious mod
+                for (IpMuteRecord record : ipMuteRecords.query()) {
                   if (getPlugin().getIpMuteStorage().retrieveMute(record.getIp()) == null
                       && !record.getPastActor().getUUID().equals(player.getUUID())) {
                     getPlugin().getIpMuteStorage().create(new IpMuteData(record));
                   }
 
                   getPlugin().getIpMuteRecordStorage().delete(record);
-                } catch (SQLException e) {
-                  sender.sendMessage(Message.get("sender.error.exception").toString());
-                  getPlugin().getLogger().warning("Failed to execute rollback command", e);
-                  return;
                 }
-              }
 
-              // Also delete records where the malicious mod was the original muter (pastActor)
-              DeleteBuilder<IpMuteRecord, Integer> maliciousIpMuteRecords = getPlugin().getIpMuteRecordStorage().deleteBuilder();
-              maliciousIpMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
-              maliciousIpMuteRecords.delete();
+                DeleteBuilder<IpMuteRecord, Integer> maliciousIpMuteRecords = getPlugin().getIpMuteRecordStorage().deleteBuilder();
+                maliciousIpMuteRecords.where().eq("pastActor_id", player.getId()).and().le("pastCreated", now).and().ge("pastCreated", expires);
+                maliciousIpMuteRecords.delete();
 
-              break;
+                break;
 
-            case "notes":
-              DeleteBuilder<PlayerNoteData, Integer> notes = getPlugin().getPlayerNoteStorage().deleteBuilder();
-              notes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              notes.delete();
-              break;
+              case "notes":
+                DeleteBuilder<PlayerNoteData, Integer> notes = getPlugin().getPlayerNoteStorage().deleteBuilder();
+                notes.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                notes.delete();
+                break;
 
-            case "reports":
-              QueryBuilder<PlayerReportData, Integer> reports = getPlugin().getPlayerReportStorage().queryBuilder();
-              reports.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+              case "reports":
+                QueryBuilder<PlayerReportData, Integer> reportQb = getPlugin().getPlayerReportStorage().queryBuilder();
+                reportQb.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                List<PlayerReportData> matchedReports = reportQb.query();
 
-              for (PlayerReportData record : reports.query()) {
-                getPlugin().getPlayerReportStorage().deleteById(record.getId());
-              }
-              break;
+                for (PlayerReportData report : matchedReports) {
+                  getPlugin().getServer().callEvent("PlayerReportDeletedEvent", report);
+                }
 
-            case "warnings":
-              DeleteBuilder<PlayerWarnData, Integer> warnings = getPlugin().getPlayerWarnStorage().deleteBuilder();
-              warnings.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-              warnings.delete();
-              break;
+                if (!matchedReports.isEmpty()) {
+                  DeleteBuilder<PlayerReportData, Integer> reports = getPlugin().getPlayerReportStorage().deleteBuilder();
+                  reports.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                  reports.delete();
+                }
+                break;
+
+              case "warnings":
+                DeleteBuilder<PlayerWarnData, Integer> warnings = getPlugin().getPlayerWarnStorage().deleteBuilder();
+                warnings.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
+                warnings.delete();
+                break;
+            }
           }
-        } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
-          getPlugin().getLogger().warning("Failed to execute rollback command", e);
-          return;
-        }
+        });
 
-        Message.get("bmrollback.notify")
-            .set("type", type)
-            .set("player", player.getName())
-            .set("playerId", player.getUUID().toString())
-            .sendTo(sender);
+        for (String type : types) {
+          Message.get("bmrollback.notify")
+              .set("type", type)
+              .set("player", player.getName())
+              .set("playerId", player.getUUID().toString())
+              .sendTo(sender);
+        }
+      } catch (SQLException e) {
+        sender.sendMessage(Message.get("sender.error.exception").toString());
+        getPlugin().getLogger().warning("Failed to execute rollback command", e);
       }
     });
 

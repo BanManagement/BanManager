@@ -19,9 +19,12 @@ public class CommonChatListener {
   }
 
   public boolean onPlayerChat(CommonPlayer player, CommonChatHandler handler, String chatMessage) {
-    if (!plugin.getPlayerMuteStorage().isMuted(player.getUniqueId())) {
-      if (plugin.getPlayerWarnStorage().isMuted(player.getUniqueId())) {
-        PlayerWarnData warning = plugin.getPlayerWarnStorage().getMute(player.getUniqueId());
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
+
+    if (mute == null) {
+      PlayerWarnData warning = plugin.getPlayerWarnStorage().getMute(player.getUniqueId());
+
+      if (warning != null) {
 
         if (warning.getReason().toLowerCase().equals(chatMessage.toLowerCase())) {
           plugin.getPlayerWarnStorage().removeMute(player.getUniqueId());
@@ -36,8 +39,6 @@ public class CommonChatListener {
 
       return false;
     }
-
-    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
 
     if (mute.hasExpired()) {
       plugin.getPlayerMuteStorage().removeMute(mute);
@@ -91,11 +92,11 @@ public class CommonChatListener {
   }
 
   public boolean onIpChat(CommonPlayer player, InetAddress address, CommonChatHandler handler, String chatMessage) {
-    if (!plugin.getIpMuteStorage().isMuted(address)) {
+    IpMuteData mute = plugin.getIpMuteStorage().getMute(address);
+
+    if (mute == null) {
       return false;
     }
-
-    IpMuteData mute = plugin.getIpMuteStorage().getMute(address);
 
     if (mute.hasExpired()) {
       plugin.getIpMuteStorage().removeMute(mute);

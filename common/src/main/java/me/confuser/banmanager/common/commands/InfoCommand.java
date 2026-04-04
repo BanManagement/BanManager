@@ -11,6 +11,11 @@ import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
 import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
+import me.confuser.banmanager.common.ormlite.field.SqlType;
+import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
+import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
+import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -21,7 +26,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class InfoCommand extends CommonCommand {
@@ -109,7 +113,7 @@ public class InfoCommand extends CommonCommand {
         return;
       }
 
-      ArrayList<HashMap<String, Object>> results;
+      List<HistoryEntry> results;
 
       if (parser.getTime() != null && !parser.getTime().isEmpty()) {
         results = getPlugin().getHistoryStorage().getSince(ip, since, parser);
@@ -117,22 +121,21 @@ public class InfoCommand extends CommonCommand {
         results = getPlugin().getHistoryStorage().getAll(ip, parser);
       }
 
-      if (results == null || results.size() == 0) {
+      if (results == null || results.isEmpty()) {
         Message.get("info.history.noResults").sendTo(sender);
         return;
       }
 
       String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
 
-      for (HashMap<String, Object> result : results) {
+      for (HistoryEntry result : results) {
         Message message = Message.get("info.history.row")
-            .set("id", (int) result.get("id"))
-            .set("reason", (String) result.get("reason"))
-            .set("type", (String) result.get("type"))
-            .set("created", DateUtils
-                .format(dateTimeFormat, (long) result.get("created")))
-            .set("actor", (String) result.get("actor"))
-            .set("meta", (String) result.get("meta"));
+            .set("id", result.getId())
+            .set("reason", result.getReason())
+            .set("type", result.getType())
+            .set("created", DateUtils.format(dateTimeFormat, result.getCreated()))
+            .set("actor", result.getActor())
+            .set("meta", result.getMeta());
 
         messages.add(message.toString());
       }
@@ -369,7 +372,7 @@ public class InfoCommand extends CommonCommand {
         handleIpHistory(messages, player, since, page);
       } else {
 
-        ArrayList<HashMap<String, Object>> results;
+        List<HistoryEntry> results;
 
         if (parser.getTime() != null && !parser.getTime().isEmpty()) {
           results = getPlugin().getHistoryStorage().getSince(player, since, parser);
@@ -377,22 +380,21 @@ public class InfoCommand extends CommonCommand {
           results = getPlugin().getHistoryStorage().getAll(player, parser);
         }
 
-        if (results == null || results.size() == 0) {
+        if (results == null || results.isEmpty()) {
           Message.get("info.history.noResults").sendTo(sender);
           return;
         }
 
         String dateTimeFormat = Message.getString("info.history.dateTimeFormat");
 
-        for (HashMap<String, Object> result : results) {
+        for (HistoryEntry result : results) {
           Message message = Message.get("info.history.row")
-              .set("id", (int) result.get("id"))
-              .set("reason", (String) result.get("reason"))
-              .set("type", (String) result.get("type"))
-              .set("created", DateUtils
-                  .format(dateTimeFormat, (long) result.get("created")))
-              .set("actor", (String) result.get("actor"))
-              .set("meta", (String) result.get("meta"));
+              .set("id", result.getId())
+              .set("reason", result.getReason())
+              .set("type", result.getType())
+              .set("created", DateUtils.format(dateTimeFormat, result.getCreated()))
+              .set("actor", result.getActor())
+              .set("meta", result.getMeta());
 
           messages.add(message.toString());
         }
@@ -401,13 +403,55 @@ public class InfoCommand extends CommonCommand {
     } else {
 
       if (sender.hasPermission("bm.command.bminfo.playerstats")) {
-        long banTotal = getPlugin().getPlayerBanRecordStorage().getCount(player);
-        long muteTotal = getPlugin().getPlayerMuteRecordStorage().getCount(player);
-        long warnTotal = getPlugin().getPlayerWarnStorage().getCount(player);
-        double warnPointsTotal = getPlugin().getPlayerWarnStorage().getPointsCount(player);
-        long kickTotal = getPlugin().getPlayerKickStorage().getCount(player);
-        long noteTotal = getPlugin().getPlayerNoteStorage().getCount(player);
-        long reportTotal = getPlugin().getPlayerReportStorage().getCount(player);
+        String banRecordsTable = getPlugin().getPlayerBanRecordStorage().getTableInfo().getTableName();
+        String muteRecordsTable = getPlugin().getPlayerMuteRecordStorage().getTableInfo().getTableName();
+        String warningsTable = getPlugin().getPlayerWarnStorage().getTableName();
+        String kicksTable = getPlugin().getPlayerKickStorage().getTableInfo().getTableName();
+        String notesTable = getPlugin().getPlayerNoteStorage().getTableInfo().getTableName();
+        String reportsTable = getPlugin().getPlayerReportStorage().getTableName();
+
+        String sql = "SELECT 'bans' AS type, COUNT(*) AS cnt, 0 AS pts FROM `" + banRecordsTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'mutes', COUNT(*), 0 FROM `" + muteRecordsTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'warns', COUNT(*), 0 FROM `" + warningsTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'warnPoints', 0, COALESCE(SUM(`points`), 0) FROM `" + warningsTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'kicks', COUNT(*), 0 FROM `" + kicksTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'notes', COUNT(*), 0 FROM `" + notesTable + "` WHERE `player_id` = ?"
+            + " UNION ALL SELECT 'reports', COUNT(*), 0 FROM `" + reportsTable + "` WHERE `player_id` = ?";
+
+        long banTotal = 0, muteTotal = 0, warnTotal = 0, kickTotal = 0, noteTotal = 0, reportTotal = 0;
+        double warnPointsTotal = 0;
+
+        try (DatabaseConnection conn = getPlugin().getLocalConn().getReadOnlyConnection("")) {
+          CompiledStatement stmt = conn.compileStatement(sql,
+              StatementBuilder.StatementType.SELECT, null,
+              DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+          try {
+            for (int i = 0; i < 7; i++) {
+              stmt.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
+            }
+            DatabaseResults results = stmt.runQuery(null);
+            try {
+              while (results.next()) {
+                String type = results.getString(0);
+                switch (type) {
+                  case "bans": banTotal = results.getLong(1); break;
+                  case "mutes": muteTotal = results.getLong(1); break;
+                  case "warns": warnTotal = results.getLong(1); break;
+                  case "warnPoints": warnPointsTotal = results.getDouble(2); break;
+                  case "kicks": kickTotal = results.getLong(1); break;
+                  case "notes": noteTotal = results.getLong(1); break;
+                  case "reports": reportTotal = results.getLong(1); break;
+                }
+              }
+            } finally {
+              try { results.close(); } catch (IOException ignored) { }
+            }
+          } finally {
+            try { stmt.close(); } catch (IOException ignored) { }
+          }
+        } catch (IOException e) {
+          throw new SQLException("Failed to query player stats", e);
+        }
 
         messages.add(Message.get("info.stats.player")
             .set("player", player.getName())
@@ -516,8 +560,9 @@ public class InfoCommand extends CommonCommand {
             .set("rangebans", Long.toString(ipRangeBanTotal))
             .toString());
 
-        if (getPlugin().getIpBanStorage().isBanned(player.getIp())) {
-          IpBanData ban = getPlugin().getIpBanStorage().getBan(player.getIp());
+        IpBanData ipBan = getPlugin().getIpBanStorage().getBan(player.getIp());
+        if (ipBan != null) {
+          IpBanData ban = ipBan;
 
           Message message;
 
@@ -539,8 +584,9 @@ public class InfoCommand extends CommonCommand {
         }
       }
 
-      if (getPlugin().getPlayerBanStorage().isBanned(player.getUUID())) {
-        PlayerBanData ban = getPlugin().getPlayerBanStorage().getBan(player.getUUID());
+      PlayerBanData playerBan = getPlugin().getPlayerBanStorage().getBan(player.getUUID());
+      if (playerBan != null) {
+        PlayerBanData ban = playerBan;
 
         Message message;
 
@@ -562,8 +608,9 @@ public class InfoCommand extends CommonCommand {
             .toString());
       }
 
-      if (getPlugin().getPlayerMuteStorage().isMuted(player.getUUID())) {
-        PlayerMuteData mute = getPlugin().getPlayerMuteStorage().getMute(player.getUUID());
+      PlayerMuteData playerMute = getPlugin().getPlayerMuteStorage().getMute(player.getUUID());
+      if (playerMute != null) {
+        PlayerMuteData mute = playerMute;
 
         Message message;
 

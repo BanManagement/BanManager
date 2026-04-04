@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.storage;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.data.HistoryEntry;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.field.SqlType;
@@ -10,9 +11,10 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class HistoryStorage {
 
@@ -21,7 +23,7 @@ public class HistoryStorage {
           "  ) subquery" +
           " ORDER BY created DESC";
   private BanManagerPlugin plugin;
-  // Queries
+
   private final String banSql;
   private final String muteSql;
   private final String kickSql;
@@ -89,402 +91,102 @@ public class HistoryStorage {
         "    WHERE ? BETWEEN fromIp AND toIp";
   }
 
-  public ArrayList<HashMap<String, Object>> getSince(PlayerData player, long since, InfoCommandParser parser) {
-    DatabaseConnection connection;
-
-    try {
-      connection = plugin.getLocalConn().getReadOnlyConnection("");
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      return null;
-    }
-
-    final DatabaseResults result;
-    String sql;
+  public List<HistoryEntry> getSince(PlayerData player, long since, InfoCommandParser parser) {
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
-    // TODO refactor
-    if (parser.isBans()) {
-      unions.append(banSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
+    if (parser.isBans()) { unions.append(banSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
+    if (parser.isMutes()) { unions.append(muteSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
+    if (parser.isKicks()) { unions.append(kickSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
+    if (parser.isNotes()) { unions.append(noteSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
+    if (parser.isReports()) { unions.append(reportSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
+    if (parser.isWarnings()) { unions.append(warningSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
 
-    if (parser.isMutes()) {
-      unions.append(muteSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isKicks()) {
-      unions.append(kickSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isNotes()) {
-      unions.append(noteSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isReports()) {
-      unions.append(reportSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isWarnings()) {
-      unions.append(warningSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-
-    unions.setLength(unions.length() - 11);
-
-    sql = playerSql.replace("{QUERIES}", unions.toString());
-
-    try {
-      CompiledStatement statement = connection
-              .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS, false);
-
-      for (int i = 0; i < typeCount; i++) {
-        statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
-      }
-
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      try {
-        plugin.getLocalConn().releaseConnection(connection);
-      } catch (SQLException e1) {
-        plugin.getLogger().warning("Failed to process history operation", e1);
-      }
-
-      return null;
-    }
-
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("id", result.getInt(0));
-            put("type", result.getString(1));
-            put("actor", result.getString(2));
-            put("created", result.getLong(3));
-            put("reason", result.getString(4));
-            put("meta", result.getString(5));
-          }
-        });
-      }
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    } finally {
-      result.closeQuietly();
-    }
-
-    try {
-      plugin.getLocalConn().releaseConnection(connection);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    }
-
-    return results;
+    return executeQuery(player.getId(), SqlType.BYTE_ARRAY, unions, typeCount);
   }
 
-  public ArrayList<HashMap<String, Object>> getAll(PlayerData player, InfoCommandParser parser) {
-    DatabaseConnection connection;
-
-    try {
-      connection = plugin.getLocalConn().getReadOnlyConnection("");
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      return null;
-    }
-
-    final DatabaseResults result;
-    String sql;
+  public List<HistoryEntry> getAll(PlayerData player, InfoCommandParser parser) {
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
-    // TODO refactor
-    if (parser.isBans()) {
-      unions.append(banSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
+    if (parser.isBans()) { unions.append(banSql).append(" UNION ALL "); typeCount++; }
+    if (parser.isMutes()) { unions.append(muteSql).append(" UNION ALL "); typeCount++; }
+    if (parser.isKicks()) { unions.append(kickSql).append(" UNION ALL "); typeCount++; }
+    if (parser.isNotes()) { unions.append(noteSql).append(" UNION ALL "); typeCount++; }
+    if (parser.isReports()) { unions.append(reportSql).append(" UNION ALL "); typeCount++; }
+    if (parser.isWarnings()) { unions.append(warningSql).append(" UNION ALL "); typeCount++; }
 
-    if (parser.isMutes()) {
-      unions.append(muteSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isKicks()) {
-      unions.append(kickSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isNotes()) {
-      unions.append(noteSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isReports()) {
-      unions.append(reportSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-    if (parser.isWarnings()) {
-      unions.append(warningSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-
-    unions.setLength(unions.length() - 11);
-
-    sql = playerSql.replace("{QUERIES}", unions.toString());
-
-    try {
-      CompiledStatement statement = connection
-              .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-                      .DEFAULT_RESULT_FLAGS, false);
-
-      for (int i = 0; i < typeCount; i++) {
-        statement.setObject(i, player.getId(), SqlType.BYTE_ARRAY);
-      }
-
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      try {
-        plugin.getLocalConn().releaseConnection(connection);
-      } catch (SQLException e1) {
-        plugin.getLogger().warning("Failed to process history operation", e1);
-      }
-
-      return null;
-    }
-
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("id", result.getInt(0));
-            put("type", result.getString(1));
-            put("actor", result.getString(2));
-            put("created", result.getLong(3));
-            put("reason", result.getString(4));
-            put("meta", result.getString(5));
-          }
-        });
-      }
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    } finally {
-      result.closeQuietly();
-    }
-
-    try {
-      plugin.getLocalConn().releaseConnection(connection);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    }
-
-    return results;
+    return executeQuery(player.getId(), SqlType.BYTE_ARRAY, unions, typeCount);
   }
 
-  public ArrayList<HashMap<String, Object>> getSince(IPAddress ip, long since, InfoCommandParser parser) {
-    DatabaseConnection connection;
-
-    try {
-      connection = plugin.getLocalConn().getReadOnlyConnection("");
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      return null;
-    }
-
-    final DatabaseResults result;
-    String sql;
+  public List<HistoryEntry> getSince(IPAddress ip, long since, InfoCommandParser parser) {
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
     if (parser.isBans()) {
-      unions.append(ipBanSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-
-      unions.append(ipRangeBanSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
+      unions.append(ipBanSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++;
+      unions.append(ipRangeBanSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++;
     }
+    if (parser.isMutes()) { unions.append(ipMuteSql).append(" AND created >= ").append(since).append(" UNION ALL "); typeCount++; }
 
-    if (parser.isMutes()) {
-      unions.append(ipMuteSql);
-      unions.append(" AND created >= ").append(since);
-      unions.append(" UNION ALL ");
-      typeCount++;
-    }
-
-    unions.setLength(unions.length() - 11);
-
-    sql = playerSql.replace("{QUERIES}", unions.toString());
-
-    try {
-      CompiledStatement statement = connection
-          .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-              .DEFAULT_RESULT_FLAGS, false);
-
-      for (int i = 0; i < typeCount; i++) {
-        statement.setObject(i, ip.getBytes(), SqlType.BYTE_ARRAY);
-      }
-
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      try {
-        plugin.getLocalConn().releaseConnection(connection);
-      } catch (SQLException e1) {
-        plugin.getLogger().warning("Failed to process history operation", e1);
-      }
-
-      return null;
-    }
-
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("id", result.getInt(0));
-            put("type", result.getString(1));
-            put("actor", result.getString(2));
-            put("created", result.getLong(3));
-            put("reason", result.getString(4));
-            put("meta", result.getString(5));
-          }
-        });
-      }
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    } finally {
-      result.closeQuietly();
-    }
-
-    try {
-      plugin.getLocalConn().releaseConnection(connection);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    }
-
-    return results;
+    return executeQuery(ip.getBytes(), SqlType.BYTE_ARRAY, unions, typeCount);
   }
 
-  public ArrayList<HashMap<String, Object>> getAll(IPAddress ip, InfoCommandParser parser) {
-    DatabaseConnection connection;
-
-    try {
-      connection = plugin.getLocalConn().getReadOnlyConnection("");
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
-      return null;
-    }
-
-    final DatabaseResults result;
-    String sql;
+  public List<HistoryEntry> getAll(IPAddress ip, InfoCommandParser parser) {
     StringBuilder unions = new StringBuilder();
     int typeCount = 0;
 
     if (parser.isBans()) {
-      unions.append(ipBanSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
-
-      unions.append(ipRangeBanSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
+      unions.append(ipBanSql).append(" UNION ALL "); typeCount++;
+      unions.append(ipRangeBanSql).append(" UNION ALL "); typeCount++;
     }
+    if (parser.isMutes()) { unions.append(ipMuteSql).append(" UNION ALL "); typeCount++; }
 
-    if (parser.isMutes()) {
-      unions.append(ipMuteSql);
-      unions.append(" UNION ALL ");
-      typeCount++;
+    return executeQuery(ip.getBytes(), SqlType.BYTE_ARRAY, unions, typeCount);
+  }
+
+  private List<HistoryEntry> executeQuery(Object paramValue, SqlType paramType,
+      StringBuilder unions, int typeCount) {
+    if (typeCount == 0) {
+      return new ArrayList<>();
     }
 
     unions.setLength(unions.length() - 11);
+    String sql = playerSql.replace("{QUERIES}", unions.toString());
 
-    sql = playerSql.replace("{QUERIES}", unions.toString());
+    try (DatabaseConnection connection = plugin.getLocalConn().getReadOnlyConnection("")) {
+      CompiledStatement statement = connection.compileStatement(
+          sql, StatementBuilder.StatementType.SELECT, null,
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
 
-    try {
-      CompiledStatement statement = connection
-          .compileStatement(sql, StatementBuilder.StatementType.SELECT, null, DatabaseConnection
-              .DEFAULT_RESULT_FLAGS, false);
-
-      for (int i = 0; i < typeCount; i++) {
-        statement.setObject(i, ip.getBytes(), SqlType.BYTE_ARRAY);
-      }
-
-      result = statement.runQuery(null);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-
+      List<HistoryEntry> results = new ArrayList<>();
       try {
-        plugin.getLocalConn().releaseConnection(connection);
-      } catch (SQLException e1) {
-        plugin.getLogger().warning("Failed to process history operation", e1);
+        for (int i = 0; i < typeCount; i++) {
+          statement.setObject(i, paramValue, paramType);
+        }
+
+        DatabaseResults dbResults = statement.runQuery(null);
+        try {
+          while (dbResults.next()) {
+            results.add(new HistoryEntry(
+                dbResults.getInt(0),
+                dbResults.getString(1),
+                dbResults.getString(2),
+                dbResults.getLong(3),
+                dbResults.getString(4),
+                dbResults.getString(5)));
+          }
+        } finally {
+          dbResults.closeQuietly();
+        }
+      } finally {
+        try { statement.close(); } catch (IOException ignored) { }
       }
 
+      return results;
+    } catch (SQLException | IOException e) {
+      plugin.getLogger().warning("Failed to process history operation", e);
       return null;
     }
-
-    ArrayList<HashMap<String, Object>> results = new ArrayList<>();
-
-    try {
-      while (result.next()) {
-        results.add(new HashMap<String, Object>(4) {
-
-          {
-            put("id", result.getInt(0));
-            put("type", result.getString(1));
-            put("actor", result.getString(2));
-            put("created", result.getLong(3));
-            put("reason", result.getString(4));
-            put("meta", result.getString(5));
-          }
-        });
-      }
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    } finally {
-      result.closeQuietly();
-    }
-
-    try {
-      plugin.getLocalConn().releaseConnection(connection);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process history operation", e);
-    }
-
-    return results;
   }
 }

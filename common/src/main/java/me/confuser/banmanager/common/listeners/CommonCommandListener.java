@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
+import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.StringUtils;
 
@@ -13,7 +14,9 @@ public class CommonCommandListener {
   }
 
   public boolean onCommand(CommonPlayer player, String cmd, String[] args) {
-    if (!plugin.getPlayerMuteStorage().isMuted(player.getUniqueId())) {
+    PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUniqueId());
+
+    if (mute == null) {
       return false;
     }
 
@@ -23,7 +26,7 @@ public class CommonCommandListener {
       startIndex = 1;
     }
 
-    boolean isSoft = plugin.getPlayerMuteStorage().getMute(player.getUniqueId()).isSoft();
+    boolean isSoft = mute.isSoft();
     boolean deepCheck = isSoft ? !plugin.getConfig().isSoftBlockedCommand(cmd) : !plugin.getConfig().isBlockedCommand(cmd);
 
     if (deepCheck) {

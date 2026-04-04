@@ -8,4 +8,5 @@ public interface CommonScheduler {
   void runSync(Runnable task);
   void runSyncLater(Runnable task, Duration delay);
   void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period);
+  default void cancelAll() {}
 }

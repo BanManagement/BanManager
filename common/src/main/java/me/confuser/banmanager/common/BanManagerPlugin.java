@@ -251,7 +251,10 @@ public class BanManagerPlugin {
     }
 
     if (localConn != null) {
-      // Save all player histories
+      if (playerStorage != null) {
+        playerStorage.shutdown();
+      }
+
       if (config.isLogIpsEnabled() && playerHistoryStorage != null) {
         playerHistoryStorage.save();
       }

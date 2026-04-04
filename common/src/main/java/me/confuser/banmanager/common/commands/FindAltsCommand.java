@@ -14,9 +14,10 @@ import me.confuser.banmanager.common.kyori.text.format.TextColor;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
 
+
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FindAltsCommand extends CommonCommand {
 
@@ -84,28 +85,46 @@ public class FindAltsCommand extends CommonCommand {
 
   public static TextComponent alts(List<PlayerData> players) {
     TextComponent.Builder message = Component.text();
+
+    List<PlayerData> unbanned = new ArrayList<>();
+    Map<UUID, TextColor> colours = new HashMap<>();
+
+    for (PlayerData player : players) {
+      PlayerBanData ban = BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(player.getUUID());
+
+      if (ban != null) {
+        colours.put(player.getUUID(), ban.getExpires() == 0 ? NamedTextColor.RED : NamedTextColor.GOLD);
+      } else {
+        unbanned.add(player);
+      }
+    }
+
+    if (!unbanned.isEmpty()) {
+      try {
+        Set<UUID> withRecords = BanManagerPlugin.getInstance().getPlayerBanRecordStorage()
+            .queryBuilder()
+            .selectColumns("player_id")
+            .where().in("player_id", unbanned.stream().map(PlayerData::getId).collect(Collectors.toList()))
+            .query()
+            .stream()
+            .map(r -> r.getPlayer().getUUID())
+            .collect(Collectors.toSet());
+
+        for (PlayerData player : unbanned) {
+          colours.put(player.getUUID(), withRecords.contains(player.getUUID()) ? NamedTextColor.YELLOW : NamedTextColor.GREEN);
+        }
+      } catch (SQLException e) {
+        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute findalts command", e);
+        for (PlayerData player : unbanned) {
+          colours.put(player.getUUID(), NamedTextColor.GREEN);
+        }
+      }
+    }
+
     int index = 0;
 
     for (PlayerData player : players) {
-      TextColor colour = NamedTextColor.GREEN;
-
-      if (BanManagerPlugin.getInstance().getPlayerBanStorage().isBanned(player.getUUID())) {
-        PlayerBanData ban = BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(player.getUUID());
-
-        if (ban.getExpires() == 0) {
-          colour = NamedTextColor.RED;
-        } else {
-          colour = NamedTextColor.GOLD;
-        }
-      } else {
-        try {
-          if (BanManagerPlugin.getInstance().getPlayerBanRecordStorage().getCount(player) != 0) {
-            colour = NamedTextColor.YELLOW;
-          }
-        } catch (SQLException e) {
-          BanManagerPlugin.getInstance().getLogger().warning("Failed to execute findalts command", e);
-        }
-      }
+      TextColor colour = colours.getOrDefault(player.getUUID(), NamedTextColor.GREEN);
 
       message
           .append(
