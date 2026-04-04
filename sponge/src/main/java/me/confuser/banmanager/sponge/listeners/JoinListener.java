@@ -79,7 +79,10 @@ public class JoinListener {
         @Override
         public void handlePlayerDeny(PlayerData player, Message message) {
             plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-            handleDeny(message);
+            String locale = player.getLocale() != null ? player.getLocale() : "en";
+            isDenied = true;
+            event.setCancelled(true);
+            event.setMessage(SpongeServer.formatMessage(message.resolve(locale)));
         }
 
         @Override
@@ -101,7 +104,7 @@ public class JoinListener {
 
         @Override
         public void handleDeny(Message message) {
-            player.kick(SpongeServer.formatMessage(message.toString()));
+            new SpongePlayer(player, plugin.getConfig().isOnlineMode()).kick(message);
         }
     }
 }

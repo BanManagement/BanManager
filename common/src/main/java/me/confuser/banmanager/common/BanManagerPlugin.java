@@ -14,6 +14,7 @@ import me.confuser.banmanager.common.ormlite.jdbc.DataSourceConnectionSource;
 import me.confuser.banmanager.common.ormlite.logger.LocalLog;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.Runner;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;
@@ -21,9 +22,11 @@ import me.confuser.banmanager.common.storage.migration.MigrationRunner;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.common.util.DriverManagerUtil;
+import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRegistry;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.sql.SQLException;
 
 import static java.lang.Long.parseLong;
@@ -153,6 +156,9 @@ public class BanManagerPlugin {
   @Getter
   private PlaceholderResolver placeholderResolver;
 
+  @Getter
+  private MessageRegistry messageRegistry;
+
   public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
     this.logger = logger;
@@ -268,11 +274,6 @@ public class BanManagerPlugin {
   }
 
   public void setupConfigs() {
-    MessagesConfig newMessagesConfig = new MessagesConfig(dataFolder, logger);
-    if (!newMessagesConfig.load()) {
-      logger.warning("Failed to reload messages.yml, keeping previous messages");
-    }
-
     config = reloadConfig(new DefaultConfig(dataFolder, logger), config, "config.yml");
     consoleConfig = reloadConfig(new ConsoleConfig(dataFolder, logger), consoleConfig, "console.yml");
     schedulesConfig = reloadConfig(new SchedulesConfig(dataFolder, logger), schedulesConfig, "schedules.yml");
@@ -280,6 +281,119 @@ public class BanManagerPlugin {
     reasonsConfig = reloadConfig(new ReasonsConfig(dataFolder, logger), reasonsConfig, "reasons.yml");
     geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger), geoIpConfig, "geoip.yml");
     webhookConfig = reloadConfig(new WebhookConfig(dataFolder, logger), webhookConfig, "webhooks.yml");
+
+    loadMessages();
+  }
+
+  private void loadMessages() {
+    String defaultLocale = config != null ? config.getDefaultLocale() : "en";
+    MessageRegistry newRegistry = new MessageRegistry(defaultLocale);
+
+    copyMessagesDirectory();
+
+    File messagesDir = new File(dataFolder, "messages");
+    if (messagesDir.exists() && messagesDir.isDirectory()) {
+      File[] files = messagesDir.listFiles((dir, name) ->
+          name.startsWith("messages_") && name.endsWith(".yml"));
+
+      if (files != null) {
+        for (File file : files) {
+          String fileName = file.getName();
+          String locale = fileName.substring("messages_".length(), fileName.length() - ".yml".length());
+          loadLocaleFile(newRegistry, file, locale);
+        }
+      }
+    }
+
+    File legacyMessages = new File(dataFolder, "messages.yml");
+    if (legacyMessages.exists()) {
+      loadLocaleFile(newRegistry, legacyMessages, defaultLocale);
+    }
+
+    if (!newRegistry.hasAnyMessages()) {
+      if (messageRegistry != null) {
+        logger.warning("No messages loaded, keeping previous messages");
+        return;
+      }
+    }
+
+    if (messageRegistry != null) {
+      messageRegistry.atomicSwap(newRegistry);
+    } else {
+      messageRegistry = newRegistry;
+    }
+
+    Message.init(messageRegistry, logger);
+
+    logLocaleInfo();
+  }
+
+  private void logLocaleInfo() {
+    if (messageRegistry == null) return;
+
+    java.util.Set<String> locales = messageRegistry.getAvailableLocales();
+    logger.info("Loaded " + locales.size() + " locale(s): " + String.join(", ", locales));
+
+    String defaultLocale = messageRegistry.getDefaultLocale();
+    for (String locale : locales) {
+      if (locale.equals(defaultLocale)) continue;
+      int missing = messageRegistry.getMissingKeyCount(locale);
+      if (missing > 0) {
+        logger.info("Locale '" + locale + "' is missing " + missing + " key(s) (will fall back to '" + defaultLocale + "')");
+      }
+    }
+  }
+
+  private void loadLocaleFile(MessageRegistry registry, File file, String locale) {
+    try {
+      YamlConfiguration conf = new YamlConfiguration();
+      conf.load(file);
+
+      if (conf.getConfigurationSection("messages") == null) {
+        logger.warning("Messages section not found in " + file.getName() + ", skipping");
+        return;
+      }
+
+      java.util.Map<String, String> messages = new java.util.HashMap<>();
+
+      for (String key : conf.getConfigurationSection("messages").getKeys(true)) {
+        String value = conf.getString("messages." + key);
+        if (value != null) {
+          messages.put(key, value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " "));
+        }
+      }
+
+      if (!messages.isEmpty()) {
+        java.util.Map<String, String> existing = registry.getMessages(locale);
+        if (!existing.isEmpty()) {
+          java.util.Map<String, String> merged = new java.util.HashMap<>(existing);
+          merged.putAll(messages);
+          registry.loadLocale(locale, merged);
+        } else {
+          registry.loadLocale(locale, messages);
+        }
+      }
+    } catch (Exception e) {
+      logger.warning("Failed to load " + file.getName(), e);
+    }
+  }
+
+  private void copyMessagesDirectory() {
+    File messagesDir = new File(dataFolder, "messages");
+    if (!messagesDir.exists()) {
+      messagesDir.mkdirs();
+    }
+
+    File defaultMessages = new File(messagesDir, "messages_en.yml");
+    if (!defaultMessages.exists()) {
+      try (InputStream in = getClass().getClassLoader().getResourceAsStream("messages/messages_en.yml")) {
+        if (in != null) {
+          Files.copy(in, defaultMessages.toPath());
+        }
+      } catch (IOException e) {
+        logger.warning("Failed to copy default messages_en.yml", e);
+      }
+    }
   }
 
   /**

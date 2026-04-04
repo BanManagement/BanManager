@@ -110,7 +110,7 @@ public class UnbanIpCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanip");
+        getPlugin().getServer().broadcast(message, "bm.notify.unbanip");
       }
     });
 

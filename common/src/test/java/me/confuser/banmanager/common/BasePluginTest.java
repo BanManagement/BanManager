@@ -58,6 +58,19 @@ public abstract class BasePluginTest {
       }
     }
 
+    File messagesDir = new File(folder.getRoot(), "messages");
+    messagesDir.mkdirs();
+    try (InputStream in = BasePluginTest.class.getClassLoader().getResource("messages/messages_en.yml").openStream();
+         OutputStream out = new FileOutputStream(new File(messagesDir, "messages_en.yml"))) {
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
     // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
     try (InputStream in = BasePluginTest.class.getClassLoader().getResource("plugin.yml").openStream();

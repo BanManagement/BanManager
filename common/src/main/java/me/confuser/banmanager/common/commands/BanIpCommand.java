@@ -130,7 +130,7 @@ public class BanIpCommand extends CommonCommand {
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
-            onlinePlayer.kick(kickMessage.toString());
+            onlinePlayer.kick(kickMessage);
           }
         }
       });

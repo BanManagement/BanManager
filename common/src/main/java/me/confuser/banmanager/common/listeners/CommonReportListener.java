@@ -24,7 +24,7 @@ public class CommonReportListener {
         .set("reason", data.getReason())
         .set("id", data.getId());
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.report");
+    plugin.getServer().broadcast(message, "bm.notify.report");
 
     // Check if the sender is online and does not have the
     // broadcastPermission

@@ -111,7 +111,7 @@ public class UnmuteCommand extends CommonCommand {
         }
 
         if (!parser.isSilent()) {
-          getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmute");
+          getPlugin().getServer().broadcast(message, "bm.notify.unmute");
         }
 
         getPlugin().getScheduler().runSync(() -> {

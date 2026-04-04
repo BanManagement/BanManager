@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRegistry;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -108,6 +109,13 @@ public class BungeePlayer implements CommonPlayer {
   @Override
   public boolean canSee(CommonPlayer player) {
     return true;
+  }
+
+  @Override
+  public String getLocale() {
+    java.util.Locale locale = player.getLocale();
+    if (locale == null) return "en";
+    return MessageRegistry.normaliseLocale(locale.toString());
   }
 
   private ProxiedPlayer getPlayer() {

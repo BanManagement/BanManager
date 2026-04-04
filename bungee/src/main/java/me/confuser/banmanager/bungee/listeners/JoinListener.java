@@ -58,8 +58,9 @@ public class JoinListener implements Listener {
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-
-      handleDeny(message);
+      String locale = player.getLocale() != null ? player.getLocale() : "en";
+      event.setCancelled(true);
+      event.setCancelReason(BungeeServer.formatMessage(message.resolve(locale)));
     }
 
     @Override

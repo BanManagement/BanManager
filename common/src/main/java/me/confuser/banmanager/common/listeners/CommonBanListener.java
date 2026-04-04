@@ -36,7 +36,7 @@ public class CommonBanListener {
         .set("reason", data.getReason());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      plugin.getServer().broadcast(message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
@@ -86,7 +86,7 @@ public class CommonBanListener {
         .set("players", playerNames.toString());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      plugin.getServer().broadcast(message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
@@ -126,7 +126,7 @@ public class CommonBanListener {
         .set("reason", data.getReason());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      plugin.getServer().broadcast(message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
@@ -165,7 +165,7 @@ public class CommonBanListener {
         .set("reason", data.getReason());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      plugin.getServer().broadcast(message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;

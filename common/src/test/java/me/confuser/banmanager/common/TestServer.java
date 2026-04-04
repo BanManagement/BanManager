@@ -4,6 +4,7 @@ import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
 import java.sql.SQLException;
@@ -102,6 +103,10 @@ public class TestServer implements CommonServer {
 
   @Override
   public void broadcast(String message, String permission) {
+  }
+
+  @Override
+  public void broadcast(Message message, String permission) {
   }
 
   @Override

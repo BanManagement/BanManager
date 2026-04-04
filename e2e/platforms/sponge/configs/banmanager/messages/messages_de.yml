@@ -1,0 +1,16 @@
+messages:
+  configReloaded: '&aKonfiguration erfolgreich neu geladen!'
+
+  ban:
+    player:
+      disallowed: '&6Du wurdest von diesem Server gebannt wegen &4[reason]'
+      kick: '&6Du wurdest dauerhaft gebannt wegen &4[reason]'
+    notify: '&6[player] wurde dauerhaft gebannt von [actor] wegen &4[reason]'
+
+  unban:
+    notify: '&6[player] wurde von [actor] entbannt'
+
+  mute:
+    player:
+      disallowed: '&6Du bist stummgeschaltet wegen &4[reason]'
+    notify: '&6[player] wurde dauerhaft stummgeschaltet von [actor] wegen &4[reason]'
