@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class MigrationRunner {
 
-  private static final Pattern VERSION_PATTERN = Pattern.compile("^V(\\d+)__(.+)\\.sql$");
+  private static final Pattern MANIFEST_PATTERN = Pattern.compile("^(V(\\d+)__(.+)\\.sql)(?:\\s+(\\S+))?$");
   static final String SCHEMA_TABLE = "bm_schema_version";
 
   private final BanManagerPlugin plugin;
@@ -98,7 +98,7 @@ public class MigrationRunner {
             throw new SQLException("[Migration:" + instanceScope + "] Migration file not found or empty: " + migration.filename);
           }
           sql = substitutePlaceholders(sql);
-          executeMigrationStatements(conn, sql);
+          executeMigrationStatements(conn, sql, migration.lenient);
           insertVersion(conn, migration.version, migration.description);
           applied++;
         }
@@ -121,9 +121,17 @@ public class MigrationRunner {
         "SELECT GET_LOCK('bm_migration_" + instanceScope + "', 30)",
         StatementBuilder.StatementType.SELECT, null,
         DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-    DatabaseResults results = stmt.runQuery(null);
-    if (!results.next() || results.getInt(0) != 1) {
-      throw new SQLException("[Migration:" + instanceScope + "] Could not acquire advisory lock (another server may be migrating)");
+    try {
+      DatabaseResults results = stmt.runQuery(null);
+      try {
+        if (!results.next() || results.getInt(0) != 1) {
+          throw new SQLException("[Migration:" + instanceScope + "] Could not acquire advisory lock (another server may be migrating)");
+        }
+      } finally {
+        closeQuietly(results);
+      }
+    } finally {
+      closeQuietly(stmt);
     }
   }
 
@@ -142,7 +150,7 @@ public class MigrationRunner {
 
     try (InputStream is = resourceLoader.getResourceAsStream(manifestPath)) {
       if (is == null) {
-        plugin.getLogger().warning("[Migration:" + scope + "] No manifest found at " + manifestPath);
+        plugin.getLogger().warning("[Migration:" + instanceScope + "] No manifest found at " + manifestPath);
         return migrations;
       }
 
@@ -154,18 +162,20 @@ public class MigrationRunner {
             continue;
           }
 
-          Matcher matcher = VERSION_PATTERN.matcher(line);
+          Matcher matcher = MANIFEST_PATTERN.matcher(line);
           if (matcher.matches()) {
-            int version = Integer.parseInt(matcher.group(1));
-            String description = matcher.group(2).replace('_', ' ');
-            migrations.add(new MigrationFile(line, version, description));
+            String filename = matcher.group(1);
+            int version = Integer.parseInt(matcher.group(2));
+            String description = matcher.group(3).replace('_', ' ');
+            boolean lenient = "lenient".equalsIgnoreCase(matcher.group(4));
+            migrations.add(new MigrationFile(filename, version, description, lenient));
           } else {
-            plugin.getLogger().warning("[Migration:" + scope + "] Skipping invalid manifest entry: " + line);
+            plugin.getLogger().warning("[Migration:" + instanceScope + "] Skipping invalid manifest entry: " + line);
           }
         }
       }
     } catch (IOException e) {
-      plugin.getLogger().warning("[Migration:" + scope + "] Failed to read manifest: " + e.getMessage());
+      plugin.getLogger().warning("[Migration:" + instanceScope + "] Failed to read manifest: " + e.getMessage());
     }
 
     migrations.sort(Comparator.comparingInt(m -> m.version));
@@ -188,10 +198,18 @@ public class MigrationRunner {
           "SELECT COALESCE(MAX(version), 0) FROM " + SCHEMA_TABLE + " WHERE scope = ?",
           StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-      stmt.setObject(0, instanceScope, SqlType.STRING);
-      DatabaseResults results = stmt.runQuery(null);
-      if (results.next()) {
-        return results.getInt(0);
+      try {
+        stmt.setObject(0, instanceScope, SqlType.STRING);
+        DatabaseResults results = stmt.runQuery(null);
+        try {
+          if (results.next()) {
+            return results.getInt(0);
+          }
+        } finally {
+          closeQuietly(results);
+        }
+      } finally {
+        closeQuietly(stmt);
       }
     } catch (SQLException e) {
       // Table may not exist yet
@@ -204,14 +222,14 @@ public class MigrationRunner {
 
     try (InputStream is = resourceLoader.getResourceAsStream(path)) {
       if (is == null) {
-        plugin.getLogger().warning("[Migration:" + scope + "] SQL file not found: " + path);
+        plugin.getLogger().warning("[Migration:" + instanceScope + "] SQL file not found: " + path);
         return "";
       }
 
       byte[] bytes = readAllBytes(is);
       return new String(bytes, StandardCharsets.UTF_8);
     } catch (IOException e) {
-      plugin.getLogger().warning("[Migration:" + scope + "] Failed to read SQL file: " + path);
+      plugin.getLogger().warning("[Migration:" + instanceScope + "] Failed to read SQL file: " + path);
       return "";
     }
   }
@@ -224,14 +242,18 @@ public class MigrationRunner {
     return sql;
   }
 
-  private void executeMigrationStatements(DatabaseConnection conn, String sql) {
+  private void executeMigrationStatements(DatabaseConnection conn, String sql, boolean lenient) throws SQLException {
     List<String> statements = splitStatements(sql);
 
     for (String statement : statements) {
       try {
         conn.executeStatement(statement, DatabaseConnection.DEFAULT_RESULT_FLAGS);
       } catch (SQLException e) {
-        plugin.getLogger().warning("[Migration:" + instanceScope + "] Statement failed (continuing): " + e.getMessage());
+        if (lenient) {
+          plugin.getLogger().warning("[Migration:" + instanceScope + "] Statement failed (continuing): " + e.getMessage());
+        } else {
+          throw new SQLException("[Migration:" + instanceScope + "] Statement failed: " + e.getMessage(), e);
+        }
       }
     }
   }
@@ -316,11 +338,27 @@ public class MigrationRunner {
         "INSERT INTO " + SCHEMA_TABLE + " (version, description, appliedAt, scope) VALUES (?, ?, ?, ?)",
         StatementBuilder.StatementType.UPDATE, null,
         DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-    stmt.setObject(0, version, SqlType.INTEGER);
-    stmt.setObject(1, description, SqlType.STRING);
-    stmt.setObject(2, appliedAt, SqlType.LONG);
-    stmt.setObject(3, instanceScope, SqlType.STRING);
-    stmt.runUpdate();
+    try {
+      stmt.setObject(0, version, SqlType.INTEGER);
+      stmt.setObject(1, description, SqlType.STRING);
+      stmt.setObject(2, appliedAt, SqlType.LONG);
+      stmt.setObject(3, instanceScope, SqlType.STRING);
+      stmt.runUpdate();
+    } finally {
+      closeQuietly(stmt);
+    }
+  }
+
+  private static void closeQuietly(CompiledStatement stmt) {
+    if (stmt != null) {
+      try { stmt.close(); } catch (IOException ignored) { }
+    }
+  }
+
+  private static void closeQuietly(DatabaseResults results) {
+    if (results != null) {
+      try { results.close(); } catch (IOException ignored) { }
+    }
   }
 
   private static byte[] readAllBytes(InputStream is) throws IOException {
@@ -350,11 +388,13 @@ public class MigrationRunner {
     final String filename;
     final int version;
     final String description;
+    final boolean lenient;
 
-    MigrationFile(String filename, int version, String description) {
+    MigrationFile(String filename, int version, String description, boolean lenient) {
       this.filename = filename;
       this.version = version;
       this.description = description;
+      this.lenient = lenient;
     }
   }
 }

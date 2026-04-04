@@ -28,11 +28,4 @@ public class SchemaVersion {
   @DatabaseField(canBeNull = false, columnDefinition = "VARCHAR(50) NOT NULL")
   @Getter
   private String scope;
-
-  public SchemaVersion(int version, String description, String scope) {
-    this.version = version;
-    this.description = description;
-    this.scope = scope;
-    this.appliedAt = System.currentTimeMillis() / 1000L;
-  }
 }
