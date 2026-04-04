@@ -35,6 +35,13 @@ public class MigrationRunner {
   private final String detectionTableKey;
   private final ClassLoader resourceLoader;
 
+  /**
+   * The instance-qualified scope used for database operations (version tracking, advisory locks).
+   * Combines the resource scope with the detection table name to isolate instances that share
+   * the same database but use different table prefixes (e.g. "local:bm_players" vs "local:bm_s2_players").
+   */
+  private String instanceScope;
+
   public MigrationRunner(BanManagerPlugin plugin, ConnectionSource connectionSource,
                          DatabaseConfig dbConfig, String scope, String detectionTableKey,
                          ClassLoader resourceLoader) {
@@ -53,6 +60,9 @@ public class MigrationRunner {
       return;
     }
 
+    String detectionTableName = dbConfig.getTable(detectionTableKey).getTableName();
+    instanceScope = scope + ":" + detectionTableName;
+
     int latestVersion = migrations.get(migrations.size() - 1).version;
     boolean isH2 = dbConfig.getStorageType().equals("h2");
 
@@ -65,9 +75,8 @@ public class MigrationRunner {
       try {
         TableUtils.createTableIfNotExists(connectionSource, SchemaVersion.class);
 
-        String detectionTableName = dbConfig.getTable(detectionTableKey).getTableName();
         if (!tableExists(conn, detectionTableName)) {
-          plugin.getLogger().info("[Migration:" + scope + "] Fresh install detected, marking schema at V" + latestVersion);
+          plugin.getLogger().info("[Migration:" + instanceScope + "] Fresh install detected, marking schema at V" + latestVersion);
           insertVersion(conn, latestVersion, "baseline (fresh install)");
           return;
         }
@@ -75,7 +84,7 @@ public class MigrationRunner {
         int currentVersion = getCurrentVersion(conn);
 
         if (currentVersion == 0) {
-          plugin.getLogger().info("[Migration:" + scope + "] Existing install detected, marking V1 as baseline");
+          plugin.getLogger().info("[Migration:" + instanceScope + "] Existing install detected, marking V1 as baseline");
           insertVersion(conn, 1, "baseline (existing install)");
           currentVersion = 1;
         }
@@ -86,10 +95,10 @@ public class MigrationRunner {
             continue;
           }
 
-          plugin.getLogger().info("[Migration:" + scope + "] Applying V" + migration.version + " " + migration.description);
+          plugin.getLogger().info("[Migration:" + instanceScope + "] Applying V" + migration.version + " " + migration.description);
           String sql = loadSqlFile(migration.filename);
           if (sql.isEmpty()) {
-            throw new SQLException("[Migration:" + scope + "] Migration file not found or empty: " + migration.filename);
+            throw new SQLException("[Migration:" + instanceScope + "] Migration file not found or empty: " + migration.filename);
           }
           sql = substitutePlaceholders(sql);
           executeMigrationStatements(conn, sql);
@@ -98,7 +107,7 @@ public class MigrationRunner {
         }
 
         if (applied > 0) {
-          plugin.getLogger().info("[Migration:" + scope + "] Applied " + applied + " migration(s)");
+          plugin.getLogger().info("[Migration:" + instanceScope + "] Applied " + applied + " migration(s)");
         }
       } finally {
         if (!isH2) {
@@ -112,21 +121,21 @@ public class MigrationRunner {
 
   private void acquireAdvisoryLock(DatabaseConnection conn) throws SQLException {
     CompiledStatement stmt = conn.compileStatement(
-        "SELECT GET_LOCK('bm_migration_" + scope + "', 30)",
+        "SELECT GET_LOCK('bm_migration_" + instanceScope + "', 30)",
         StatementBuilder.StatementType.SELECT, null,
         DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
     DatabaseResults results = stmt.runQuery(null);
     if (!results.next() || results.getInt(0) != 1) {
-      throw new SQLException("[Migration:" + scope + "] Could not acquire advisory lock (another server may be migrating)");
+      throw new SQLException("[Migration:" + instanceScope + "] Could not acquire advisory lock (another server may be migrating)");
     }
   }
 
   private void releaseAdvisoryLock(DatabaseConnection conn) {
     try {
-      conn.executeStatement("SELECT RELEASE_LOCK('bm_migration_" + scope + "')",
+      conn.executeStatement("SELECT RELEASE_LOCK('bm_migration_" + instanceScope + "')",
           DatabaseConnection.DEFAULT_RESULT_FLAGS);
     } catch (SQLException e) {
-      plugin.getLogger().warning("[Migration:" + scope + "] Failed to release advisory lock", e);
+      plugin.getLogger().warning("[Migration:" + instanceScope + "] Failed to release advisory lock", e);
     }
   }
 
@@ -182,7 +191,7 @@ public class MigrationRunner {
           "SELECT COALESCE(MAX(version), 0) FROM " + SCHEMA_TABLE + " WHERE scope = ?",
           StatementBuilder.StatementType.SELECT, null,
           DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-      stmt.setObject(0, scope, SqlType.STRING);
+      stmt.setObject(0, instanceScope, SqlType.STRING);
       DatabaseResults results = stmt.runQuery(null);
       if (results.next()) {
         return results.getInt(0);
@@ -225,7 +234,7 @@ public class MigrationRunner {
       try {
         conn.executeStatement(statement, DatabaseConnection.DEFAULT_RESULT_FLAGS);
       } catch (SQLException e) {
-        plugin.getLogger().warning("[Migration:" + scope + "] Statement failed (continuing): " + e.getMessage());
+        plugin.getLogger().warning("[Migration:" + instanceScope + "] Statement failed (continuing): " + e.getMessage());
       }
     }
   }
@@ -313,7 +322,7 @@ public class MigrationRunner {
     stmt.setObject(0, version, SqlType.INTEGER);
     stmt.setObject(1, description, SqlType.STRING);
     stmt.setObject(2, appliedAt, SqlType.LONG);
-    stmt.setObject(3, scope, SqlType.STRING);
+    stmt.setObject(3, instanceScope, SqlType.STRING);
     stmt.runUpdate();
   }
 
