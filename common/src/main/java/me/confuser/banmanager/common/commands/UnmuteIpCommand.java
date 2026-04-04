@@ -98,7 +98,7 @@ public class UnmuteIpCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmuteip");
+        getPlugin().getServer().broadcast(message, "bm.notify.unmuteip");
       }
     });
 

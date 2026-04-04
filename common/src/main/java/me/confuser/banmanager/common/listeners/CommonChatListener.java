@@ -63,7 +63,7 @@ public class CommonChatListener {
         .set("id", mute.getId())
         .set("actor", mute.getActor().getName());
 
-    plugin.getServer().broadcast(broadcast.toString(), "bm.notify.muted");
+    plugin.getServer().broadcast(broadcast, "bm.notify.muted");
 
     if (mute.isSoft()) {
       handler.handleSoftMute();
@@ -121,7 +121,7 @@ public class CommonChatListener {
         .set("id", mute.getId())
         .set("actor", mute.getActor().getName());
 
-    plugin.getServer().broadcast(broadcast.toString(), "bm.notify.mutedip");
+    plugin.getServer().broadcast(broadcast, "bm.notify.mutedip");
 
     if (mute.isSoft()) {
       handler.handleSoftMute();

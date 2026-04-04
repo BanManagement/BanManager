@@ -74,7 +74,7 @@ public class UnbanNameCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanname");
+        getPlugin().getServer().broadcast(message, "bm.notify.unbanname");
       }
     });
 

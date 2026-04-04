@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
@@ -109,5 +110,12 @@ public class VelocityPlayer implements CommonPlayer {
   @Override
   public boolean canSee(CommonPlayer player) {
     return true;
+  }
+
+  @Override
+  public String getLocale() {
+    java.util.Locale locale = player.getEffectiveLocale();
+    if (locale == null) return "en";
+    return MessageRegistry.normaliseLocale(locale.toString());
   }
 }
