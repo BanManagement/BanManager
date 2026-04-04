@@ -195,7 +195,7 @@ public class AdvancedBan implements IConverter {
                               boolean isEnabled, int maxConnections, int leakDetection, int maxLifetime,
                               int connectionTimeout, HashMap<String, DatabaseTableConfig<?>> tables, File dataFolder) {
       super(storageType, host, port, name, user, password, useSSL, verifyServerCertificate, allowPublicKeyRetrieval,
-          isEnabled, maxConnections, leakDetection, maxLifetime, connectionTimeout, tables, dataFolder);
+          isEnabled, maxConnections, leakDetection, maxLifetime, connectionTimeout, "", tables, dataFolder);
     }
   }
 }

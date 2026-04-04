@@ -48,11 +48,10 @@ public class MigrationIntegrationTest {
 
     boolean hasLocal = false;
     for (SchemaVersion sv : versions) {
-      if (sv.getScope().startsWith("local:")) {
+      if ("local".equals(sv.getScope())) {
         hasLocal = true;
         assertEquals("Fresh install should mark at latest version", 1, sv.getVersion());
         assertTrue("Description should indicate fresh install", sv.getDescription().contains("fresh install"));
-        assertEquals("Scope should include detection table name", "local:bm_players", sv.getScope());
       }
     }
 
@@ -73,7 +72,7 @@ public class MigrationIntegrationTest {
     Dao<SchemaVersion, Integer> dao = DaoManager.createDao(plugin.getLocalConn(), SchemaVersion.class);
 
     String[] rawResults = dao.queryRaw(
-        "SELECT COUNT(*) FROM " + MigrationRunner.SCHEMA_TABLE + " WHERE scope = ?", "local:bm_players"
+        "SELECT COUNT(*) FROM " + MigrationRunner.SCHEMA_TABLE + " WHERE scope = ?", "local"
     ).getFirstResult();
 
     int count = Integer.parseInt(rawResults[0]);

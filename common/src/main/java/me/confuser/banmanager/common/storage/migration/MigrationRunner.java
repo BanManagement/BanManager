@@ -35,12 +35,7 @@ public class MigrationRunner {
   private final String detectionTableKey;
   private final ClassLoader resourceLoader;
 
-  /**
-   * The instance-qualified scope used for database operations (version tracking, advisory locks).
-   * Combines the resource scope with the detection table name to isolate instances that share
-   * the same database but use different table prefixes (e.g. "local:bm_players" vs "local:bm_s2_players").
-   */
-  private String instanceScope;
+  private final String instanceScope;
 
   public MigrationRunner(BanManagerPlugin plugin, ConnectionSource connectionSource,
                          DatabaseConfig dbConfig, String scope, String detectionTableKey,
@@ -51,17 +46,19 @@ public class MigrationRunner {
     this.scope = scope;
     this.detectionTableKey = detectionTableKey;
     this.resourceLoader = resourceLoader;
+
+    String id = dbConfig.getInstanceId();
+    this.instanceScope = (id != null && !id.isEmpty()) ? scope + ":" + id : scope;
   }
 
   public void migrate() throws SQLException {
     List<MigrationFile> migrations = loadManifest();
     if (migrations.isEmpty()) {
-      plugin.getLogger().info("[Migration:" + scope + "] No migrations found in manifest");
+      plugin.getLogger().info("[Migration:" + instanceScope + "] No migrations found in manifest");
       return;
     }
 
     String detectionTableName = dbConfig.getTable(detectionTableKey).getTableName();
-    instanceScope = scope + ":" + detectionTableName;
 
     int latestVersion = migrations.get(migrations.size() - 1).version;
     boolean isH2 = dbConfig.getStorageType().equals("h2");
