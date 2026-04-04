@@ -98,4 +98,50 @@ public class PlayerWarnStorageTest extends BasePluginDbTest {
 
     assertTrue(warning.getExpires() > 0 && warning.getExpires() < System.currentTimeMillis() / 1000L);
   }
+
+  @Test
+  public void shouldMarkAllRead() throws SQLException {
+    PlayerData player = testUtils.createRandomPlayer();
+    PlayerData actor = testUtils.createRandomPlayer();
+
+    PlayerWarnData w1 = new PlayerWarnData(player, actor, "unread 1", 1.0, false);
+    plugin.getPlayerWarnStorage().addWarning(w1, false);
+    PlayerWarnData w2 = new PlayerWarnData(player, actor, "unread 2", 1.0, false);
+    plugin.getPlayerWarnStorage().addWarning(w2, false);
+
+    long unreadBefore = plugin.getPlayerWarnStorage().queryBuilder()
+        .where().eq("player_id", player.getId()).and().eq("read", false)
+        .countOf();
+    assertEquals(2, unreadBefore);
+
+    int updated = plugin.getPlayerWarnStorage().markAllRead(player.getUUID());
+    assertEquals(2, updated);
+
+    long unreadAfter = plugin.getPlayerWarnStorage().queryBuilder()
+        .where().eq("player_id", player.getId()).and().eq("read", false)
+        .countOf();
+    assertEquals(0, unreadAfter);
+  }
+
+  @Test
+  public void shouldNotMarkOtherPlayersRead() throws SQLException {
+    PlayerData player1 = testUtils.createRandomPlayer();
+    PlayerData player2 = testUtils.createRandomPlayer();
+    PlayerData actor = testUtils.createRandomPlayer();
+
+    plugin.getPlayerWarnStorage().addWarning(new PlayerWarnData(player1, actor, "p1 warn", 1.0, false), false);
+    plugin.getPlayerWarnStorage().addWarning(new PlayerWarnData(player2, actor, "p2 warn", 1.0, false), false);
+
+    plugin.getPlayerWarnStorage().markAllRead(player1.getUUID());
+
+    long p1Unread = plugin.getPlayerWarnStorage().queryBuilder()
+        .where().eq("player_id", player1.getId()).and().eq("read", false)
+        .countOf();
+    assertEquals(0, p1Unread);
+
+    long p2Unread = plugin.getPlayerWarnStorage().queryBuilder()
+        .where().eq("player_id", player2.getId()).and().eq("read", false)
+        .countOf();
+    assertEquals(1, p2Unread);
+  }
 }

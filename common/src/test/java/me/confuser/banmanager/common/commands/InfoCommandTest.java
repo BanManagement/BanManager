@@ -2,11 +2,7 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
-import me.confuser.banmanager.common.data.PlayerBanData;
-import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.data.PlayerMuteData;
-import me.confuser.banmanager.common.data.PlayerNoteData;
-import me.confuser.banmanager.common.data.PlayerWarnData;
+import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,5 +148,32 @@ public class InfoCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new InfoCommandParser(plugin, args)));
 
     await().untilAsserted(() -> verify(sender, never()).sendMessage(contains("Known names")));
+  }
+
+  @Test
+  public void shouldShowStatsWithMultipleRecordTypes() throws SQLException {
+    PlayerData player = testUtils.createRandomPlayer();
+    PlayerData actor = testUtils.createRandomPlayer();
+    CommonServer server = spy(plugin.getServer());
+    CommonSender sender = spy(server.getConsoleSender());
+
+    PlayerBanData ban = testUtils.createBan(player, actor, "test ban");
+    plugin.getPlayerBanStorage().unban(ban, actor, "unbanned");
+
+    PlayerMuteData mute = testUtils.createMute(player, actor, "test mute");
+    plugin.getPlayerMuteStorage().unmute(mute, actor, "unmuted");
+
+    plugin.getPlayerWarnStorage().addWarning(new PlayerWarnData(player, actor, "warn 1", 3.0), false);
+    plugin.getPlayerWarnStorage().addWarning(new PlayerWarnData(player, actor, "warn 2", 2.0), false);
+
+    plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, "a note"));
+
+    ReportState openState = plugin.getReportStateStorage().queryForId(1);
+    plugin.getPlayerReportStorage().create(new PlayerReportData(player, actor, "report", openState));
+
+    String[] args = new String[]{player.getName()};
+    assert (cmd.onCommand(sender, new InfoCommandParser(plugin, args)));
+
+    await().untilAsserted(() -> verify(sender, atLeastOnce()).sendMessage(anyString()));
   }
 }
