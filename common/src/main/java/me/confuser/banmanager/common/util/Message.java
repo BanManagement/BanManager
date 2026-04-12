@@ -7,12 +7,8 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.PlaceholderResolver;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.kyori.text.Component;
-import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.Placeholder;
-import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.TagResolver;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -151,7 +147,7 @@ public class Message {
 
   /**
    * Resolve the message template to a Component using MiniMessage.
-   * Pipeline: raw template -> .replace() subs -> PAPI -> MiniMessage parse (with .set() as TagResolvers)
+   * Pipeline: raw template -> .replace() subs -> PAPI -> token replacement -> MiniMessage parse
    */
   public Component resolveComponent(String locale) {
     return resolveComponent(locale, null);
@@ -166,6 +162,8 @@ public class Message {
     String template = registry.getMessage(key, locale);
     if (template == null) return Component.empty();
 
+    MessageRenderer renderer = MessageRenderer.getInstance();
+
     // Step 1: Apply .replace() substitutions on the raw string
     template = applyRawReplacements(template);
 
@@ -177,9 +175,13 @@ public class Message {
       }
     }
 
-    // Step 3: Parse with MiniMessage, using .set() tokens as TagResolvers
-    TagResolver dynamicResolver = buildDynamicResolver();
-    return MessageRenderer.getInstance().render(template, dynamicResolver);
+    // Step 3: Apply static and dynamic tokens as raw string replacements so they
+    // resolve correctly inside click/hover arguments (MiniMessage TagResolvers
+    // produce Components which can't be used as click event string values)
+    template = applyTokenReplacements(template, renderer);
+
+    // Step 4: Parse with MiniMessage (standard tags only, tokens already replaced)
+    return renderer.render(template);
   }
 
   /**
@@ -231,7 +233,6 @@ public class Message {
 
   /**
    * Apply .replace() raw substitutions on the template string before MiniMessage parsing.
-   * Token replacements from .set() are handled exclusively via MiniMessage TagResolvers.
    */
   private String applyRawReplacements(String template) {
     String result = template;
@@ -264,22 +265,25 @@ public class Message {
   }
 
   /**
-   * Build a TagResolver from .set() token replacements.
-   * Values are inserted as unparsed (literal) text for safety.
+   * Apply static and dynamic token replacements as raw string substitutions.
+   * Values are tag-escaped to prevent MiniMessage injection.
    */
-  private TagResolver buildDynamicResolver() {
-    List<TagResolver> resolvers = new ArrayList<>();
+  private String applyTokenReplacements(String template, MessageRenderer renderer) {
+    String result = template;
+
+    for (Map.Entry<String, String> entry : renderer.getStaticTokens().entrySet()) {
+      result = result.replace("<" + entry.getKey() + ">", renderer.escapeTags(entry.getValue()));
+    }
+
     for (Map.Entry<String, String[]> entry : replacements.entrySet()) {
       if (!entry.getKey().startsWith(REPLACE_PREFIX)) {
         String tokenName = MessageRenderer.normaliseTagName(entry.getKey());
         String value = entry.getValue()[1];
-        resolvers.add(Placeholder.unparsed(tokenName, value));
+        result = result.replace("<" + tokenName + ">", renderer.escapeTags(value));
       }
     }
-    if (resolvers.isEmpty()) {
-      return TagResolver.empty();
-    }
-    return TagResolver.resolver(resolvers);
+
+    return result;
   }
 
   private static String getDefaultLocale() {
