@@ -65,16 +65,16 @@ public class PaginatedView {
     StringBuilder nav = new StringBuilder();
 
     if (currentPage > 1) {
-      nav.append("<click:run_command:'").append(escapedCommand).append(" ").append(currentPage - 1)
-          .append("'><hover:show_text:'<gray>Previous page'><gold>«</gold></hover></click> ");
+      nav.append("<click:run_command:\"").append(escapedCommand).append(" ").append(currentPage - 1)
+          .append("\"><hover:show_text:\"<gray>Previous page\"><gold>«</gold></hover></click> ");
     }
 
     nav.append("<gray>Page <white>").append(currentPage).append("</white> of <white>")
         .append(totalPages).append("</white></gray>");
 
     if (currentPage < totalPages) {
-      nav.append(" <click:run_command:'").append(escapedCommand).append(" ").append(currentPage + 1)
-          .append("'><hover:show_text:'<gray>Next page'><gold>»</gold></hover></click>");
+      nav.append(" <click:run_command:\"").append(escapedCommand).append(" ").append(currentPage + 1)
+          .append("\"><hover:show_text:\"<gray>Next page\"><gold>»</gold></hover></click>");
     }
 
     return renderer.render(nav.toString());

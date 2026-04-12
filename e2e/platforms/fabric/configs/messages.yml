@@ -162,7 +162,7 @@ messages:
       disallowed: '<red><bold>You are banned from this server</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
       kick: '<red><bold>You have been banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
-    notify: '<gold><player> has been permanently banned by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:''/unban <player>''><hover:show_text:''<gray>Unban player''><dark_aqua>[Unban]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been permanently banned by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unban <player>"><hover:show_text:"<gray>Unban player"><dark_aqua>[Unban]</dark_aqua></hover></click>'
     error:
       exists: '<red><player> is already banned'
       cooldown: '<red>This player was banned too recently, try again later'
@@ -175,7 +175,7 @@ messages:
       disallowed: '<red><bold>You are temporarily banned from this server</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Expires: <white><expires>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
       kick: '<red><bold>You have been temporarily banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Expires: <white><expires>'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
-    notify: '<gold><player> has been temporarily banned for <expires> by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:''/unban <player>''><hover:show_text:''<gray>Unban player''><dark_aqua>[Unban]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been temporarily banned for <expires> by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unban <player>"><hover:show_text:"<gray>Unban player"><dark_aqua>[Unban]</dark_aqua></hover></click>'
 
   tempbanall:
     notify: '<gold><player> will be temporarily banned for <expires> by <actor> for <dark_red><reason>'
@@ -194,7 +194,7 @@ messages:
       blocked: '<red>You may not use the <command> command whilst muted!'
       disallowed: '<gold>You have been permanently muted for <dark_red><reason> <gold>by <actor>'
       broadcast: '<dark_red>[Muted] <player><gray> <message>'
-    notify: '<gold><player> has been permanently muted by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:''/unmute <player>''><hover:show_text:''<gray>Unmute player''><dark_aqua>[Unmute]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been permanently muted by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unmute <player>"><hover:show_text:"<gray>Unmute player"><dark_aqua>[Unmute]</dark_aqua></hover></click>'
     error:
       exists: '<red><player> is already muted'
       cooldown: '<red>This player was muted too recently, try again later'
@@ -214,7 +214,7 @@ messages:
     player:
       disallowed: '<gold>You have been temporarily muted for <dark_red><reason> <gold>by <actor> which expires in <expires>'
       disallowedOnline: '<gold>You have been temporarily muted for <dark_red><reason> <gold>by <actor> which expires in <expires> (online time)'
-    notify: '<gold><player> has been temporarily muted for <expires> by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:''/unmute <player>''><hover:show_text:''<gray>Unmute player''><dark_aqua>[Unmute]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been temporarily muted for <expires> by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unmute <player>"><hover:show_text:"<gray>Unmute player"><dark_aqua>[Unmute]</dark_aqua></hover></click>'
     notifyOnline: '<gold><player> has been temporarily muted for <expires> (online time) by <actor> for <dark_red><reason>'
     error:
       exists: '<red><player> is already muted'
@@ -326,14 +326,14 @@ messages:
         header: '<red>You may not speak until you have accepted your most recent warning. Please type the following:'
         reason: '<gold><reason>'
         removed: '<green>Thank you for your understanding, you may now speak again'
-    notify: '<gold><player> has been warned by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been warned by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click>'
     error:
       cooldown: '<red>This player was warned too recently, try again later'
 
   tempwarn:
     player:
       warned: '<gold>You have been warned for <expires> by <actor> for <dark_red><reason>'
-    notify: '<gold><player> has been warned for <expires> by <actor> for <dark_red><reason> <click:run_command:''/bminfo <player>''><hover:show_text:''<gray>View player info''><dark_aqua>[Info]</dark_aqua></hover></click>'
+    notify: '<gold><player> has been warned for <expires> by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click>'
 
   dwarn:
     player:
@@ -429,9 +429,9 @@ messages:
         location: '<world> - <x>, <y>, <z>'
 
     actions:
-      assign: '<click:run_command:''/report assign <id>''><hover:show_text:''<gray>Assign to yourself''><dark_aqua>[Assign]</dark_aqua></hover></click>'
-      close: '<click:run_command:''/report close <id>''><hover:show_text:''<gray>Close this report''><green>[Close]</green></hover></click>'
-      tp: '<click:run_command:''/report tp <id>''><hover:show_text:''<gray>Teleport to location''><aqua>[TP]</aqua></hover></click>'
+      assign: '<click:run_command:"/reports assign <id>"><hover:show_text:"<gray>Assign to yourself"><dark_aqua>[Assign]</dark_aqua></hover></click>'
+      close: '<click:run_command:"/reports close <id>"><hover:show_text:"<gray>Close this report"><green>[Close]</green></hover></click>'
+      tp: '<click:run_command:"/reports tp <id>"><hover:show_text:"<gray>Teleport to location"><aqua>[TP]</aqua></hover></click>'
     feedback:
       assigned: '<gold>Your report #<id> has been assigned to <actor>'
       closed: '<gold>Your report #<id> has been closed by <actor>'
@@ -442,7 +442,7 @@ messages:
   banlist:
     header: '<gold>There are <bans> <type> bans:'
     row:
-      player: '<click:run_command:''/bminfo <name>''><hover:show_text:''<gray>Click for info''><gold><name></gold></hover></click> <gray>- <dark_red><reason>'
+      player: '<click:run_command:"/bminfo <name>"><hover:show_text:"<gray>Click for info"><gold><name></gold></hover></click> <gray>- <dark_red><reason>'
       ip: '<gold><ip> <gray>- <dark_red><reason>'
       iprange: '<gold><from_ip> - <to_ip> <gray>- <dark_red><reason>'
 
@@ -467,7 +467,7 @@ messages:
     row: '<hashtag> = <reason>'
 
   confirmation:
-    prompt: '<gold>Are you sure you want to <action>? <click:run_command:''/bm confirm''><hover:show_text:''<gray>Click to confirm''><green>[Confirm]</green></hover></click> <click:run_command:''/bm cancel''><hover:show_text:''<gray>Click to cancel''><red>[Cancel]</red></hover></click>'
+    prompt: '<gold>Are you sure you want to <action>? <click:run_command:"/bm confirm"><hover:show_text:"<gray>Click to confirm"><green>[Confirm]</green></hover></click> <click:run_command:"/bm cancel"><hover:show_text:"<gray>Click to cancel"><red>[Cancel]</red></hover></click>'
     confirmed: '<green>Action confirmed.'
     cancelled: '<red>Action cancelled.'
     expired: '<red>No pending action found. It may have expired.'
@@ -476,6 +476,6 @@ messages:
     header: '<dark_gray><strikethrough>                    </strikethrough><reset> <gold><bold>Staff Dashboard</bold></gold> <dark_gray><strikethrough>                    </strikethrough>'
     activeBans: '<gray>Active Bans: <white><count>'
     activeMutes: '<gray>Active Mutes: <white><count>'
-    openReports: '<gray>Open Reports: <white><count> <click:run_command:''/reports 1''><hover:show_text:''<gray>View reports''><dark_aqua>[View]</dark_aqua></hover></click>'
+    openReports: '<gray>Open Reports: <white><count> <click:run_command:"/reports list 1"><hover:show_text:"<gray>View reports"><dark_aqua>[View]</dark_aqua></hover></click>'
     recentActivity: '<gray>Recent Activity (24h): <white><count>'
     footer: '<dark_gray><strikethrough>                                                        </strikethrough>'

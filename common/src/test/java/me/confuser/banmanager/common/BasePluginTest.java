@@ -40,7 +40,6 @@ public abstract class BasePluginTest {
         "webhooks.yml",
         "exemptions.yml",
         "geoip.yml",
-        "messages.yml",
         "notifications.yml",
         "reasons.yml",
         "schedules.yml"

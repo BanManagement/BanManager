@@ -92,7 +92,7 @@ public class CommonChatListener {
     player.sendMessage(message);
 
     if (plugin.getNotificationsConfig().isMutedActionBar()) {
-      player.sendActionBar(message.resolveComponent());
+      player.sendActionBar(message.resolveComponentFor(player));
     }
 
     return true;

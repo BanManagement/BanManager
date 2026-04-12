@@ -319,6 +319,10 @@ public class BanManagerPlugin {
     String defaultLocale = config != null ? config.getDefaultLocale() : "en";
     MessageRegistry newRegistry = new MessageRegistry(defaultLocale);
 
+    // Clear static tokens before loading so removed tokens don't persist across reloads
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    renderer.loadStaticTokens(Collections.emptyMap());
+
     copyMessagesDirectory();
 
     File messagesDir = new File(dataFolder, "messages");
@@ -354,9 +358,6 @@ public class BanManagerPlugin {
     }
 
     Message.init(messageRegistry, logger);
-
-    MessageRenderer renderer = MessageRenderer.getInstance();
-    renderer.loadStaticTokens(Collections.emptyMap());
 
     if (renderer.getStaticTokens() != null) {
       for (String tokenName : renderer.getStaticTokens().keySet()) {

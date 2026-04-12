@@ -38,7 +38,6 @@ public class BMBukkitPlugin extends JavaPlugin {
       "webhooks.yml",
       "exemptions.yml",
       "geoip.yml",
-      "messages.yml",
       "notifications.yml",
       "reasons.yml",
       "schedules.yml"
