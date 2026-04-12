@@ -5,8 +5,14 @@ applyLibrariesConfiguration()
 dependencies {
     "shade"("net.kyori:adventure-text-serializer-legacy:${Versions.ADVENTURE}")
     "shade"("net.kyori:adventure-text-serializer-gson:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-json:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-plain:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-minimessage:${Versions.ADVENTURE}")
     "shade"("net.kyori:adventure-api:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-commons:${Versions.ADVENTURE}")
     "shade"("net.kyori:examination-api:1.3.0")
+    "shade"("net.kyori:examination-string:1.3.0")
+    "shade"("net.kyori:option:1.1.0")
 
     "shade"("com.j256.ormlite:ormlite-core:5.1")
     "shade"("com.j256.ormlite:ormlite-jdbc:5.1")
@@ -38,12 +44,21 @@ tasks.named<ShadowJar>("jar") {
         relocate("net.kyori.adventure", "me.confuser.banmanager.common.kyori") {
             include(dependency("net.kyori:adventure-text-serializer-legacy"))
             include(dependency("net.kyori:adventure-text-serializer-gson"))
+            include(dependency("net.kyori:adventure-text-serializer-json"))
+            include(dependency("net.kyori:adventure-text-serializer-plain"))
+            include(dependency("net.kyori:adventure-text-serializer-commons"))
+            include(dependency("net.kyori:adventure-text-minimessage"))
             include(dependency("net.kyori:adventure-api"))
             include(dependency("net.kyori:adventure-key"))
         }
 
         relocate("net.kyori.examination", "me.confuser.banmanager.common.kyori.examination") {
             include(dependency("net.kyori:examination-api"))
+            include(dependency("net.kyori:examination-string"))
+        }
+
+        relocate("net.kyori.option", "me.confuser.banmanager.common.kyori.option") {
+            include(dependency("net.kyori:option"))
         }
 
         relocate("org.yaml.snakeyaml", "me.confuser.banmanager.common.snakeyaml") {

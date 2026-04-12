@@ -6,16 +6,26 @@ import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.PlaceholderResolver;
 import me.confuser.banmanager.common.commands.CommonSender;
-import me.confuser.banmanager.common.configs.Config;
-import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.kyori.text.Component;
+import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.Placeholder;
+import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.TagResolver;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Message {
 
   private static volatile MessageRegistry registry;
   private static volatile CommonLogger logger;
+  // Matches PlaceholderAPI %placeholder% tokens. May also match non-PAPI patterns like %100%,
+  // but the resolver's no-op return for unrecognised placeholders makes this harmless.
+  private static final Pattern PAPI_PATTERN = Pattern.compile("%([^%]+)%");
+
+  private static final String REPLACE_PREFIX = "__replace__";
 
   @Getter
   private String key;
@@ -24,8 +34,8 @@ public class Message {
   public Message(String key) {
     this.key = key;
 
-    if (registry != null && registry.getMessage(key) == null) {
-      if (logger != null) logger.warning("Missing " + key + " message");
+    if (registry != null && registry.getMessage(key) == null && logger != null) {
+      logger.warning("Missing " + key + " message");
     }
   }
 
@@ -50,49 +60,61 @@ public class Message {
     return new Message(key);
   }
 
+  /**
+   * Resolve a message template to a Component using the default locale.
+   * Convenience for static messages with no dynamic tokens.
+   */
+  public static Component component(String key) {
+    return get(key).resolveComponent();
+  }
+
+  /**
+   * Resolve a message template to a Component using the specified locale.
+   */
+  public static Component component(String key, String locale) {
+    return get(key).resolveComponent(locale);
+  }
+
   public static String getString(String key) {
     if (registry == null) return null;
-    return registry.getMessage(key);
+    String template = registry.getMessage(key);
+    if (template == null) return null;
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    return renderer.toLegacy(renderer.render(template));
   }
 
   public static String getString(String key, String locale) {
     if (registry == null) return null;
-    return registry.getMessage(key, locale);
+    String template = registry.getMessage(key, locale);
+    if (template == null) return null;
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    return renderer.toLegacy(renderer.render(template));
   }
 
   /**
-   * @deprecated Use {@link #init(MessageRegistry, CommonLogger)} instead.
-   * Loads messages from the YAML config into the active registry for backwards compatibility.
+   * Get the raw, unrendered template string for a message key.
+   * Use this when you need to check for key existence or render
+   * the template separately with dynamic context.
    */
-  @Deprecated
-  public static void load(YamlConfiguration config, CommonLogger commonLogger) {
-    logger = commonLogger;
-
-    if (registry != null && config.getConfigurationSection("messages") != null) {
-      for (String key : config.getConfigurationSection("messages").getKeys(true)) {
-        String value = config.getString("messages." + key);
-        if (value != null) {
-          registry.putMessage(key, value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " "));
-        }
-      }
-    }
+  public static String getRawTemplate(String key) {
+    if (registry == null) return null;
+    return registry.getMessage(key);
   }
 
   /**
-   * @deprecated Use {@link #init(MessageRegistry, CommonLogger)} instead.
+   * Get the raw, unrendered template string for this message's key.
    */
-  @Deprecated
-  public static void load(Config config) {
-    load(config.conf, config.getLogger());
+  public String getRawTemplate() {
+    return getRawTemplate(this.key);
   }
 
   public Message replace(CharSequence oldChar, CharSequence newChar) {
-    replacements.put("__replace__" + replacements.size(), new String[]{oldChar.toString(), newChar.toString()});
+    replacements.put(REPLACE_PREFIX + replacements.size(), new String[]{oldChar.toString(), newChar.toString()});
     return this;
   }
 
   public Message set(String token, String replace) {
-    replacements.put(token, new String[]{"[" + token + "]", replace});
+    replacements.put(token, new String[]{token, replace});
     return this;
   }
 
@@ -112,29 +134,78 @@ public class Message {
     return set(token, replace.toString());
   }
 
+  /**
+   * Resolve the message template to a legacy &-code string using the specified locale.
+   */
   public String resolve(String locale) {
-    if (registry == null) return "";
+    Component component = resolveComponent(locale);
+    return MessageRenderer.getInstance().toLegacy(component);
+  }
+
+  /**
+   * Resolve the message template to a Component using the default locale.
+   */
+  public Component resolveComponent() {
+    return resolveComponent(getDefaultLocale());
+  }
+
+  /**
+   * Resolve the message template to a Component using MiniMessage.
+   * Pipeline: raw template -> .replace() subs -> PAPI -> MiniMessage parse (with .set() as TagResolvers)
+   */
+  public Component resolveComponent(String locale) {
+    return resolveComponent(locale, null);
+  }
+
+  /**
+   * Resolve the message template to a Component using MiniMessage, with optional PAPI resolution.
+   */
+  public Component resolveComponent(String locale, CommonPlayer player) {
+    if (registry == null) return Component.empty();
 
     String template = registry.getMessage(key, locale);
-    if (template == null) return "";
+    if (template == null) return Component.empty();
 
-    return applyReplacements(template);
+    // Step 1: Apply .replace() substitutions on the raw string
+    template = applyRawReplacements(template);
+
+    // Step 2: Resolve PAPI placeholders individually, escaping MiniMessage tags in output
+    if (player != null && BanManagerPlugin.getInstance() != null) {
+      PlaceholderResolver papiResolver = BanManagerPlugin.getInstance().getPlaceholderResolver();
+      if (papiResolver != null) {
+        template = resolvePapiSafe(papiResolver, player, template);
+      }
+    }
+
+    // Step 3: Parse with MiniMessage, using .set() tokens as TagResolvers
+    TagResolver dynamicResolver = buildDynamicResolver();
+    return MessageRenderer.getInstance().render(template, dynamicResolver);
+  }
+
+  /**
+   * Resolve the Component for a specific player, respecting per-player locale.
+   */
+  public Component resolveComponentFor(CommonPlayer player) {
+    if (player == null) return resolveComponent(getDefaultLocale());
+
+    BanManagerPlugin plugin = BanManagerPlugin.getInstance();
+    String locale = getDefaultLocale();
+    if (plugin != null && plugin.getConfig() != null && plugin.getConfig().isPerPlayerLocale()) {
+      locale = player.getLocale();
+    }
+    return resolveComponent(locale, player);
   }
 
   public String resolveFor(CommonPlayer player) {
-    if (player == null) return resolve(getDefaultLocale());
-
-    BanManagerPlugin plugin = BanManagerPlugin.getInstance();
-    if (plugin != null && plugin.getConfig() != null && plugin.getConfig().isPerPlayerLocale()) {
-      return resolve(player.getLocale());
-    }
-    return resolve(getDefaultLocale());
+    Component component = resolveComponentFor(player);
+    return MessageRenderer.getInstance().toLegacy(component);
   }
 
   public boolean sendTo(CommonSender sender) {
     if (sender == null) return false;
 
-    sender.sendMessage(resolve(getDefaultLocale()));
+    Component component = resolveComponent(getDefaultLocale());
+    sender.sendMessage(component);
 
     return true;
   }
@@ -143,13 +214,8 @@ public class Message {
     if (player == null) return false;
     if (!player.isOnline()) return false;
 
-    String resolved = resolveFor(player);
-    PlaceholderResolver resolver = BanManagerPlugin.getInstance().getPlaceholderResolver();
-    if (resolver != null) {
-      resolved = resolver.resolve(player, resolved);
-    }
-
-    player.sendMessage(resolved);
+    Component component = resolveComponentFor(player);
+    player.sendMessage(component);
 
     return true;
   }
@@ -163,13 +229,57 @@ public class Message {
     return resolve(getDefaultLocale());
   }
 
-  private String applyReplacements(String template) {
+  /**
+   * Apply .replace() raw substitutions on the template string before MiniMessage parsing.
+   * Token replacements from .set() are handled exclusively via MiniMessage TagResolvers.
+   */
+  private String applyRawReplacements(String template) {
     String result = template;
     for (Map.Entry<String, String[]> entry : replacements.entrySet()) {
-      String[] pair = entry.getValue();
-      result = result.replace(pair[0], pair[1]);
+      if (entry.getKey().startsWith(REPLACE_PREFIX)) {
+        String[] pair = entry.getValue();
+        result = result.replace(pair[0], pair[1]);
+      }
     }
     return result;
+  }
+
+  /**
+   * Resolve PAPI placeholders individually, escaping MiniMessage tags in each resolved value
+   * to prevent injection of formatting/click/hover tags from external placeholder plugins.
+   */
+  private static String resolvePapiSafe(PlaceholderResolver resolver, CommonPlayer player, String template) {
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    Matcher matcher = PAPI_PATTERN.matcher(template);
+    StringBuffer sb = new StringBuffer();
+    while (matcher.find()) {
+      String placeholder = matcher.group(0);
+      String resolved = resolver.resolve(player, placeholder);
+      if (!resolved.equals(placeholder)) {
+        matcher.appendReplacement(sb, Matcher.quoteReplacement(renderer.escapeTags(resolved)));
+      }
+    }
+    matcher.appendTail(sb);
+    return sb.toString();
+  }
+
+  /**
+   * Build a TagResolver from .set() token replacements.
+   * Values are inserted as unparsed (literal) text for safety.
+   */
+  private TagResolver buildDynamicResolver() {
+    List<TagResolver> resolvers = new ArrayList<>();
+    for (Map.Entry<String, String[]> entry : replacements.entrySet()) {
+      if (!entry.getKey().startsWith(REPLACE_PREFIX)) {
+        String tokenName = MessageRenderer.normaliseTagName(entry.getKey());
+        String value = entry.getValue()[1];
+        resolvers.add(Placeholder.unparsed(tokenName, value));
+      }
+    }
+    if (resolvers.isEmpty()) {
+      return TagResolver.empty();
+    }
+    return TagResolver.resolver(resolvers);
   }
 
   private static String getDefaultLocale() {

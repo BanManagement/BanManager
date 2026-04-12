@@ -4,14 +4,18 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
@@ -19,6 +23,18 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class BukkitPlayer implements CommonPlayer {
+  private static final boolean PAPER_ADVENTURE;
+
+  static {
+    boolean paper = false;
+    try {
+      Class.forName("io.papermc.paper.adventure.PaperAdventure");
+      paper = true;
+    } catch (ClassNotFoundException ignored) {
+    }
+    PAPER_ADVENTURE = paper;
+  }
+
   private Player player;
   private final UUID uuid;
   private InetAddress address;
@@ -45,6 +61,15 @@ public class BukkitPlayer implements CommonPlayer {
     getPlayer().kickPlayer(BukkitServer.formatMessage(message));
   }
 
+  @Override
+  public void kick(Component component) {
+    if (PAPER_ADVENTURE) {
+      PaperAdventureHelper.kick(getPlayer(), component);
+    } else {
+      kick(MessageRenderer.getInstance().toLegacy(component));
+    }
+  }
+
   public void sendMessage(String message) {
     if(message.isEmpty()) return;
 
@@ -55,8 +80,47 @@ public class BukkitPlayer implements CommonPlayer {
     }
   }
 
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
+  @Override
+  public void sendMessage(Component component) {
+    if (PAPER_ADVENTURE) {
+      PaperAdventureHelper.sendMessage(getPlayer(), component);
+    } else {
+      String json = MessageRenderer.getInstance().toJson(component);
+      getPlayer().spigot().sendMessage(ComponentSerializer.parse(json));
+    }
+  }
+
+  @Override
+  public void sendActionBar(Component component) {
+    if (PAPER_ADVENTURE) {
+      PaperAdventureHelper.sendActionBar(getPlayer(), component);
+    } else {
+      String json = MessageRenderer.getInstance().toJson(component);
+      getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, ComponentSerializer.parse(json));
+    }
+  }
+
+  @Override
+  public void showTitle(Component title, Component subtitle, int fadeIn, int stay, int fadeOut) {
+    if (PAPER_ADVENTURE) {
+      PaperAdventureHelper.showTitle(getPlayer(), title, subtitle, fadeIn, stay, fadeOut);
+    } else {
+      MessageRenderer renderer = MessageRenderer.getInstance();
+      String legacyTitle = title != null ? renderer.toLegacy(title) : "";
+      String legacySubtitle = subtitle != null ? renderer.toLegacy(subtitle) : "";
+      getPlayer().sendTitle(legacyTitle, legacySubtitle, fadeIn, stay, fadeOut);
+    }
+  }
+
+  @Override
+  public void playSound(String sound, float volume, float pitch) {
+    Player p = getPlayer();
+    if (p == null) return;
+    try {
+      p.playSound(p.getLocation(), sound, volume, pitch);
+    } catch (IllegalArgumentException ignored) {
+      // Invalid sound key -- silently ignore
+    }
   }
 
   @Override

@@ -35,7 +35,7 @@ public class UnbanIpAllCommand extends CommonCommand {
       Message message = Message.get("invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -48,7 +48,7 @@ public class UnbanIpAllCommand extends CommonCommand {
         Message message = Message.get("unbanip.error.noExists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -63,7 +63,7 @@ public class UnbanIpAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyIpUnban(record, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("errorOccurred").toString());
+        Message.get("errorOccurred").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unbanipall command", e);
         return;
       }

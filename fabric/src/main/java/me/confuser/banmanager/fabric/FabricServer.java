@@ -31,7 +31,7 @@ import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import com.google.gson.JsonElement;
@@ -94,12 +94,6 @@ public class FabricServer implements CommonServer {
       .forEach(player -> player.sendMessage(message));
 
     getConsoleSender().sendMessage(message);
-  }
-
-  public void broadcastJSON(TextComponent message, String permission) {
-    Arrays.stream(getOnlinePlayers())
-      .filter(player -> player.hasPermission(permission))
-      .forEach(player -> player.sendJSONMessage(message));
   }
 
   public void broadcast(String message, String permission, CommonSender sender) {
@@ -350,10 +344,10 @@ public class FabricServer implements CommonServer {
   }
 
   public static Text formatMessage(Message message) {
-    return formatMessage(message.toString());
+    return formatMessage(message.resolveComponent());
   }
 
-  public static Text formatMessage(TextComponent message) {
+  public static Text formatMessage(Component message) {
     //? if >=1.21 {
     return TextCodecs.CODEC
       .decode(JsonOps.INSTANCE, JsonParser.parseString(GsonComponentSerializer.gson().serialize(message)))

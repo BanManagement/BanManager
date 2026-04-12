@@ -45,7 +45,7 @@ public class CommonCommandListener {
       if (!shouldCancel) return false;
     }
 
-    if (!isSoft) player.sendMessage(Message.get("mute.player.blocked").set("command", cmd).toString());
+    if (!isSoft) Message.get("mute.player.blocked").set("command", cmd).sendTo(player);
 
     return true;
   }

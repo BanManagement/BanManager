@@ -49,7 +49,7 @@ public class RollbackCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.args[1], false);
     } catch (Exception e) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -67,7 +67,7 @@ public class RollbackCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, playerName, false);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -266,7 +266,7 @@ public class RollbackCommand extends CommonCommand {
               .sendTo(sender);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute rollback command", e);
       }
     });

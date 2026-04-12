@@ -6,7 +6,6 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.util.Message;
 
 public class VelocitySender implements CommonSender {
 
@@ -29,11 +28,6 @@ public class VelocitySender implements CommonSender {
   @Override
   public void sendMessage(String message) {
     commandSource.sendMessage(VelocityServer.formatMessage(message));
-  }
-
-  @Override
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
   }
 
   @Override

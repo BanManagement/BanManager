@@ -57,7 +57,7 @@ public class TempIpMuteCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -76,7 +76,7 @@ public class TempIpMuteCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.args[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -92,7 +92,7 @@ public class TempIpMuteCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        Message.get("sender.error.notFound").set("player", ipStr).sendTo(sender);
         return;
       }
 
@@ -102,7 +102,7 @@ public class TempIpMuteCommand extends CommonCommand {
         Message message = Message.get("muteip.error.exists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -116,7 +116,7 @@ public class TempIpMuteCommand extends CommonCommand {
           try {
             getPlugin().getIpMuteStorage().unmute(mute, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute tempmuteip command", e);
             return;
           }

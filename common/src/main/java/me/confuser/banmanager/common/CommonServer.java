@@ -2,8 +2,9 @@ package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 
 import java.util.UUID;
 
@@ -21,13 +22,21 @@ public interface CommonServer {
   default void broadcast(Message message, String permission) {
     for (CommonPlayer player : getOnlinePlayers()) {
       if (player.hasPermission(permission)) {
-        player.sendMessage(message.resolveFor(player));
+        player.sendMessage(message.resolveComponentFor(player));
       }
     }
-    getConsoleSender().sendMessage(message.toString());
+    getConsoleSender().sendMessage(MessageRenderer.getInstance().toPlainText(message.resolveComponent()));
   }
 
-  void broadcastJSON(TextComponent message, String permission);
+  // Console receives plain text since it cannot render Components with hover/click events
+  default void broadcast(Component message, String permission) {
+    for (CommonPlayer player : getOnlinePlayers()) {
+      if (player.hasPermission(permission)) {
+        player.sendMessage(message);
+      }
+    }
+    getConsoleSender().sendMessage(MessageRenderer.getInstance().toPlainText(message));
+  }
 
   void broadcast(String message, String permission, CommonSender sender);
 

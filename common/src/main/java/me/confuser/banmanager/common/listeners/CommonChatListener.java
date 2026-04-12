@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.NotificationUtils;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -32,6 +33,8 @@ public class CommonChatListener {
         } else {
           Message.get("warn.player.disallowed.header").sendTo(player);
           Message.get("warn.player.disallowed.reason").set("reason", warning.getReason()).sendTo(player);
+
+          NotificationUtils.playWarnedSound(plugin, player);
         }
 
         return true;
@@ -87,6 +90,10 @@ public class CommonChatListener {
         .set("actor", mute.getActor().getName());
 
     player.sendMessage(message);
+
+    if (plugin.getNotificationsConfig().isMutedActionBar()) {
+      player.sendActionBar(message.resolveComponent());
+    }
 
     return true;
   }
@@ -145,7 +152,7 @@ public class CommonChatListener {
         .set("id", mute.getId())
         .set("ip", mute.getIp().toString());
 
-    player.sendMessage(message.toString());
+    message.sendTo(player);
 
     return true;
   }

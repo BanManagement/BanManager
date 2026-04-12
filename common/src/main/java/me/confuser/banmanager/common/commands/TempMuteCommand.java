@@ -57,12 +57,12 @@ public class TempMuteCommand extends CommonCommand {
     TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
-      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
       return true;
     }
 
     if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
-      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      Message.get("sender.error.ambiguousPlayer").set("player", playerName).sendTo(sender);
       return true;
     }
 
@@ -83,7 +83,7 @@ public class TempMuteCommand extends CommonCommand {
       try {
         isMuted = getPlugin().getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
       } catch (IllegalArgumentException e) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return true;
       }
     } else {
@@ -94,7 +94,7 @@ public class TempMuteCommand extends CommonCommand {
       Message message = Message.get("mute.error.exists");
       message.set("player", targetName);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -114,7 +114,7 @@ public class TempMuteCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.args[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -130,12 +130,12 @@ public class TempMuteCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
+        Message.get("sender.error.notFound").set("player", targetName).sendTo(sender);
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "tempmute")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
+        Message.get("sender.error.exempt").set("player", targetName).sendTo(sender);
         return;
       }
 
@@ -145,7 +145,7 @@ public class TempMuteCommand extends CommonCommand {
           return;
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempmute command", e);
         return;
       }
@@ -167,7 +167,7 @@ public class TempMuteCommand extends CommonCommand {
           try {
             getPlugin().getPlayerMuteStorage().unmute(mute, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute tempmute command", e);
             return;
           }
@@ -220,7 +220,7 @@ public class TempMuteCommand extends CommonCommand {
         muteMessage.set("expires", DateUtils.getDifferenceFormat(mute.getExpires()));
       }
 
-      onlinePlayer1.sendMessage(muteMessage.toString());
+      muteMessage.sendTo(onlinePlayer1);
 
     });
 

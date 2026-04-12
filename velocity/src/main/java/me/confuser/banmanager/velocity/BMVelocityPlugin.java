@@ -60,6 +60,7 @@ public class BMVelocityPlugin {
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
+      "notifications.yml",
       "reasons.yml",
       "schedules.yml"
   };

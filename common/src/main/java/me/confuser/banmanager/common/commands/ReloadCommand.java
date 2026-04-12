@@ -15,7 +15,7 @@ public class ReloadCommand extends CommonCommand {
 
     getPlugin().getServer().callEvent("PluginReloadedEvent", sender.getData());
 
-    sender.sendMessage(Message.get("configReloaded").toString());
+    Message.get("configReloaded").sendTo(sender);
 
     return true;
   }

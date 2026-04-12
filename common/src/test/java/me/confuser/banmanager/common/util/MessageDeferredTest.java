@@ -2,6 +2,7 @@ package me.confuser.banmanager.common.util;
 
 import me.confuser.banmanager.common.TestLogger;
 import me.confuser.banmanager.common.TestPlayer;
+import me.confuser.banmanager.common.kyori.text.Component;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,13 +19,13 @@ public class MessageDeferredTest {
     MessageRegistry registry = new MessageRegistry("en");
 
     Map<String, String> en = new HashMap<>();
-    en.put("ban.kick", "You are banned by [actor] for [reason]");
-    en.put("greeting", "Hello [player]");
+    en.put("ban.kick", "You are banned by <actor> for <reason>");
+    en.put("greeting", "Hello <player>");
     registry.loadLocale("en", en);
 
     Map<String, String> de = new HashMap<>();
-    de.put("ban.kick", "Du wurdest von [actor] gebannt: [reason]");
-    de.put("greeting", "Hallo [player]");
+    de.put("ban.kick", "Du wurdest von <actor> gebannt: <reason>");
+    de.put("greeting", "Hallo <player>");
     registry.loadLocale("de", de);
 
     Message.init(registry, new TestLogger());
@@ -32,67 +33,73 @@ public class MessageDeferredTest {
 
   @Test
   public void resolveWithDefaultLocale() {
-    String result = Message.get("ban.kick")
+    Component component = Message.get("ban.kick")
         .set("actor", "Admin")
         .set("reason", "griefing")
-        .resolve("en");
+        .resolveComponent("en");
 
-    assertEquals("You are banned by Admin for griefing", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("You are banned by Admin for griefing", plain);
   }
 
   @Test
   public void resolveWithSpecificLocale() {
-    String result = Message.get("ban.kick")
+    Component component = Message.get("ban.kick")
         .set("actor", "Admin")
         .set("reason", "griefing")
-        .resolve("de");
+        .resolveComponent("de");
 
-    assertEquals("Du wurdest von Admin gebannt: griefing", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("Du wurdest von Admin gebannt: griefing", plain);
   }
 
   @Test
   public void toStringUsesDefaultLocale() {
-    String result = Message.get("greeting")
+    Component component = Message.get("greeting")
         .set("player", "Steve")
-        .toString();
+        .resolveComponent();
 
-    assertEquals("Hello Steve", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("Hello Steve", plain);
   }
 
   @Test
   public void resolveWithPlayerLocale() {
     TestPlayer player = new TestPlayer(UUID.randomUUID(), "Steve", true, "de");
-    String result = Message.get("greeting")
+    Component component = Message.get("greeting")
         .set("player", "Steve")
-        .resolve(player.getLocale());
+        .resolveComponent(player.getLocale());
 
-    assertEquals("Hallo Steve", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("Hallo Steve", plain);
   }
 
   @Test
   public void resolveForFallsBackWithoutPlugin() {
     TestPlayer player = new TestPlayer(UUID.randomUUID(), "Steve", true, "de");
-    String result = Message.get("greeting")
+    Component component = Message.get("greeting")
         .set("player", "Steve")
-        .resolveFor(player);
+        .resolveComponentFor(player);
 
-    assertEquals("Hello Steve", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("Hello Steve", plain);
   }
 
   @Test
   public void tokenReplacementOrderPreserved() {
     MessageRegistry registry = new MessageRegistry("en");
     Map<String, String> en = new HashMap<>();
-    en.put("test.order", "[a] [b] [a]");
+    en.put("test.order", "<first> <second> <first>");
     registry.loadLocale("en", en);
     Message.init(registry, new TestLogger());
 
-    String result = Message.get("test.order")
-        .set("a", "X")
-        .set("b", "Y")
-        .toString();
+    Component component = Message.get("test.order")
+        .set("first", "X")
+        .set("second", "Y")
+        .resolveComponent();
 
-    assertEquals("X Y X", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("X Y X", plain);
   }
 
   @Test
@@ -105,16 +112,19 @@ public class MessageDeferredTest {
   public void dynamicRegistrationWritesToDefaultLocale() {
     new Message("custom.key", "Custom message");
 
-    assertEquals("Custom message", Message.getString("custom.key"));
+    String result = Message.getString("custom.key");
+    assertNotNull("Dynamic registration should produce a non-null result", result);
+    assertEquals("Custom message", result);
   }
 
   @Test
   public void replaceMethodWorks() {
-    String result = Message.get("greeting")
+    Component component = Message.get("greeting")
         .set("player", "Steve")
         .replace("Hello", "Hey")
-        .toString();
+        .resolveComponent();
 
-    assertEquals("Hey Steve", result);
+    String plain = MessageRenderer.getInstance().toPlainText(component);
+    assertEquals("Hey Steve", plain);
   }
 }

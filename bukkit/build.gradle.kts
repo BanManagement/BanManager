@@ -80,6 +80,9 @@ dependencies {
     "compileOnly"("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
+    "compileOnly"("net.kyori:adventure-api:${Versions.ADVENTURE}")
+    "compileOnly"("net.kyori:adventure-text-serializer-gson:${Versions.ADVENTURE}")
+    "compileOnly"("net.kyori:adventure-text-serializer-json:${Versions.ADVENTURE}")
     "compileOnly"("me.clip:placeholderapi:2.10.9")
     "shadeOnly"("org.bstats:bstats-bukkit:2.2.1")
     "shadeOnly"("org.slf4j:slf4j-api:1.7.36")

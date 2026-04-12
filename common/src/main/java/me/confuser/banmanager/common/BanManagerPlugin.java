@@ -21,18 +21,43 @@ import me.confuser.banmanager.common.storage.global.*;
 import me.confuser.banmanager.common.storage.migration.MigrationRunner;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
+import me.confuser.banmanager.common.util.ConfirmationManager;
 import me.confuser.banmanager.common.util.DriverManagerUtil;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.MessageRegistry;
+import me.confuser.banmanager.common.util.MessageRenderer;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.*;
 
 import static java.lang.Long.parseLong;
 
 public class BanManagerPlugin {
   private static BanManagerPlugin self;
+
+  // Token names used by commands/listeners via Message.set(). Hardcoded because these are
+  // defined across many source files and not available at runtime as a registry. Used only
+  // to warn admins when a static token in messages.yml collides with a built-in name.
+  private static final Set<String> BUILTIN_TOKENS;
+
+  static {
+    String[] rawNames = {"player", "playerId", "actor", "reason", "expires", "id",
+        "message", "displayName", "ip", "players", "name", "type", "created",
+        "amount", "bans", "mutes", "warns", "warnPoints", "kicks", "notes",
+        "reports", "count", "page", "maxPage", "state", "from", "to",
+        "from_ip", "to_ip", "index", "uuid", "size", "remaining",
+        "firstSeen", "lastSeen", "updated", "country", "countryIso", "city",
+        "meta", "file", "rows", "command", "comment", "world", "x", "y", "z",
+        "hashtag", "points", "join", "leave", "lastChecked", "types",
+        "rangebans", "action"};
+    Set<String> normalised = new HashSet<>();
+    for (String name : rawNames) {
+      normalised.add(MessageRenderer.normaliseTagName(name));
+    }
+    BUILTIN_TOKENS = Collections.unmodifiableSet(normalised);
+  }
 
   /*
    * This block prevents the Maven Shade plugin to remove the specified classes
@@ -67,6 +92,8 @@ public class BanManagerPlugin {
   private GeoIpConfig geoIpConfig;
   @Getter
   private WebhookConfig webhookConfig;
+  @Getter
+  private NotificationsConfig notificationsConfig;
 
   // Connections
   @Getter
@@ -252,6 +279,8 @@ public class BanManagerPlugin {
   }
 
   public final void disable() {
+    ConfirmationManager.getInstance().clear();
+
     if (getSchedulesConfig() != null) {
       getSchedulesConfig().save();
     }
@@ -281,6 +310,7 @@ public class BanManagerPlugin {
     reasonsConfig = reloadConfig(new ReasonsConfig(dataFolder, logger), reasonsConfig, "reasons.yml");
     geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger), geoIpConfig, "geoip.yml");
     webhookConfig = reloadConfig(new WebhookConfig(dataFolder, logger), webhookConfig, "webhooks.yml");
+    notificationsConfig = reloadConfig(new NotificationsConfig(dataFolder, logger), notificationsConfig, "notifications.yml");
 
     loadMessages();
   }
@@ -325,13 +355,24 @@ public class BanManagerPlugin {
 
     Message.init(messageRegistry, logger);
 
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    renderer.loadStaticTokens(Collections.emptyMap());
+
+    if (renderer.getStaticTokens() != null) {
+      for (String tokenName : renderer.getStaticTokens().keySet()) {
+        if (BUILTIN_TOKENS.contains(tokenName)) {
+          logger.warning("Static token '" + tokenName + "' collides with a built-in token and will be overridden at runtime");
+        }
+      }
+    }
+
     logLocaleInfo();
   }
 
   private void logLocaleInfo() {
     if (messageRegistry == null) return;
 
-    java.util.Set<String> locales = messageRegistry.getAvailableLocales();
+    Set<String> locales = messageRegistry.getAvailableLocales();
     logger.info("Loaded " + locales.size() + " locale(s): " + String.join(", ", locales));
 
     String defaultLocale = messageRegistry.getDefaultLocale();
@@ -354,23 +395,50 @@ public class BanManagerPlugin {
         return;
       }
 
-      java.util.Map<String, String> messages = new java.util.HashMap<>();
+      Map<String, String> messages = new HashMap<>();
+      MessageRenderer renderer = MessageRenderer.getInstance();
+      int rejectedCount = 0;
 
       for (String key : conf.getConfigurationSection("messages").getKeys(true)) {
         String value = conf.getString("messages." + key);
         if (value != null) {
-          messages.put(key, value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " "));
+          String processed = value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " ");
+          if (renderer.isLegacyFormat(processed)) {
+            logger.severe("Message '" + key + "' in " + file.getName() + " contains legacy &-code formatting and has been skipped. Please convert to MiniMessage format: https://docs.advntr.dev/minimessage/format.html");
+            rejectedCount++;
+            continue;
+          }
+          messages.put(key, processed);
         }
       }
 
+      if (rejectedCount > 0) {
+        logger.severe(rejectedCount + " message(s) in " + file.getName() + " were rejected due to legacy formatting. Bundled defaults will be used for those keys.");
+      }
+
       if (!messages.isEmpty()) {
-        java.util.Map<String, String> existing = registry.getMessages(locale);
+        Map<String, String> existing = registry.getMessages(locale);
         if (!existing.isEmpty()) {
-          java.util.Map<String, String> merged = new java.util.HashMap<>(existing);
+          Map<String, String> merged = new HashMap<>(existing);
           merged.putAll(messages);
           registry.loadLocale(locale, merged);
         } else {
           registry.loadLocale(locale, messages);
+        }
+      }
+
+      if (conf.getConfigurationSection("tokens") != null) {
+        Map<String, String> tokens = new HashMap<>();
+        for (String key : conf.getConfigurationSection("tokens").getKeys(false)) {
+          String value = conf.getString("tokens." + key);
+          if (value != null) {
+            tokens.put(key, value);
+          }
+        }
+        if (!tokens.isEmpty()) {
+          Map<String, String> existing = new HashMap<>(renderer.getStaticTokens());
+          existing.putAll(tokens);
+          renderer.loadStaticTokens(existing);
         }
       }
     } catch (Exception e) {
@@ -596,7 +664,8 @@ public class BanManagerPlugin {
         new UnmuteCommand(this),
         new UnmuteIpCommand(this),
         new UtilsCommand(this),
-        new WarnCommand(this)
+        new WarnCommand(this),
+        new BmCommand(this)
     };
   }
 

@@ -64,7 +64,7 @@ public class KickAllCommand extends CommonCommand {
               return null;
             });
           } catch (Exception e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute kickall command", e);
           }
         }

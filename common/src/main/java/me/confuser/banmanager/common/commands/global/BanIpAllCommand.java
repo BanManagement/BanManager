@@ -40,7 +40,7 @@ public class BanIpAllCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -59,7 +59,7 @@ public class BanIpAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyIpBan(ban, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute banipall command", e);
         return;
       }

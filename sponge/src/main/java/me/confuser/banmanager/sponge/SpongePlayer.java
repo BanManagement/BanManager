@@ -6,15 +6,19 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.math.vector.Vector3d;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -48,6 +52,11 @@ public class SpongePlayer implements CommonPlayer {
     }
 
     @Override
+    public void kick(me.confuser.banmanager.common.kyori.text.Component component) {
+        getPlayer().kick(convertToNative(component));
+    }
+
+    @Override
     public void sendMessage(String message) {
         if (message.isEmpty()) return;
 
@@ -59,8 +68,38 @@ public class SpongePlayer implements CommonPlayer {
     }
 
     @Override
-    public void sendMessage(Message message) {
-        sendMessage(message.toString());
+    public void sendMessage(me.confuser.banmanager.common.kyori.text.Component component) {
+        getPlayer().sendMessage(convertToNative(component));
+    }
+
+    @Override
+    public void sendActionBar(me.confuser.banmanager.common.kyori.text.Component component) {
+        getPlayer().sendActionBar(convertToNative(component));
+    }
+
+    @Override
+    public void showTitle(me.confuser.banmanager.common.kyori.text.Component title,
+                          me.confuser.banmanager.common.kyori.text.Component subtitle,
+                          int fadeIn, int stay, int fadeOut) {
+        Component nativeTitle = title != null ? convertToNative(title) : Component.empty();
+        Component nativeSubtitle = subtitle != null ? convertToNative(subtitle) : Component.empty();
+        Title.Times times = Title.Times.times(
+            java.time.Duration.ofMillis(fadeIn * 50L),
+            java.time.Duration.ofMillis(stay * 50L),
+            java.time.Duration.ofMillis(fadeOut * 50L)
+        );
+        getPlayer().showTitle(Title.title(nativeTitle, nativeSubtitle, times));
+    }
+
+    @Override
+    public void playSound(String sound, float volume, float pitch) {
+        ServerPlayer p = getPlayer();
+        if (p == null) return;
+        try {
+            p.playSound(Sound.sound(Key.key(sound), Sound.Source.MASTER, volume, pitch));
+        } catch (IllegalArgumentException ignored) {
+            // Invalid sound key -- silently ignore
+        }
     }
 
     @Override
@@ -71,6 +110,11 @@ public class SpongePlayer implements CommonPlayer {
     @Override
     public void sendJSONMessage(String jsonString) {
         getPlayer().sendMessage(SpongeServer.formatJsonMessage(jsonString));
+    }
+
+    private Component convertToNative(me.confuser.banmanager.common.kyori.text.Component component) {
+        String json = MessageRenderer.getInstance().toJson(component);
+        return GsonComponentSerializer.gson().deserialize(json);
     }
 
     @Override

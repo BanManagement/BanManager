@@ -3,7 +3,6 @@ package me.confuser.banmanager.common;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -107,10 +106,6 @@ public class TestServer implements CommonServer {
 
   @Override
   public void broadcast(Message message, String permission) {
-  }
-
-  @Override
-  public void broadcastJSON(TextComponent message, String permission) {
   }
 
   @Override

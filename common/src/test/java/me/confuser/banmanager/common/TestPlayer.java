@@ -2,7 +2,6 @@ package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
-import me.confuser.banmanager.common.util.Message;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -35,10 +34,6 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(String message) {
-  }
-
-  @Override
-  public void sendMessage(Message message) {
   }
 
   @Override

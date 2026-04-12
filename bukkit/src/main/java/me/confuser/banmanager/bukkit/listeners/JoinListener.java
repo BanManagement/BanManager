@@ -62,13 +62,13 @@ public class JoinListener implements Listener {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       String locale = player.getLocale() != null ? player.getLocale() : "en";
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(BukkitServer.formatMessage(message.resolve(locale)));
+      event.setKickMessage(BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent(locale))));
     }
 
     @Override
     public void handleDeny(Message message) {
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(BukkitServer.formatMessage(message.toString()));
+      event.setKickMessage(BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent())));
     }
   }
 
@@ -83,7 +83,8 @@ public class JoinListener implements Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message.toString());
+      event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+          BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent())));
     }
   }
 }

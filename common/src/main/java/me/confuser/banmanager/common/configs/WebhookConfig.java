@@ -191,16 +191,6 @@ public class WebhookConfig extends Config {
     return hooks != null ? hooks : Collections.emptyList();
   }
 
-  /**
-   * @deprecated Use {@link #getHooks(String)} instead for multi-webhook support.
-   * This method returns the first webhook config for backwards compatibility.
-   */
-  @Deprecated
-  public WebhookHookConfig getType(String type) {
-    List<WebhookHookConfig> hooks = hookTypes.get(type);
-    return (hooks != null && !hooks.isEmpty()) ? hooks.get(0) : null;
-  }
-
   @AllArgsConstructor
   public static class WebhookHookConfig {
     @Getter

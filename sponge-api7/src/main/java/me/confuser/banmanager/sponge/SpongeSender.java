@@ -36,11 +36,6 @@ public class SpongeSender implements CommonSender {
   }
 
   @Override
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
-  }
-
-  @Override
   public boolean isConsole() {
     return !(sender instanceof Player);
   }

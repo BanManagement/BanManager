@@ -82,14 +82,14 @@ public class JoinListener {
             String locale = player.getLocale() != null ? player.getLocale() : "en";
             isDenied = true;
             event.setCancelled(true);
-            event.setMessage(SpongeServer.formatMessage(message.resolve(locale)));
+            event.setMessage(SpongeServer.formatMessage(message.resolveComponent(locale)));
         }
 
         @Override
         public void handleDeny(Message message) {
             isDenied = true;
             event.setCancelled(true);
-            event.setMessage(SpongeServer.formatMessage(message.toString()));
+            event.setMessage(SpongeServer.formatMessage(message.resolveComponent()));
         }
     }
 

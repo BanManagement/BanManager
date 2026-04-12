@@ -50,6 +50,7 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
+      "notifications.yml",
       "reasons.yml",
       "schedules.yml"
   };

@@ -264,10 +264,15 @@ commands:
     usage: "/bmnames <player>"
     aliases: [names]
     permission: bm.command.bmnames
+  bm:
+    description: "BanManager core commands (confirm, cancel, dashboard)"
+    usage: "/bm <confirm|cancel|dashboard>"
+    permission: bm.command.bm
 permissions:
   bm.command.*:
     description: Gives access to all BanManager commands
     children:
+      bm.command.bm: true
       bm.command.alts: true
       bm.command.ban: true
       bm.command.ban.offline: true

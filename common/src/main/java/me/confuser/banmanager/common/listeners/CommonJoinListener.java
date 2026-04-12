@@ -314,7 +314,7 @@ public class CommonJoinListener {
               .set("amount", notes.size())
               .set("player", player.getName());
 
-          plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+          plugin.getServer().broadcast(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
           Message header = Message.get("notes.header")
               .set("player", player.getName());

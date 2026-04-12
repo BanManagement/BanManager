@@ -39,7 +39,7 @@ public class UnbanIpCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -51,8 +51,8 @@ public class UnbanIpCommand extends CommonCommand {
       if (isName) {
         PlayerData player = getPlugin().getPlayerStorage().retrieve(ipStr, false);
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr)
-                                    .toString());
+          Message.get("sender.error.notFound").set("player", ipStr)
+              .sendTo(sender);
           return;
         }
 
@@ -61,7 +61,7 @@ public class UnbanIpCommand extends CommonCommand {
         try {
           ip = new IPAddressString(ipStr).toAddress();
         } catch (AddressStringException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute unbanip command", e);
           return;
         }
@@ -71,7 +71,7 @@ public class UnbanIpCommand extends CommonCommand {
         Message message = Message.get("unbanip.error.noExists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -89,7 +89,7 @@ public class UnbanIpCommand extends CommonCommand {
       try {
         unbanned = getPlugin().getIpBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unbanip command", e);
         return;
       }

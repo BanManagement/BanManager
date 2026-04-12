@@ -56,13 +56,14 @@ public class JoinListener extends Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.setResult(ResultedEvent.ComponentResult.denied(VelocityServer.formatMessage(message.toString())));
+      event.setResult(ResultedEvent.ComponentResult.denied(VelocityServer.convert(message.resolveComponent())));
     }
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-      event.setResult(ResultedEvent.ComponentResult.denied(VelocityServer.formatMessage(message.resolve(player.getLocale() != null ? player.getLocale() : "en"))));
+      event.setResult(ResultedEvent.ComponentResult.denied(
+          VelocityServer.convert(message.resolveComponent(player.getLocale() != null ? player.getLocale() : "en"))));
     }
   }
 
@@ -72,7 +73,7 @@ public class JoinListener extends Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.getPlayer().disconnect(VelocityServer.formatMessage(message.toString()));
+      event.getPlayer().disconnect(VelocityServer.convert(message.resolveComponent()));
     }
 
     @Override

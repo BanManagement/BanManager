@@ -103,7 +103,7 @@ public class KickCommand extends CommonCommand {
         try {
           created = getPlugin().getPlayerKickStorage().addKick(data, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute kick command", e);
           return;
         }

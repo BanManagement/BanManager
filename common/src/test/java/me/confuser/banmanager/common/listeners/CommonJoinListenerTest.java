@@ -296,9 +296,6 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
       public void sendMessage(String message) {}
 
       @Override
-      public void sendMessage(Message message) {}
-
-      @Override
       public void sendJSONMessage(me.confuser.banmanager.common.kyori.text.TextComponent jsonString) {}
 
       @Override

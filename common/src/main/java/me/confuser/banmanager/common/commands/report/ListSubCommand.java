@@ -45,7 +45,7 @@ public class ListSubCommand extends CommonSubCommand {
 
           state = states.get(0).getId();
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute report list", e);
           return;
         }
@@ -61,7 +61,7 @@ public class ListSubCommand extends CommonSubCommand {
                                .getReports(page, state, sender.getData().getUUID());
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute report list", e);
         return;
       }

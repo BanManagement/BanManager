@@ -37,7 +37,7 @@ describe('Hex Color Support E2E Tests', () => {
   })
 
   test('hex color message is received correctly', async () => {
-    // configReloaded in messages.yml uses &#rrggbb hex colors
+    // configReloaded in messages.yml uses MiniMessage hex colors (<#rrggbb>)
     await bot.sendChat('/bmreload')
 
     await waitFor(
@@ -65,8 +65,8 @@ describe('Hex Color Support E2E Tests', () => {
   }, 30000)
 
   test('hex colors are processed correctly', async () => {
-    // configReloaded: '&#00ff00Configuration &#ff5733reloaded &asuccessfully!'
-    // - Bukkit/Bungee/Sponge: hex downsampled to legacy codes (&2, &c)
+    // configReloaded: '<#00ff00>Configuration <#ff5733>reloaded <green>successfully!'
+    // - Bukkit/Bungee/Sponge: colors may downsample when sent to legacy clients
     // - Velocity/Fabric: full hex preserved in JSON
     await bot.sendChat('/bmreload')
 

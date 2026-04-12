@@ -49,7 +49,7 @@ public class ExportCommand extends CommonCommand {
         try {
           exportPlayers(fileName);
         } catch (IOException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute export command", e);
           return;
         }
@@ -64,7 +64,7 @@ public class ExportCommand extends CommonCommand {
         try {
           exportIps(fileName);
         } catch (IOException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute export command", e);
           return;
         }

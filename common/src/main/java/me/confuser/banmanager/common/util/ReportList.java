@@ -1,12 +1,11 @@
 package me.confuser.banmanager.common.util;
 
 import lombok.Getter;
-import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerReportData;
-import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
-import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import me.confuser.banmanager.common.kyori.text.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReportList {
@@ -25,32 +24,31 @@ public class ReportList {
   }
 
   public void send(CommonSender sender, int page) {
-    String dateTimeFormat = Message.getString("report.list.row.dateTimeFormat");
+    String dateTimeFormat = Message.getRawTemplate("report.list.row.dateTimeFormat");
 
-    Message.get("report.list.row.header")
+    Component header = Message.get("report.list.row.header")
         .set("page", page)
         .set("maxPage", getMaxPage())
         .set("count", getCount())
-        .sendTo(sender);
+        .resolveComponent();
+
+    List<Component> items = new ArrayList<>();
 
     for (PlayerReportData report : getList()) {
-      String message = Message.get("report.list.row.all")
+      Component row = Message.get("report.list.row.all")
           .set("id", report.getId())
           .set("state", report.getState().getName())
           .set("player", report.getPlayer().getName())
           .set("actor", report.getActor().getName())
           .set("reason", report.getReason())
           .set("created", DateUtils.format(dateTimeFormat, report.getCreated()))
-          .set("updated", DateUtils.format(dateTimeFormat, report.getUpdated())).toString();
+          .set("updated", DateUtils.format(dateTimeFormat, report.getUpdated()))
+          .resolveComponent();
 
-      if (sender.isConsole()) {
-        sender.sendMessage(message);
-      } else {
-        ((CommonPlayer) sender).sendJSONMessage(
-            LegacyComponentSerializer.legacy('&').deserialize(
-                message).clickEvent(ClickEvent.runCommand("/reports info " + report.getId()
-            )));
-      }
+      items.add(row);
     }
+
+    PaginatedView view = new PaginatedView(items, "/reports list");
+    view.send(sender, page, header, null);
   }
 }

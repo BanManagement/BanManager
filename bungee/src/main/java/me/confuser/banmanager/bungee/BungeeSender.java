@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.util.Message;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -31,11 +30,6 @@ public class BungeeSender implements CommonSender {
   @Override
   public void sendMessage(String message) {
     sender.sendMessage(BungeeServer.formatMessage(message));
-  }
-
-  @Override
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
   }
 
   @Override

@@ -60,13 +60,13 @@ public class JoinListener {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       String locale = player.getLocale() != null ? player.getLocale() : "en";
       event.setCancelled(true);
-      event.setMessage(SpongeServer.formatMessage(message.resolve(locale)));
+      event.setMessage(SpongeServer.formatMessage(message.resolveComponent(locale)));
     }
 
     @Override
     public void handleDeny(Message message) {
       event.setCancelled(true);
-      event.setMessage(SpongeServer.formatMessage(message.toString()));
+      event.setMessage(SpongeServer.formatMessage(message.resolveComponent()));
     }
   }
 
@@ -81,7 +81,7 @@ public class JoinListener {
 
     @Override
     public void handleDeny(Message message) {
-      event.setMessage(SpongeServer.formatMessage(message.toString()));
+      event.setMessage(SpongeServer.formatMessage(message.resolveComponent()));
       event.setCancelled(true);
     }
   }

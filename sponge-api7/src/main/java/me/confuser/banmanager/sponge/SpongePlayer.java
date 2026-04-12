@@ -4,15 +4,20 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -49,6 +54,12 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   @Override
+  public void kick(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    getPlayer().kick(TextSerializers.JSON.deserialize(json));
+  }
+
+  @Override
   public void sendMessage(String message) {
     if(message.isEmpty()) return;
 
@@ -60,8 +71,31 @@ public class SpongePlayer implements CommonPlayer {
   }
 
   @Override
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
+  public void sendMessage(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    getPlayer().sendMessage(TextSerializers.JSON.deserialize(json));
+  }
+
+  @Override
+  public void sendActionBar(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    getPlayer().sendMessage(ChatTypes.ACTION_BAR, TextSerializers.JSON.deserialize(json));
+  }
+
+  @Override
+  public void showTitle(Component title, Component subtitle, int fadeIn, int stay, int fadeOut) {
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    Text spongeTitle = title != null
+        ? TextSerializers.JSON.deserialize(renderer.toJson(title)) : Text.EMPTY;
+    Text spongeSubtitle = subtitle != null
+        ? TextSerializers.JSON.deserialize(renderer.toJson(subtitle)) : Text.EMPTY;
+    getPlayer().sendTitle(Title.builder()
+        .title(spongeTitle)
+        .subtitle(spongeSubtitle)
+        .fadeIn(fadeIn)
+        .stay(stay)
+        .fadeOut(fadeOut)
+        .build());
   }
 
   @Override

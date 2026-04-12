@@ -5,7 +5,7 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -62,15 +62,6 @@ public class BungeeServer implements CommonServer {
   public void broadcast(String message, String permission) {
     if(message.isEmpty()) return;
 
-    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-      if (player != null && player.hasPermission(permission)) {
-        player.sendMessage(formatMessage(message));
-      }
-    }
-  }
-
-  @Override
-  public void broadcastJSON(TextComponent message, String permission) {
     for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
       if (player != null && player.hasPermission(permission)) {
         player.sendMessage(formatMessage(message));
@@ -237,7 +228,7 @@ public class BungeeServer implements CommonServer {
     return ComponentSerializer.parse(json);
   }
 
-  public static BaseComponent[] formatMessage(TextComponent message) {
+  public static BaseComponent[] formatMessage(Component message) {
     return ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(message));
   }
 

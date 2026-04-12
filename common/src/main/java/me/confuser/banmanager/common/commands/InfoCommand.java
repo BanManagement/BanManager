@@ -8,7 +8,7 @@ import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
-import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
+
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.field.SqlType;
@@ -19,6 +19,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
+
 import me.confuser.banmanager.common.util.StringUtils;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 
@@ -98,7 +99,7 @@ public class InfoCommand extends CommonCommand {
         try {
           since = DateUtils.parseDateDiff(parser.getTime(), false);
         } catch (Exception e1) {
-          sender.sendMessage(Message.get("time.error.invalid").toString());
+          Message.get("time.error.invalid").sendTo(sender);
           return;
         }
       }
@@ -284,7 +285,7 @@ public class InfoCommand extends CommonCommand {
     List<PlayerData> players = getPlugin().getPlayerStorage().retrieve(name);
 
     if (players == null || players.size() == 0) {
-      sender.sendMessage(Message.get("sender.error.notFound").set("player", name).toString());
+      Message.get("sender.error.notFound").set("player", name).sendTo(sender);
       return;
     }
 
@@ -324,7 +325,7 @@ public class InfoCommand extends CommonCommand {
         try {
           since = DateUtils.parseDateDiff(parser.getTime(), false);
         } catch (Exception e1) {
-          sender.sendMessage(Message.get("time.error.invalid").toString());
+          Message.get("time.error.invalid").sendTo(sender);
           return;
         }
       }
@@ -693,29 +694,6 @@ public class InfoCommand extends CommonCommand {
   }
 
   private TextComponent buildNamesComponent(List<PlayerNameSummary> names, String dateTimeFormat) {
-    TextComponent.Builder message = Component.text();
-    int index = 0;
-
-    for (PlayerNameSummary nameData : names) {
-      String hoverText = Message.get("names.row")
-          .set("name", nameData.getName())
-          .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
-          .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
-          .toString();
-
-      message.append(
-          Component.text(nameData.getName())
-              .color(NamedTextColor.YELLOW)
-              .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.getName()))
-              .hoverEvent(Component.text(hoverText)));
-
-      if (index != names.size() - 1) {
-        message.append(Component.text(", ").color(NamedTextColor.GRAY));
-      }
-
-      index++;
-    }
-
-    return message.build();
+    return NamesCommand.buildNamesComponent(names, dateTimeFormat);
   }
 }

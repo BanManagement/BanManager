@@ -10,6 +10,7 @@ import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
 import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -31,7 +32,7 @@ public class NamesCommand extends CommonCommand {
     if (playerName.length() > 16) {
       Message message = Message.get("sender.error.invalidPlayer");
       message.set("player", playerName);
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -39,7 +40,7 @@ public class NamesCommand extends CommonCommand {
       PlayerData player = getPlugin().getPlayerStorage().retrieve(playerName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -47,29 +48,29 @@ public class NamesCommand extends CommonCommand {
       try {
         names = getPlugin().getPlayerHistoryStorage().getNamesSummary(player);
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute names command", e);
         return;
       }
 
-      sender.sendMessage(Message.get("names.header").set("player", player.getName()).toString());
+      Message.get("names.header").set("player", player.getName()).sendTo(sender);
 
       if (names.isEmpty()) {
-        sender.sendMessage(Message.get("names.none").toString());
+        Message.get("names.none").sendTo(sender);
         return;
       }
 
-      String dateTimeFormat = Message.getString("names.dateTimeFormat");
+      String dateTimeFormat = Message.getRawTemplate("names.dateTimeFormat");
 
       if (!sender.isConsole()) {
         ((CommonPlayer) sender).sendJSONMessage(buildNamesComponent(names, dateTimeFormat));
       } else {
         for (PlayerNameSummary nameData : names) {
-          sender.sendMessage(Message.get("names.row")
+          Message.get("names.row")
               .set("name", nameData.getName())
               .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
               .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
-              .toString());
+              .sendTo(sender);
         }
       }
     });
@@ -77,25 +78,39 @@ public class NamesCommand extends CommonCommand {
     return true;
   }
 
-  private TextComponent buildNamesComponent(List<PlayerNameSummary> names, String dateTimeFormat) {
+  static TextComponent buildNamesComponent(List<PlayerNameSummary> names, String dateTimeFormat) {
     TextComponent.Builder message = Component.text();
+    boolean hasInteractiveTemplate = Message.getRawTemplate("names.interactive") != null;
+    String separatorRaw = Message.getRawTemplate("names.separator");
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    Component separator = separatorRaw != null ? renderer.render(separatorRaw) : Component.text(", ").color(NamedTextColor.GRAY);
+
     int index = 0;
 
     for (PlayerNameSummary nameData : names) {
-      String hoverText = Message.get("names.row")
-          .set("name", nameData.getName())
-          .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
-          .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
-          .toString();
+      if (hasInteractiveTemplate) {
+        Component entry = Message.get("names.interactive")
+            .set("name", nameData.getName())
+            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
+            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+            .resolveComponent();
+        message.append(entry);
+      } else {
+        String hoverText = Message.get("names.row")
+            .set("name", nameData.getName())
+            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
+            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+            .toString();
 
-      message.append(
-          Component.text(nameData.getName())
-              .color(NamedTextColor.YELLOW)
-              .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.getName()))
-              .hoverEvent(Component.text(hoverText)));
+        message.append(
+            Component.text(nameData.getName())
+                .color(NamedTextColor.YELLOW)
+                .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.getName()))
+                .hoverEvent(Component.text(hoverText)));
+      }
 
       if (index != names.size() - 1) {
-        message.append(Component.text(", ").color(NamedTextColor.GRAY));
+        message.append(separator);
       }
 
       index++;

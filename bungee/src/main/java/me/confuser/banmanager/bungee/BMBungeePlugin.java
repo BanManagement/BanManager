@@ -34,6 +34,7 @@ public class BMBungeePlugin extends Plugin {
       "exemptions.yml",
       "geoip.yml",
       "messages.yml",
+      "notifications.yml",
       "reasons.yml",
       "schedules.yml"
   };

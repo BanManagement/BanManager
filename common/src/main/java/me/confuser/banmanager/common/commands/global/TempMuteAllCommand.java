@@ -52,7 +52,7 @@ public class TempMuteAllCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.getArgs()[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("invalidTime").toString());
+      Message.get("invalidTime").sendTo(sender);
       return true;
     }
 
@@ -69,7 +69,7 @@ public class TempMuteAllCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, playerName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -83,7 +83,7 @@ public class TempMuteAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyMute(mute, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempmuteall command", e);
         return;
       }

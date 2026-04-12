@@ -41,6 +41,7 @@ public abstract class BasePluginTest {
         "exemptions.yml",
         "geoip.yml",
         "messages.yml",
+        "notifications.yml",
         "reasons.yml",
         "schedules.yml"
     };

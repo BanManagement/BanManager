@@ -120,7 +120,7 @@ dependencies {
     "shadeOnly"("org.bstats:bstats-sponge:2.2.1")
 }
 
-val javaTarget = 8 // Sponge targets a minimum of Java 8
+val javaTarget = 17
 java {
     sourceCompatibility = JavaVersion.toVersion(javaTarget)
     targetCompatibility = JavaVersion.toVersion(javaTarget)

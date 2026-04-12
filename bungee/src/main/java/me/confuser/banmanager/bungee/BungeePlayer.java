@@ -4,9 +4,12 @@ import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -31,6 +34,12 @@ public class BungeePlayer implements CommonPlayer {
   }
 
   @Override
+  public void kick(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    player.disconnect(ComponentSerializer.parse(json));
+  }
+
+  @Override
   public void sendMessage(String message) {
     if(message.isEmpty()) return;
 
@@ -42,8 +51,15 @@ public class BungeePlayer implements CommonPlayer {
   }
 
   @Override
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
+  public void sendMessage(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    player.sendMessage(ComponentSerializer.parse(json));
+  }
+
+  @Override
+  public void sendActionBar(Component component) {
+    String json = MessageRenderer.getInstance().toJson(component);
+    player.sendMessage(ChatMessageType.ACTION_BAR, ComponentSerializer.parse(json));
   }
 
   @Override
