@@ -21,7 +21,6 @@ import me.confuser.banmanager.common.storage.global.*;
 import me.confuser.banmanager.common.storage.migration.MigrationRunner;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
-import me.confuser.banmanager.common.util.ConfirmationManager;
 import me.confuser.banmanager.common.util.DriverManagerUtil;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.MessageRegistry;
@@ -279,8 +278,6 @@ public class BanManagerPlugin {
   }
 
   public final void disable() {
-    ConfirmationManager.getInstance().clear();
-
     if (getSchedulesConfig() != null) {
       getSchedulesConfig().save();
     }

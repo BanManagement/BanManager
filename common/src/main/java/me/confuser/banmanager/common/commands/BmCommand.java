@@ -11,8 +11,6 @@ public class BmCommand extends MultiCommonCommand {
 
   @Override
   public void registerCommands() {
-    registerCommonSubCommand(new ConfirmSubCommand(getPlugin()));
-    registerCommonSubCommand(new CancelSubCommand(getPlugin()));
     registerCommonSubCommand(new DashboardSubCommand(getPlugin()));
   }
 }

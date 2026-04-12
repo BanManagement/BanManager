@@ -146,8 +146,8 @@ messages:
       noReason: '<gold>You have been kicked'
       reason: '<gold>You have been kicked for <dark_red><reason>'
     notify:
-      noReason: '<gold><player> has been kicked by <actor>'
-      reason: '<gold><player> has been kicked by <actor> for <dark_red><reason>'
+      noReason: '<gold><player> has been kicked by <actor> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click>'
+      reason: '<gold><player> has been kicked by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click>'
 
   kickall:
     player:
@@ -465,12 +465,6 @@ messages:
 
   reasons:
     row: '<hashtag> = <reason>'
-
-  confirmation:
-    prompt: '<gold>Are you sure you want to <action>? <click:run_command:"/bm confirm"><hover:show_text:"<gray>Click to confirm"><green>[Confirm]</green></hover></click> <click:run_command:"/bm cancel"><hover:show_text:"<gray>Click to cancel"><red>[Cancel]</red></hover></click>'
-    confirmed: '<green>Action confirmed.'
-    cancelled: '<red>Action cancelled.'
-    expired: '<red>No pending action found. It may have expired.'
 
   dashboard:
     header: '<dark_gray><strikethrough>                    </strikethrough><reset> <gold><bold>Staff Dashboard</bold></gold> <dark_gray><strikethrough>                    </strikethrough>'

@@ -92,7 +92,7 @@ public class KickCommandTest extends BasePluginDbTest {
 
     ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("&6" + args[0] + " has been kicked by Console", msgCaptor.getValue().toString());
+    assertEquals("&6" + args[0] + " has been kicked by Console &3[Info]", msgCaptor.getValue().toString());
   }
 
   @Test
@@ -111,7 +111,7 @@ public class KickCommandTest extends BasePluginDbTest {
 
     ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("&6" + args[0] + " has been kicked by Console for &4" + args[1], msgCaptor.getValue().toString());
+    assertEquals("&6" + args[0] + " has been kicked by Console for &4" + args[1] + " &3[Info]", msgCaptor.getValue().toString());
   }
 
   @Test

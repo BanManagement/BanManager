@@ -256,8 +256,8 @@ commands:
     alias: [bmunbanname]
     permission: bm.command.unbanname
   bm:
-    description: "BanManager core commands (confirm, cancel, dashboard)"
-    usage: "/bm <confirm|cancel|dashboard>"
+    description: "BanManager core commands (dashboard)"
+    usage: "/bm <dashboard>"
     permission: bm.command.bm
   bmutils:
     description: "BanManager utility commands"
