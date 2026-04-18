@@ -169,16 +169,20 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
     }
+
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
     exclude("/mappings/*")
 
-    minimize()
+    minimize {
+        exclude(dependency(":BanManagerLibs"))
+    }
 }
 
 tasks.named<RemapJarTask>("remapJar") {

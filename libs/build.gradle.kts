@@ -119,10 +119,16 @@ tasks.named<ShadowJar>("jar") {
         }
     }
 
+    // MariaDB Connector/J 3.x, MySQL Connector/J 8.x, HikariCP and others
+    // discover codecs / credential plugins / drivers via ServiceLoader. Keep
+    // META-INF/services and let the shadow task merge + relocate the entries
+    // alongside the package renames (e.g. org.mariadb.jdbc.plugin.codec.* ->
+    // me.confuser.banmanager.common.mariadb.plugin.codec.*).
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")

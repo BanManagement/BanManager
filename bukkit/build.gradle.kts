@@ -145,6 +145,15 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
         exclude(dependency("org.slf4j:.*:.*"))
+        // JDBC drivers, HikariCP and ORMLite load codecs / dialects / drivers
+        // via ServiceLoader. Static analysis can't see those references, so
+        // exclude them from minimisation to avoid stripping classes that are
+        // listed in the merged META-INF/services entries.
+        exclude(dependency("org.mariadb.jdbc:mariadb-java-client:.*"))
+        exclude(dependency("com.mysql:mysql-connector-j:.*"))
+        exclude(dependency("com.zaxxer:HikariCP:.*"))
+        exclude(dependency("com.j256.ormlite:.*:.*"))
+        exclude(dependency("com.h2database:.*:.*"))
     }
 }
 

@@ -96,16 +96,19 @@ tasks.named<ShadowJar>("shadowJar") {
 
         relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
+
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache")
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
 
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
+        exclude(dependency(":BanManagerLibs"))
     }
 }
 
