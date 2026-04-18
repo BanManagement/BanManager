@@ -2,7 +2,7 @@ package me.confuser.banmanager.fabric.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonWebhookListener;
-import me.confuser.banmanager.common.listeners.CommonWebhookListener.WebhookData;
+import me.confuser.banmanager.common.data.Webhook;
 import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.fabric.BanManagerEvents;
 import me.confuser.banmanager.common.data.*;
@@ -28,54 +28,54 @@ public class WebhookListener {
   }
 
   private void notifyOnBan(PlayerBanData banData, boolean silent, Message kickMessage) {
-    List<WebhookData> webhooks = listener.notifyOnBan(banData);
+    List<Webhook> webhooks = listener.notifyOnBan(banData);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnMute(PlayerMuteData muteData, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnMute(muteData);
+    List<Webhook> webhooks = listener.notifyOnMute(muteData);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnBan(IpBanData banData, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnBan(banData);
+    List<Webhook> webhooks = listener.notifyOnBan(banData);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnKick(PlayerKickData kickData, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnKick(kickData);
+    List<Webhook> webhooks = listener.notifyOnKick(kickData);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnWarn(PlayerWarnData warnData, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnWarn(warnData);
+    List<Webhook> webhooks = listener.notifyOnWarn(warnData);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnUnban(PlayerBanData banData, PlayerData actor, String reason, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnUnban(banData, actor, reason);
+    List<Webhook> webhooks = listener.notifyOnUnban(banData, actor, reason);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnUnban(IpBanData banData, PlayerData actor, String reason, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnUnban(banData, actor, reason);
+    List<Webhook> webhooks = listener.notifyOnUnban(banData, actor, reason);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnUnmute(PlayerMuteData muteData, PlayerData actor, String reason, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnUnmute(muteData, actor, reason);
+    List<Webhook> webhooks = listener.notifyOnUnmute(muteData, actor, reason);
     sendAll(webhooks, silent);
   }
 
   private void notifyOnReport(PlayerReportData reportData, boolean silent) {
-    List<WebhookData> webhooks = listener.notifyOnReport(reportData, reportData.getActor(), reportData.getReason());
+    List<Webhook> webhooks = listener.notifyOnReport(reportData, reportData.getActor(), reportData.getReason());
     sendAll(webhooks, silent);
   }
 
-  private void sendAll(List<WebhookData> webhooks, boolean isSilent) {
-    for (WebhookData data : webhooks) {
-      if (isSilent && data.ignoreSilent) continue;
-      if (data.url == null || data.payload == null || data.url.isEmpty() || data.payload.isEmpty()) continue;
+  private void sendAll(List<Webhook> webhooks, boolean isSilent) {
+    for (Webhook data : webhooks) {
+      if (isSilent && data.ignoreSilent()) continue;
+      if (data.url() == null || data.payload() == null || data.url().isEmpty() || data.payload().isEmpty()) continue;
       listener.sendAsync(data);
     }
   }

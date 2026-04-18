@@ -8,20 +8,20 @@ import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class BanIpCommandTest extends BasePluginDbTest {
   private BanIpCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("banip")) {
@@ -76,7 +76,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     CommonPlayer commonPlayer = spy(server.getPlayer(player.getName()));
     String[] args = new String[]{player.getName(), "test"};
@@ -100,7 +100,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfOfflineExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     ExemptionsConfig config = spy(plugin.getExemptionsConfig());
     String[] args = new String[]{player.getName(), "test"};
@@ -115,7 +115,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanIp() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{ip.toString(), "test"};
 
@@ -133,7 +133,7 @@ public class BanIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanIpSilently() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{ip.toString(), "test", "-s"};
 

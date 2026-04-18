@@ -6,20 +6,20 @@ import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class BanCommandTest extends BasePluginDbTest {
   private BanCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("ban")) {
@@ -154,7 +154,7 @@ public class BanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
     this.server.setExactMatch(player.getName(), commonPlayer);
@@ -179,7 +179,7 @@ public class BanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfOfflineExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
     this.server.setExactMatch(player.getName(), commonPlayer);
@@ -195,7 +195,7 @@ public class BanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanPlayer() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test"};
 
@@ -213,7 +213,7 @@ public class BanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanPlayerSilently() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test", "-s"};
 

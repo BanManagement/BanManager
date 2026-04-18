@@ -4,37 +4,35 @@ import me.confuser.banmanager.common.BasePluginTest;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.TestLogger;
 import me.confuser.banmanager.common.util.Message;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigReloadTest extends BasePluginTest {
 
   @Test
   public void configLoadReturnsFalseForInvalidYaml() throws IOException {
-    // Create a file with invalid YAML
-    File invalidFile = new File(temporaryFolder.getRoot(), "invalid.yml");
+    File invalidFile = new File(temporaryFolder, "invalid.yml");
     try (FileWriter writer = new FileWriter(invalidFile)) {
       writer.write("invalid: yaml: content: [unclosed");
     }
 
     CommonLogger logger = new TestLogger();
-    TestConfig config = new TestConfig(temporaryFolder.getRoot(), invalidFile, logger);
+    TestConfig config = new TestConfig(temporaryFolder, invalidFile, logger);
 
     boolean result = config.load();
 
-    assertFalse("Config.load() should return false for invalid YAML", result);
+    assertFalse(result, "Config.load() should return false for invalid YAML");
   }
 
   @Test
   public void configLoadReturnsTrueForValidYaml() throws IOException {
-    // Create a file with valid YAML
-    File validFile = new File(temporaryFolder.getRoot(), "valid.yml");
+    File validFile = new File(temporaryFolder, "valid.yml");
     try (FileWriter writer = new FileWriter(validFile)) {
       writer.write("key: value\n");
       writer.write("nested:\n");
@@ -42,66 +40,58 @@ public class ConfigReloadTest extends BasePluginTest {
     }
 
     CommonLogger logger = new TestLogger();
-    TestConfig config = new TestConfig(temporaryFolder.getRoot(), validFile, logger);
+    TestConfig config = new TestConfig(temporaryFolder, validFile, logger);
 
     boolean result = config.load();
 
-    assertTrue("Config.load() should return true for valid YAML", result);
+    assertTrue(result, "Config.load() should return true for valid YAML");
     assertEquals("value", config.conf.getString("key"));
     assertEquals("data", config.conf.getString("nested.child"));
   }
 
   @Test
   public void configLoadReturnsFalseForMissingFile() {
-    File missingFile = new File(temporaryFolder.getRoot(), "nonexistent.yml");
+    File missingFile = new File(temporaryFolder, "nonexistent.yml");
 
     CommonLogger logger = new TestLogger();
-    TestConfig config = new TestConfig(temporaryFolder.getRoot(), missingFile, logger);
+    TestConfig config = new TestConfig(temporaryFolder, missingFile, logger);
 
     boolean result = config.load();
 
-    assertFalse("Config.load() should return false for missing file", result);
+    assertFalse(result, "Config.load() should return false for missing file");
   }
 
   @Test
   public void setupConfigsPreservesPreviousSettingsOnReloadFailure() throws IOException {
-    // First, verify the initial config loaded successfully
-    assertNotNull("Initial config should be loaded", plugin.getConfig());
+    assertNotNull(plugin.getConfig(), "Initial config should be loaded");
     DefaultConfig originalConfig = plugin.getConfig();
 
-    // Corrupt the config.yml file with invalid YAML
-    File configFile = new File(temporaryFolder.getRoot(), "config.yml");
+    File configFile = new File(temporaryFolder, "config.yml");
     try (FileWriter writer = new FileWriter(configFile)) {
       writer.write("invalid: yaml: [unclosed bracket");
     }
 
-    // Reload configs
     plugin.setupConfigs();
 
-    // The original config should still be in place
-    assertSame("Config should be preserved after failed reload", originalConfig, plugin.getConfig());
+    assertSame(originalConfig, plugin.getConfig(), "Config should be preserved after failed reload");
   }
 
   @Test
   public void setupConfigsReplacesConfigOnSuccessfulReload() throws IOException {
-    // Get the original config
     DefaultConfig originalConfig = plugin.getConfig();
-    assertNotNull("Initial config should be loaded", originalConfig);
+    assertNotNull(originalConfig, "Initial config should be loaded");
 
-    // Reload configs (file is still valid)
     plugin.setupConfigs();
 
-    // A new config object should have been created
-    assertNotSame("Config should be replaced after successful reload", originalConfig, plugin.getConfig());
+    assertNotSame(originalConfig, plugin.getConfig(), "Config should be replaced after successful reload");
   }
 
   @Test
   public void messagesArePreservedWhenConfigFails() throws IOException {
     String originalMessage = Message.getString("configReloaded");
-    assertNotNull("configReloaded message should exist", originalMessage);
+    assertNotNull(originalMessage, "configReloaded message should exist");
 
-    // Corrupt the messages/messages_en.yml so reload yields no usable messages
-    File messagesEnFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
+    File messagesEnFile = new File(temporaryFolder, "messages/messages_en.yml");
     try (FileWriter writer = new FileWriter(messagesEnFile)) {
       writer.write("invalid: yaml: [unclosed");
     }
@@ -109,28 +99,24 @@ public class ConfigReloadTest extends BasePluginTest {
     plugin.setupConfigs();
 
     String afterReloadMessage = Message.getString("configReloaded");
-    assertEquals("Messages should be preserved after failed reload", originalMessage, afterReloadMessage);
+    assertEquals(originalMessage, afterReloadMessage, "Messages should be preserved after failed reload");
   }
 
   @Test
   public void messagesAreUpdatedOnSuccessfulReload() throws IOException {
-    // Get the original message
     String originalMessage = Message.getString("configReloaded");
-    assertNotNull("configReloaded message should exist", originalMessage);
+    assertNotNull(originalMessage, "configReloaded message should exist");
 
-    // Modify the messages/messages_en.yml file with a new message value
-    File messagesFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
+    File messagesFile = new File(temporaryFolder, "messages/messages_en.yml");
     try (FileWriter writer = new FileWriter(messagesFile)) {
       writer.write("messages:\n");
       writer.write("  configReloaded: \"New reload message\"\n");
     }
 
-    // Reload configs
     plugin.setupConfigs();
 
-    // Message should be updated
     String afterReloadMessage = Message.getString("configReloaded");
-    assertEquals("Messages should be updated after successful reload", "New reload message", afterReloadMessage);
+    assertEquals("New reload message", afterReloadMessage, "Messages should be updated after successful reload");
   }
 
   /**
@@ -150,7 +136,6 @@ public class ConfigReloadTest extends BasePluginTest {
 
     @Override
     public void onSave() {
-      // No-op for testing
     }
 
     public boolean wasAfterLoadCalled() {
@@ -160,102 +145,91 @@ public class ConfigReloadTest extends BasePluginTest {
 
   @Test
   public void afterLoadIsNotCalledOnFailure() throws IOException {
-    // Create a file with invalid YAML
-    File invalidFile = new File(temporaryFolder.getRoot(), "invalid.yml");
+    File invalidFile = new File(temporaryFolder, "invalid.yml");
     try (FileWriter writer = new FileWriter(invalidFile)) {
       writer.write("invalid: yaml: [unclosed");
     }
 
     CommonLogger logger = new TestLogger();
-    TestConfig config = new TestConfig(temporaryFolder.getRoot(), invalidFile, logger);
+    TestConfig config = new TestConfig(temporaryFolder, invalidFile, logger);
 
     config.load();
 
-    assertFalse("afterLoad() should not be called when loading fails", config.wasAfterLoadCalled());
+    assertFalse(config.wasAfterLoadCalled(), "afterLoad() should not be called when loading fails");
   }
 
   @Test
   public void afterLoadIsCalledOnSuccess() throws IOException {
-    // Create a file with valid YAML
-    File validFile = new File(temporaryFolder.getRoot(), "valid.yml");
+    File validFile = new File(temporaryFolder, "valid.yml");
     try (FileWriter writer = new FileWriter(validFile)) {
       writer.write("key: value\n");
     }
 
     CommonLogger logger = new TestLogger();
-    TestConfig config = new TestConfig(temporaryFolder.getRoot(), validFile, logger);
+    TestConfig config = new TestConfig(temporaryFolder, validFile, logger);
 
     config.load();
 
-    assertTrue("afterLoad() should be called when loading succeeds", config.wasAfterLoadCalled());
+    assertTrue(config.wasAfterLoadCalled(), "afterLoad() should be called when loading succeeds");
   }
 
   @Test
   public void saveDoesNotOverwriteFileAfterFailedReload() throws IOException {
-    // Create initial valid config
-    File configFile = new File(temporaryFolder.getRoot(), "saveable.yml");
+    File configFile = new File(temporaryFolder, "saveable.yml");
     try (FileWriter writer = new FileWriter(configFile)) {
       writer.write("key: originalValue\n");
     }
 
     CommonLogger logger = new TestLogger();
-    SaveableTestConfig config = new SaveableTestConfig(temporaryFolder.getRoot(), configFile, logger);
-    assertTrue("Initial load should succeed", config.load());
+    SaveableTestConfig config = new SaveableTestConfig(temporaryFolder, configFile, logger);
+    assertTrue(config.load(), "Initial load should succeed");
 
-    // User edits the file (makes it invalid)
     String invalidContent = "key: editedValue\ninvalid: yaml: [unclosed";
     try (FileWriter writer = new FileWriter(configFile)) {
       writer.write(invalidContent);
     }
 
-    // Reload fails
-    assertFalse("Reload should fail for invalid YAML", config.load());
+    assertFalse(config.load(), "Reload should fail for invalid YAML");
 
-    // Now save is called (e.g., on plugin disable)
     config.save();
 
-    // The file should NOT have been overwritten with old content
     String fileContent = new String(Files.readAllBytes(configFile.toPath()));
-    assertEquals("File should not be overwritten after failed reload", invalidContent, fileContent);
+    assertEquals(invalidContent, fileContent, "File should not be overwritten after failed reload");
   }
 
   @Test
   public void saveOverwritesFileAfterSuccessfulReload() throws IOException {
-    // Create initial valid config
-    File configFile = new File(temporaryFolder.getRoot(), "saveable.yml");
+    File configFile = new File(temporaryFolder, "saveable.yml");
     try (FileWriter writer = new FileWriter(configFile)) {
       writer.write("key: originalValue\n");
     }
 
     CommonLogger logger = new TestLogger();
-    SaveableTestConfig config = new SaveableTestConfig(temporaryFolder.getRoot(), configFile, logger);
-    assertTrue("Initial load should succeed", config.load());
+    SaveableTestConfig config = new SaveableTestConfig(temporaryFolder, configFile, logger);
+    assertTrue(config.load(), "Initial load should succeed");
 
-    // Modify the in-memory config
     config.conf.set("key", "modifiedValue");
 
-    // Save should work
     config.save();
 
-    // Verify file was updated
     String fileContent = new String(Files.readAllBytes(configFile.toPath()));
-    assertTrue("File should contain modified value", fileContent.contains("modifiedValue"));
+    assertTrue(fileContent.contains("modifiedValue"), "File should contain modified value");
   }
 
   @Test
   public void saveInAfterLoadPersistsChanges() throws IOException {
-    File configFile = new File(temporaryFolder.getRoot(), "self-save.yml");
+    File configFile = new File(temporaryFolder, "self-save.yml");
     try (FileWriter writer = new FileWriter(configFile)) {
       writer.write("key: originalValue\n");
     }
 
     CommonLogger logger = new TestLogger();
-    SelfSavingTestConfig config = new SelfSavingTestConfig(temporaryFolder.getRoot(), configFile, logger);
+    SelfSavingTestConfig config = new SelfSavingTestConfig(temporaryFolder, configFile, logger);
 
-    assertTrue("Load should succeed for valid YAML", config.load());
+    assertTrue(config.load(), "Load should succeed for valid YAML");
 
     String fileContent = new String(Files.readAllBytes(configFile.toPath()));
-    assertTrue("afterLoad() save should persist updated value", fileContent.contains("updatedInAfterLoad"));
+    assertTrue(fileContent.contains("updatedInAfterLoad"), "afterLoad() save should persist updated value");
   }
 
   /**
@@ -268,12 +242,10 @@ public class ConfigReloadTest extends BasePluginTest {
 
     @Override
     public void afterLoad() {
-      // No-op
     }
 
     @Override
     public void onSave() {
-      // No-op
     }
   }
 
@@ -293,7 +265,6 @@ public class ConfigReloadTest extends BasePluginTest {
 
     @Override
     public void onSave() {
-      // No-op
     }
   }
 }

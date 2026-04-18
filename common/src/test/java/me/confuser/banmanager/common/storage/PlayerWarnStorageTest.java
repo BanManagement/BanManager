@@ -4,11 +4,11 @@ import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerWarnStorageTest extends BasePluginDbTest {
 

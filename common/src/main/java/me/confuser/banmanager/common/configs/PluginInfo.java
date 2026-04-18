@@ -1,8 +1,5 @@
 package me.confuser.banmanager.common.configs;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,18 +16,9 @@ public class PluginInfo {
   }
 
   public CommandInfo setCommand(CommandInfo command) {
-    return commands.put(command.getName(), command);
+    return commands.put(command.name(), command);
   }
 
-  @AllArgsConstructor
-  public static class CommandInfo {
-    @Getter
-    private String name;
-    @Getter
-    private String permission;
-    @Getter
-    private String usage;
-    @Getter
-    private List<String> aliases;
+  public record CommandInfo(String name, String permission, String usage, List<String> aliases) {
   }
 }

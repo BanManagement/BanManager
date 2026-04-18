@@ -2,8 +2,8 @@ package me.confuser.banmanager.common.commands;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 public class NamesCommandTest extends BasePluginDbTest {
   private NamesCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("bmnames")) {

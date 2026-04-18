@@ -1,10 +1,12 @@
 package me.confuser.banmanager.common.util;
 
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.UUID;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -16,16 +18,14 @@ import me.confuser.banmanager.common.gson.JsonObject;
  * Based on UUIDFetcher by evilmidget38
  */
 public class UUIDUtils {
-  private static HttpURLConnection createConnection(String urlStr, String method) throws Exception {
-    URL url = new URL(urlStr);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod(method);
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setUseCaches(false);
-    connection.setDoInput(true);
-
-    if (method.equals("POST")) connection.setDoOutput(true);
-    return connection;
+  private static HttpRequest buildGet(String urlStr) {
+    return HttpRequest.newBuilder()
+        .uri(URI.create(urlStr))
+        .timeout(Duration.ofSeconds(15))
+        .header("Content-Type", "application/json")
+        .header("User-Agent", "BanManager")
+        .GET()
+        .build();
   }
 
   private static UUID getUUID(String id) {
@@ -58,55 +58,41 @@ public class UUIDUtils {
     }
 
     plugin.getLogger().info("Requesting UUID for " + name);
-    Fetcher fetcher = plugin.getConfig().getUuidFetcher().getNameToId();
-    String url = fetcher.getUrl().replace("[name]", name);
+    Fetcher fetcher = plugin.getConfig().getUuidFetcher().nameToId();
+    String url = fetcher.url().replace("[name]", name);
 
-    HttpURLConnection connection = createConnection(url, "GET");
+    HttpResponse<String> response = sendBlocking(plugin.getHttpClient(), buildGet(url));
+    int status = response.statusCode();
 
-    try {
-      int status = connection.getResponseCode();
+    plugin.getLogger().info(url + " " + status);
 
-      plugin.getLogger().info(url + " " + status);
+    if (status != 200) throw new Exception("Error retrieving UUID from " + url);
 
-      if (status != 200) throw new Exception("Error retrieving UUID from " + url);
-
-      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
-        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
-        return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.getKey()).getAsString()));
-      }
-    } finally {
-      connection.disconnect();
-    }
+    JsonObject data = new Gson().fromJson(response.body(), JsonObject.class);
+    return new UUIDProfile(name, UUIDUtils.getUUID(data.get(fetcher.key()).getAsString()));
   }
 
   public static String getCurrentName(BanManagerPlugin plugin, UUID uuid) throws Exception {
     plugin.getLogger().info("Requesting name for " + uuid.toString());
-    Fetcher fetcher = plugin.getConfig().getUuidFetcher().getIdToName();
-    String url = fetcher.getUrl().replace("[uuid]", uuid.toString());
+    Fetcher fetcher = plugin.getConfig().getUuidFetcher().idToName();
+    String url = fetcher.url().replace("[uuid]", uuid.toString());
 
-    HttpURLConnection connection = createConnection(url, "GET");
+    HttpResponse<String> response = sendBlocking(plugin.getHttpClient(), buildGet(url));
+    int status = response.statusCode();
 
-    try {
-      int status = connection.getResponseCode();
+    plugin.getLogger().info(url + " " + status);
 
-      plugin.getLogger().info(url + " " + status);
+    if (status != 200) throw new Exception("Error retrieving name from " + url);
 
-      if (status != 200) throw new Exception("Error retrieving name from " + url);
-
-      try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
-        JsonObject data = new Gson().fromJson(reader, JsonObject.class);
-        return data.get(fetcher.getKey()).getAsString();
-      }
-    } finally {
-      connection.disconnect();
-    }
+    JsonObject data = new Gson().fromJson(response.body(), JsonObject.class);
+    return data.get(fetcher.key()).getAsString();
   }
 
   public static UUID createOfflineUUID(String name) {
-    try {
-      return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      return null;
-    }
+    return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+  }
+
+  private static HttpResponse<String> sendBlocking(HttpClient client, HttpRequest request) throws Exception {
+    return client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
   }
 }

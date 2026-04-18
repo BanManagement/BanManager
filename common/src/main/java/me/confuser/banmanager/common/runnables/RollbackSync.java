@@ -28,65 +28,43 @@ public class RollbackSync extends BmRunnable {
         final RollbackData data = itr.next();
 
         switch (data.getType()) {
-          case "bans":
-            evictFromCache(plugin.getPlayerBanStorage().getBans(),
-                v -> v.getActor().getUUID(), PlayerBanData::getCreated, data);
-            break;
-
-          case "ipbans":
-            evictFromCache(plugin.getIpBanStorage().getBans(),
-                v -> v.getActor().getUUID(), IpBanData::getCreated, data);
-            break;
-
-          case "ipmutes":
-            evictFromCache(plugin.getIpMuteStorage().getMutes(),
-                v -> v.getActor().getUUID(), IpMuteData::getCreated, data);
-            break;
-
-          case "mutes":
-            evictFromCache(plugin.getPlayerMuteStorage().getMutes(),
-                v -> v.getActor().getUUID(), PlayerMuteData::getCreated, data);
-            break;
-
-          case "banrecords":
-            restoreToCache(plugin.getPlayerBanStorage()
-                .queryBuilder().where()
-                .le("created", data.getCreated())
-                .and().ge("created", data.getExpires())
-                .iterator(),
-                ban -> !plugin.getPlayerBanStorage().isBanned(ban.getPlayer().getUUID()),
-                ban -> plugin.getPlayerBanStorage().addBan(ban));
-            break;
-
-          case "ipbanrecords":
-            restoreToCache(plugin.getIpBanStorage()
-                .queryBuilder().where()
-                .le("created", data.getCreated())
-                .and().ge("created", data.getExpires())
-                .iterator(),
-                ban -> !plugin.getIpBanStorage().isBanned(ban.getIp()),
-                ban -> plugin.getIpBanStorage().addBan(ban));
-            break;
-
-          case "muterecords":
-            restoreToCache(plugin.getPlayerMuteStorage()
-                .queryBuilder().where()
-                .le("created", data.getCreated())
-                .and().ge("created", data.getExpires())
-                .iterator(),
-                mute -> !plugin.getPlayerMuteStorage().isMuted(mute.getPlayer().getUUID()),
-                mute -> plugin.getPlayerMuteStorage().addMute(mute));
-            break;
-
-          case "ipmuterecords":
-            restoreToCache(plugin.getIpMuteStorage()
-                .queryBuilder().where()
-                .le("created", data.getCreated())
-                .and().ge("created", data.getExpires())
-                .iterator(),
-                mute -> !plugin.getIpMuteStorage().isMuted(mute.getIp()),
-                mute -> plugin.getIpMuteStorage().addMute(mute));
-            break;
+          case "bans" -> evictFromCache(plugin.getPlayerBanStorage().getBans(),
+              v -> v.getActor().getUUID(), PlayerBanData::getCreated, data);
+          case "ipbans" -> evictFromCache(plugin.getIpBanStorage().getBans(),
+              v -> v.getActor().getUUID(), IpBanData::getCreated, data);
+          case "ipmutes" -> evictFromCache(plugin.getIpMuteStorage().getMutes(),
+              v -> v.getActor().getUUID(), IpMuteData::getCreated, data);
+          case "mutes" -> evictFromCache(plugin.getPlayerMuteStorage().getMutes(),
+              v -> v.getActor().getUUID(), PlayerMuteData::getCreated, data);
+          case "banrecords" -> restoreToCache(plugin.getPlayerBanStorage()
+              .queryBuilder().where()
+              .le("created", data.getCreated())
+              .and().ge("created", data.getExpires())
+              .iterator(),
+              ban -> !plugin.getPlayerBanStorage().isBanned(ban.getPlayer().getUUID()),
+              ban -> plugin.getPlayerBanStorage().addBan(ban));
+          case "ipbanrecords" -> restoreToCache(plugin.getIpBanStorage()
+              .queryBuilder().where()
+              .le("created", data.getCreated())
+              .and().ge("created", data.getExpires())
+              .iterator(),
+              ban -> !plugin.getIpBanStorage().isBanned(ban.getIp()),
+              ban -> plugin.getIpBanStorage().addBan(ban));
+          case "muterecords" -> restoreToCache(plugin.getPlayerMuteStorage()
+              .queryBuilder().where()
+              .le("created", data.getCreated())
+              .and().ge("created", data.getExpires())
+              .iterator(),
+              mute -> !plugin.getPlayerMuteStorage().isMuted(mute.getPlayer().getUUID()),
+              mute -> plugin.getPlayerMuteStorage().addMute(mute));
+          case "ipmuterecords" -> restoreToCache(plugin.getIpMuteStorage()
+              .queryBuilder().where()
+              .le("created", data.getCreated())
+              .and().ge("created", data.getExpires())
+              .iterator(),
+              mute -> !plugin.getIpMuteStorage().isMuted(mute.getIp()),
+              mute -> plugin.getIpMuteStorage().addMute(mute));
+          default -> { /* unknown rollback type */ }
         }
       }
 

@@ -79,20 +79,40 @@ public abstract class DatabaseConfig {
   }
 
   public String getJDBCUrl() {
-    if (storageType.equals("h2")) return "jdbc:h2:file:" + new File(dataFolder, name).getAbsolutePath() + ";mode=MySQL;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;IGNORECASE=TRUE";
-
-    String url = "jdbc:" + storageType + "://" + host + ":" + port + "/" + name +
-        "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useUnicode=true&characterEncoding=utf-8" +
-        "&serverTimezone=UTC" +
-        "&useSSL=" + useSSL +
-        "&allowPublicKeyRetrieval=" + allowPublicKeyRetrieval +
-        "&verifyServerCertificate=" + verifyServerCertificate;
-
-    if (!storageType.equals("mariadb")) {
-      url += "&disableMariaDbDriver";
+    if (storageType.equals("h2")) {
+      return "jdbc:h2:file:" + new File(dataFolder, name).getAbsolutePath()
+          + ";mode=MySQL;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;IGNORECASE=TRUE";
     }
 
-    return url;
+    if (storageType.equals("mariadb")) {
+      // mariadb-java-client 3.x rejects most legacy mysql parameters with a WARN log.
+      // Only emit options the driver actually supports and translate useSSL +
+      // verifyServerCertificate into the modern sslMode setting.
+      String sslMode;
+      if (!useSSL) {
+        sslMode = "disable";
+      } else if (verifyServerCertificate) {
+        sslMode = "verify-full";
+      } else {
+        sslMode = "trust";
+      }
+      return "jdbc:mariadb://" + host + ":" + port + "/" + name
+          + "?useServerPrepStmts=true"
+          + "&cachePrepStmts=true"
+          + "&prepStmtCacheSize=250"
+          + "&prepStmtCacheSqlLimit=2048"
+          + "&sslMode=" + sslMode;
+    }
+
+    // mysql via mysql-connector-j 8.x. mariadb-java-client 3.x no longer hijacks
+    // jdbc:mysql:// URLs, so the legacy "disableMariaDbDriver" hint is gone.
+    return "jdbc:mysql://" + host + ":" + port + "/" + name
+        + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10"
+        + "&useUnicode=true&characterEncoding=utf-8"
+        + "&serverTimezone=UTC"
+        + "&useSSL=" + useSSL
+        + "&allowPublicKeyRetrieval=" + allowPublicKeyRetrieval
+        + "&verifyServerCertificate=" + verifyServerCertificate;
   }
 
   public DatabaseTableConfig<?> getTable(String table) {

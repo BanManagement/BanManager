@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CommonLoggerTest {
 
@@ -72,7 +72,7 @@ public class CommonLoggerTest {
       logger.severe("test", new RuntimeException("err"));
       logger.warning("test", new RuntimeException("err"));
 
-      assertEquals("No output should go to stderr", 0, baos.size());
+      assertEquals(0, baos.size(), "No output should go to stderr");
     } finally {
       System.setErr(originalErr);
     }

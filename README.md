@@ -38,7 +38,7 @@
 To learn more about configuration, usage and features of BanManager, take a look at [the website](https://banmanagement.com/docs/banmanager/configuration) or view [the website demo](https://demo.banmanagement.com).
 
 ## Requirements
-- Java 8+ (JDK21+ required to build from source)
+- Java 17+ (JDK21+ required to build from source)
 - CraftBukkit/Spigot/Paper, BungeeCord or Sponge for Minecraft 1.7.2+
 - Optionally [MySQL or MariaDB](https://banmanagement.com/docs/banmanager/install#setup-shared-database-optional)
 

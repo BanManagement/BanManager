@@ -3,19 +3,19 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AddNoteCommandTest extends BasePluginDbTest {
   private AddNoteCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("addnote")) {
@@ -46,7 +46,7 @@ public class AddNoteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldAddNoteToPlayer() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test note message"};
 
@@ -59,7 +59,7 @@ public class AddNoteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldAddNoteSilently() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "silent note", "-s"};
 

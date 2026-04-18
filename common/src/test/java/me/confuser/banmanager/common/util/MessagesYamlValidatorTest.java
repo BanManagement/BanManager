@@ -5,9 +5,9 @@ import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.Placeholder;
 import me.confuser.banmanager.common.kyori.text.minimessage.tag.resolver.TagResolver;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +22,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Validates that every message in the bundled messages_en.yml parses cleanly through MiniMessage.
@@ -50,7 +50,7 @@ public class MessagesYamlValidatorTest {
   private MessageRenderer renderer;
   private List<String> errors;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MessageRenderer.reset();
     renderer = MessageRenderer.getInstance();
@@ -62,7 +62,7 @@ public class MessagesYamlValidatorTest {
     errors = new ArrayList<>();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     renderer.loadStaticTokens(new HashMap<>());
     MessageRenderer.reset();
@@ -72,7 +72,7 @@ public class MessagesYamlValidatorTest {
   public void everyMessageParsesWithoutError() throws Exception {
     YamlConfiguration conf = loadBundledMessages();
     ConfigurationSection messages = conf.getConfigurationSection("messages");
-    assertNotNull("messages section missing", messages);
+    assertNotNull(messages, "messages section missing");
 
     TagResolver.Builder resolverBuilder = TagResolver.builder();
     for (String token : KNOWN_DYNAMIC_TOKENS) {
@@ -107,7 +107,7 @@ public class MessagesYamlValidatorTest {
     if (!errors.isEmpty()) {
       fail("Found " + errors.size() + " message issue(s):\n" + String.join("\n", errors));
     }
-    assertTrue("Expected to parse at least 1 message", parsed > 0);
+    assertTrue(parsed > 0, "Expected to parse at least 1 message");
   }
 
   @Test
@@ -203,17 +203,14 @@ public class MessagesYamlValidatorTest {
     String close = messages.getString("report.actions.close");
     String tp = messages.getString("report.actions.tp");
 
-    assertNotNull("report.actions.assign missing", assign);
-    assertNotNull("report.actions.close missing", close);
-    assertNotNull("report.actions.tp missing", tp);
+    assertNotNull(assign, "report.actions.assign missing");
+    assertNotNull(close, "report.actions.close missing");
+    assertNotNull(tp, "report.actions.tp missing");
 
     String buttonColor = "<dark_aqua>";
-    assertTrue("report.actions.assign should use " + buttonColor + " for visual consistency: " + assign,
-        assign.contains(buttonColor));
-    assertTrue("report.actions.close should use " + buttonColor + " for visual consistency: " + close,
-        close.contains(buttonColor));
-    assertTrue("report.actions.tp should use " + buttonColor + " for visual consistency: " + tp,
-        tp.contains(buttonColor));
+    assertTrue(assign.contains(buttonColor), "report.actions.assign should use " + buttonColor + " for visual consistency: " + assign);
+    assertTrue(close.contains(buttonColor), "report.actions.close should use " + buttonColor + " for visual consistency: " + close);
+    assertTrue(tp.contains(buttonColor), "report.actions.tp should use " + buttonColor + " for visual consistency: " + tp);
   }
 
   @Test
@@ -221,8 +218,7 @@ public class MessagesYamlValidatorTest {
     YamlConfiguration conf = loadBundledMessages();
     String value = conf.getString("messages.addnoteall.notify");
     assertNotNull(value);
-    assertTrue("addnoteall.notify is missing the word 'note': " + value,
-        value.toLowerCase().contains("note"));
+    assertTrue(value.toLowerCase().contains("note"), "addnoteall.notify is missing the word 'note': " + value);
   }
 
   @Test
@@ -230,8 +226,7 @@ public class MessagesYamlValidatorTest {
     YamlConfiguration conf = loadBundledMessages();
     String value = conf.getString("messages.sender.error.invalidReason");
     assertNotNull(value);
-    assertTrue("invalidReason should say 'is not a valid reason' (was previously 'is no valid reason'): " + value,
-        value.contains("is not a valid"));
+    assertTrue(value.contains("is not a valid"), "invalidReason should say 'is not a valid reason' (was previously 'is no valid reason'): " + value);
   }
 
   @Test
@@ -240,14 +235,12 @@ public class MessagesYamlValidatorTest {
     String disallowed = conf.getString("messages.ban.player.disallowed");
     String kick = conf.getString("messages.ban.player.kick");
 
-    assertNotNull("ban.player.disallowed missing", disallowed);
-    assertNotNull("ban.player.kick missing", kick);
+    assertNotNull(disallowed, "ban.player.disallowed missing");
+    assertNotNull(kick, "ban.player.kick missing");
 
     for (String token : new String[]{"<reason>", "<actor>", "<created>", "<appeal_url>"}) {
-      assertTrue("ban.player.disallowed should contain " + token + ": " + disallowed,
-          disallowed.contains(token));
-      assertTrue("ban.player.kick should contain " + token + " for parity with disallowed: " + kick,
-          kick.contains(token));
+      assertTrue(disallowed.contains(token), "ban.player.disallowed should contain " + token + ": " + disallowed);
+      assertTrue(kick.contains(token), "ban.player.kick should contain " + token + " for parity with disallowed: " + kick);
     }
   }
 
@@ -257,14 +250,12 @@ public class MessagesYamlValidatorTest {
     String disallowed = conf.getString("messages.tempban.player.disallowed");
     String kick = conf.getString("messages.tempban.player.kick");
 
-    assertNotNull("tempban.player.disallowed missing", disallowed);
-    assertNotNull("tempban.player.kick missing", kick);
+    assertNotNull(disallowed, "tempban.player.disallowed missing");
+    assertNotNull(kick, "tempban.player.kick missing");
 
     for (String token : new String[]{"<reason>", "<actor>", "<created>", "<expires>", "<appeal_url>"}) {
-      assertTrue("tempban.player.disallowed should contain " + token + ": " + disallowed,
-          disallowed.contains(token));
-      assertTrue("tempban.player.kick should contain " + token + " for parity with disallowed: " + kick,
-          kick.contains(token));
+      assertTrue(disallowed.contains(token), "tempban.player.disallowed should contain " + token + ": " + disallowed);
+      assertTrue(kick.contains(token), "tempban.player.kick should contain " + token + " for parity with disallowed: " + kick);
     }
   }
 
@@ -276,8 +267,7 @@ public class MessagesYamlValidatorTest {
 
     Component component = renderer.render(header);
     String plain = renderer.toPlainText(component);
-    assertTrue("dashboard.header plain text should contain 'Staff Dashboard': " + plain,
-        plain.contains("Staff Dashboard"));
+    assertTrue(plain.contains("Staff Dashboard"), "dashboard.header plain text should contain 'Staff Dashboard': " + plain);
   }
 
   @Test
@@ -311,7 +301,7 @@ public class MessagesYamlValidatorTest {
 
   private YamlConfiguration loadBundledMessages() throws Exception {
     InputStream in = getClass().getClassLoader().getResourceAsStream(MESSAGES_RESOURCE);
-    assertNotNull("Resource " + MESSAGES_RESOURCE + " not found on classpath", in);
+    assertNotNull(in, "Resource " + MESSAGES_RESOURCE + " not found on classpath");
     try (InputStream stream = in;
          Reader reader = new InputStreamReader(stream)) {
       return YamlConfiguration.loadConfiguration(reader);

@@ -10,7 +10,6 @@ import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.storage.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,7 +125,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player " + data.getUUID());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -148,7 +147,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player ban " + data.getPlayer().getUUID());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -167,7 +166,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player ban record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -189,7 +188,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player mute " + data.getPlayer().getUUID());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -208,7 +207,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player mute record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -230,7 +229,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player warning " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -251,7 +250,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player kick " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -272,7 +271,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player note " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -293,7 +292,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player note " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -326,7 +325,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player report state " + h2State.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -345,7 +344,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player report state " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -364,7 +363,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player report comment " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -410,7 +409,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player report " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -429,7 +428,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import player report location " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -451,7 +450,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip ban " + data.getIp());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -470,7 +469,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip ban record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -491,7 +490,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip mute " + data.getIp());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -510,7 +509,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip mute record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -532,7 +531,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip range ban " + data.getFromIp() + " - " + data.getToIp());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -551,7 +550,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import ip range ban record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -572,7 +571,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import name ban " + data.getName());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 
@@ -591,7 +590,7 @@ public class H2 implements IConverter {
           plugin.getLogger().severe("Failed to import name ban record " + data.getId());
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed during H2 conversion", e);
     }
 

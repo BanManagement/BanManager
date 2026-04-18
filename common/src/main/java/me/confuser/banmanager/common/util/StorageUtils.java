@@ -8,10 +8,30 @@ import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class StorageUtils {
+
+  /**
+   * Wraps an arbitrary exception as a {@link SQLException} for callers that
+   * declare {@code throws SQLException}. Returns the original instance when
+   * already a SQLException so the original message and stack trace are
+   * preserved; otherwise wraps with the supplied context message.
+   *
+   * <p>Callers should use the {@code throw} keyword:</p>
+   * <pre>
+   *   try (CompiledStatement stmt = ...) { ... }
+   *   catch (Exception e) { throw StorageUtils.toSqlException("Context", e); }
+   * </pre>
+   *
+   * <p>This pattern exists because ORMLite 6.x's {@code AutoCloseable}
+   * declarations throw the broader {@code Exception}, forcing every
+   * try-with-resources around a statement to also catch {@code Exception}.</p>
+   */
+  public static SQLException toSqlException(String message, Exception e) {
+    if (e instanceof SQLException sqle) return sqle;
+    return new SQLException(message, e);
+  }
 
   /**
    * Updates the created and updated timestamps to database time using the DAO.
@@ -54,8 +74,8 @@ public class StorageUtils {
           null, DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
       statement.setObject(0, id, SqlType.INTEGER);
       statement.runUpdate();
-    } catch (IOException e) {
-      throw new SQLException("Failed to update timestamps", e);
+    } catch (Exception e) {
+      throw toSqlException("Failed to update timestamps", e);
     }
   }
 

@@ -5,12 +5,11 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.PlayerMuteRecord;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerMuteStorageTest extends BasePluginDbTest {
 
@@ -233,7 +232,7 @@ public class PlayerMuteStorageTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldNotRestoreOnlineOnlyWhenNoRemainingTime() throws SQLException, IOException {
+  public void shouldNotRestoreOnlineOnlyWhenNoRemainingTime() throws Exception {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
     PlayerData unmuter = testUtils.createRandomPlayer();
@@ -268,7 +267,7 @@ public class PlayerMuteStorageTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldRestoreOnlineOnlyWithRemainingTime() throws SQLException, IOException {
+  public void shouldRestoreOnlineOnlyWithRemainingTime() throws Exception {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
     PlayerData unmuter = testUtils.createRandomPlayer();

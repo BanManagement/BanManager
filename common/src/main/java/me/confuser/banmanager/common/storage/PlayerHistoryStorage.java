@@ -17,8 +17,8 @@ import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
 import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
+import me.confuser.banmanager.common.util.StorageUtils;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,13 +176,13 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
                 results.getLong(2)));
           }
         } finally {
-          try { results.close(); } catch (IOException ignored) { }
+          try { results.close(); } catch (Exception ignored) { }
         }
       } finally {
-        try { statement.close(); } catch (IOException ignored) { }
+        try { statement.close(); } catch (Exception ignored) { }
       }
-    } catch (IOException e) {
-      throw new SQLException("Failed to query name summary", e);
+    } catch (Exception e) {
+      throw StorageUtils.toSqlException("Failed to query name summary", e);
     }
 
     return summaries;

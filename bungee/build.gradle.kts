@@ -64,7 +64,7 @@ configurations {
 dependencies {
     api(project(":BanManagerCommon"))
     compileOnly("net.md-5:bungeecord-api:1.21-R0.4")
-    "shadeOnly"("org.bstats:bstats-bungeecord:2.2.1")
+    "shadeOnly"("org.bstats:bstats-bungeecord:3.2.1")
 }
 
 tasks.named<Copy>("processResources") {
@@ -99,17 +99,24 @@ tasks.named<ShadowJar>("shadowJar") {
 
         relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
+
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
+    // BanManagerSlf4jServiceProvider only ships in (and is relocated by) Bukkit.
+    // BungeeCord provides its own SLF4J 2.x implementation, so removing the
+    // bundled provider entry avoids a ServiceConfigurationError at startup.
+    exclude("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
     exclude("velocity.yml")
 
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
+        exclude(dependency(":BanManagerLibs"))
     }
 }
 

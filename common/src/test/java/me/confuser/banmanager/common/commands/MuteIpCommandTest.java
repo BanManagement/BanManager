@@ -8,19 +8,19 @@ import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class MuteIpCommandTest extends BasePluginDbTest {
   private MuteIpCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("muteip")) {
@@ -75,7 +75,7 @@ public class MuteIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     CommonPlayer commonPlayer = spy(server.getPlayer(player.getName()));
     String[] args = new String[]{player.getName(), "test"};
@@ -99,7 +99,7 @@ public class MuteIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailIfOfflineExempt() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     ExemptionsConfig config = spy(plugin.getExemptionsConfig());
     String[] args = new String[]{player.getName(), "test"};
@@ -114,7 +114,7 @@ public class MuteIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldMuteIp() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{ip.toString(), "test"};
 
@@ -132,7 +132,7 @@ public class MuteIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldMuteIpSilently() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{ip.toString(), "test", "-s"};
 
@@ -146,7 +146,7 @@ public class MuteIpCommandTest extends BasePluginDbTest {
   @Test
   public void shouldMuteIpSoftly() {
     IPAddress ip = IPUtils.toIPAddress(faker.internet().ipV6Address());
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{ip.toString(), "test", "-st"};
 

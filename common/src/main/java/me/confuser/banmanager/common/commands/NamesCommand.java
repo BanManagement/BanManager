@@ -67,9 +67,9 @@ public class NamesCommand extends CommonCommand {
       } else {
         for (PlayerNameSummary nameData : names) {
           Message.get("names.row")
-              .set("name", nameData.getName())
-              .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
-              .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+              .set("name", nameData.name())
+              .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.firstSeen()))
+              .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.lastSeen()))
               .sendTo(sender);
         }
       }
@@ -90,22 +90,22 @@ public class NamesCommand extends CommonCommand {
     for (PlayerNameSummary nameData : names) {
       if (hasInteractiveTemplate) {
         Component entry = Message.get("names.interactive")
-            .set("name", nameData.getName())
-            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
-            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+            .set("name", nameData.name())
+            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.firstSeen()))
+            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.lastSeen()))
             .resolveComponent();
         message.append(entry);
       } else {
         String hoverText = Message.get("names.row")
-            .set("name", nameData.getName())
-            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.getFirstSeen()))
-            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.getLastSeen()))
+            .set("name", nameData.name())
+            .set("firstSeen", DateUtils.format(dateTimeFormat, nameData.firstSeen()))
+            .set("lastSeen", DateUtils.format(dateTimeFormat, nameData.lastSeen()))
             .toString();
 
         message.append(
-            Component.text(nameData.getName())
+            Component.text(nameData.name())
                 .color(NamedTextColor.YELLOW)
-                .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.getName()))
+                .clickEvent(ClickEvent.runCommand("/bminfo " + nameData.name()))
                 .hoverEvent(Component.text(hoverText)));
       }
 

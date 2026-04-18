@@ -5,17 +5,17 @@ import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.data.RollbackData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RollbackSyncTest extends BasePluginDbTest {
   private RollbackSync rollbackSync;
 
-  @Before
+  @BeforeEach
   public void setupSync() {
     rollbackSync = new RollbackSync(plugin);
   }

@@ -1,25 +1,25 @@
 package me.confuser.banmanager.common.util;
 
 import me.confuser.banmanager.common.kyori.text.Component;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageRendererTest {
 
   private MessageRenderer renderer;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     renderer = MessageRenderer.getInstance();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     renderer.loadStaticTokens(new HashMap<>());
   }
@@ -113,6 +113,6 @@ public class MessageRendererTest {
     String escaped = renderer.escapeTags(malicious);
     Component result = renderer.render("<gold>" + escaped);
     String plain = renderer.toPlainText(result);
-    assertTrue("Escaped tags should render as literal text", plain.contains("<red>injected</red>"));
+    assertTrue(plain.contains("<red>injected</red>"), "Escaped tags should render as literal text");
   }
 }

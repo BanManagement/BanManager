@@ -4,19 +4,19 @@ import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class BanNameCommandTest extends BasePluginDbTest {
   private BanNameCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("banname")) {
@@ -62,7 +62,7 @@ public class BanNameCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanPlayerName() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test"};
 
@@ -80,7 +80,7 @@ public class BanNameCommandTest extends BasePluginDbTest {
   @Test
   public void shouldBanNameSilently() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test", "-s"};
 

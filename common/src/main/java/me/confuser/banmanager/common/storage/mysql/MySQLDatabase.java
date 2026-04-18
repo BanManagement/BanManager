@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common.storage.mysql;
 
-import me.confuser.banmanager.common.ormlite.db.MysqlDatabaseType;
+import me.confuser.banmanager.common.ormlite.jdbc.db.MysqlDatabaseType;
 
 public class MySQLDatabase extends MysqlDatabaseType {
 
@@ -11,7 +11,7 @@ public class MySQLDatabase extends MysqlDatabaseType {
   }
 
   @Override
-  protected String getDriverClassName() {
-    return DRIVER_CLASS_NAME;
+  protected String[] getDriverClassNames() {
+    return new String[] { DRIVER_CLASS_NAME };
   }
 }

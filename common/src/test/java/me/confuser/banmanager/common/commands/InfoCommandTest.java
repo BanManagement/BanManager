@@ -4,19 +4,19 @@ import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class InfoCommandTest extends BasePluginDbTest {
   private InfoCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("bminfo")) {
@@ -29,7 +29,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   @Test
   public void shouldShowPlayerInfo() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName()};
 
@@ -42,7 +42,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   public void shouldShowBanHistory() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a ban and unban to create history
@@ -59,7 +59,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   public void shouldShowMuteHistory() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a mute and unmute to create history
@@ -76,7 +76,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   public void shouldShowWarnings() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a warning
@@ -93,7 +93,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   public void shouldShowNotes() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a note
@@ -119,7 +119,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   @Test
   public void shouldShowKnownNames() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a session record (which includes name)
@@ -136,7 +136,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   @Test
   public void shouldHideNamesWithoutPermission() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create a session record (which includes name)
@@ -154,7 +154,7 @@ public class InfoCommandTest extends BasePluginDbTest {
   public void shouldShowStatsWithMultipleRecordTypes() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData actor = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     PlayerBanData ban = testUtils.createBan(player, actor, "test ban");

@@ -3,18 +3,18 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class TabCompletionTest extends BasePluginDbTest {
   private CommonCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand command : plugin.getCommands()) {
       if (command.getCommandName().equals("ban")) {
@@ -36,9 +36,9 @@ public class TabCompletionTest extends BasePluginDbTest {
 
     List<String> suggestions = cmd.handlePlayerNameTabComplete(sender, args);
 
-    assertTrue("Should suggest TestPlayer1", suggestions.contains("TestPlayer1"));
-    assertTrue("Should suggest TestPlayer2", suggestions.contains("TestPlayer2"));
-    assertFalse("Should not suggest OtherPlayer", suggestions.contains("OtherPlayer"));
+    assertTrue(suggestions.contains("TestPlayer1"), "Should suggest TestPlayer1");
+    assertTrue(suggestions.contains("TestPlayer2"), "Should suggest TestPlayer2");
+    assertFalse(suggestions.contains("OtherPlayer"), "Should not suggest OtherPlayer");
   }
 
   @Test
@@ -51,9 +51,9 @@ public class TabCompletionTest extends BasePluginDbTest {
 
     List<String> suggestions = cmd.handlePlayerNameTabComplete(sender, args);
 
-    assertTrue("Should include all players for empty input", suggestions.size() >= 2);
-    assertTrue("Should suggest Alpha", suggestions.contains("Alpha"));
-    assertTrue("Should suggest Beta", suggestions.contains("Beta"));
+    assertTrue(suggestions.size() >= 2, "Should include all players for empty input");
+    assertTrue(suggestions.contains("Alpha"), "Should suggest Alpha");
+    assertTrue(suggestions.contains("Beta"), "Should suggest Beta");
   }
 
   @Test
@@ -69,8 +69,8 @@ public class TabCompletionTest extends BasePluginDbTest {
     List<String> suggestions = cmd.handlePlayerNameTabComplete(sender, args);
 
     // Should complete with the full prefix including first player
-    assertTrue("Should suggest Alice,Alice", suggestions.stream().anyMatch(s -> s.startsWith("Alice,Alice")));
-    assertTrue("Should suggest Alice,AliceAlt", suggestions.stream().anyMatch(s -> s.startsWith("Alice,AliceAlt")));
+    assertTrue(suggestions.stream().anyMatch(s -> s.startsWith("Alice,Alice")), "Should suggest Alice,Alice");
+    assertTrue(suggestions.stream().anyMatch(s -> s.startsWith("Alice,AliceAlt")), "Should suggest Alice,AliceAlt");
   }
 
   @Test
@@ -91,7 +91,7 @@ public class TabCompletionTest extends BasePluginDbTest {
     String[] args = new String[]{"Test"};
 
     List<String> suggestions = noTabCmd.handlePlayerNameTabComplete(sender, args);
-    assertTrue("Should return empty list for disabled tab completion", suggestions.isEmpty());
+    assertTrue(suggestions.isEmpty(), "Should return empty list for disabled tab completion");
   }
 
   @Test
@@ -106,7 +106,7 @@ public class TabCompletionTest extends BasePluginDbTest {
 
     List<String> suggestions = cmd.handlePlayerNameTabComplete(sender, args);
 
-    assertTrue("Should limit results to 100 or less", suggestions.size() <= 100);
+    assertTrue(suggestions.size() <= 100, "Should limit results to 100 or less");
   }
 
   @Test
@@ -126,7 +126,7 @@ public class TabCompletionTest extends BasePluginDbTest {
     // Offline auto-complete is case-sensitive by design (uses radix tree)
     // So this should not find CaseSensitive when searching for "casesens"
     // But let's verify behavior is consistent
-    assertNotNull("Should return a list", suggestions);
+    assertNotNull(suggestions, "Should return a list");
   }
 
   @Test
@@ -139,6 +139,6 @@ public class TabCompletionTest extends BasePluginDbTest {
 
     List<String> suggestions = cmd.handlePlayerNameTabComplete(sender, args);
 
-    assertTrue("Should return empty for non-hashtag second arg", suggestions.isEmpty());
+    assertTrue(suggestions.isEmpty(), "Should return empty for non-hashtag second arg");
   }
 }

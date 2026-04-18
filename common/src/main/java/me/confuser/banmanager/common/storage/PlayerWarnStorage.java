@@ -20,9 +20,9 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
+import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -108,7 +108,9 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
       DatabaseResults results = statement.runQuery(null);
 
       if (results.next()) return results.getDouble(0);
-    } catch (IOException e) {
+    } catch (SQLException e) {
+      throw e;
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed to process player warn operation", e);
     }
 
@@ -127,7 +129,9 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
       DatabaseResults results = statement.runQuery(null);
 
       if (results.next()) return results.getDouble(0);
-    } catch (IOException e) {
+    } catch (SQLException e) {
+      throw e;
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed to process player warn operation", e);
     }
 
@@ -166,10 +170,10 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
         statement.setObject(0, player.getId(), SqlType.BYTE_ARRAY);
         return statement.runUpdate();
       } finally {
-        try { statement.close(); } catch (IOException ignored) { }
+        try { statement.close(); } catch (Exception ignored) { }
       }
-    } catch (IOException e) {
-      throw new SQLException("Failed to delete recent warning", e);
+    } catch (Exception e) {
+      throw StorageUtils.toSqlException("Failed to delete recent warning", e);
     }
   }
 

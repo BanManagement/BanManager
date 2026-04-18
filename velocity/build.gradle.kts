@@ -65,7 +65,7 @@ dependencies {
     api(project(":BanManagerCommon"))
     compileOnly("com.velocitypowered:velocity-api:3.1.0")
     annotationProcessor("com.velocitypowered:velocity-api:3.1.0")
-    "shadeOnly"("org.bstats:bstats-velocity:3.0.0")
+    "shadeOnly"("org.bstats:bstats-velocity:3.2.1")
 }
 
 tasks.named<Copy>("processResources") {
@@ -96,16 +96,23 @@ tasks.named<ShadowJar>("shadowJar") {
 
         relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
+
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache")
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
+    // BanManagerSlf4jServiceProvider only ships in (and is relocated by) Bukkit.
+    // Velocity provides its own SLF4J 2.x implementation, so removing the
+    // bundled provider entry avoids a ServiceConfigurationError at startup.
+    exclude("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
 
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
+        exclude(dependency(":BanManagerLibs"))
     }
 }
 

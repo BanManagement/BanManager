@@ -7,10 +7,7 @@ import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
 import me.confuser.banmanager.common.ormlite.support.CompiledStatement;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
-import me.confuser.banmanager.common.util.IPUtils;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -296,11 +293,11 @@ public class ActivityStorage {
           result.closeQuietly();
         }
       } finally {
-        try { statement.close(); } catch (IOException ignored) { }
+        try { statement.close(); } catch (Exception ignored) { }
       }
 
       return results;
-    } catch (SQLException | IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed to process activity operation", e);
       return null;
     }

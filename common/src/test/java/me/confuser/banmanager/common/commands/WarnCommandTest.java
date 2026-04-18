@@ -10,8 +10,8 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.parsers.WarnCommandParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 public class WarnCommandTest extends BasePluginDbTest {
   private WarnCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("warn")) {
@@ -145,7 +145,7 @@ public class WarnCommandTest extends BasePluginDbTest {
   @Test
   public void shouldWarnPlayer() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test"};
 

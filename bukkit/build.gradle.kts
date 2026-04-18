@@ -83,9 +83,9 @@ dependencies {
     "compileOnly"("net.kyori:adventure-api:${Versions.ADVENTURE}")
     "compileOnly"("net.kyori:adventure-text-serializer-gson:${Versions.ADVENTURE}")
     "compileOnly"("net.kyori:adventure-text-serializer-json:${Versions.ADVENTURE}")
-    "compileOnly"("me.clip:placeholderapi:2.10.9")
-    "shadeOnly"("org.bstats:bstats-bukkit:2.2.1")
-    "shadeOnly"("org.slf4j:slf4j-api:1.7.36")
+    "compileOnly"("me.clip:placeholderapi:2.12.2")
+    "shadeOnly"("org.bstats:bstats-bukkit:3.2.1")
+    "shadeOnly"("org.slf4j:slf4j-api:2.0.17")
 }
 
 tasks.named<Copy>("processResources") {
@@ -119,15 +119,23 @@ tasks.named<ShadowJar>("shadowJar") {
 
         include(dependency("org.bstats:.*:.*"))
         include(dependency("org.slf4j:.*:.*"))
-
-        relocate("org.bstats", "me.confuser.banmanager.common.bstats")
-        relocate("org.slf4j", "me.confuser.banmanager.common.slf4j")
     }
+
+    // Relocate at task level so resource paths and service file contents are
+    // also rewritten (the SLF4J 2.x ServiceLoader needs the META-INF/services
+    // entry to be relocated to the shaded package).
+    relocate("org.bstats", "me.confuser.banmanager.common.bstats")
+    relocate("org.slf4j", "me.confuser.banmanager.common.slf4j")
+
+    // Required for SLF4J 2.x service discovery: merges + relocates the
+    // META-INF/services/org.slf4j.spi.SLF4JServiceProvider entry.
+    mergeServiceFiles()
 
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
+    // Keep META-INF/services so the relocated SLF4J 2.x ServiceLoader can find
+    // BanManagerSlf4jServiceProvider; shaded deps here ship no service files.
     exclude("META-INF/maven/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
@@ -137,6 +145,15 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
         exclude(dependency("org.slf4j:.*:.*"))
+        // JDBC drivers, HikariCP and ORMLite load codecs / dialects / drivers
+        // via ServiceLoader. Static analysis can't see those references, so
+        // exclude them from minimisation to avoid stripping classes that are
+        // listed in the merged META-INF/services entries.
+        exclude(dependency("org.mariadb.jdbc:mariadb-java-client:.*"))
+        exclude(dependency("com.mysql:mysql-connector-j:.*"))
+        exclude(dependency("com.zaxxer:HikariCP:.*"))
+        exclude(dependency("com.j256.ormlite:.*:.*"))
+        exclude(dependency("com.h2database:.*:.*"))
     }
 }
 

@@ -5,19 +5,19 @@ import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.parsers.UnbanCommandParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UnmuteCommandTest extends BasePluginDbTest {
   private UnmuteCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("unmute")) {
@@ -50,7 +50,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnmutePlayer() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // First mute the player
@@ -70,7 +70,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnmuteByUUID() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     PlayerMuteData mute = testUtils.createMute(player, sender.getData(), "test mute");
@@ -86,7 +86,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnmuteWithDeleteFlag() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     when(sender.hasPermission(cmd.getPermission() + ".delete")).thenReturn(true);
@@ -106,7 +106,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailDeleteWithoutPermission() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     when(sender.hasPermission(cmd.getPermission() + ".delete")).thenReturn(false);
@@ -124,7 +124,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnmuteSilently() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     PlayerMuteData mute = testUtils.createMute(player, sender.getData(), "test mute");
@@ -143,7 +143,7 @@ public class UnmuteCommandTest extends BasePluginDbTest {
   public void shouldFailOwnUnmuteWithoutPermission() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData otherMod = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create mute by a different actor

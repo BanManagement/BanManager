@@ -1,15 +1,15 @@
 package me.confuser.banmanager.common.util;
 
-import com.github.javafaker.Faker;
+import net.datafaker.Faker;
 import me.confuser.banmanager.common.ipaddr.AddressStringException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ipaddr.IPAddressString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IPUtilsTest {
   private Faker faker = new Faker();
@@ -105,16 +105,35 @@ public class IPUtilsTest {
     assertEquals(randomIpv4, reconstructed.toString());
   }
 
+  // Curated, well-formed IPv6 addresses. We can't trust faker.internet().ipV6Address()
+  // alone because the previous test contained a "replaceAll(\"0\", \"\")" workaround that
+  // occasionally produced strings like ":::abc" which fail to parse - leaving the suite
+  // intermittently red without saying anything new about IPUtils.
+  private static final String[] SAMPLE_IPV6 = {
+      "2001:db8::1",
+      "fe80::1ff:fe23:4567:890a",
+      "::ffff:192.0.2.128",
+      "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+      "::",
+      "2607:f8b0:4005:805::200e"
+  };
+
+  private static String randomSampleIpv6() {
+    return SAMPLE_IPV6[(int) (Math.random() * SAMPLE_IPV6.length)];
+  }
+
   @Test
   public void stringToIPAddress() {
     assertEquals("127.0.0.1", IPUtils.toIPAddress("127.0.0.1").toString());
     assertEquals("::1", IPUtils.toIPAddress("::1").toString());
 
     String ipv4 = faker.internet().ipV4Address();
-    String ipv6 = faker.internet().ipV6Address().replaceAll("0", "");
-
     assertEquals(ipv4, IPUtils.toIPAddress(ipv4).toString());
-    assertEquals(ipv6, IPUtils.toIPAddress(ipv6).toString());
+
+    // Compare canonical forms because IPAddress normalises ("2001:0db8:..." → "2001:db8:...").
+    String ipv6 = randomSampleIpv6();
+    String canonicalInput = new IPAddressString(ipv6).getAddress().toString();
+    assertEquals(canonicalInput, IPUtils.toIPAddress(ipv6).toString());
   }
 
   @Test
@@ -123,12 +142,12 @@ public class IPUtilsTest {
     assertTrue(IPUtils.isValid("::1"));
 
     String ipv4 = faker.internet().ipV4Address();
-    String ipv6 = faker.internet().ipV6Address().replaceAll("0", "");
+    assertTrue(IPUtils.isValid(ipv4), () -> "expected valid IPv4: " + ipv4);
 
-    assertTrue(IPUtils.isValid(ipv4));
-    assertTrue(IPUtils.isValid(ipv6));
+    for (String ipv6 : SAMPLE_IPV6) {
+      assertTrue(IPUtils.isValid(ipv6), () -> "expected valid IPv6: " + ipv6);
+    }
 
-    // Test invalid IPs
     assertFalse(IPUtils.isValid("not-an-ip"));
     assertFalse(IPUtils.isValid("256.256.256.256"));
   }

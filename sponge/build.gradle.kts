@@ -92,7 +92,7 @@ dependencies {
     api(project(":BanManagerCommon")) {
         isTransitive = true
     }
-    "shadeOnly"("org.bstats:bstats-sponge:3.0.2")
+    "shadeOnly"("org.bstats:bstats-sponge:3.2.1")
 }
 
 // Sponge API 11+ requires Java 21
@@ -138,11 +138,16 @@ tasks.named<ShadowJar>("shadowJar") {
         relocate("org.bstats", "me.confuser.banmanager.common.bstats")
     }
 
+    mergeServiceFiles()
+
     exclude("GradleStart**")
     exclude(".cache");
     exclude("LICENSE*")
-    exclude("META-INF/services/**")
     exclude("META-INF/maven/**")
+    // BanManagerSlf4jServiceProvider only ships in (and is relocated by) Bukkit.
+    // Sponge provides its own SLF4J 2.x implementation, so removing the
+    // bundled provider entry avoids a ServiceConfigurationError at startup.
+    exclude("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")
     exclude("META-INF/versions/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
@@ -153,6 +158,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
+        exclude(dependency(":BanManagerLibs"))
     }
 }
 

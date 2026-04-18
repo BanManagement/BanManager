@@ -6,16 +6,16 @@ import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerHistoryData;
 import me.confuser.banmanager.common.data.PlayerNameSummary;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerHistoryStorageTest extends BasePluginDbTest {
-  @After
+  @AfterEach
   public void clear() throws SQLException {
     plugin.getPlayerHistoryStorage().updateRaw("TRUNCATE TABLE " + plugin.getPlayerHistoryStorage().getTableName());
   }
@@ -89,7 +89,7 @@ public class PlayerHistoryStorageTest extends BasePluginDbTest {
     // Fetch from DB to verify
     List<PlayerHistoryData> sessions = storage.queryForAll();
     assertEquals(1, sessions.size());
-    assertNull("IP should be null when logIp=false", sessions.get(0).getIp());
+    assertNull(sessions.get(0).getIp(), "IP should be null when logIp=false");
     assertEquals(player.getName(), sessions.get(0).getName());
   }
 
@@ -102,7 +102,7 @@ public class PlayerHistoryStorageTest extends BasePluginDbTest {
 
     List<PlayerNameSummary> summary = storage.getNamesSummary(player);
     assertEquals(1, summary.size());
-    assertEquals(player.getName(), summary.get(0).getName());
+    assertEquals(player.getName(), summary.get(0).name());
   }
 
   @Test
@@ -162,8 +162,8 @@ public class PlayerHistoryStorageTest extends BasePluginDbTest {
     assertEquals(1, sessions.size());
     PlayerHistoryData session = sessions.get(0);
 
-    assertTrue("Join time should be set", session.getJoin() > 0);
-    assertTrue("Leave time should be set", session.getLeave() > 0);
-    assertTrue("Leave should be >= Join", session.getLeave() >= session.getJoin());
+    assertTrue(session.getJoin() > 0, "Join time should be set");
+    assertTrue(session.getLeave() > 0, "Leave time should be set");
+    assertTrue(session.getLeave() >= session.getJoin(), "Leave should be >= Join");
   }
 }
