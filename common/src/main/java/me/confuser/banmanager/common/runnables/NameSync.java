@@ -48,19 +48,23 @@ public class NameSync extends BmRunnable {
           if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
 
           Message kickMessage;
+          String dateTimeFormat;
 
           if (ban.getExpires() == 0) {
             kickMessage = Message.get("ban.player.kick");
+            dateTimeFormat = Message.getString("ban.player.dateTimeFormat");
           } else {
             kickMessage = Message.get("tempban.player.kick");
             kickMessage.set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+            dateTimeFormat = Message.getString("tempban.player.dateTimeFormat");
           }
 
           kickMessage
               .set("displayName", bukkitPlayer.getDisplayName())
               .set("player", ban.getName())
               .set("reason", ban.getReason())
-              .set("actor", ban.getActor().getName());
+              .set("actor", ban.getActor().getName())
+              .set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "yyyy-MM-dd HH:mm:ss", ban.getCreated()));
 
           bukkitPlayer.kick(kickMessage);
         });

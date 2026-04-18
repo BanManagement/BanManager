@@ -52,7 +52,7 @@ public class LoglessKickAllCommandTest extends BasePluginDbTest {
 
     ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console for &4test", msgCaptor.getValue().toString());
+    assertEquals("&6All players have been kicked by Console for &4test", msgCaptor.getValue().toString());
   }
 
   @Test
@@ -71,7 +71,7 @@ public class LoglessKickAllCommandTest extends BasePluginDbTest {
 
     ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console", msgCaptor.getValue().toString());
+    assertEquals("&6All players have been kicked by Console", msgCaptor.getValue().toString());
   }
 
   @Test
@@ -90,7 +90,7 @@ public class LoglessKickAllCommandTest extends BasePluginDbTest {
 
     ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console for &4" + args[0], msgCaptor.getValue().toString());
+    assertEquals("&6All players have been kicked by Console for &4" + args[0], msgCaptor.getValue().toString());
   }
 
   @Test

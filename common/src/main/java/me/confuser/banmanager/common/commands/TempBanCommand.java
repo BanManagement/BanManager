@@ -164,13 +164,15 @@ public class TempBanCommand extends CommonCommand {
 
         Message kickMessage = null;
         if (onlinePlayer != null) {
+          String dateTimeFormat = Message.getString("tempban.player.dateTimeFormat");
           kickMessage = Message.get("tempban.player.kick")
               .set("displayName", onlinePlayer.getDisplayName())
               .set("player", player.getName())
               .set("playerId", player.getUUID().toString())
               .set("reason", ban.getReason())
               .set("actor", actor.getName())
-              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+              .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()))
+              .set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "yyyy-MM-dd HH:mm:ss", ban.getCreated()));
         }
 
         try {

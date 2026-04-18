@@ -4,6 +4,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -142,12 +143,14 @@ public class BanCommand extends CommonCommand {
 
       Message kickMessage = null;
       if (onlinePlayer != null) {
+        String dateTimeFormat = Message.getString("ban.player.dateTimeFormat");
         kickMessage = Message.get("ban.player.kick")
                              .set("displayName", onlinePlayer.getDisplayName())
                              .set("player", player.getName())
                              .set("playerId", player.getUUID().toString())
                              .set("reason", ban.getReason())
-                             .set("actor", actor.getName());
+                             .set("actor", actor.getName())
+                             .set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "yyyy-MM-dd HH:mm:ss", ban.getCreated()));
       }
 
       try {

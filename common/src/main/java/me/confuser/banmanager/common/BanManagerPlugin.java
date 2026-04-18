@@ -338,6 +338,7 @@ public class BanManagerPlugin {
 
     File legacyMessages = new File(dataFolder, "messages.yml");
     if (legacyMessages.exists()) {
+      logger.warning("Found legacy messages.yml in your data folder. BanManager v8 uses messages/messages_" + defaultLocale + ".yml. Please migrate your customisations to that file and delete messages.yml. The legacy file will continue to be loaded for now to preserve your customisations.");
       loadLocaleFile(newRegistry, legacyMessages, defaultLocale);
     }
 

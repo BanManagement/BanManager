@@ -53,7 +53,7 @@ messages:
       exempt: '<red><player> is exempt from that action'
       noPermission: '<red>You do not have permission to perform that action'
       noConsole: '<red>This command cannot be used from console'
-      invalidReason: '<red><reason> is no valid reason.'
+      invalidReason: '<red><reason> is not a valid reason.'
   # Commands
   alts:
     header: 'Possible alts found:'
@@ -107,7 +107,7 @@ messages:
       times (<warn_points> Points), has <notes> notes and been reported <reports> times'
       ip: '<gold>This ip has been banned <bans> times, muted <mutes> times and range banned <rangebans> times'
     connection: '<gold>Their last connection was with <ip> on <last_seen>'
-    geoip: 'Country: <country> City: <city>'
+    geoip: '<gold>Country: <country> City: <city>'
     ban:
       permanent: '<gold>Currently banned for <dark_red><reason><gold> by <actor> at <created>'
       temporary: '<gold>Currently banned for <dark_red><reason><gold> by <actor> at <created> which expires in <expires>'
@@ -160,7 +160,7 @@ messages:
   ban:
     player:
       disallowed: '<red><bold>You are banned from this server</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
-      kick: '<red><bold>You have been banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>'
+      kick: '<red><bold>You have been banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '<gold><player> has been permanently banned by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unban <player>"><hover:show_text:"<gray>Unban player"><dark_aqua>[Unban]</dark_aqua></hover></click>'
     error:
@@ -173,7 +173,7 @@ messages:
   tempban:
     player:
       disallowed: '<red><bold>You are temporarily banned from this server</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Expires: <white><expires>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
-      kick: '<red><bold>You have been temporarily banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Expires: <white><expires>'
+      kick: '<red><bold>You have been temporarily banned</bold></red>\n \n<gray>Reason: <white><reason>\n<gray>Banned by: <white><actor>\n<gray>Expires: <white><expires>\n<gray>Date: <white><created>\n \n<gold>Appeal at <appeal_url>'
       dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
     notify: '<gold><player> has been temporarily banned for <expires> by <actor> for <dark_red><reason> <click:run_command:"/bminfo <player>"><hover:show_text:"<gray>View player info"><dark_aqua>[Info]</dark_aqua></hover></click> <click:run_command:"/unban <player>"><hover:show_text:"<gray>Unban player"><dark_aqua>[Unban]</dark_aqua></hover></click>'
 
@@ -427,17 +427,16 @@ messages:
       notify:
         report: '<gray>#<id> <gold><actor> reported <player> for <dark_red><reason><gold> at <created>'
         location: '<world> - <x>, <y>, <z>'
-
     actions:
       assign: '<click:run_command:"/reports assign <id>"><hover:show_text:"<gray>Assign to yourself"><dark_aqua>[Assign]</dark_aqua></hover></click>'
-      close: '<click:run_command:"/reports close <id>"><hover:show_text:"<gray>Close this report"><green>[Close]</green></hover></click>'
-      tp: '<click:run_command:"/reports tp <id>"><hover:show_text:"<gray>Teleport to location"><aqua>[TP]</aqua></hover></click>'
+      close: '<click:run_command:"/reports close <id>"><hover:show_text:"<gray>Close this report"><dark_aqua>[Close]</dark_aqua></hover></click>'
+      tp: '<click:run_command:"/reports tp <id>"><hover:show_text:"<gray>Teleport to location"><dark_aqua>[TP]</dark_aqua></hover></click>'
     feedback:
       assigned: '<gold>Your report #<id> has been assigned to <actor>'
       closed: '<gold>Your report #<id> has been closed by <actor>'
 
   addnoteall:
-    notify: '<red><player> will have a new attached by <actor>: <message>'
+    notify: '<red><player> will have a new note attached by <actor>: <message>'
 
   banlist:
     header: '<gold>There are <bans> <type> bans:'

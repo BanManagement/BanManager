@@ -601,12 +601,14 @@ public class CommonJoinListener {
         plugin.getScheduler().runSync(() -> {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
 
+          String kickDateTimeFormat = Message.getString("ban.player.dateTimeFormat");
           Message kickMessage = Message.get("ban.player.kick")
               .set("displayName", bukkitPlayer.getDisplayName())
               .set("player", newBan.getPlayer().getName())
               .set("reason", newBan.getReason())
               .set("id", newBan.getId())
-              .set("actor", newBan.getActor().getName());
+              .set("actor", newBan.getActor().getName())
+              .set("created", DateUtils.format(kickDateTimeFormat != null ? kickDateTimeFormat : "yyyy-MM-dd HH:mm:ss", newBan.getCreated()));
 
           bukkitPlayer.kick(kickMessage);
         });

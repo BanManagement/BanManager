@@ -1,12 +1,9 @@
-package me.confuser.banmanager.common.configs;
+package me.confuser.banmanager.common.util;
 
 import me.confuser.banmanager.common.BasePluginTest;
 import me.confuser.banmanager.common.TestLogger;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.kyori.text.Component;
-import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRenderer;
-import me.confuser.banmanager.common.util.MessageRegistry;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -14,7 +11,7 @@ import java.io.StringReader;
 import static org.junit.Assert.*;
 
 
-public class MessagesConfigTest extends BasePluginTest {
+public class MessageLoadingTest extends BasePluginTest {
 
   @Test
   public void isValid() {

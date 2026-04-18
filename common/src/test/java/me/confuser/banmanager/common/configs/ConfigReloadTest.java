@@ -100,11 +100,7 @@ public class ConfigReloadTest extends BasePluginTest {
     String originalMessage = Message.getString("configReloaded");
     assertNotNull("configReloaded message should exist", originalMessage);
 
-    // Corrupt both messages.yml and messages_en.yml
-    File messagesFile = new File(temporaryFolder.getRoot(), "messages.yml");
-    try (FileWriter writer = new FileWriter(messagesFile)) {
-      writer.write("invalid: yaml: [unclosed");
-    }
+    // Corrupt the messages/messages_en.yml so reload yields no usable messages
     File messagesEnFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
     try (FileWriter writer = new FileWriter(messagesEnFile)) {
       writer.write("invalid: yaml: [unclosed");
@@ -122,8 +118,8 @@ public class ConfigReloadTest extends BasePluginTest {
     String originalMessage = Message.getString("configReloaded");
     assertNotNull("configReloaded message should exist", originalMessage);
 
-    // Modify the messages.yml file with a new message value
-    File messagesFile = new File(temporaryFolder.getRoot(), "messages.yml");
+    // Modify the messages/messages_en.yml file with a new message value
+    File messagesFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
     try (FileWriter writer = new FileWriter(messagesFile)) {
       writer.write("messages:\n");
       writer.write("  configReloaded: \"New reload message\"\n");
