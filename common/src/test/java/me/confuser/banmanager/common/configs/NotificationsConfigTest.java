@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.configs;
 
 import me.confuser.banmanager.common.BasePluginTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NotificationsConfigTest extends BasePluginTest {
 

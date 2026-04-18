@@ -1,7 +1,6 @@
 package me.confuser.banmanager.common.listeners;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.configs.WebhookConfig.WebhookHookConfig;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.DateUtils;
 
@@ -9,15 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
-import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
 import java.sql.SQLException;
 import java.time.ZoneId;
 
@@ -33,10 +30,9 @@ public class CommonWebhookListener {
         .format(java.time.Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
   }
 
-  public List<WebhookData> notifyOnBan(PlayerBanData ban) {
+  public List<Webhook> notifyOnBan(PlayerBanData ban) {
     String type = ban.getExpires() == 0 ? "ban" : "tempban";
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks(type);
-    List<WebhookData> results = new ArrayList<>();
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", ban.getPlayer().getName());
@@ -51,17 +47,12 @@ public class CommonWebhookListener {
       replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
     }
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnBan(IpBanData ban) {
+  public List<Webhook> notifyOnBan(IpBanData ban) {
     String type = ban.getExpires() == 0 ? "banip" : "tempbanip";
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks(type);
-    List<WebhookData> results = new ArrayList<>();
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(ban.getIp(),
         plugin.getConfig().getTimeAssociatedAlts());
@@ -87,16 +78,11 @@ public class CommonWebhookListener {
       replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
     }
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnKick(PlayerKickData kick) {
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks("kick");
-    List<WebhookData> results = new ArrayList<>();
+  public List<Webhook> notifyOnKick(PlayerKickData kick) {
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks("kick");
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", kick.getPlayer().getName());
@@ -107,17 +93,12 @@ public class CommonWebhookListener {
     replacements.put("[created]", toISO8601(kick.getCreated()));
     replacements.put("[reason]", kick.getReason());
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnMute(PlayerMuteData mute) {
+  public List<Webhook> notifyOnMute(PlayerMuteData mute) {
     String type = mute.getExpires() == 0 ? "mute" : "tempmute";
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks(type);
-    List<WebhookData> results = new ArrayList<>();
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", mute.getPlayer().getName());
@@ -132,17 +113,12 @@ public class CommonWebhookListener {
       replacements.put("[expires]", DateUtils.getDifferenceFormat(mute.getExpires()));
     }
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnWarn(PlayerWarnData warn) {
+  public List<Webhook> notifyOnWarn(PlayerWarnData warn) {
     String type = warn.getExpires() == 0 ? "warning" : "tempwarning";
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks(type);
-    List<WebhookData> results = new ArrayList<>();
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", warn.getPlayer().getName());
@@ -158,16 +134,11 @@ public class CommonWebhookListener {
       replacements.put("[expires]", DateUtils.getDifferenceFormat(warn.getExpires()));
     }
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnUnban(PlayerBanData ban, PlayerData actor, String reason) {
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks("unban");
-    List<WebhookData> results = new ArrayList<>();
+  public List<Webhook> notifyOnUnban(PlayerBanData ban, PlayerData actor, String reason) {
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unban");
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", ban.getPlayer().getName());
@@ -178,16 +149,11 @@ public class CommonWebhookListener {
     replacements.put("[created]", toISO8601(ban.getCreated()));
     replacements.put("[reason]", reason);
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnUnban(IpBanData ban, PlayerData actor, String reason) {
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks("unbanip");
-    List<WebhookData> results = new ArrayList<>();
+  public List<Webhook> notifyOnUnban(IpBanData ban, PlayerData actor, String reason) {
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unbanip");
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[ip]", ban.getIp().toString());
@@ -197,16 +163,11 @@ public class CommonWebhookListener {
     replacements.put("[created]", toISO8601(ban.getCreated()));
     replacements.put("[reason]", reason);
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnUnmute(PlayerMuteData mute, PlayerData actor, String reason) {
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks("unmute");
-    List<WebhookData> results = new ArrayList<>();
+  public List<Webhook> notifyOnUnmute(PlayerMuteData mute, PlayerData actor, String reason) {
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unmute");
 
     Map<String, String> replacements = new HashMap<>();
     replacements.put("[player]", mute.getPlayer().getName());
@@ -217,22 +178,17 @@ public class CommonWebhookListener {
     replacements.put("[created]", toISO8601(mute.getCreated()));
     replacements.put("[reason]", reason);
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
-
-    return results;
+    return resolve(hooks, replacements);
   }
 
-  public List<WebhookData> notifyOnReport(PlayerReportData report, PlayerData actor, String reason) {
-    List<WebhookHookConfig> hooks = plugin.getWebhookConfig().getHooks("report");
-    List<WebhookData> results = new ArrayList<>();
+  public List<Webhook> notifyOnReport(PlayerReportData report, PlayerData actor, String reason) {
+    List<Webhook> hooks = plugin.getWebhookConfig().getHooks("report");
 
     List<PlayerReportLocationData> locations = null;
     try {
       locations = plugin.getPlayerReportLocationStorage().getByReport(report);
     } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to send webhook", e);
+      plugin.getLogger().warning("Failed to load report locations for webhook", e);
     }
 
     Map<String, String> replacements = new HashMap<>();
@@ -275,20 +231,24 @@ public class CommonWebhookListener {
       }
     }
 
-    for (WebhookHookConfig hook : hooks) {
-      results.add(createWebhookData(hook, replacements));
-    }
+    return resolve(hooks, replacements);
+  }
 
+  private List<Webhook> resolve(List<Webhook> hooks, Map<String, String> replacements) {
+    List<Webhook> results = new ArrayList<>(hooks.size());
+    for (Webhook hook : hooks) {
+      results.add(applyReplacements(hook, replacements));
+    }
     return results;
   }
 
-  private WebhookData createWebhookData(WebhookHookConfig hook, Map<String, String> replacements) {
-    String payload = applyReplacements(hook.getPayload(), replacements);
+  private Webhook applyReplacements(Webhook hook, Map<String, String> replacements) {
+    String payload = applyReplacements(hook.payload(), replacements);
     Map<String, String> headers = new HashMap<>();
-    for (Map.Entry<String, String> entry : hook.getHeaders().entrySet()) {
+    for (Map.Entry<String, String> entry : hook.headers().entrySet()) {
       headers.put(entry.getKey(), applyReplacements(entry.getValue(), replacements));
     }
-    return new WebhookData(hook.getName(), hook.getUrl(), hook.getMethod(), headers, payload, hook.isIgnoreSilent());
+    return hook.withResolved(headers, payload);
   }
 
   private String applyReplacements(String input, Map<String, String> replacements) {
@@ -300,87 +260,54 @@ public class CommonWebhookListener {
     return result;
   }
 
-  public void sendAsync(WebhookData data) {
-    CompletableFuture.runAsync(() -> send(data));
-  }
-
-  public void send(WebhookData data) {
+  public void sendAsync(Webhook data) {
     if (plugin.getConfig().isDebugEnabled()) {
-      plugin.getLogger().info("Sending webhook '" + data.name + "' to " + data.url + " with method " + data.method);
+      plugin.getLogger().info("Sending webhook '" + data.name() + "' to " + data.url() + " with method " + data.method());
     }
 
-    HttpURLConnection connection = null;
+    HttpRequest request;
     try {
-      connection = (HttpURLConnection) new URL(data.url).openConnection();
-      connection.addRequestProperty("Content-Type", "application/json");
-      connection.addRequestProperty("User-Agent", "BanManager");
-
-      // Apply custom headers
-      for (Map.Entry<String, String> header : data.headers.entrySet()) {
-        connection.addRequestProperty(header.getKey(), header.getValue());
-      }
-
-      connection.setRequestMethod(data.method);
-
-      // Only set output for methods that support a body
-      if (!"GET".equals(data.method) && !"DELETE".equals(data.method)) {
-        connection.setDoOutput(true);
-        try (OutputStream stream = connection.getOutputStream()) {
-          stream.write(data.payload.getBytes());
-          stream.flush();
-        }
-      }
-
-      int responseCode = connection.getResponseCode();
-      if (responseCode > 299) {
-        plugin.getLogger().warning("Failed to send webhook '" + data.name + "'");
-        plugin.getLogger().warning("Response code: " + responseCode);
-
-        InputStream errorStream = connection.getErrorStream();
-        if (errorStream != null) {
-          try (BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream))) {
-            StringBuilder responseBody = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-              responseBody.append(line);
-            }
-            plugin.getLogger().warning("Response body: " + responseBody.toString());
-          }
-        }
-      } else {
-        try (InputStream in = connection.getInputStream()) {
-          while (in.read() != -1) {}
-        }
-      }
-    } catch (Exception e) {
-      plugin.getLogger().warning("Failed to send webhook '" + data.name + "'");
-      plugin.getLogger().warning("Error: " + e.getMessage());
-      plugin.getLogger().warning("Failed to send webhook", e);
-    } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
+      request = buildRequest(data);
+    } catch (IllegalArgumentException e) {
+      plugin.getLogger().warning("Failed to send webhook '" + data.name() + "': invalid URL or method - " + e.getMessage());
+      return;
     }
+
+    plugin.getHttpClient()
+        .sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
+        .whenComplete((response, throwable) -> {
+          if (throwable != null) {
+            plugin.getLogger().warning("Failed to send webhook '" + data.name() + "'", throwable);
+            return;
+          }
+
+          int responseCode = response.statusCode();
+          if (responseCode > 299) {
+            plugin.getLogger().warning("Failed to send webhook '" + data.name() + "'");
+            plugin.getLogger().warning("Response code: " + responseCode);
+            String body = response.body();
+            if (body != null && !body.isEmpty()) {
+              plugin.getLogger().warning("Response body: " + body);
+            }
+          }
+        });
   }
 
-  /**
-   * Data class to hold all information needed to send a webhook request.
-   */
-  public static class WebhookData {
-    public final String name;
-    public final String url;
-    public final String method;
-    public final Map<String, String> headers;
-    public final String payload;
-    public final boolean ignoreSilent;
+  private HttpRequest buildRequest(Webhook data) {
+    HttpRequest.Builder builder = HttpRequest.newBuilder()
+        .uri(URI.create(data.url()))
+        .timeout(Duration.ofSeconds(15))
+        .header("Content-Type", "application/json")
+        .header("User-Agent", "BanManager");
 
-    public WebhookData(String name, String url, String method, Map<String, String> headers, String payload, boolean ignoreSilent) {
-      this.name = name;
-      this.url = url;
-      this.method = method;
-      this.headers = headers;
-      this.payload = payload;
-      this.ignoreSilent = ignoreSilent;
+    for (Map.Entry<String, String> header : data.headers().entrySet()) {
+      builder.header(header.getKey(), header.getValue());
     }
+
+    HttpRequest.BodyPublisher body = data.hasBody()
+        ? HttpRequest.BodyPublishers.ofString(data.payload(), StandardCharsets.UTF_8)
+        : HttpRequest.BodyPublishers.noBody();
+
+    return builder.method(data.method(), body).build();
   }
 }

@@ -7,21 +7,21 @@ import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ipaddr.IPAddressSeqRange;
 import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.util.IPUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 public class BanIpRangeCommandTest extends BasePluginDbTest {
   private BanIpRangeCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("baniprange")) {
@@ -85,7 +85,7 @@ public class BanIpRangeCommandTest extends BasePluginDbTest {
     IPAddress expectedFromIp = range.getLower();
     IPAddress expectedToIp = range.getUpper();
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{cidr, "test"};
 

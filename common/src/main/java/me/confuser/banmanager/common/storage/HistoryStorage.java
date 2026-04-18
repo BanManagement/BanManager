@@ -11,8 +11,6 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,11 +178,11 @@ public class HistoryStorage {
           dbResults.closeQuietly();
         }
       } finally {
-        try { statement.close(); } catch (IOException ignored) { }
+        try { statement.close(); } catch (Exception ignored) { }
       }
 
       return results;
-    } catch (SQLException | IOException e) {
+    } catch (Exception e) {
       plugin.getLogger().warning("Failed to process history operation", e);
       return null;
     }

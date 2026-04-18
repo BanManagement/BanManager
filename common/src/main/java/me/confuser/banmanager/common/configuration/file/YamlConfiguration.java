@@ -5,6 +5,7 @@ import me.confuser.banmanager.common.configuration.Configuration;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.InvalidConfigurationException;
 import me.confuser.banmanager.common.snakeyaml.DumperOptions;
+import me.confuser.banmanager.common.snakeyaml.LoaderOptions;
 import me.confuser.banmanager.common.snakeyaml.Yaml;
 import me.confuser.banmanager.common.snakeyaml.error.YAMLException;
 import me.confuser.banmanager.common.snakeyaml.representer.Representer;
@@ -23,8 +24,34 @@ public class YamlConfiguration extends FileConfiguration {
   private static final String COMMENT_PREFIX = "# ";
   private static final String BLANK_CONFIG = "{}\n";
   private final DumperOptions yamlOptions = new DumperOptions();
-  private final Representer yamlRepresenter = new YamlRepresenter();
-  private final Yaml yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
+  private final LoaderOptions loaderOptions = createLoaderOptions();
+  private final Representer yamlRepresenter = new YamlRepresenter(yamlOptions);
+  private final Yaml yaml = new Yaml(new YamlConstructor(loaderOptions), yamlRepresenter, yamlOptions, loaderOptions);
+
+  /**
+   * Build {@link LoaderOptions} that preserve SnakeYAML 1.x-compatible
+   * behaviour for existing user-authored config files. The 2.x defaults made
+   * three potentially breaking changes for our use case:
+   *
+   * <ul>
+   *   <li>{@code allowDuplicateKeys} flipped from {@code true} to {@code false}.
+   *   Operators routinely hand-edit messages.yml and may have introduced
+   *   duplicate keys; refusing to load would brick the plugin on upgrade. The
+   *   last value still wins, matching legacy behaviour.</li>
+   *   <li>{@code codePointLimit} now defaults to 3 MB. Large message bundles
+   *   (translations, big punishment payloads) can exceed this, so we raise it
+   *   to 32 MB.</li>
+   *   <li>{@code nestingDepthLimit} now defaults to 50. Bumped to 100 to give
+   *   headroom for deeply nested webhook payloads.</li>
+   * </ul>
+   */
+  private static LoaderOptions createLoaderOptions() {
+    LoaderOptions options = new LoaderOptions();
+    options.setAllowDuplicateKeys(true);
+    options.setCodePointLimit(32 * 1024 * 1024);
+    options.setNestingDepthLimit(100);
+    return options;
+  }
 
   /**
    * Creates a new {@link YamlConfiguration}, loading from the given file.

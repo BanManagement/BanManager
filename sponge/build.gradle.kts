@@ -92,7 +92,7 @@ dependencies {
     api(project(":BanManagerCommon")) {
         isTransitive = true
     }
-    "shadeOnly"("org.bstats:bstats-sponge:3.0.2")
+    "shadeOnly"("org.bstats:bstats-sponge:3.2.1")
 }
 
 // Sponge API 11+ requires Java 21

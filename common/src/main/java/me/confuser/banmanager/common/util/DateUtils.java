@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class DateUtils {
 
-  private static final List<Integer> times = Arrays.asList(
+  private static final List<Integer> times = List.of(
           Calendar.YEAR,
           Calendar.MONTH,
           Calendar.WEEK_OF_MONTH,
@@ -19,10 +19,10 @@ public class DateUtils {
           Calendar.HOUR_OF_DAY,
           Calendar.MINUTE,
           Calendar.SECOND);
-  private static final List<String> timesString = Arrays
-          .asList("year", "month", "week", "day", "hour", "minute", "second");
-  private static final List<String> shortTimesString = Arrays
-          .asList("y", "mo", "w", "d", "h", "m", "s");
+  private static final List<String> timesString = List.of(
+          "year", "month", "week", "day", "hour", "minute", "second");
+  private static final List<String> shortTimesString = List.of(
+          "y", "mo", "w", "d", "h", "m", "s");
   @Getter
   private static long timeDiff = 0;
   private static Pattern timePattern = Pattern

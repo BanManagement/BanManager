@@ -1,7 +1,7 @@
 package me.confuser.banmanager.common.util;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ColorUtilsTest {
 
@@ -9,65 +9,65 @@ public class ColorUtilsTest {
   public void testHexColorParsing() {
     String input = "&#ff0000Red Text";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertFalse("Output should not contain #", legacy.contains("#"));
-    assertTrue("Output should contain 'Red Text'", legacy.contains("Red Text"));
+    assertFalse(legacy.contains("#"), "Output should not contain #");
+    assertTrue(legacy.contains("Red Text"), "Output should contain 'Red Text'");
   }
 
   @Test
   public void testMixedColors() {
     String input = "&cRed &#00ff00Green &9Blue";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertFalse("Output should not contain #", legacy.contains("#"));
-    assertTrue("Output should contain text", legacy.contains("Red"));
-    assertTrue("Output should contain text", legacy.contains("Green"));
-    assertTrue("Output should contain text", legacy.contains("Blue"));
+    assertFalse(legacy.contains("#"), "Output should not contain #");
+    assertTrue(legacy.contains("Red"), "Output should contain text");
+    assertTrue(legacy.contains("Green"), "Output should contain text");
+    assertTrue(legacy.contains("Blue"), "Output should contain text");
   }
 
   @Test
   public void testSpigotHexFormat() {
     String input = "&x&f&f&0&0&0&0Red";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertFalse("Output should not contain &x", legacy.contains("&x"));
-    assertFalse("Output should not contain #", legacy.contains("#"));
-    assertTrue("Output should contain 'Red'", legacy.contains("Red"));
+    assertFalse(legacy.contains("&x"), "Output should not contain &x");
+    assertFalse(legacy.contains("#"), "Output should not contain #");
+    assertTrue(legacy.contains("Red"), "Output should contain 'Red'");
   }
 
   @Test
   public void testDownsampledJsonNoHex() {
     String input = "&#ff5733Orange";
     String json = ColorUtils.toDownsampledJson(input);
-    assertFalse("JSON should not contain hex code", json.contains("#ff5733"));
-    assertFalse("JSON should not contain hex code", json.contains("ff5733"));
-    assertTrue("JSON should contain text", json.contains("Orange"));
+    assertFalse(json.contains("#ff5733"), "JSON should not contain hex code");
+    assertFalse(json.contains("ff5733"), "JSON should not contain hex code");
+    assertTrue(json.contains("Orange"), "JSON should contain text");
   }
 
   @Test
   public void testFullJsonHasHex() {
     String input = "&#ff5733Orange";
     String json = ColorUtils.toJson(input);
-    assertTrue("JSON should contain text", json.contains("Orange"));
+    assertTrue(json.contains("Orange"), "JSON should contain text");
   }
 
   @Test
   public void testNewlinePreservation() {
     String input = "Line1\\nLine2";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertTrue("Should convert \\n to newline", legacy.contains("\n"));
+    assertTrue(legacy.contains("\n"), "Should convert \\n to newline");
   }
 
   @Test
   public void testPlainTextUnchanged() {
     String input = "Hello World";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertEquals("Plain text should be unchanged", "Hello World", legacy);
+    assertEquals("Hello World", legacy, "Plain text should be unchanged");
   }
 
   @Test
   public void testLegacyColorsPreserved() {
     String input = "&cRed &aGreen";
     String legacy = ColorUtils.toDownsampledLegacy(input);
-    assertTrue("Should contain & codes", legacy.contains("&"));
-    assertTrue("Should contain text", legacy.contains("Red"));
-    assertTrue("Should contain text", legacy.contains("Green"));
+    assertTrue(legacy.contains("&"), "Should contain & codes");
+    assertTrue(legacy.contains("Red"), "Should contain text");
+    assertTrue(legacy.contains("Green"), "Should contain text");
   }
 }

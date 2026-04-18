@@ -6,14 +6,13 @@ import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ipaddr.IPAddressString;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for the LiteBans to BanManager import functionality.
@@ -30,8 +29,8 @@ public class LiteBansImportTest extends BasePluginDbTest {
   private static final String PLAYER_UUID_3 = "550e8400-e29b-41d4-a716-446655440003";
   private static final String ACTOR_UUID = "550e8400-e29b-41d4-a716-446655440099";
 
-  @Before
-  public void setupLiteBansTables() throws SQLException, IOException {
+  @BeforeEach
+  public void setupLiteBansTables() throws Exception {
     createLiteBansSchema();
     insertTestData();
   }
@@ -39,7 +38,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
   /**
    * Creates the LiteBans table schema in the test database.
    */
-  private void createLiteBansSchema() throws SQLException, IOException {
+  private void createLiteBansSchema() throws Exception {
     try (DatabaseConnection conn = plugin.getLocalConn().getReadWriteConnection("")) {
       // Create bans table
       conn.executeStatement(
@@ -146,7 +145,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
   /**
    * Inserts test data into the LiteBans tables.
    */
-  private void insertTestData() throws SQLException, IOException {
+  private void insertTestData() throws Exception {
     long currentTime = System.currentTimeMillis();
     long pastTime = currentTime - 86400000L; // 1 day ago
 
@@ -254,12 +253,12 @@ public class LiteBansImportTest extends BasePluginDbTest {
     runImport();
 
     UUID playerUuid = UUID.fromString(PLAYER_UUID_1);
-    assertTrue("Player should be banned", plugin.getPlayerBanStorage().isBanned(playerUuid));
+    assertTrue(plugin.getPlayerBanStorage().isBanned(playerUuid), "Player should be banned");
 
     PlayerBanData ban = plugin.getPlayerBanStorage().getBan(playerUuid);
-    assertNotNull("Ban data should exist", ban);
+    assertNotNull(ban, "Ban data should exist");
     assertEquals("Test ban reason", ban.getReason());
-    assertFalse("Ban should not be silent", ban.isSilent());
+    assertFalse(ban.isSilent(), "Ban should not be silent");
   }
 
   @Test
@@ -269,7 +268,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
     // Check that IP ban was imported
     // The IP 10.0.0.1 should be banned
     IPAddress ip = new IPAddressString("10.0.0.1").getAddress();
-    assertTrue("IP should be banned", plugin.getIpBanStorage().isBanned(ip));
+    assertTrue(plugin.getIpBanStorage().isBanned(ip), "IP should be banned");
   }
 
   @Test
@@ -278,7 +277,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
 
     // Check that an IP within the range 172.16.0.0/16 is banned
     IPAddress ip = new IPAddressString("172.16.1.1").getAddress();
-    assertTrue("IP in range should be banned", plugin.getIpRangeBanStorage().isBanned(ip));
+    assertTrue(plugin.getIpRangeBanStorage().isBanned(ip), "IP in range should be banned");
   }
 
   @Test
@@ -286,10 +285,10 @@ public class LiteBansImportTest extends BasePluginDbTest {
     runImport();
 
     UUID playerUuid = UUID.fromString(PLAYER_UUID_1);
-    assertTrue("Player should be muted", plugin.getPlayerMuteStorage().isMuted(playerUuid));
+    assertTrue(plugin.getPlayerMuteStorage().isMuted(playerUuid), "Player should be muted");
 
     PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(playerUuid);
-    assertNotNull("Mute data should exist", mute);
+    assertNotNull(mute, "Mute data should exist");
     assertEquals("Test mute reason", mute.getReason());
   }
 
@@ -298,11 +297,11 @@ public class LiteBansImportTest extends BasePluginDbTest {
     runImport();
 
     IPAddress ip = new IPAddressString("10.0.0.2").getAddress();
-    assertTrue("IP should be muted", plugin.getIpMuteStorage().isMuted(ip));
+    assertTrue(plugin.getIpMuteStorage().isMuted(ip), "IP should be muted");
   }
 
   @Test
-  public void shouldImportWarningWithCorrectReadStatus() throws SQLException, IOException {
+  public void shouldImportWarningWithCorrectReadStatus() throws Exception {
     runImport();
 
     // Check warnings for PLAYER_UUID_1 - should have warned=true (read=true)
@@ -314,11 +313,11 @@ public class LiteBansImportTest extends BasePluginDbTest {
       while (warnings.hasNext()) {
         PlayerWarnData warn = warnings.next();
         if (warn.getReason().equals("Test warning")) {
-          assertTrue("Warning should be marked as read", warn.isRead());
+          assertTrue(warn.isRead(), "Warning should be marked as read");
           foundReadWarning = true;
         }
       }
-      assertTrue("Should have found the read warning", foundReadWarning);
+      assertTrue(foundReadWarning, "Should have found the read warning");
     }
   }
 
@@ -331,7 +330,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
 
     // Verify at least one kick was imported for this player
     long kickCount = plugin.getPlayerKickStorage().getCount(player);
-    assertTrue("Should have at least one kick", kickCount > 0);
+    assertTrue(kickCount > 0, "Should have at least one kick");
   }
 
   @Test
@@ -340,8 +339,7 @@ public class LiteBansImportTest extends BasePluginDbTest {
     runImport();
 
     // Verify import completed successfully by checking valid entries exist
-    assertTrue("Valid player ban should exist",
-        plugin.getPlayerBanStorage().isBanned(UUID.fromString(PLAYER_UUID_1)));
+    assertTrue(plugin.getPlayerBanStorage().isBanned(UUID.fromString(PLAYER_UUID_1)), "Valid player ban should exist");
   }
 
   @Test
@@ -350,13 +348,11 @@ public class LiteBansImportTest extends BasePluginDbTest {
 
     // The IP ban was created by CONSOLE, verify it imported correctly
     IPAddress ip = new IPAddressString("10.0.0.1").getAddress();
-    assertTrue("IP ban by console should exist", plugin.getIpBanStorage().isBanned(ip));
+    assertTrue(plugin.getIpBanStorage().isBanned(ip), "IP ban by console should exist");
 
     IpBanData ban = plugin.getIpBanStorage().getBan(ip);
-    assertNotNull("Ban should exist", ban);
-    assertEquals("Actor should be console",
-        plugin.getPlayerStorage().getConsole().getUUID(),
-        ban.getActor().getUUID());
+    assertNotNull(ban, "Ban should exist");
+    assertEquals(plugin.getPlayerStorage().getConsole().getUUID(), ban.getActor().getUUID(), "Actor should be console");
   }
 
   @Test
@@ -367,13 +363,12 @@ public class LiteBansImportTest extends BasePluginDbTest {
     UUID removedPlayerUuid = UUID.fromString("550e8400-e29b-41d4-a716-446655440004");
 
     // Player should NOT be actively banned (it was removed)
-    assertFalse("Player should not be actively banned",
-        plugin.getPlayerBanStorage().isBanned(removedPlayerUuid));
+    assertFalse(plugin.getPlayerBanStorage().isBanned(removedPlayerUuid), "Player should not be actively banned");
 
     // But there should be a ban record
     PlayerData player = plugin.getPlayerStorage().createIfNotExists(removedPlayerUuid, "Unknown");
     long recordCount = plugin.getPlayerBanRecordStorage().getCount(player);
-    assertTrue("Should have a ban record", recordCount > 0);
+    assertTrue(recordCount > 0, "Should have a ban record");
   }
 
   /**

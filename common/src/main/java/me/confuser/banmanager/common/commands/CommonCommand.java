@@ -44,9 +44,9 @@ public abstract class CommonCommand {
 
     PluginInfo.CommandInfo info = plugin.getPluginInfo().getCommand(commandName);
 
-    this.usage = info.getUsage();
-    this.permission = info.getPermission();
-    this.aliases = info.getAliases();
+    this.usage = info.usage();
+    this.permission = info.permission();
+    this.aliases = info.aliases();
     this.parser = CommandParser.class;
   }
 
@@ -57,9 +57,9 @@ public abstract class CommonCommand {
 
     PluginInfo.CommandInfo info = pluginInfo.getCommand(commandName);
 
-    this.usage = info.getUsage();
-    this.permission = info.getPermission();
-    this.aliases = info.getAliases();
+    this.usage = info.usage();
+    this.permission = info.permission();
+    this.aliases = info.aliases();
     this.parser = CommandParser.class;
   }
 

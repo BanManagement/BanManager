@@ -9,9 +9,10 @@ import me.confuser.banmanager.common.configs.*;
 import me.confuser.banmanager.common.hikari.HikariDataSource;
 import me.confuser.banmanager.common.ormlite.dao.GenericRawResults;
 import me.confuser.banmanager.common.ormlite.db.DatabaseType;
-import me.confuser.banmanager.common.ormlite.db.H2DatabaseType;
 import me.confuser.banmanager.common.ormlite.jdbc.DataSourceConnectionSource;
-import me.confuser.banmanager.common.ormlite.logger.LocalLog;
+import me.confuser.banmanager.common.ormlite.jdbc.db.H2DatabaseType;
+import me.confuser.banmanager.common.ormlite.logger.Level;
+import me.confuser.banmanager.common.ormlite.logger.Logger;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
@@ -27,9 +28,15 @@ import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.MessageRenderer;
 
 import java.io.*;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Long.parseLong;
 
@@ -185,6 +192,14 @@ public class BanManagerPlugin {
   @Getter
   private MessageRegistry messageRegistry;
 
+  // Shared HTTP infrastructure for webhooks, UUID lookups and GeoIP downloads.
+  // Lazily initialised on first use so unit tests that don't touch HTTP avoid
+  // spinning up the executor. volatile ensures the double-checked locking in
+  // getHttpClient() publishes a fully-constructed HttpClient to other threads.
+  private volatile HttpClient httpClient;
+  private volatile ExecutorService httpExecutor;
+  private final Object httpLock = new Object();
+
   public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
     this.logger = logger;
@@ -296,6 +311,56 @@ public class BanManagerPlugin {
 
     if (globalConn != null) {
       globalConn.closeQuietly();
+    }
+
+    shutdownHttpExecutor();
+  }
+
+  /**
+   * Returns the shared {@link HttpClient}, creating it on first use. Callers
+   * (webhooks, UUID lookups, GeoIP downloads) share a single dedicated thread
+   * pool so webhook bursts do not starve the common ForkJoinPool.
+   *
+   * <p>Thread-safe: uses double-checked locking with a {@code volatile} field
+   * so concurrent callers will see a fully-constructed instance.</p>
+   */
+  public HttpClient getHttpClient() {
+    HttpClient existing = httpClient;
+    if (existing != null) return existing;
+    synchronized (httpLock) {
+      if (httpClient == null) {
+        AtomicInteger counter = new AtomicInteger();
+        httpExecutor = Executors.newCachedThreadPool(r -> {
+          Thread t = new Thread(r, "BanManager-Http-" + counter.incrementAndGet());
+          t.setDaemon(true);
+          return t;
+        });
+        httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .executor(httpExecutor)
+            .build();
+      }
+      return httpClient;
+    }
+  }
+
+  private void shutdownHttpExecutor() {
+    ExecutorService executor;
+    synchronized (httpLock) {
+      executor = httpExecutor;
+      httpExecutor = null;
+      httpClient = null;
+    }
+    if (executor == null) return;
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -487,11 +552,16 @@ public class BanManagerPlugin {
     return newConfig;
   }
 
-  // Only effective on platforms where ORMLite falls back to LocalLog (no SLF4J/Log4j2
-  // on the classpath). On Bukkit, ORMLite auto-detects the shaded SLF4J and level
-  // filtering is handled by BanManagerSlf4jLogger instead.
+  // Silences chatty ORMLite/HikariCP TRACE/DEBUG/INFO output unless debug mode is on.
+  // Uses Logger.setGlobalLogLevel rather than the LOCAL_LOG_LEVEL_PROPERTY system
+  // property because the property name ("com.j256.simplelogging.level") is a
+  // hard-coded string that survives shading; setting it would also throttle any
+  // other plugin on the server that bundles ORMLite. setGlobalLogLevel mutates a
+  // static field on our shaded Logger class, so the change is isolated to BanManager.
+  // On Bukkit the shaded SLF4J 2.x bridge handles filtering itself, so this is a
+  // no-op there (Logger doesn't observe the level once an SLF4J backend is wired).
   private void disableDatabaseLogging() {
-    System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "WARNING");
+    Logger.setGlobalLogLevel(Level.WARNING);
   }
 
   public boolean setupConnections() throws SQLException {
@@ -572,7 +642,7 @@ public class BanManagerPlugin {
     if (config.getLocalDb().getStorageType().equals("h2")) {
       try (DatabaseConnection conn = getLocalConn().getReadWriteConnection("")) {
         conn.executeStatement("CREATE ALIAS IF NOT EXISTS INET6_NTOA FOR \"me.confuser.banmanager.common.util.IPUtils.toString\"", DatabaseConnection.DEFAULT_RESULT_FLAGS);
-      } catch (IOException | SQLException e) {
+      } catch (Exception e) {
         logger.severe("An error occurred setting up H2 storage", e);
       }
     }

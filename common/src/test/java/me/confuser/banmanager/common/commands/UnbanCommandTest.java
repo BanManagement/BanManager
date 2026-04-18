@@ -5,20 +5,20 @@ import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.parsers.UnbanCommandParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UnbanCommandTest extends BasePluginDbTest {
   private UnbanCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("unban")) {
@@ -61,7 +61,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnbanPlayer() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // First ban the player
@@ -81,7 +81,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnbanByUUID() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     PlayerBanData ban = testUtils.createBan(player, sender.getData(), "test ban");
@@ -97,7 +97,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnbanWithDeleteFlag() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     when(sender.hasPermission(cmd.getPermission() + ".delete")).thenReturn(true);
@@ -117,7 +117,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailDeleteWithoutPermission() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     when(sender.hasPermission(cmd.getPermission() + ".delete")).thenReturn(false);
@@ -135,7 +135,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   @Test
   public void shouldUnbanSilently() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     PlayerBanData ban = testUtils.createBan(player, sender.getData(), "test ban");
@@ -154,7 +154,7 @@ public class UnbanCommandTest extends BasePluginDbTest {
   public void shouldFailOwnUnbanWithoutPermission() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
     PlayerData otherMod = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Create ban by a different actor

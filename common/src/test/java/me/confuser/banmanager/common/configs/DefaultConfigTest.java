@@ -1,9 +1,9 @@
 package me.confuser.banmanager.common.configs;
 
 import me.confuser.banmanager.common.BasePluginDbTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultConfigTest extends BasePluginDbTest {
 

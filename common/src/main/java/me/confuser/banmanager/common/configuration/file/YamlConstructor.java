@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.configuration.file;
 
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerialization;
+import me.confuser.banmanager.common.snakeyaml.LoaderOptions;
 import me.confuser.banmanager.common.snakeyaml.constructor.SafeConstructor;
 import me.confuser.banmanager.common.snakeyaml.error.YAMLException;
 import me.confuser.banmanager.common.snakeyaml.nodes.Node;
@@ -11,7 +12,8 @@ import java.util.Map;
 
 public class YamlConstructor extends SafeConstructor {
 
-    YamlConstructor() {
+    YamlConstructor(LoaderOptions loaderOptions) {
+        super(loaderOptions);
         yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
     }
 

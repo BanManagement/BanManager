@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.configs;
 
 import lombok.Getter;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.apachecommons.compress.archivers.ArchiveEntry;
 import me.confuser.banmanager.common.apachecommons.compress.archivers.tar.TarArchiveInputStream;
@@ -14,8 +15,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 
@@ -141,17 +145,32 @@ public class GeoIpConfig extends Config {
       location.delete();
     }
 
-    URL url = new URL(downloadUrl);
-    URLConnection con = url.openConnection();
+    HttpClient client = BanManagerPlugin.getInstance().getHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(downloadUrl))
+        .timeout(Duration.ofMinutes(5))
+        .header("User-Agent", "BanManager")
+        .GET()
+        .build();
 
-    con.setConnectTimeout(6000);
-    con.connect();
+    HttpResponse<InputStream> response;
+    try {
+      response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IOException("Interrupted while downloading " + downloadUrl, e);
+    }
 
-    try (InputStream input = new GZIPInputStream(con.getInputStream());
+    if (response.statusCode() != 200) {
+      response.body().close();
+      throw new IOException("Unexpected response " + response.statusCode() + " from " + downloadUrl);
+    }
+
+    try (InputStream input = new GZIPInputStream(response.body());
          TarArchiveInputStream inputStream = new TarArchiveInputStream(input);
          FileOutputStream outputStream = new FileOutputStream(location)) {
 
-      ArchiveEntry entry = null;
+      ArchiveEntry entry;
       while ((entry = inputStream.getNextEntry()) != null) {
         if (entry.isDirectory()) continue;
         if (!entry.getName().endsWith(".mmdb")) continue;

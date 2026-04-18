@@ -1,26 +1,26 @@
 package me.confuser.banmanager.common.configs;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
+import me.confuser.banmanager.common.data.Webhook;
 import me.confuser.banmanager.common.gson.Gson;
 import me.confuser.banmanager.common.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class WebhookConfig extends Config {
-  private static final Set<String> ALLOWED_METHODS = new HashSet<>(Arrays.asList(
+  private static final Set<String> ALLOWED_METHODS = Set.of(
       "GET", "POST", "PUT", "PATCH", "DELETE"
-  ));
+  );
 
   @Getter
   private boolean hooksEnabled = false;
-  private Map<String, List<WebhookHookConfig>> hookTypes = new HashMap<>();
+  private Map<String, List<Webhook>> hookTypes = new HashMap<>();
 
   public WebhookConfig(File dataFolder, CommonLogger logger) {
     super(dataFolder, "webhooks.yml", logger);
@@ -55,18 +55,16 @@ public class WebhookConfig extends Config {
     }
 
     for (String type : hooks.getKeys(false)) {
-      List<WebhookHookConfig> webhooksList = new ArrayList<>();
+      List<Webhook> webhooksList = new ArrayList<>();
       Object typeValue = hooks.get(type);
 
-      if (typeValue instanceof List) {
-        // New array format
-        List<?> hookList = (List<?>) typeValue;
+      if (typeValue instanceof List<?> hookList) {
         int index = 0;
         for (Object hookObj : hookList) {
           if (hookObj instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, Object> hookMap = (Map<String, Object>) hookObj;
-            WebhookHookConfig config = parseWebhookConfig(hookMap, type, index);
+            Webhook config = parseWebhookConfig(hookMap, type, index);
             if (config != null) {
               webhooksList.add(config);
             }
@@ -77,7 +75,7 @@ public class WebhookConfig extends Config {
         // Legacy single-object format - wrap in list
         ConfigurationSection hookSection = hooks.getConfigurationSection(type);
         if (hookSection != null) {
-          WebhookHookConfig config = parseLegacyWebhookConfig(hookSection, type);
+          Webhook config = parseLegacyWebhookConfig(hookSection, type);
           if (config != null) {
             webhooksList.add(config);
           }
@@ -88,7 +86,7 @@ public class WebhookConfig extends Config {
     }
   }
 
-  private WebhookHookConfig parseWebhookConfig(Map<String, Object> hookMap, String type, int index) {
+  private Webhook parseWebhookConfig(Map<String, Object> hookMap, String type, int index) {
     String name = (String) hookMap.getOrDefault("name", "webhook-" + index);
     String url = (String) hookMap.get("url");
     String method = ((String) hookMap.getOrDefault("method", "POST")).toUpperCase();
@@ -109,11 +107,9 @@ public class WebhookConfig extends Config {
     // Parse headers
     Map<String, String> headers = new HashMap<>();
     Object headersObj = hookMap.get("headers");
-    if (headersObj instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> headersMap = (Map<String, Object>) headersObj;
-      for (Map.Entry<String, Object> entry : headersMap.entrySet()) {
-        headers.put(entry.getKey(), String.valueOf(entry.getValue()));
+    if (headersObj instanceof Map<?, ?> headersMap) {
+      for (Map.Entry<?, ?> entry : headersMap.entrySet()) {
+        headers.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
       }
     }
 
@@ -127,10 +123,10 @@ public class WebhookConfig extends Config {
       payload = writer.toString();
     }
 
-    return new WebhookHookConfig(name, url, method, headers, payload, ignoreSilent);
+    return new Webhook(name, url, method, headers, payload, ignoreSilent);
   }
 
-  private WebhookHookConfig parseLegacyWebhookConfig(ConfigurationSection hookSection, String type) {
+  private Webhook parseLegacyWebhookConfig(ConfigurationSection hookSection, String type) {
     String url = hookSection.getString("url");
     String method = hookSection.getString("method", "POST").toUpperCase();
     boolean ignoreSilent = hookSection.getBoolean("ignoreSilent", true);
@@ -166,7 +162,7 @@ public class WebhookConfig extends Config {
       payload = writer.toString();
     }
 
-    return new WebhookHookConfig("webhook-0", url, method, headers, payload, ignoreSilent);
+    return new Webhook("webhook-0", url, method, headers, payload, ignoreSilent);
   }
 
   private boolean isValidUrl(String url) {
@@ -174,10 +170,12 @@ public class WebhookConfig extends Config {
       return false;
     }
     try {
-      URL parsed = new URL(url);
-      String protocol = parsed.getProtocol().toLowerCase();
-      return "http".equals(protocol) || "https".equals(protocol);
-    } catch (MalformedURLException e) {
+      URI parsed = new URI(url);
+      String scheme = parsed.getScheme();
+      if (scheme == null) return false;
+      scheme = scheme.toLowerCase(Locale.ROOT);
+      return ("http".equals(scheme) || "https".equals(scheme)) && parsed.getHost() != null;
+    } catch (URISyntaxException e) {
       return false;
     }
   }
@@ -186,24 +184,8 @@ public class WebhookConfig extends Config {
   public void onSave() {
   }
 
-  public List<WebhookHookConfig> getHooks(String type) {
-    List<WebhookHookConfig> hooks = hookTypes.get(type);
+  public List<Webhook> getHooks(String type) {
+    List<Webhook> hooks = hookTypes.get(type);
     return hooks != null ? hooks : Collections.emptyList();
-  }
-
-  @AllArgsConstructor
-  public static class WebhookHookConfig {
-    @Getter
-    private String name;
-    @Getter
-    private String url;
-    @Getter
-    private String method;
-    @Getter
-    private Map<String, String> headers;
-    @Getter
-    private String payload;
-    @Getter
-    private boolean ignoreSilent;
   }
 }

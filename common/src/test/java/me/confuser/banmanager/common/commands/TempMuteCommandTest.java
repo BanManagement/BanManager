@@ -5,20 +5,20 @@ import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class TempMuteCommandTest extends BasePluginDbTest {
   private TempMuteCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("tempmute")) {
@@ -48,7 +48,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldTempMutePlayer() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "1h", "test"};
 
@@ -75,7 +75,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
       await().until(() -> plugin.getPlayerMuteStorage().isMuted(player.getUUID()));
 
       PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(player.getUUID());
-      assertTrue("Expiry should be set for " + time, mute.getExpires() > 0);
+      assertTrue(mute.getExpires() > 0, "Expiry should be set for " + time);
 
       // Clean up
       plugin.getPlayerMuteStorage().removeMute(player.getUUID());
@@ -86,7 +86,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
   public void shouldTempMuteWithLongDuration() {
     // Test that very long durations are accepted when time limits are not configured
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     String[] args = new String[]{player.getName(), "30y", "test"};
@@ -99,7 +99,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldFailWhenAlreadyMutedWithoutOverride() throws SQLException {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // First mute the player
@@ -122,7 +122,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldTempMuteSilently() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "1h", "test", "-s"};
 
@@ -136,7 +136,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
   @Test
   public void shouldTempMuteSoftly() {
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "1h", "test", "-st"};
 

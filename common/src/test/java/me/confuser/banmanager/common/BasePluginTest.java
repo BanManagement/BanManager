@@ -3,22 +3,21 @@ package me.confuser.banmanager.common;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 
 public abstract class BasePluginTest {
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public File temporaryFolder;
   protected BanManagerPlugin plugin;
 
-  @Before
+  @BeforeEach
   public void setup() {
     CommonLogger logger = new TestLogger();
-    plugin = new BanManagerPlugin(setupConfigs(temporaryFolder), logger, temporaryFolder.getRoot(), new TestScheduler(), new TestServer(), new TestMetrics());
+    plugin = new BanManagerPlugin(setupConfigs(temporaryFolder), logger, temporaryFolder, new TestScheduler(), new TestServer(), new TestMetrics());
 
     try {
       plugin.enable();
@@ -26,14 +25,14 @@ public abstract class BasePluginTest {
     }
   }
 
-  @After
+  @AfterEach
   public void cleanup() {
     if (plugin != null) {
       plugin.disable();
     }
   }
 
-  public static PluginInfo setupConfigs(TemporaryFolder folder) {
+  public static PluginInfo setupConfigs(File folder) {
     String[] configs = new String[]{
         "config.yml",
         "console.yml",
@@ -47,7 +46,7 @@ public abstract class BasePluginTest {
 
     for (String name : configs) {
       try (InputStream in = BasePluginTest.class.getClassLoader().getResource(name).openStream();
-           OutputStream out = new FileOutputStream(new File(folder.getRoot(), name))) {
+           OutputStream out = new FileOutputStream(new File(folder, name))) {
         byte[] buf = new byte[1024];
         int len;
         while ((len = in.read(buf)) > 0) {
@@ -58,7 +57,7 @@ public abstract class BasePluginTest {
       }
     }
 
-    File messagesDir = new File(folder.getRoot(), "messages");
+    File messagesDir = new File(folder, "messages");
     messagesDir.mkdirs();
     try (InputStream in = BasePluginTest.class.getClassLoader().getResource("messages/messages_en.yml").openStream();
          OutputStream out = new FileOutputStream(new File(messagesDir, "messages_en.yml"))) {
@@ -71,7 +70,6 @@ public abstract class BasePluginTest {
       e.printStackTrace();
     }
 
-    // Load plugin.yml
     PluginInfo pluginInfo = new PluginInfo();
     try (InputStream in = BasePluginTest.class.getClassLoader().getResource("plugin.yml").openStream();
          Reader defConfigStream = new InputStreamReader(in)) {

@@ -3,11 +3,11 @@ package me.confuser.banmanager.common.commands.report;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CloseSubCommandTest extends BasePluginDbTest {
 

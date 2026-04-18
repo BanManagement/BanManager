@@ -9,6 +9,7 @@ import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
 import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
+import me.confuser.banmanager.common.util.StorageUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +61,7 @@ public class MigrationRunner {
 
     String detectionTableName = dbConfig.getTable(detectionTableKey).getTableName();
 
-    int latestVersion = migrations.get(migrations.size() - 1).version;
+    int latestVersion = migrations.get(migrations.size() - 1).version();
     boolean isH2 = dbConfig.getStorageType().equals("h2");
 
     DatabaseConnection conn = connectionSource.getReadWriteConnection("");
@@ -88,18 +89,18 @@ public class MigrationRunner {
 
         int applied = 0;
         for (MigrationFile migration : migrations) {
-          if (migration.version <= currentVersion) {
+          if (migration.version() <= currentVersion) {
             continue;
           }
 
-          plugin.getLogger().info("[Migration:" + instanceScope + "] Applying V" + migration.version + " " + migration.description);
-          String sql = loadSqlFile(migration.filename);
+          plugin.getLogger().info("[Migration:" + instanceScope + "] Applying V" + migration.version() + " " + migration.description());
+          String sql = loadSqlFile(migration.filename());
           if (sql.isEmpty()) {
-            throw new SQLException("[Migration:" + instanceScope + "] Migration file not found or empty: " + migration.filename);
+            throw new SQLException("[Migration:" + instanceScope + "] Migration file not found or empty: " + migration.filename());
           }
           sql = substitutePlaceholders(sql);
-          executeMigrationStatements(conn, sql, migration.lenient);
-          insertVersion(conn, migration.version, migration.description);
+          executeMigrationStatements(conn, sql, migration.lenient());
+          insertVersion(conn, migration.version(), migration.description());
           applied++;
         }
 
@@ -117,21 +118,16 @@ public class MigrationRunner {
   }
 
   private void acquireAdvisoryLock(DatabaseConnection conn) throws SQLException {
-    CompiledStatement stmt = conn.compileStatement(
+    try (CompiledStatement stmt = conn.compileStatement(
         "SELECT GET_LOCK('bm_migration_" + instanceScope + "', 30)",
         StatementBuilder.StatementType.SELECT, null,
         DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-    try {
-      DatabaseResults results = stmt.runQuery(null);
-      try {
-        if (!results.next() || results.getInt(0) != 1) {
-          throw new SQLException("[Migration:" + instanceScope + "] Could not acquire advisory lock (another server may be migrating)");
-        }
-      } finally {
-        closeQuietly(results);
+         DatabaseResults results = stmt.runQuery(null)) {
+      if (!results.next() || results.getInt(0) != 1) {
+        throw new SQLException("[Migration:" + instanceScope + "] Could not acquire advisory lock (another server may be migrating)");
       }
-    } finally {
-      closeQuietly(stmt);
+    } catch (Exception e) {
+      throw StorageUtils.toSqlException("[Migration:" + instanceScope + "] Failed acquiring advisory lock", e);
     }
   }
 
@@ -178,7 +174,7 @@ public class MigrationRunner {
       plugin.getLogger().warning("[Migration:" + instanceScope + "] Failed to read manifest: " + e.getMessage());
     }
 
-    migrations.sort(Comparator.comparingInt(m -> m.version));
+    migrations.sort(Comparator.comparingInt(MigrationFile::version));
     return migrations;
   }
 
@@ -193,26 +189,26 @@ public class MigrationRunner {
   }
 
   private int getCurrentVersion(DatabaseConnection conn) throws SQLException {
-    try {
-      CompiledStatement stmt = conn.compileStatement(
-          "SELECT COALESCE(MAX(version), 0) FROM " + SCHEMA_TABLE + " WHERE scope = ?",
-          StatementBuilder.StatementType.SELECT, null,
-          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-      try {
-        stmt.setObject(0, instanceScope, SqlType.STRING);
-        DatabaseResults results = stmt.runQuery(null);
-        try {
-          if (results.next()) {
-            return results.getInt(0);
-          }
-        } finally {
-          closeQuietly(results);
+    try (CompiledStatement stmt = conn.compileStatement(
+        "SELECT COALESCE(MAX(version), 0) FROM " + SCHEMA_TABLE + " WHERE scope = ?",
+        StatementBuilder.StatementType.SELECT, null,
+        DatabaseConnection.DEFAULT_RESULT_FLAGS, false)) {
+      stmt.setObject(0, instanceScope, SqlType.STRING);
+      try (DatabaseResults results = stmt.runQuery(null)) {
+        if (results.next()) {
+          return results.getInt(0);
         }
-      } finally {
-        closeQuietly(stmt);
       }
     } catch (SQLException e) {
-      // Table may not exist yet
+      // The schema_version table is created above via TableUtils.createTableIfNotExists,
+      // so an SQLException here usually indicates a real failure (permissions, deadlock,
+      // wrong scope value, etc.) rather than a missing table. Log it so the operator can
+      // diagnose, then fall through to 0 so we re-baseline rather than silently no-op.
+      plugin.getLogger().warning("[Migration:" + instanceScope
+          + "] Failed to read schema_version, treating as baseline V0", e);
+    } catch (Exception e) {
+      plugin.getLogger().warning("[Migration:" + instanceScope
+          + "] Unexpected error reading schema_version, treating as baseline V0", e);
     }
     return 0;
   }
@@ -226,8 +222,7 @@ public class MigrationRunner {
         return "";
       }
 
-      byte[] bytes = readAllBytes(is);
-      return new String(bytes, StandardCharsets.UTF_8);
+      return new String(is.readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException e) {
       plugin.getLogger().warning("[Migration:" + instanceScope + "] Failed to read SQL file: " + path);
       return "";
@@ -334,67 +329,20 @@ public class MigrationRunner {
 
   private void insertVersion(DatabaseConnection conn, int version, String description) throws SQLException {
     long appliedAt = System.currentTimeMillis() / 1000L;
-    CompiledStatement stmt = conn.compileStatement(
+    try (CompiledStatement stmt = conn.compileStatement(
         "INSERT INTO " + SCHEMA_TABLE + " (version, description, appliedAt, scope) VALUES (?, ?, ?, ?)",
         StatementBuilder.StatementType.UPDATE, null,
-        DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
-    try {
+        DatabaseConnection.DEFAULT_RESULT_FLAGS, false)) {
       stmt.setObject(0, version, SqlType.INTEGER);
       stmt.setObject(1, description, SqlType.STRING);
       stmt.setObject(2, appliedAt, SqlType.LONG);
       stmt.setObject(3, instanceScope, SqlType.STRING);
       stmt.runUpdate();
-    } finally {
-      closeQuietly(stmt);
+    } catch (Exception e) {
+      throw StorageUtils.toSqlException("[Migration:" + instanceScope + "] Failed inserting schema version", e);
     }
   }
 
-  private static void closeQuietly(CompiledStatement stmt) {
-    if (stmt != null) {
-      try { stmt.close(); } catch (IOException ignored) { }
-    }
-  }
-
-  private static void closeQuietly(DatabaseResults results) {
-    if (results != null) {
-      try { results.close(); } catch (IOException ignored) { }
-    }
-  }
-
-  private static byte[] readAllBytes(InputStream is) throws IOException {
-    byte[] buffer = new byte[4096];
-    int bytesRead;
-    List<byte[]> chunks = new ArrayList<>();
-    int totalLen = 0;
-
-    while ((bytesRead = is.read(buffer)) != -1) {
-      byte[] chunk = new byte[bytesRead];
-      System.arraycopy(buffer, 0, chunk, 0, bytesRead);
-      chunks.add(chunk);
-      totalLen += bytesRead;
-    }
-
-    byte[] result = new byte[totalLen];
-    int offset = 0;
-    for (byte[] chunk : chunks) {
-      System.arraycopy(chunk, 0, result, offset, chunk.length);
-      offset += chunk.length;
-    }
-
-    return result;
-  }
-
-  static class MigrationFile {
-    final String filename;
-    final int version;
-    final String description;
-    final boolean lenient;
-
-    MigrationFile(String filename, int version, String description, boolean lenient) {
-      this.filename = filename;
-      this.version = version;
-      this.description = description;
-      this.lenient = lenient;
-    }
+  record MigrationFile(String filename, int version, String description, boolean lenient) {
   }
 }

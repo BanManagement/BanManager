@@ -1,13 +1,13 @@
 package me.confuser.banmanager.common;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Verifies that plugin startup does not write to System.err via
@@ -18,7 +18,7 @@ public class StderrRegressionTest extends BasePluginDbTest {
   private PrintStream originalErr;
   private ByteArrayOutputStream errCapture;
 
-  @Before
+  @BeforeEach
   @Override
   public void setup() throws Exception {
     originalErr = System.err;
@@ -28,7 +28,7 @@ public class StderrRegressionTest extends BasePluginDbTest {
     super.setup();
   }
 
-  @After
+  @AfterEach
   @Override
   public void cleanup() {
     super.cleanup();
@@ -56,7 +56,7 @@ public class StderrRegressionTest extends BasePluginDbTest {
           offendingLines.append(line).append("\n");
         }
       }
-      assertEquals("No e.printStackTrace() output should appear during startup:\n" + offendingLines, 0, offendingLines.length());
+      assertEquals(0, offendingLines.length(), "No e.printStackTrace() output should appear during startup:\n" + offendingLines);
     }
   }
 }

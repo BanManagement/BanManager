@@ -3,6 +3,7 @@ package me.confuser.banmanager.common.configuration.file;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerializable;
 import me.confuser.banmanager.common.configuration.serialization.ConfigurationSerialization;
+import me.confuser.banmanager.common.snakeyaml.DumperOptions;
 import me.confuser.banmanager.common.snakeyaml.nodes.Node;
 import me.confuser.banmanager.common.snakeyaml.representer.Representer;
 
@@ -11,7 +12,8 @@ import java.util.Map;
 
 class YamlRepresenter extends Representer {
 
-    YamlRepresenter() {
+    YamlRepresenter(DumperOptions options) {
+        super(options);
         this.multiRepresenters.put(ConfigurationSection.class, new RepresentConfigurationSection());
         this.multiRepresenters
             .put(ConfigurationSerializable.class, new RepresentConfigurationSerializable());

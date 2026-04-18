@@ -48,24 +48,28 @@ mavenPublishing {
 dependencies {
     api(project(":BanManagerLibs"))
 
-    testImplementation("junit:junit:4.13")
-    testImplementation("org.hamcrest:hamcrest-library:1.2.1")
-    testImplementation("org.powermock:powermock-module-junit4:2.0.2")
-    testImplementation("org.powermock:powermock-api-mockito2:2.0.2")
-    testImplementation("com.github.javafaker:javafaker:1.0.2")
-    testImplementation("org.awaitility:awaitility:4.0.1")
-    testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:2.6.0")
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("net.datafaker:datafaker:2.5.4")
+    testImplementation("org.awaitility:awaitility:4.3.0")
+    testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:3.3.1")
 }
 
 tasks.withType<Test>().configureEach {
-    useJUnit()
+    useJUnitPlatform()
     maxHeapSize = "512m"
-    forkEvery = 1  // Fork a new JVM for each test class to prevent memory accumulation
+    // Fork a new JVM per test class. Several tests (storage, configs, MariaDB4j) leak
+    // static state - native handles, jdbc drivers, daemon executors - that hangs the
+    // suite if a single JVM keeps accumulating fixtures. Slower, but reliable.
+    forkEvery = 1
     finalizedBy(tasks.jacocoTestReport)
 }
 
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = "0.8.12"
 }
 
 tasks.jacocoTestReport {

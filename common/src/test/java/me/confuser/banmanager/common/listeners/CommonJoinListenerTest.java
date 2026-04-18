@@ -6,8 +6,8 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class CommonJoinListenerTest extends BasePluginDbTest {
@@ -23,7 +23,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
   private CommonJoinListener listener;
   private IPAddress testIp;
 
-  @Before
+  @BeforeEach
   public void setupListener() throws UnknownHostException {
     listener = new CommonJoinListener(plugin);
     testIp = IPUtils.toIPAddress(InetAddress.getByName("192.168.1.100"));
@@ -59,7 +59,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     // The cache should have been populated - we can't directly access it,
     // but we can verify by calling onPlayerLogin and seeing if it uses the cached value
     // For now, verify that the method completed without error
-    assertFalse("Should not deny during banCheck for multiaccounts", denied.get());
+    assertFalse(denied.get(), "Should not deny during banCheck for multiaccounts");
   }
 
   @Test
@@ -97,7 +97,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
 
     testListener.onPlayerLogin(testPlayer, loginHandler);
 
-    assertTrue("Should deny login when multiaccounts count exceeds limit", loginDenied.get());
+    assertTrue(loginDenied.get(), "Should deny login when multiaccounts count exceeds limit");
   }
 
   @Test
@@ -131,7 +131,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     AtomicBoolean loginDenied = new AtomicBoolean(false);
     testListener.onPlayerLogin(testPlayer, createHandler(loginDenied));
 
-    assertFalse("Should allow login when player has exempt permission", loginDenied.get());
+    assertFalse(loginDenied.get(), "Should allow login when player has exempt permission");
   }
 
   @Test
@@ -158,7 +158,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     AtomicBoolean loginDenied = new AtomicBoolean(false);
     testListener.onPlayerLogin(testPlayer, createHandler(loginDenied));
 
-    assertFalse("Should allow login (fail-open) when cache is empty", loginDenied.get());
+    assertFalse(loginDenied.get(), "Should allow login (fail-open) when cache is empty");
   }
 
   @Test
@@ -191,7 +191,7 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     AtomicBoolean loginDenied = new AtomicBoolean(false);
     testListener.onPlayerLogin(testPlayer, createHandler(loginDenied));
 
-    assertFalse("Should allow login when count is within limit", loginDenied.get());
+    assertFalse(loginDenied.get(), "Should allow login when count is within limit");
   }
 
   @Test
@@ -206,13 +206,13 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     testListener.onPreJoin(existingPlayer.getUUID(), existingPlayer.getName(), testIp);
 
     // Session should be in DB and tracked in memory
-    assertTrue("Session should be active", plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()));
+    assertTrue(plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()), "Session should be active");
 
     // Verify the session is in the database with correct data
     java.util.List<me.confuser.banmanager.common.data.PlayerHistoryData> sessions = plugin.getPlayerHistoryStorage().queryForAll();
-    assertEquals("Should have one session", 1, sessions.size());
-    assertEquals("Recorded name should match", existingPlayer.getName(), sessions.get(0).getName());
-    assertNotNull("Session should have IP", sessions.get(0).getIp());
+    assertEquals(1, sessions.size(), "Should have one session");
+    assertEquals(existingPlayer.getName(), sessions.get(0).getName(), "Recorded name should match");
+    assertNotNull(sessions.get(0).getIp(), "Session should have IP");
 
     // Clean up - end the session
     plugin.getPlayerHistoryStorage().endSession(existingPlayer.getUUID());
@@ -236,13 +236,13 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
     testListener.onPreJoin(existingPlayer.getUUID(), existingPlayer.getName(), testIp);
 
     // Session should be active
-    assertTrue("Session should be active", plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()));
+    assertTrue(plugin.getPlayerHistoryStorage().hasActiveSession(existingPlayer.getUUID()), "Session should be active");
 
     // Verify session has null IP in database
     java.util.List<me.confuser.banmanager.common.data.PlayerHistoryData> sessions = plugin.getPlayerHistoryStorage().queryForAll();
-    assertEquals("Should have one session", 1, sessions.size());
-    assertEquals("Recorded name should match", existingPlayer.getName(), sessions.get(0).getName());
-    assertNull("Session should NOT have IP when logIps is disabled", sessions.get(0).getIp());
+    assertEquals(1, sessions.size(), "Should have one session");
+    assertEquals(existingPlayer.getName(), sessions.get(0).getName(), "Recorded name should match");
+    assertNull(sessions.get(0).getIp(), "Session should NOT have IP when logIps is disabled");
 
     // Clean up - end the session
     plugin.getPlayerHistoryStorage().endSession(existingPlayer.getUUID());

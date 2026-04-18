@@ -19,7 +19,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
-
+import me.confuser.banmanager.common.util.StorageUtils;
 import me.confuser.banmanager.common.util.StringUtils;
 import me.confuser.banmanager.common.util.parsers.InfoCommandParser;
 
@@ -131,12 +131,12 @@ public class InfoCommand extends CommonCommand {
 
       for (HistoryEntry result : results) {
         Message message = Message.get("info.history.row")
-            .set("id", result.getId())
-            .set("reason", result.getReason())
-            .set("type", result.getType())
-            .set("created", DateUtils.format(dateTimeFormat, result.getCreated()))
-            .set("actor", result.getActor())
-            .set("meta", result.getMeta());
+            .set("id", result.id())
+            .set("reason", result.reason())
+            .set("type", result.type())
+            .set("created", DateUtils.format(dateTimeFormat, result.created()))
+            .set("actor", result.actor())
+            .set("meta", result.meta());
 
         messages.add(message.toString());
       }
@@ -390,12 +390,12 @@ public class InfoCommand extends CommonCommand {
 
         for (HistoryEntry result : results) {
           Message message = Message.get("info.history.row")
-              .set("id", result.getId())
-              .set("reason", result.getReason())
-              .set("type", result.getType())
-              .set("created", DateUtils.format(dateTimeFormat, result.getCreated()))
-              .set("actor", result.getActor())
-              .set("meta", result.getMeta());
+              .set("id", result.id())
+              .set("reason", result.reason())
+              .set("type", result.type())
+              .set("created", DateUtils.format(dateTimeFormat, result.created()))
+              .set("actor", result.actor())
+              .set("meta", result.meta());
 
           messages.add(message.toString());
         }
@@ -445,13 +445,13 @@ public class InfoCommand extends CommonCommand {
                 }
               }
             } finally {
-              try { results.close(); } catch (IOException ignored) { }
+              try { results.close(); } catch (Exception ignored) { }
             }
           } finally {
-            try { stmt.close(); } catch (IOException ignored) { }
+            try { stmt.close(); } catch (Exception ignored) { }
           }
-        } catch (IOException e) {
-          throw new SQLException("Failed to query player stats", e);
+        } catch (Exception e) {
+          throw StorageUtils.toSqlException("Failed to query player stats", e);
         }
 
         messages.add(Message.get("info.stats.player")
@@ -538,7 +538,7 @@ public class InfoCommand extends CommonCommand {
             } else {
               StringBuilder namesBuilder = new StringBuilder();
               for (PlayerNameSummary nameData : playerNames) {
-                namesBuilder.append(nameData.getName()).append(", ");
+                namesBuilder.append(nameData.name()).append(", ");
               }
               if (namesBuilder.length() >= 2) namesBuilder.setLength(namesBuilder.length() - 2);
               messages.add(namesBuilder.toString());

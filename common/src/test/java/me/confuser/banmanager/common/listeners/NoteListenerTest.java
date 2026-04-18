@@ -5,10 +5,10 @@ import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
 import me.confuser.banmanager.common.util.Message;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class NoteListenerTest extends BasePluginDbTest {
@@ -16,7 +16,7 @@ public class NoteListenerTest extends BasePluginDbTest {
   public void shouldBroadcast() {
     PlayerData player = testUtils.createRandomPlayer();
     BanManagerPlugin plugin = spy(this.plugin);
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = plugin.getServer().getConsoleSender();
     PlayerNoteData data = new PlayerNoteData(player, sender.getData(), "test");
     CommonPlayer testPlayer = spy(new TestPlayer(sender.getData().getUUID(), sender.getName(), false));

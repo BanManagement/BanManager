@@ -1,6 +1,6 @@
 package me.confuser.banmanager.common;
 
-import com.github.javafaker.Faker;
+import net.datafaker.Faker;
 import lombok.AllArgsConstructor;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
@@ -35,7 +35,7 @@ public class TestUtils {
   }
 
   public String createRandomPlayerName() {
-    String name = faker.name().username();
+    String name = faker.credentials().username();
 
     return name.substring(0, Math.min(name.length(), 16));
   }

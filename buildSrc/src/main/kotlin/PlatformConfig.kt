@@ -2,18 +2,12 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.plugins.quality.CheckstyleExtension
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.javadoc.Javadoc
-import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.gradle.kotlin.dsl.the
 
@@ -34,7 +28,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     ext["internalVersion"] = internalVersion
 
-    // Java 8 turns on doclint which we fail
+    // Suppress doclint to keep javadoc builds green; tags below document supported custom tags.
     tasks.withType<Javadoc>().configureEach {
         (options as StandardJavadocDocletOptions).apply {
             addStringOption("Xdoclint:none", "-quiet")

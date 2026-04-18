@@ -19,7 +19,7 @@ public class CommonHooksListener {
   }
 
   private boolean shouldSkip(Hook hook, boolean silent) {
-    return silent && hook.isIgnoreSilent();
+    return silent && hook.ignoreSilent();
   }
 
   public void onBan(PlayerBanData data, boolean pre) {
@@ -33,7 +33,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
@@ -57,8 +57,8 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPost(), ImmutableMap.of(
+    if (hook.post().size() != 0) {
+      executeCommands(hook.post(), ImmutableMap.of(
           "player", data.getPlayer().getName()
           , "playerId", data.getPlayer().getUUID().toString()
           , "actor", actor.getName()
@@ -79,7 +79,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
@@ -103,8 +103,8 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPost(), ImmutableMap.of(
+    if (hook.post().size() != 0) {
+      executeCommands(hook.post(), ImmutableMap.of(
           "player", data.getPlayer().getName()
           , "playerId", data.getPlayer().getUUID().toString()
           , "actor", actor.getName()
@@ -125,7 +125,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
@@ -148,8 +148,8 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPost(), ImmutableMap.of(
+    if (hook.post().size() != 0) {
+      executeCommands(hook.post(), ImmutableMap.of(
           "ip", data.getIp().toString()
           , "actor", actor.getName()
           , "reason", reason
@@ -170,7 +170,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
@@ -194,8 +194,8 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPost(), ImmutableMap.of(
+    if (hook.post().size() != 0) {
+      executeCommands(hook.post(), ImmutableMap.of(
           "from", data.getFromIp().toString()
           , "to", data.getToIp().toString()
           , "actor", actor.getName()
@@ -216,7 +216,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(
@@ -240,8 +240,8 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    if (hook.getPost().size() != 0) {
-      executeCommands(hook.getPost(), ImmutableMap.of(
+    if (hook.post().size() != 0) {
+      executeCommands(hook.post(), ImmutableMap.of(
           "player", data.getPlayer().getName()
           , "playerId", data.getPlayer().getUUID().toString()
           , "actor", data.getActor().getName()
@@ -261,7 +261,7 @@ public class CommonHooksListener {
     if (hook == null) return;
     if (shouldSkip(hook, silent)) return;
 
-    List<ActionCommand> commands = pre ? hook.getPre() : hook.getPost();
+    List<ActionCommand> commands = pre ? hook.pre() : hook.post();
 
     if (commands.size() != 0) {
       executeCommands(commands, ImmutableMap.of(

@@ -4,11 +4,11 @@ import me.confuser.banmanager.common.BasePluginTest;
 import me.confuser.banmanager.common.TestLogger;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.kyori.text.Component;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class MessageLoadingTest extends BasePluginTest {
@@ -67,7 +67,7 @@ public class MessageLoadingTest extends BasePluginTest {
     String result = Message.get("test.msg").toString();
 
     for (String line : result.split("\n", -1)) {
-      assertFalse("Empty lines should contain a space for chat rendering", line.isEmpty());
+      assertFalse(line.isEmpty(), "Empty lines should contain a space for chat rendering");
     }
   }
 }

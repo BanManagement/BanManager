@@ -1,8 +1,8 @@
 package me.confuser.banmanager.common.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 // From apache commons lang3
 public class StringUtilsTest {

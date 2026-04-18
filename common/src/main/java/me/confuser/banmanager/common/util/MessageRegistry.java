@@ -4,14 +4,7 @@ import java.util.*;
 
 public class MessageRegistry {
 
-  private static final class Snapshot {
-    final String defaultLocale;
-    final Map<String, Map<String, String>> locales;
-
-    Snapshot(String defaultLocale, Map<String, Map<String, String>> locales) {
-      this.defaultLocale = defaultLocale;
-      this.locales = locales;
-    }
+  private record Snapshot(String defaultLocale, Map<String, Map<String, String>> locales) {
   }
 
   private volatile Snapshot snapshot;
@@ -26,33 +19,33 @@ public class MessageRegistry {
   }
 
   public String getDefaultLocale() {
-    return snapshot.defaultLocale;
+    return snapshot.defaultLocale();
   }
 
   public void loadLocale(String locale, Map<String, String> messages) {
     String normalised = normaliseLocale(locale);
     Snapshot s = this.snapshot;
-    Map<String, Map<String, String>> copy = new HashMap<>(s.locales);
-    copy.put(normalised, Collections.unmodifiableMap(new HashMap<>(messages)));
-    this.snapshot = new Snapshot(s.defaultLocale, copy);
+    Map<String, Map<String, String>> copy = new HashMap<>(s.locales());
+    copy.put(normalised, Map.copyOf(messages));
+    this.snapshot = new Snapshot(s.defaultLocale(), copy);
   }
 
   public String getMessage(String key, String locale) {
     String normalised = normaliseLocale(locale);
     Snapshot s = this.snapshot;
 
-    String value = getFromLocale(s.locales, key, normalised);
+    String value = getFromLocale(s.locales(), key, normalised);
     if (value != null) return value;
 
     int underscore = normalised.indexOf('_');
     if (underscore > 0) {
       String baseLanguage = normalised.substring(0, underscore);
-      value = getFromLocale(s.locales, key, baseLanguage);
+      value = getFromLocale(s.locales(), key, baseLanguage);
       if (value != null) return value;
     }
 
-    if (!normalised.equals(s.defaultLocale)) {
-      value = getFromLocale(s.locales, key, s.defaultLocale);
+    if (!normalised.equals(s.defaultLocale())) {
+      value = getFromLocale(s.locales(), key, s.defaultLocale());
       if (value != null) return value;
     }
 
@@ -60,17 +53,17 @@ public class MessageRegistry {
   }
 
   public String getMessage(String key) {
-    return getMessage(key, snapshot.defaultLocale);
+    return getMessage(key, snapshot.defaultLocale());
   }
 
   public void putMessage(String key, String message) {
-    putMessage(key, message, snapshot.defaultLocale);
+    putMessage(key, message, snapshot.defaultLocale());
   }
 
   public void putMessage(String key, String message, String locale) {
     String normalised = normaliseLocale(locale);
     Snapshot s = this.snapshot;
-    Map<String, Map<String, String>> copy = new HashMap<>(s.locales);
+    Map<String, Map<String, String>> copy = new HashMap<>(s.locales());
     Map<String, String> localeMessages = copy.get(normalised);
 
     if (localeMessages == null) {
@@ -80,29 +73,29 @@ public class MessageRegistry {
     }
 
     localeMessages.put(key, message);
-    copy.put(normalised, Collections.unmodifiableMap(localeMessages));
-    this.snapshot = new Snapshot(s.defaultLocale, copy);
+    copy.put(normalised, Map.copyOf(localeMessages));
+    this.snapshot = new Snapshot(s.defaultLocale(), copy);
   }
 
   public Set<String> getAvailableLocales() {
-    return Collections.unmodifiableSet(new HashSet<>(snapshot.locales.keySet()));
+    return Set.copyOf(snapshot.locales().keySet());
   }
 
   public Set<String> getKeys(String locale) {
-    Map<String, String> localeMessages = snapshot.locales.get(normaliseLocale(locale));
+    Map<String, String> localeMessages = snapshot.locales().get(normaliseLocale(locale));
     if (localeMessages == null) return Collections.emptySet();
     return Collections.unmodifiableSet(localeMessages.keySet());
   }
 
   public Map<String, String> getMessages(String locale) {
-    Map<String, String> localeMessages = snapshot.locales.get(normaliseLocale(locale));
+    Map<String, String> localeMessages = snapshot.locales().get(normaliseLocale(locale));
     if (localeMessages == null) return Collections.emptyMap();
     return localeMessages;
   }
 
   public boolean hasAnyMessages() {
     Snapshot s = this.snapshot;
-    for (Map<String, String> msgs : s.locales.values()) {
+    for (Map<String, String> msgs : s.locales().values()) {
       if (!msgs.isEmpty()) return true;
     }
     return false;
@@ -110,7 +103,7 @@ public class MessageRegistry {
 
   public int getMissingKeyCount(String locale) {
     Snapshot s = this.snapshot;
-    Set<String> defaultKeys = getKeysFromSnapshot(s, s.defaultLocale);
+    Set<String> defaultKeys = getKeysFromSnapshot(s, s.defaultLocale());
     Set<String> localeKeys = getKeysFromSnapshot(s, normaliseLocale(locale));
     int missing = 0;
 
@@ -126,7 +119,7 @@ public class MessageRegistry {
   }
 
   private static Set<String> getKeysFromSnapshot(Snapshot s, String locale) {
-    Map<String, String> messages = s.locales.get(locale);
+    Map<String, String> messages = s.locales().get(locale);
     if (messages == null) return Collections.emptySet();
     return messages.keySet();
   }

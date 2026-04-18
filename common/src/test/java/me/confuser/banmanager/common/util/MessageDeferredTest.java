@@ -3,18 +3,18 @@ package me.confuser.banmanager.common.util;
 import me.confuser.banmanager.common.TestLogger;
 import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.kyori.text.Component;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageDeferredTest {
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MessageRegistry registry = new MessageRegistry("en");
 
@@ -113,7 +113,7 @@ public class MessageDeferredTest {
     new Message("custom.key", "Custom message");
 
     String result = Message.getString("custom.key");
-    assertNotNull("Dynamic registration should produce a non-null result", result);
+    assertNotNull(result, "Dynamic registration should produce a non-null result");
     assertEquals("Custom message", result);
   }
 

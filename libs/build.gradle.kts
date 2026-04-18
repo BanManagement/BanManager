@@ -14,22 +14,22 @@ dependencies {
     "shade"("net.kyori:examination-string:1.3.0")
     "shade"("net.kyori:option:1.1.0")
 
-    "shade"("com.j256.ormlite:ormlite-core:5.1")
-    "shade"("com.j256.ormlite:ormlite-jdbc:5.1")
+    "shade"("com.j256.ormlite:ormlite-core:6.1")
+    "shade"("com.j256.ormlite:ormlite-jdbc:6.1")
 
-    "shade"("com.zaxxer:HikariCP:4.0.3")
-    "shade"("org.mariadb.jdbc:mariadb-java-client:2.7.4")
-    "shade"("mysql:mysql-connector-java:8.0.27")
+    "shade"("com.zaxxer:HikariCP:6.3.3")
+    "shade"("org.mariadb.jdbc:mariadb-java-client:3.5.7")
+    "shade"("com.mysql:mysql-connector-j:8.4.0")
     "shade"("com.googlecode.concurrent-trees:concurrent-trees:2.4.0")
     "shade"("com.maxmind.db:maxmind-db-gson:2.0.3")
 
-    "shade"("org.yaml:snakeyaml:1.29")
-    "shade"("com.google.code.gson:gson:2.3.1")
+    "shade"("org.yaml:snakeyaml:2.4")
+    "shade"("com.google.code.gson:gson:2.11.0")
     "shade"("com.github.spullara.cli-parser:cli-parser:1.1.5")
-    "shade"("com.google.guava:guava:21.0")
+    "shade"("com.google.guava:guava:33.4.8-jre")
 
-    "shade"("org.apache.commons:commons-compress:1.19")
-    "shade"("com.github.seancfoley:ipaddress:5.3.4")
+    "shade"("org.apache.commons:commons-compress:1.27.1")
+    "shade"("com.github.seancfoley:ipaddress:5.5.1")
     "shade"("com.h2database:h2:1.4.200")
 }
 
@@ -74,8 +74,8 @@ tasks.named<ShadowJar>("jar") {
         }
 
         relocate("com.j256.ormlite", "me.confuser.banmanager.common.ormlite") {
-            include(dependency("com.j256.ormlite:ormlite-core:5.1"))
-            include(dependency("com.j256.ormlite:ormlite-jdbc:5.1"))
+            include(dependency("com.j256.ormlite:ormlite-core"))
+            include(dependency("com.j256.ormlite:ormlite-jdbc"))
         }
 
         relocate("com.zaxxer.hikari", "me.confuser.banmanager.common.hikari") {
@@ -87,7 +87,7 @@ tasks.named<ShadowJar>("jar") {
         }
 
         relocate("com.mysql", "me.confuser.banmanager.common.mysql") {
-            include(dependency("mysql:mysql-connector-java"))
+            include(dependency("com.mysql:mysql-connector-j"))
         }
 
         relocate("com.google.gson", "me.confuser.banmanager.common.gson") {

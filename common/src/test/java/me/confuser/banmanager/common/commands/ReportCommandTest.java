@@ -4,35 +4,28 @@ import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.TestPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ReportCommandTest extends BasePluginDbTest {
   private ReportCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
-    for (CommonCommand command : plugin.getCommands()) {
-      if (command.getCommandName().equals("report")) {
-        this.cmd = (ReportCommand) command;
-        break;
-      }
-    }
+    cmd = requireCommand("report");
   }
 
   @Test
   public void shouldCreateReport() throws SQLException {
-    Assume.assumeNotNull(cmd);
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test report reason"};
 
@@ -42,8 +35,7 @@ public class ReportCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldFailIfSelfReport() {
-    Assume.assumeNotNull(cmd);
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
 
     // Get sender's player data
@@ -56,7 +48,6 @@ public class ReportCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldFailIfPlayerNotFound() {
-    Assume.assumeNotNull(cmd);
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     String playerName = testUtils.createRandomPlayerName();
     String[] args = new String[]{playerName, "test report"};
@@ -67,7 +58,6 @@ public class ReportCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldFailIfNoReasonGiven() {
-    Assume.assumeNotNull(cmd);
     CommonSender sender = plugin.getServer().getConsoleSender();
     String[] args = new String[]{"confuser"};
 
@@ -121,9 +111,8 @@ public class ReportCommandTest extends BasePluginDbTest {
 
   @Test
   public void shouldNotifyStaff() throws SQLException {
-    Assume.assumeNotNull(cmd);
     PlayerData player = testUtils.createRandomPlayer();
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{player.getName(), "test report notification"};
 

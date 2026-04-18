@@ -3,19 +3,19 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class RollbackCommandTest extends BasePluginDbTest {
   private RollbackCommand cmd;
 
-  @Before
+  @BeforeEach
   public void setupCmd() {
     for (CommonCommand cmd : plugin.getCommands()) {
       if (cmd.getCommandName().equals("bmrollback")) {
@@ -65,7 +65,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
 
     assertTrue(plugin.getPlayerBanStorage().isBanned(victim.getUUID()));
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "bans"};
 
@@ -107,7 +107,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
         .countOf();
     assertEquals(1, recordCount);
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "banrecords"};
 
@@ -156,7 +156,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
         .countOf();
     assertEquals(1, recordCount);
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "banrecords"};
 
@@ -200,7 +200,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
         .countOf();
     assertEquals(1, recordCount);
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     // Rolling back banrecords for malicious mod should clean up records where they were the original banner
     String[] args = new String[]{maliciousMod.getName(), "1d", "banrecords"};
@@ -242,7 +242,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
     // Wait a bit to ensure time difference
     Thread.sleep(100);
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     // Rollback only last 1 second (ban was created more than 1 second ago)
     String[] args = new String[]{maliciousMod.getName(), "1s", "bans"};
@@ -269,7 +269,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
 
     assertTrue(plugin.getPlayerMuteStorage().isMuted(victim.getUUID()));
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "mutes"};
 
@@ -304,7 +304,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
     testUtils.unmutePlayer(mute, maliciousMod);
     assertFalse(plugin.getPlayerMuteStorage().isMuted(victim.getUUID()));
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "muterecords"};
 
@@ -347,7 +347,7 @@ public class RollbackCommandTest extends BasePluginDbTest {
         .countOf();
     assertEquals(1, recordCount);
 
-    CommonServer server = spy(plugin.getServer());
+    CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "muterecords"};
 

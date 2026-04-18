@@ -3,12 +3,12 @@ package me.confuser.banmanager.common.storage;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerBanStorageTest extends BasePluginDbTest {
 
