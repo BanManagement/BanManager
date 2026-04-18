@@ -18,8 +18,7 @@
 #
 # Platform notes:
 #   - BungeeCord: title, showTitle and playSound are not supported (ignored silently)
-#   - Sponge API7: playSound is not supported (ignored silently)
-#   - All other platforms (Bukkit/Paper, Velocity, Fabric, Sponge API8+) support all channels
+#   - All other platforms (Bukkit/Paper, Velocity, Fabric, Sponge) support all channels
 
 staff:
   ban:

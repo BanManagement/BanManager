@@ -48,9 +48,8 @@ jobs:
       - name: Build all Fabric versions
         run: ./gradlew :fabric:1.20.1:remapJar :fabric:1.21.1:remapJar :fabric:1.21.4:remapJar :fabric:1.21.11:remapJar --build-cache
 
-      # Build both Sponge modules (legacy API 7 and modern API 11+)
-      - name: Build Sponge modules
-        run: ./gradlew :BanManagerSponge:shadowJar :BanManagerSponge7:shadowJar --build-cache
+      - name: Build Sponge module
+        run: ./gradlew :BanManagerSponge:shadowJar --build-cache
 
       - name: Get version from tag
         id: version
@@ -73,7 +72,6 @@ jobs:
             [Download BungeeCord](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerBungeeCord.jar)
             [Download Velocity](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerVelocity.jar)
             [Download Sponge](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerSponge.jar)
-            [Download Sponge 7](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerSponge7.jar)
             [Download Fabric 1.20.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.20.1.jar)
             [Download Fabric 1.21.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.1.jar)
             [Download Fabric 1.21.4](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.4.jar)
@@ -83,7 +81,6 @@ jobs:
             bungee/build/libs/BanManagerBungeeCord.jar
             velocity/build/libs/BanManagerVelocity.jar
             sponge/build/libs/BanManagerSponge.jar
-            sponge-api7/build/libs/BanManagerSponge7.jar
             fabric/versions/1.20.1/build/libs/BanManagerFabric-mc1.20.1.jar
             fabric/versions/1.21.1/build/libs/BanManagerFabric-mc1.21.1.jar
             fabric/versions/1.21.4/build/libs/BanManagerFabric-mc1.21.4.jar
