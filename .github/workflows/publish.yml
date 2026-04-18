@@ -72,6 +72,7 @@ jobs:
             release-jars/BanManagerFabric-mc1.20.1.jar
             release-jars/BanManagerFabric-mc1.21.1.jar
             release-jars/BanManagerFabric-mc1.21.4.jar
+            release-jars/BanManagerFabric-mc1.21.11.jar
           name: "BanManager v${{ needs.download-assets.outputs.version }}"
           version: ${{ needs.download-assets.outputs.version }}
           version-type: release
@@ -81,6 +82,7 @@ jobs:
             1.20.1
             1.21.1
             1.21.4
+            1.21.11
           game-version-filter: releases
           dependencies: |
             fabric-api@* (required)

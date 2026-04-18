@@ -46,7 +46,7 @@ jobs:
 
       # Build all Fabric versions
       - name: Build all Fabric versions
-        run: ./gradlew :fabric:1.20.1:remapJar :fabric:1.21.1:remapJar :fabric:1.21.4:remapJar --build-cache
+        run: ./gradlew :fabric:1.20.1:remapJar :fabric:1.21.1:remapJar :fabric:1.21.4:remapJar :fabric:1.21.11:remapJar --build-cache
 
       # Build both Sponge modules (legacy API 7 and modern API 11+)
       - name: Build Sponge modules
@@ -77,6 +77,7 @@ jobs:
             [Download Fabric 1.20.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.20.1.jar)
             [Download Fabric 1.21.1](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.1.jar)
             [Download Fabric 1.21.4](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.4.jar)
+            [Download Fabric 1.21.11](https://github.com/BanManagement/BanManager/releases/download/v${{ steps.version.outputs.VERSION }}/BanManagerFabric-mc1.21.11.jar)
           files: |
             bukkit/build/libs/BanManagerBukkit.jar
             bungee/build/libs/BanManagerBungeeCord.jar
@@ -86,3 +87,4 @@ jobs:
             fabric/versions/1.20.1/build/libs/BanManagerFabric-mc1.20.1.jar
             fabric/versions/1.21.1/build/libs/BanManagerFabric-mc1.21.1.jar
             fabric/versions/1.21.4/build/libs/BanManagerFabric-mc1.21.4.jar
+            fabric/versions/1.21.11/build/libs/BanManagerFabric-mc1.21.11.jar
