@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -135,15 +134,6 @@ public class SpongePlayer implements CommonPlayer {
   @Override
   public boolean canSee(CommonPlayer player) {
     return getPlayer().canSee(Sponge.getServer().getPlayer(player.getUniqueId()).get());
-  }
-
-  @Override
-  public String getLocale() {
-    Player p = getPlayer();
-    if (p == null) return "en";
-    java.util.Locale locale = p.getLocale();
-    if (locale == null) return "en";
-    return MessageRegistry.normaliseLocale(locale.toString());
   }
 
   private Player getPlayer() {

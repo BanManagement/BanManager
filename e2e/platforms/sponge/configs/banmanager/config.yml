@@ -1,9 +1,5 @@
 #
 # Aliases will be found and blocked automatically, e.g. msg will block tell
-locale:
-  default: en
-  perPlayer: true
-
 debug: false
 databases:
   local:

@@ -66,7 +66,7 @@ public class BanSync extends BmRunnable {
               .set("reason", ban.getReason())
               .set("actor", ban.getActor().getName());
 
-          bukkitPlayer.kick(kickMessage);
+          bukkitPlayer.kick(kickMessage.toString());
         });
 
       }

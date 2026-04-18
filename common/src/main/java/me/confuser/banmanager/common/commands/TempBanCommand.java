@@ -190,7 +190,7 @@ public class TempBanCommand extends CommonCommand {
         if (onlinePlayer != null) {
           final Message finalKickMessage = kickMessage;
           getPlugin().getScheduler().runSync(() -> {
-            onlinePlayer.kick(finalKickMessage);
+            onlinePlayer.kick(finalKickMessage.toString());
           });
         }
 

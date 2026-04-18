@@ -46,7 +46,7 @@ public class CommonMuteListener {
         .set("reason", data.getReason());
 
     if (!silent) {
-      plugin.getServer().broadcast(message, broadcastPermission);
+      plugin.getServer().broadcast(message.toString(), broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
@@ -97,7 +97,7 @@ public class CommonMuteListener {
         .set("players", playerNames.toString());
 
     if (!silent) {
-      plugin.getServer().broadcast(message, broadcastPermission);
+      plugin.getServer().broadcast(message.toString(), broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;

@@ -41,51 +41,6 @@ public class PlayerStorageTest extends BasePluginDbTest {
   }
 
   @Test
-  public void shouldPersistLocale() throws SQLException {
-    PlayerStorage playerStorage = plugin.getPlayerStorage();
-
-    UUID uuid = UUID.randomUUID();
-    PlayerData data = new PlayerData(uuid, "LocalePlayer");
-    data.setLocale("de");
-
-    playerStorage.upsert(data);
-
-    PlayerData retrieved = playerStorage.retrieve("LocalePlayer", false);
-    assertNotNull(retrieved);
-    assertEquals("de", retrieved.getLocale());
-  }
-
-  @Test
-  public void shouldUpdateLocale() throws SQLException {
-    PlayerStorage playerStorage = plugin.getPlayerStorage();
-
-    UUID uuid = UUID.randomUUID();
-    PlayerData data = new PlayerData(uuid, "LocaleUpdate");
-    data.setLocale("en");
-    playerStorage.upsert(data);
-
-    data.setLocale("fr");
-    playerStorage.upsert(data);
-
-    PlayerData retrieved = playerStorage.retrieve("LocaleUpdate", false);
-    assertNotNull(retrieved);
-    assertEquals("fr", retrieved.getLocale());
-  }
-
-  @Test
-  public void shouldHandleNullLocale() throws SQLException {
-    PlayerStorage playerStorage = plugin.getPlayerStorage();
-
-    UUID uuid = UUID.randomUUID();
-    PlayerData data = new PlayerData(uuid, "NullLocale");
-    playerStorage.upsert(data);
-
-    PlayerData retrieved = playerStorage.retrieve("NullLocale", false);
-    assertNotNull(retrieved);
-    assertNull(retrieved.getLocale());
-  }
-
-  @Test
   public void shouldRetrievePlayerData() throws SQLException {
     PlayerStorage playerStorage = plugin.getPlayerStorage();
 

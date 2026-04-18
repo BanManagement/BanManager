@@ -12,10 +12,6 @@ public interface CommonPlayer extends CommonSender {
 
   void kick(String message);
 
-  default void kick(Message message) {
-    kick(message.resolveFor(this));
-  }
-
   void sendMessage(String message);
 
   void sendMessage(Message message);
@@ -47,6 +43,4 @@ public interface CommonPlayer extends CommonSender {
   boolean teleport(CommonWorld world, double x, double y, double z, float pitch, float yaw);
 
   boolean canSee(CommonPlayer player);
-
-  String getLocale();
 }

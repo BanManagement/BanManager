@@ -27,7 +27,7 @@ public class CommonNoteListener {
         .set("message", data.getMessage());
 
     if (!silent) {
-      plugin.getServer().broadcast(message, broadcastPermission);
+      plugin.getServer().broadcast(message.toString(), broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;

@@ -6,7 +6,6 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -169,13 +168,6 @@ public class SpongePlayer implements CommonPlayer {
 
         Optional<ServerPlayer> target = Sponge.server().player(player.getUniqueId());
         return target.map(serverPlayer -> p.canSee(serverPlayer)).orElse(false);
-    }
-
-    @Override
-    public String getLocale() {
-        ServerPlayer p = getPlayer();
-        if (p == null) return "en";
-        return MessageRegistry.normaliseLocale(p.locale().toString());
     }
 
     private ServerPlayer getPlayer() {

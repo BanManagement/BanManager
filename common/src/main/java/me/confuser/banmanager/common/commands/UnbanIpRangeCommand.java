@@ -98,7 +98,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message, "bm.notify.unbaniprange");
+        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbaniprange");
       }
     });
 

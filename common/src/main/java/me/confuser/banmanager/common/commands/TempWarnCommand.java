@@ -172,7 +172,7 @@ public class TempWarnCommand extends CommonCommand {
         message.sendTo(sender);
       }
 
-      if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.tempwarn");
+      if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.tempwarn");
 
       final List<ActionCommand> actionCommands;
 

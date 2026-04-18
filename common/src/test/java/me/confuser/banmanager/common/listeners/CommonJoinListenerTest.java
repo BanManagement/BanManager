@@ -349,9 +349,6 @@ public class CommonJoinListenerTest extends BasePluginDbTest {
 
       @Override
       public boolean canSee(CommonPlayer player) { return true; }
-
-      @Override
-      public String getLocale() { return "en"; }
     };
   }
 }

@@ -79,13 +79,13 @@ public class LoglessKickCommand extends CommonCommand {
         Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
         message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
 
-        player.kick(kickMessage);
+        player.kick(kickMessage.toString());
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
         }
 
-        if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.kick");
+        if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.kick");
       });
 
     });
