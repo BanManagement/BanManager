@@ -176,6 +176,11 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude(".cache");
     exclude("LICENSE*")
     exclude("META-INF/maven/**")
+    // BanManagerSlf4jServiceProvider only ships in (and is relocated by) Bukkit.
+    // Minecraft / Fabric provide their own SLF4J 2.x implementation, so removing
+    // the bundled provider entry avoids a ServiceConfigurationError at server
+    // bootstrap (LogUtils initialises SLF4J before BanManager's mod loads).
+    exclude("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
     exclude("/mappings/*")

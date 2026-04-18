@@ -144,6 +144,10 @@ tasks.named<ShadowJar>("shadowJar") {
     exclude(".cache");
     exclude("LICENSE*")
     exclude("META-INF/maven/**")
+    // BanManagerSlf4jServiceProvider only ships in (and is relocated by) Bukkit.
+    // Sponge provides its own SLF4J 2.x implementation, so removing the
+    // bundled provider entry avoids a ServiceConfigurationError at startup.
+    exclude("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")
     exclude("META-INF/versions/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
