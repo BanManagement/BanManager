@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release/v7
   schedule:
     - cron: "0 0 * * 0" # weekly
 
