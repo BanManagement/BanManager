@@ -29,12 +29,8 @@ public class DateUtils {
           .compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
 
   public static String formatDifference(long time) {
-    return formatDifference(time, null);
-  }
-
-  public static String formatDifference(long time, String locale) {
     if (time == 0) {
-      return locale != null ? Message.getString("never", locale) : Message.getString("never");
+      return Message.getString("never");
     }
 
     StringBuilder diff = new StringBuilder();
@@ -73,30 +69,22 @@ public class DateUtils {
         String key = timesString.get(i);
         if (duration > 1) key += "s";
 
-        if (locale != null) {
-          diff.append(Message.get("time." + key).resolve(locale));
-        } else {
-          diff.append(Message.get("time." + key));
-        }
+        diff.append(Message.get("time." + key));
 
       }
 
+      // Hack to avoid async error
       if ((field == Calendar.SECOND) && (duration == 59)) {
-        return formatDifference(time + 1, locale);
+        return formatDifference(time + 1);
       }
 
     }
 
-    String nowStr = locale != null ? Message.getString("time.now", locale) : Message.getString("time.now");
-    return diff.length() == 0 ? nowStr : diff.toString();
+    return diff.length() == 0 ? Message.getString("time.now") : diff.toString();
   }
 
   public static String getDifferenceFormat(long timestamp) {
     return formatDifference(timestamp - (System.currentTimeMillis() / 1000L));
-  }
-
-  public static String getDifferenceFormat(long timestamp, String locale) {
-    return formatDifference(timestamp - (System.currentTimeMillis() / 1000L), locale);
   }
 
   // Copyright essentials, all credits to them for this.

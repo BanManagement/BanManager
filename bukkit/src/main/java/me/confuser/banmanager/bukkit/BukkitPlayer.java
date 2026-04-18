@@ -7,7 +7,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -124,13 +123,6 @@ public class BukkitPlayer implements CommonPlayer {
 
   public boolean isOnline() {
     return getPlayer() != null;
-  }
-
-  @Override
-  public String getLocale() {
-    Player p = getPlayer();
-    if (p == null) return "en";
-    return MessageRegistry.normaliseLocale(p.getLocale());
   }
 
   private Player getPlayer() {

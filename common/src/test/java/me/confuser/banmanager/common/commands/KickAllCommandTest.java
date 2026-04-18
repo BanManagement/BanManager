@@ -3,12 +3,9 @@ package me.confuser.banmanager.common.commands;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.util.Message;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class KickAllCommandTest extends BasePluginDbTest {
@@ -49,10 +46,7 @@ public class KickAllCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
 
     verify(commonPlayer, never()).kick("&6You have been kicked");
-
-    ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
-    verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console for &4test", msgCaptor.getValue().toString());
+    verify(server).broadcast("All players have been kicked by Console for &4test", "bm.notify.kick");
   }
 
   @Test
@@ -68,10 +62,7 @@ public class KickAllCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
 
     verify(commonPlayer).kick("&6You have been kicked");
-
-    ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
-    verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console", msgCaptor.getValue().toString());
+    verify(server).broadcast("All players have been kicked by Console", "bm.notify.kick");
   }
 
   @Test
@@ -87,10 +78,7 @@ public class KickAllCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
 
     verify(commonPlayer).kick("&6You have been kicked for &4" + args[0]);
-
-    ArgumentCaptor<Message> msgCaptor = ArgumentCaptor.forClass(Message.class);
-    verify(server).broadcast(msgCaptor.capture(), eq("bm.notify.kick"));
-    assertEquals("All players have been kicked by Console for &4" + args[0], msgCaptor.getValue().toString());
+    verify(server).broadcast("All players have been kicked by Console for &4" + args[0], "bm.notify.kick");
   }
 
   @Test
@@ -106,7 +94,7 @@ public class KickAllCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
 
     verify(commonPlayer).kick("&6You have been kicked");
-    verify(server, never()).broadcast(any(Message.class), eq("bm.notify.kick"));
+    verify(server, never()).broadcast("All players have been kicked by Console", "bm.notify.kick");
   }
 
   @Test
@@ -122,6 +110,6 @@ public class KickAllCommandTest extends BasePluginDbTest {
     assert (cmd.onCommand(sender, new CommandParser(plugin, args, 0)));
 
     verify(commonPlayer).kick("&6You have been kicked for &4test reason");
-    verify(server, never()).broadcast(any(Message.class), eq("bm.notify.kick"));
+    verify(server, never()).broadcast("All players have been kicked by Console for &4test reason", "bm.notify.kick");
   }
 }

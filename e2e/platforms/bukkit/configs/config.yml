@@ -1,7 +1,3 @@
-locale:
-  default: en
-  perPlayer: true
-
 debug: false
 databases:
   local:

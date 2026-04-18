@@ -15,7 +15,6 @@ import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 //? if >=1.21.1
 import net.minecraft.network.packet.s2c.play.PositionFlag;
@@ -133,18 +132,6 @@ public class FabricPlayer implements CommonPlayer {
 
   public boolean isOnline() {
     return getPlayer() != null && !getPlayer().isDisconnected();
-  }
-
-  @Override
-  public String getLocale() {
-    ServerPlayerEntity p = getPlayer();
-    if (p == null) return "en";
-    //? if >=1.21 {
-    return MessageRegistry.normaliseLocale(p.getClientOptions().language());
-    //?} else {
-    /*// No public API for client language pre-1.21; fall back to default
-    return "en";
-    *///?}
   }
 
   private ServerPlayerEntity getPlayer() {

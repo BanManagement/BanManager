@@ -112,7 +112,7 @@ public class TempNameBanCommand extends CommonCommand {
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(name)) {
-              onlinePlayer.kick(kickMessage);
+              onlinePlayer.kick(kickMessage.toString());
             }
           }
         });

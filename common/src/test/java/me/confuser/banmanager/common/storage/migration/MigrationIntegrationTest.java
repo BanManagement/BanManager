@@ -50,7 +50,7 @@ public class MigrationIntegrationTest {
     for (SchemaVersion sv : versions) {
       if ("local".equals(sv.getScope())) {
         hasLocal = true;
-        assertEquals("Fresh install should mark at latest version", 2, sv.getVersion());
+        assertEquals("Fresh install should mark at latest version", 1, sv.getVersion());
         assertTrue("Description should indicate fresh install", sv.getDescription().contains("fresh install"));
       }
     }

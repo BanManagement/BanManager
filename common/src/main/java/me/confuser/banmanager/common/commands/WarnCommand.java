@@ -151,7 +151,7 @@ public class WarnCommand extends CommonCommand {
         message.sendTo(sender);
       }
 
-      if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.warn");
+      if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.warn");
 
       final List<ActionCommand> actionCommands;
 

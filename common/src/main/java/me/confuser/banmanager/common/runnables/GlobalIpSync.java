@@ -77,7 +77,7 @@ public class GlobalIpSync extends BmRunnable {
 
       for (CommonPlayer onlinePlayer : plugin.getServer().getOnlinePlayers()) {
         if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(globalBan.getIp())) {
-          onlinePlayer.kick(kickMessage);
+          onlinePlayer.kick(kickMessage.toString());
         }
       }
     });
