@@ -67,14 +67,22 @@ public class InfoSubCommand extends CommonSubCommand {
         return;
       }
 
-      if (location == null) return;
+      if (location != null) {
+        Message.get("report.info.notify.location")
+            .set("world", location.getWorld())
+            .set("x", location.getX())
+            .set("y", location.getY())
+            .set("z", location.getZ())
+            .sendTo(sender);
+      }
 
-      Message.get("report.info.notify.location")
-          .set("world", location.getWorld())
-          .set("x", location.getX())
-          .set("y", location.getY())
-          .set("z", location.getZ())
-          .sendTo(sender);
+      if (!sender.isConsole()) {
+        Message.get("report.actions.assign").set("id", data.getId()).sendTo(sender);
+        Message.get("report.actions.close").set("id", data.getId()).sendTo(sender);
+        if (location != null) {
+          Message.get("report.actions.tp").set("id", data.getId()).sendTo(sender);
+        }
+      }
 
     });
 

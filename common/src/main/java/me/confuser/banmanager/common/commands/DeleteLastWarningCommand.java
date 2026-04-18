@@ -27,7 +27,7 @@ public class DeleteLastWarningCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, playerName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 

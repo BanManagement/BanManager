@@ -42,7 +42,7 @@ public class TempBanIpAllCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -51,7 +51,7 @@ public class TempBanIpAllCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.getArgs()[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -77,7 +77,7 @@ public class TempBanIpAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyIpBan(ban, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempbanipall command", e);
         return;
       }

@@ -1,0 +1,1 @@
+ALTER TABLE ${players} ADD COLUMN `locale` VARCHAR(16) NULL;

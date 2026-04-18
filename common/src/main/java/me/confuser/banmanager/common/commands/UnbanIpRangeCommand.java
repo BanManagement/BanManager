@@ -47,8 +47,8 @@ public class UnbanIpRangeCommand extends CommonCommand {
       if (isName) {
         PlayerData player = getPlugin().getPlayerStorage().retrieve(parser.args[0], false);
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", parser.args[0])
-              .toString());
+          Message.get("sender.error.notFound").set("player", parser.args[0])
+              .sendTo(sender);
           return;
         }
 
@@ -61,7 +61,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
         Message message = Message.get("unbanip.error.noExists");
         message.set("ip", parser.args[0]);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -76,7 +76,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
       try {
         unbanned = getPlugin().getIpRangeBanStorage().unban(ban, actor, reason, parser.isSilent());
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unbaniprange command", e);
         return;
       }
@@ -98,7 +98,7 @@ public class UnbanIpRangeCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbaniprange");
+        getPlugin().getServer().broadcast(message, "bm.notify.unbaniprange");
       }
     });
 

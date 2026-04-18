@@ -29,7 +29,7 @@ public class UnmuteIpCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -50,7 +50,7 @@ public class UnmuteIpCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        Message.get("sender.error.notFound").set("player", ipStr).sendTo(sender);
         return;
       }
 
@@ -58,7 +58,7 @@ public class UnmuteIpCommand extends CommonCommand {
         Message message = Message.get("unmuteip.error.noExists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -77,7 +77,7 @@ public class UnmuteIpCommand extends CommonCommand {
       try {
         unmuted = getPlugin().getIpMuteStorage().unmute(mute, actor, reason, parser.isSilent());
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unmuteip command", e);
         return;
       }
@@ -98,7 +98,7 @@ public class UnmuteIpCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmuteip");
+        getPlugin().getServer().broadcast(message, "bm.notify.unmuteip");
       }
     });
 

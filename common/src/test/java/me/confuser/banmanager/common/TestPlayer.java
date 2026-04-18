@@ -2,7 +2,6 @@ package me.confuser.banmanager.common;
 
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
-import me.confuser.banmanager.common.util.Message;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -12,11 +11,21 @@ public class TestPlayer implements CommonPlayer {
   private final UUID uuid;
   private final String name;
   private final boolean onlineMode;
+  private String locale = "en";
 
   public TestPlayer(UUID uuid, String name, boolean onlineMode) {
     this.uuid = uuid;
     this.name = name;
     this.onlineMode = onlineMode;
+  }
+
+  public TestPlayer(UUID uuid, String name, boolean onlineMode, String locale) {
+    this(uuid, name, onlineMode);
+    this.locale = locale;
+  }
+
+  public void setLocale(String locale) {
+    this.locale = locale;
   }
 
   @Override
@@ -25,10 +34,6 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(String message) {
-  }
-
-  @Override
-  public void sendMessage(Message message) {
   }
 
   @Override
@@ -92,5 +97,10 @@ public class TestPlayer implements CommonPlayer {
   @Override
   public boolean canSee(CommonPlayer player) {
     return true;
+  }
+
+  @Override
+  public String getLocale() {
+    return locale;
   }
 }

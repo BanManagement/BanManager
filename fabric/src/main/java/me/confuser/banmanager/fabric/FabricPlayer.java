@@ -11,10 +11,13 @@ import java.util.UUID;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRenderer;
+import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 //? if >=1.21.1
 import net.minecraft.network.packet.s2c.play.PositionFlag;
@@ -40,6 +43,11 @@ public class FabricPlayer implements CommonPlayer {
     this.player.networkHandler.disconnect(FabricServer.formatMessage(message));
   }
 
+  @Override
+  public void kick(Component component) {
+    this.player.networkHandler.disconnect(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)));
+  }
+
   public void sendMessage(String message) {
     if(message.isEmpty()) return;
 
@@ -50,8 +58,51 @@ public class FabricPlayer implements CommonPlayer {
     }
   }
 
-  public void sendMessage(Message message) {
-    sendMessage(message.toString());
+  @Override
+  public void sendMessage(Component component) {
+    getPlayer().sendMessage(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)));
+  }
+
+  @Override
+  public void sendActionBar(Component component) {
+    getPlayer().sendMessage(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)), true);
+  }
+
+  @Override
+  public void showTitle(Component title, Component subtitle, int fadeIn, int stay, int fadeOut) {
+    ServerPlayerEntity p = getPlayer();
+    if (p == null) return;
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    if (title != null) {
+      net.minecraft.text.Text titleText = FabricServer.formatJsonMessage(renderer.toJson(title));
+      p.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.TitleS2CPacket(titleText));
+    }
+    if (subtitle != null) {
+      net.minecraft.text.Text subtitleText = FabricServer.formatJsonMessage(renderer.toJson(subtitle));
+      p.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.SubtitleS2CPacket(subtitleText));
+    }
+    p.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket(fadeIn, stay, fadeOut));
+  }
+
+  @Override
+  public void playSound(String sound, float volume, float pitch) {
+    ServerPlayerEntity p = getPlayer();
+    if (p == null) return;
+    try {
+      //? if >=1.21 {
+      net.minecraft.util.Identifier id = net.minecraft.util.Identifier.of(sound);
+      //?} else {
+      /*net.minecraft.util.Identifier id = new net.minecraft.util.Identifier(sound);
+      *///?}
+      net.minecraft.sound.SoundEvent event = net.minecraft.sound.SoundEvent.of(id);
+      //? if >=1.21.11 {
+      p.getEntityWorld().playSound(null, p.getBlockPos(), event, net.minecraft.sound.SoundCategory.MASTER, volume, pitch);
+      //?} else {
+      /*p.getWorld().playSound(null, p.getBlockPos(), event, net.minecraft.sound.SoundCategory.MASTER, volume, pitch);
+      *///?}
+    } catch (IllegalArgumentException ignored) {
+      // Invalid sound key or identifier -- silently ignore
+    }
   }
 
   @Override
@@ -132,6 +183,18 @@ public class FabricPlayer implements CommonPlayer {
 
   public boolean isOnline() {
     return getPlayer() != null && !getPlayer().isDisconnected();
+  }
+
+  @Override
+  public String getLocale() {
+    ServerPlayerEntity p = getPlayer();
+    if (p == null) return "en";
+    //? if >=1.21 {
+    return MessageRegistry.normaliseLocale(p.getClientOptions().language());
+    //?} else {
+    /*// No public API for client language pre-1.21; fall back to default
+    return "en";
+    *///?}
   }
 
   private ServerPlayerEntity getPlayer() {

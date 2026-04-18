@@ -58,6 +58,8 @@ public class CloseSubCommand extends CommonSubCommand {
         return;
       }
 
+      notifyReporter(data, sender.getName());
+
       if (parser.getArgs().length == 1) {
         String message = Message.get("report.close.notify.closed")
                                 .set("actor", sender.getName())
@@ -125,6 +127,19 @@ public class CloseSubCommand extends CommonSubCommand {
     });
 
     return true;
+  }
+
+  private void notifyReporter(PlayerReportData data, String actorName) {
+    getPlugin().getScheduler().runSync(() -> {
+      me.confuser.banmanager.common.CommonPlayer reporter =
+          getPlugin().getServer().getPlayer(data.getActor().getUUID());
+      if (reporter != null && reporter.isOnline()) {
+        Message.get("report.actions.feedback.closed")
+               .set("id", data.getId())
+               .set("actor", actorName)
+               .sendTo(reporter);
+      }
+    });
   }
 
   @Override

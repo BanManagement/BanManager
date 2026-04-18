@@ -40,7 +40,7 @@ public abstract class BasePluginTest {
         "webhooks.yml",
         "exemptions.yml",
         "geoip.yml",
-        "messages.yml",
+        "notifications.yml",
         "reasons.yml",
         "schedules.yml"
     };
@@ -56,6 +56,19 @@ public abstract class BasePluginTest {
       } catch (IOException e) {
         e.printStackTrace();
       }
+    }
+
+    File messagesDir = new File(folder.getRoot(), "messages");
+    messagesDir.mkdirs();
+    try (InputStream in = BasePluginTest.class.getClassLoader().getResource("messages/messages_en.yml").openStream();
+         OutputStream out = new FileOutputStream(new File(messagesDir, "messages_en.yml"))) {
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
     // Load plugin.yml

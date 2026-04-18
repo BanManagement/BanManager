@@ -64,7 +64,7 @@ public class KickAllCommand extends CommonCommand {
               return null;
             });
           } catch (Exception e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute kickall command", e);
           }
         }
@@ -94,14 +94,14 @@ public class KickAllCommand extends CommonCommand {
               .set("playerId", player.getUniqueId().toString())
               .set("actor", actor.getName());
 
-          player.kick(kickMessage.toString());
+          player.kick(kickMessage);
         }
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
         }
 
-        if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.kick");
+        if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.kick");
       });
     });
 

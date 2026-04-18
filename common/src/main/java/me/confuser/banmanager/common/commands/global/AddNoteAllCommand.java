@@ -44,7 +44,7 @@ public class AddNoteAllCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, playerName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -61,7 +61,7 @@ public class AddNoteAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyNote(note, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute addnoteall command", e);
         return;
       }

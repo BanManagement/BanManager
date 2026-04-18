@@ -77,21 +77,25 @@ public class GlobalBanSync extends BmRunnable {
       if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
 
       Message kickMessage;
+      String dateTimeFormat;
 
       if (globalBan.getExpires() == 0) {
         kickMessage = Message.get("ban.player.kick");
+        dateTimeFormat = Message.getString("ban.player.dateTimeFormat");
       } else {
         kickMessage = Message.get("tempban.player.kick");
         kickMessage.set("expires", DateUtils.getDifferenceFormat(globalBan.getExpires()));
+        dateTimeFormat = Message.getString("tempban.player.dateTimeFormat");
       }
 
       kickMessage
         .set("displayName", bukkitPlayer.getDisplayName())
         .set("player", globalBan.getPlayer().getName())
         .set("reason", globalBan.getReason())
-        .set("actor", globalBan.getActor().getName());
+        .set("actor", globalBan.getActor().getName())
+        .set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "yyyy-MM-dd HH:mm:ss", globalBan.getCreated()));
 
-      bukkitPlayer.kick(kickMessage.toString());
+      bukkitPlayer.kick(kickMessage);
     });
   }
 

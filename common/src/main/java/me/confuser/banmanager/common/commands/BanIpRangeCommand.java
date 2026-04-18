@@ -82,7 +82,7 @@ public class BanIpRangeCommand extends CommonCommand {
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (ban.inRange(IPUtils.toIPAddress(onlinePlayer.getAddress()))) {
-            onlinePlayer.kick(kickMessage.toString());
+            onlinePlayer.kick(kickMessage);
           }
         }
       });

@@ -4,7 +4,6 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.serializer.gson.GsonComponentSerializer;
 import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
@@ -66,13 +65,6 @@ public class SpongeServer implements CommonServer {
         Sponge.systemSubject().sendMessage(formatMessage(message));
     }
 
-    @Override
-    public void broadcastJSON(TextComponent message, String permission) {
-        Arrays.stream(getOnlinePlayers()).forEach(player -> {
-            if (player.hasPermission(permission)) player.sendJSONMessage(message);
-        });
-    }
-
     public void broadcast(String message, String permission, CommonSender sender) {
         broadcast(message, permission);
 
@@ -88,10 +80,10 @@ public class SpongeServer implements CommonServer {
     }
 
     public static Component formatMessage(Message message) {
-        return formatMessage(message.toString());
+        return formatMessage(message.resolveComponent());
     }
 
-    public static Component formatMessage(TextComponent message) {
+    public static Component formatMessage(me.confuser.banmanager.common.kyori.text.Component message) {
         String json = GsonComponentSerializer.gson().serialize(message);
         return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(json);
     }

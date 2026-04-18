@@ -32,6 +32,11 @@ public class PlayerData {
   @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long lastSeen = System.currentTimeMillis() / 1000L;
 
+  @DatabaseField(width = 16, columnDefinition = "VARCHAR(16)")
+  @Getter
+  @Setter
+  private String locale;
+
   private UUID uuid = null;
 
   PlayerData() {

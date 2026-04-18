@@ -52,12 +52,12 @@ public class TempWarnCommand extends CommonCommand {
     TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
-      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
       return true;
     }
 
     if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
-      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      Message.get("sender.error.ambiguousPlayer").set("player", playerName).sendTo(sender);
       return true;
     }
 
@@ -86,7 +86,7 @@ public class TempWarnCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parsedArgs[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -102,12 +102,12 @@ public class TempWarnCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
+        Message.get("sender.error.notFound").set("player", targetName).sendTo(sender);
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "tempwarn")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
+        Message.get("sender.error.exempt").set("player", targetName).sendTo(sender);
         return;
       }
 
@@ -117,7 +117,7 @@ public class TempWarnCommand extends CommonCommand {
           return;
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;
       }
@@ -134,7 +134,7 @@ public class TempWarnCommand extends CommonCommand {
       try {
         created = getPlugin().getPlayerWarnStorage().addWarning(warning, isSilent);
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;
       }
@@ -156,7 +156,7 @@ public class TempWarnCommand extends CommonCommand {
                                         .set("id", warning.getId())
                                         .set("points", parser.getPoints());
 
-        onlinePlayer.sendMessage(warningMessage.toString());
+        warningMessage.sendTo(onlinePlayer);
       }
 
       Message message = Message.get("tempwarn.notify")
@@ -172,7 +172,7 @@ public class TempWarnCommand extends CommonCommand {
         message.sendTo(sender);
       }
 
-      if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.tempwarn");
+      if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.tempwarn");
 
       final List<ActionCommand> actionCommands;
 

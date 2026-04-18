@@ -42,7 +42,7 @@ public class TempNameBanCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.args[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -65,7 +65,7 @@ public class TempNameBanCommand extends CommonCommand {
           Message message = Message.get("banname.error.exists");
           message.set("name", name);
 
-          sender.sendMessage(message.toString());
+          message.sendTo(sender);
           return;
         }
 
@@ -80,7 +80,7 @@ public class TempNameBanCommand extends CommonCommand {
             try {
               getPlugin().getNameBanStorage().unban(ban, actor);
             } catch (SQLException e) {
-              sender.sendMessage(Message.get("sender.error.exception").toString());
+              Message.get("sender.error.exception").sendTo(sender);
               getPlugin().getLogger().warning("Failed to execute tempnameban command", e);
               return;
             }
@@ -112,7 +112,7 @@ public class TempNameBanCommand extends CommonCommand {
 
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(name)) {
-              onlinePlayer.kick(kickMessage.toString());
+              onlinePlayer.kick(kickMessage);
             }
           }
         });

@@ -39,7 +39,7 @@ public class AddNoteCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, playerName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -49,7 +49,7 @@ public class AddNoteCommand extends CommonCommand {
       try {
         getPlugin().getPlayerNoteStorage().addNote(warning);
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute addnote command", e);
       }
     });

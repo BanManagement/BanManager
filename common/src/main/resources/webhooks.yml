@@ -1,6 +1,10 @@
 # Webhooks Configuration
 # More info at https://banmanagement.com/docs/banmanager/configuration/webhooks-yml
 #
+# NOTE: Webhook placeholders use [token] format (e.g. [player], [reason], [actor]).
+# This is intentionally separate from MiniMessage's <token> format used in messages.
+# Webhooks send JSON to external services and do not use MiniMessage formatting.
+#
 # Each punishment type can have multiple webhooks. Use the array format:
 #   ban:
 #     - name: discord

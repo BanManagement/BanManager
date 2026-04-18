@@ -44,7 +44,7 @@ public class BanNameCommand extends CommonCommand {
         Message message = Message.get("banname.error.exists");
         message.set("name", name);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -59,7 +59,7 @@ public class BanNameCommand extends CommonCommand {
           try {
             getPlugin().getNameBanStorage().unban(ban, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute banname command", e);
             return;
           }
@@ -91,7 +91,7 @@ public class BanNameCommand extends CommonCommand {
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (onlinePlayer.getName().equalsIgnoreCase(name)) {
-            onlinePlayer.kick(kickMessage.toString());
+            onlinePlayer.kick(kickMessage);
           }
         }
       });

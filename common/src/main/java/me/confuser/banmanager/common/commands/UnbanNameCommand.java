@@ -39,7 +39,7 @@ public class UnbanNameCommand extends CommonCommand {
         Message message = Message.get("unbanname.error.noExists");
         message.set("name", name);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -53,7 +53,7 @@ public class UnbanNameCommand extends CommonCommand {
       try {
         unbanned = getPlugin().getNameBanStorage().unban(ban, actor, reason, false, parser.isSilent());
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unbanname command", e);
         return;
       }
@@ -74,7 +74,7 @@ public class UnbanNameCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unbanname");
+        getPlugin().getServer().broadcast(message, "bm.notify.unbanname");
       }
     });
 

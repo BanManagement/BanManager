@@ -55,7 +55,7 @@ public class BMSpongePlugin {
         "webhooks.yml",
         "exemptions.yml",
         "geoip.yml",
-        "messages.yml",
+        "notifications.yml",
         "reasons.yml",
         "schedules.yml"
     };

@@ -615,7 +615,7 @@ public class BmAPI {
 
   /**
    * @param key The message config node within messages.yml, e.g. "ban.notify"
-   * @return String
+   * @return A Message instance that can be resolved to a Component via resolveComponent()
    */
   public static Message getMessage(String key) {
     return Message.get(key);

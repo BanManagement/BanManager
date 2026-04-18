@@ -68,7 +68,7 @@ public class AssignSubCommand extends CommonSubCommand {
       }
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").toString());
+        Message.get("sender.error.notFound").sendTo(sender);
         return;
       }
 
@@ -88,22 +88,25 @@ public class AssignSubCommand extends CommonSubCommand {
              .set("player", player.getName())
              .sendTo(sender);
 
-      getPlugin().getScheduler().runSync(new Runnable() {
+      getPlugin().getScheduler().runSync(() -> {
+        CommonPlayer assignee = getPlugin().getServer().getPlayer(player.getUUID());
 
-        @Override
-        public void run() {
-          CommonPlayer bukkitPlayer = getPlugin().getServer().getPlayer(player.getUUID());
-
-          if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
-
+        if (assignee != null && assignee.isOnline()) {
           Message.get("report.assign.notify")
                  .set("id", data.getId())
-                 .set("displayName", bukkitPlayer.getDisplayName())
+                 .set("displayName", assignee.getDisplayName())
                  .set("player", player.getName())
                  .set("playerId", player.getUUID().toString())
                  .set("reason", data.getReason())
-                 .set("actor", sender.getName()).sendTo(bukkitPlayer);
+                 .set("actor", sender.getName()).sendTo(assignee);
+        }
 
+        CommonPlayer reporter = getPlugin().getServer().getPlayer(data.getActor().getUUID());
+        if (reporter != null && reporter.isOnline()) {
+          Message.get("report.actions.feedback.assigned")
+                 .set("id", data.getId())
+                 .set("actor", player.getName())
+                 .sendTo(reporter);
         }
       });
     });

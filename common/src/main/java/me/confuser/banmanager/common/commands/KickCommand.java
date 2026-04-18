@@ -82,13 +82,13 @@ public class KickCommand extends CommonCommand {
         Message message = Message.get(reason.isEmpty() ? "kick.notify.noReason" : "kick.notify.reason");
         message.set("player", player.getName()).set("actor", actor.getName()).set("reason", reason);
 
-        player.kick(kickMessage.toString());
+        player.kick(kickMessage);
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
         }
 
-        if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.kick");
+        if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.kick");
       });
 
       if (getPlugin().getConfig().isKickLoggingEnabled()) {
@@ -103,7 +103,7 @@ public class KickCommand extends CommonCommand {
         try {
           created = getPlugin().getPlayerKickStorage().addKick(data, isSilent);
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute kick command", e);
           return;
         }

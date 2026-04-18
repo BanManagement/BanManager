@@ -55,7 +55,7 @@ public class ActivityCommand extends CommonCommand {
         }
 
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", parser.args[1]).toString());
+          Message.get("sender.error.notFound").set("player", parser.args[1]).sendTo(sender);
           return;
         }
 

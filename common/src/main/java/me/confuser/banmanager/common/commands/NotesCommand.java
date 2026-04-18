@@ -4,6 +4,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.kyori.text.event.ClickEvent;
 import me.confuser.banmanager.common.kyori.text.serializer.legacy.LegacyComponentSerializer;
@@ -41,7 +42,7 @@ public class NotesCommand extends CommonCommand {
         PlayerData player = getPlugin().getPlayerStorage().retrieve(name, false);
 
         if (player == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", name).toString());
+          Message.get("sender.error.notFound").set("player", name).sendTo(sender);
           return;
         }
 
@@ -140,9 +141,7 @@ public class NotesCommand extends CommonCommand {
     return true;
   }
 
-  public static TextComponent notesAmountMessage(String playerName, Message text) {
-    return LegacyComponentSerializer.legacy('&').deserialize(
-        text.set("player", playerName).toString())
-        .clickEvent(ClickEvent.runCommand("/notes " + playerName));
+  public static Component notesAmountMessage(String playerName, Message text) {
+    return text.set("player", playerName).resolveComponent();
   }
 }

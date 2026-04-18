@@ -89,7 +89,7 @@ public abstract class CommonCommand {
       try {
         player = BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
       }
     } else {
@@ -171,6 +171,8 @@ public abstract class CommonCommand {
     return getParser(args.toArray(new String[0]));
   }
 
+  private static final String[] DURATION_PRESETS = {"1h", "6h", "12h", "1d", "3d", "7d", "14d", "30d", "90d", "1y"};
+
   public List<String> handlePlayerNameTabComplete(CommonSender sender, String[] args) {
     ArrayList<String> mostLike = new ArrayList<>();
     if(args.length == 1) {
@@ -199,8 +201,6 @@ public abstract class CommonCommand {
       }
     }
     if(args.length > 1) {
-      // Reasons?
-      // TODO: Only allow reasons for valid commands.
       String lookup = args[args.length - 1];
       if(lookup.startsWith("#")) {
         return plugin.getReasonsConfig().getReasons().keySet().stream().map(k -> "#" + k)
@@ -211,6 +211,21 @@ public abstract class CommonCommand {
     if (mostLike.size() > 100) return mostLike.subList(0, 99);
 
     return mostLike;
+  }
+
+  public List<String> handleDurationTabComplete(CommonSender sender, String[] args, int durationArgIndex) {
+    ArrayList<String> completions = new ArrayList<>(handlePlayerNameTabComplete(sender, args));
+
+    if (args.length == durationArgIndex + 1) {
+      String partial = args[durationArgIndex].toLowerCase();
+      for (String preset : DURATION_PRESETS) {
+        if (preset.startsWith(partial)) {
+          completions.add(preset);
+        }
+      }
+    }
+
+    return completions;
   }
 
   public long getCooldown() {

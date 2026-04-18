@@ -14,6 +14,7 @@ import me.confuser.banmanager.common.ormlite.jdbc.DataSourceConnectionSource;
 import me.confuser.banmanager.common.ormlite.logger.LocalLog;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.support.DatabaseConnection;
+import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
 import me.confuser.banmanager.common.runnables.Runner;
 import me.confuser.banmanager.common.storage.*;
 import me.confuser.banmanager.common.storage.global.*;
@@ -21,15 +22,41 @@ import me.confuser.banmanager.common.storage.migration.MigrationRunner;
 import me.confuser.banmanager.common.storage.mariadb.MariaDBDatabase;
 import me.confuser.banmanager.common.storage.mysql.MySQLDatabase;
 import me.confuser.banmanager.common.util.DriverManagerUtil;
+import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.MessageRegistry;
+import me.confuser.banmanager.common.util.MessageRenderer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.*;
 
 import static java.lang.Long.parseLong;
 
 public class BanManagerPlugin {
   private static BanManagerPlugin self;
+
+  // Token names used by commands/listeners via Message.set(). Hardcoded because these are
+  // defined across many source files and not available at runtime as a registry. Used only
+  // to warn admins when a static token in messages.yml collides with a built-in name.
+  private static final Set<String> BUILTIN_TOKENS;
+
+  static {
+    String[] rawNames = {"player", "playerId", "actor", "reason", "expires", "id",
+        "message", "displayName", "ip", "players", "name", "type", "created",
+        "amount", "bans", "mutes", "warns", "warnPoints", "kicks", "notes",
+        "reports", "count", "page", "maxPage", "state", "from", "to",
+        "from_ip", "to_ip", "index", "uuid", "size", "remaining",
+        "firstSeen", "lastSeen", "updated", "country", "countryIso", "city",
+        "meta", "file", "rows", "command", "comment", "world", "x", "y", "z",
+        "hashtag", "points", "join", "leave", "lastChecked", "types",
+        "rangebans", "action"};
+    Set<String> normalised = new HashSet<>();
+    for (String name : rawNames) {
+      normalised.add(MessageRenderer.normaliseTagName(name));
+    }
+    BUILTIN_TOKENS = Collections.unmodifiableSet(normalised);
+  }
 
   /*
    * This block prevents the Maven Shade plugin to remove the specified classes
@@ -64,6 +91,8 @@ public class BanManagerPlugin {
   private GeoIpConfig geoIpConfig;
   @Getter
   private WebhookConfig webhookConfig;
+  @Getter
+  private NotificationsConfig notificationsConfig;
 
   // Connections
   @Getter
@@ -152,6 +181,9 @@ public class BanManagerPlugin {
   @Setter
   @Getter
   private PlaceholderResolver placeholderResolver;
+
+  @Getter
+  private MessageRegistry messageRegistry;
 
   public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
@@ -268,11 +300,6 @@ public class BanManagerPlugin {
   }
 
   public void setupConfigs() {
-    MessagesConfig newMessagesConfig = new MessagesConfig(dataFolder, logger);
-    if (!newMessagesConfig.load()) {
-      logger.warning("Failed to reload messages.yml, keeping previous messages");
-    }
-
     config = reloadConfig(new DefaultConfig(dataFolder, logger), config, "config.yml");
     consoleConfig = reloadConfig(new ConsoleConfig(dataFolder, logger), consoleConfig, "console.yml");
     schedulesConfig = reloadConfig(new SchedulesConfig(dataFolder, logger), schedulesConfig, "schedules.yml");
@@ -280,6 +307,160 @@ public class BanManagerPlugin {
     reasonsConfig = reloadConfig(new ReasonsConfig(dataFolder, logger), reasonsConfig, "reasons.yml");
     geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger), geoIpConfig, "geoip.yml");
     webhookConfig = reloadConfig(new WebhookConfig(dataFolder, logger), webhookConfig, "webhooks.yml");
+    notificationsConfig = reloadConfig(new NotificationsConfig(dataFolder, logger), notificationsConfig, "notifications.yml");
+
+    loadMessages();
+  }
+
+  private void loadMessages() {
+    String defaultLocale = config != null ? config.getDefaultLocale() : "en";
+    MessageRegistry newRegistry = new MessageRegistry(defaultLocale);
+
+    // Clear static tokens before loading so removed tokens don't persist across reloads
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    renderer.loadStaticTokens(Collections.emptyMap());
+
+    copyMessagesDirectory();
+
+    File messagesDir = new File(dataFolder, "messages");
+    if (messagesDir.exists() && messagesDir.isDirectory()) {
+      File[] files = messagesDir.listFiles((dir, name) ->
+          name.startsWith("messages_") && name.endsWith(".yml"));
+
+      if (files != null) {
+        for (File file : files) {
+          String fileName = file.getName();
+          String locale = fileName.substring("messages_".length(), fileName.length() - ".yml".length());
+          loadLocaleFile(newRegistry, file, locale);
+        }
+      }
+    }
+
+    File legacyMessages = new File(dataFolder, "messages.yml");
+    if (legacyMessages.exists()) {
+      logger.warning("Found legacy messages.yml in your data folder. BanManager v8 uses messages/messages_" + defaultLocale + ".yml. Please migrate your customisations to that file and delete messages.yml. The legacy file will continue to be loaded for now to preserve your customisations.");
+      loadLocaleFile(newRegistry, legacyMessages, defaultLocale);
+    }
+
+    if (!newRegistry.hasAnyMessages()) {
+      if (messageRegistry != null) {
+        logger.warning("No messages loaded, keeping previous messages");
+        return;
+      }
+    }
+
+    if (messageRegistry != null) {
+      messageRegistry.atomicSwap(newRegistry);
+    } else {
+      messageRegistry = newRegistry;
+    }
+
+    Message.init(messageRegistry, logger);
+
+    if (renderer.getStaticTokens() != null) {
+      for (String tokenName : renderer.getStaticTokens().keySet()) {
+        if (BUILTIN_TOKENS.contains(tokenName)) {
+          logger.warning("Static token '" + tokenName + "' collides with a built-in token and will be overridden at runtime");
+        }
+      }
+    }
+
+    logLocaleInfo();
+  }
+
+  private void logLocaleInfo() {
+    if (messageRegistry == null) return;
+
+    Set<String> locales = messageRegistry.getAvailableLocales();
+    logger.info("Loaded " + locales.size() + " locale(s): " + String.join(", ", locales));
+
+    String defaultLocale = messageRegistry.getDefaultLocale();
+    for (String locale : locales) {
+      if (locale.equals(defaultLocale)) continue;
+      int missing = messageRegistry.getMissingKeyCount(locale);
+      if (missing > 0) {
+        logger.info("Locale '" + locale + "' is missing " + missing + " key(s) (will fall back to '" + defaultLocale + "')");
+      }
+    }
+  }
+
+  private void loadLocaleFile(MessageRegistry registry, File file, String locale) {
+    try {
+      YamlConfiguration conf = new YamlConfiguration();
+      conf.load(file);
+
+      if (conf.getConfigurationSection("messages") == null) {
+        logger.warning("Messages section not found in " + file.getName() + ", skipping");
+        return;
+      }
+
+      Map<String, String> messages = new HashMap<>();
+      MessageRenderer renderer = MessageRenderer.getInstance();
+      int rejectedCount = 0;
+
+      for (String key : conf.getConfigurationSection("messages").getKeys(true)) {
+        String value = conf.getString("messages." + key);
+        if (value != null) {
+          String processed = value.replace("\\n", "\n").replaceAll("(?<=\\n)(?=\\n)", " ");
+          if (renderer.isLegacyFormat(processed)) {
+            logger.severe("Message '" + key + "' in " + file.getName() + " contains legacy &-code formatting and has been skipped. Please convert to MiniMessage format: https://docs.advntr.dev/minimessage/format.html");
+            rejectedCount++;
+            continue;
+          }
+          messages.put(key, processed);
+        }
+      }
+
+      if (rejectedCount > 0) {
+        logger.severe(rejectedCount + " message(s) in " + file.getName() + " were rejected due to legacy formatting. Bundled defaults will be used for those keys.");
+      }
+
+      if (!messages.isEmpty()) {
+        Map<String, String> existing = registry.getMessages(locale);
+        if (!existing.isEmpty()) {
+          Map<String, String> merged = new HashMap<>(existing);
+          merged.putAll(messages);
+          registry.loadLocale(locale, merged);
+        } else {
+          registry.loadLocale(locale, messages);
+        }
+      }
+
+      if (conf.getConfigurationSection("tokens") != null) {
+        Map<String, String> tokens = new HashMap<>();
+        for (String key : conf.getConfigurationSection("tokens").getKeys(false)) {
+          String value = conf.getString("tokens." + key);
+          if (value != null) {
+            tokens.put(key, value);
+          }
+        }
+        if (!tokens.isEmpty()) {
+          Map<String, String> existing = new HashMap<>(renderer.getStaticTokens());
+          existing.putAll(tokens);
+          renderer.loadStaticTokens(existing);
+        }
+      }
+    } catch (Exception e) {
+      logger.warning("Failed to load " + file.getName(), e);
+    }
+  }
+
+  private void copyMessagesDirectory() {
+    File messagesDir = new File(dataFolder, "messages");
+    if (!messagesDir.exists()) {
+      messagesDir.mkdirs();
+    }
+
+    File defaultMessages = new File(messagesDir, "messages_en.yml");
+    if (!defaultMessages.exists()) {
+      try (InputStream in = getClass().getClassLoader().getResourceAsStream("messages/messages_en.yml")) {
+        if (in != null) {
+          Files.copy(in, defaultMessages.toPath());
+        }
+      } catch (IOException e) {
+        logger.warning("Failed to copy default messages_en.yml", e);
+      }
+    }
   }
 
   /**
@@ -482,7 +663,8 @@ public class BanManagerPlugin {
         new UnmuteCommand(this),
         new UnmuteIpCommand(this),
         new UtilsCommand(this),
-        new WarnCommand(this)
+        new WarnCommand(this),
+        new BmCommand(this)
     };
   }
 

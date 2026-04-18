@@ -13,7 +13,7 @@ import me.confuser.banmanager.common.kyori.text.format.NamedTextColor;
 import me.confuser.banmanager.common.kyori.text.format.TextColor;
 import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.util.Message;
-
+import me.confuser.banmanager.common.util.MessageRenderer;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -38,7 +38,7 @@ public class FindAltsCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -46,18 +46,18 @@ public class FindAltsCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("alts.header"));
-        sender.sendMessage(Message.get("none").toString());
+        Message.get("alts.header").sendTo(sender);
+        Message.get("none").sendTo(sender);
         return;
       }
 
       List<PlayerData> players = getPlugin().getPlayerStorage().getDuplicatesInTime(ip, getPlugin().getConfig().getTimeAssociatedAlts());
 
       if (!sender.isConsole()) {
-        sender.sendMessage(Message.get("alts.header").set("ip", ipStr).toString());
+        Message.get("alts.header").set("ip", ipStr).sendTo(sender);
 
         if (players.isEmpty()) {
-          sender.sendMessage(Message.get("none").toString());
+          Message.get("none").sendTo(sender);
           return;
         }
 
@@ -69,10 +69,10 @@ public class FindAltsCommand extends CommonCommand {
           names.add(player.getName());
         }
 
-        sender.sendMessage(Message.get("alts.header").set("ip", ipStr).toString());
+        Message.get("alts.header").set("ip", ipStr).sendTo(sender);
 
         if (names.isEmpty()) {
-          sender.sendMessage(Message.get("none").toString());
+          Message.get("none").sendTo(sender);
           return;
         }
 
@@ -121,19 +121,28 @@ public class FindAltsCommand extends CommonCommand {
       }
     }
 
+    boolean hasEntryTemplate = Message.getRawTemplate("alts.entry") != null;
+    String separatorRaw = Message.getRawTemplate("alts.separator");
+    MessageRenderer renderer = MessageRenderer.getInstance();
+    Component separator = separatorRaw != null ? renderer.render(separatorRaw) : Component.text(", ");
+
     int index = 0;
 
     for (PlayerData player : players) {
       TextColor colour = colours.getOrDefault(player.getUUID(), NamedTextColor.GREEN);
 
-      message
-          .append(
-              Component.text(player.getName())
-                  .color(colour)
-                  .clickEvent(ClickEvent.runCommand("/bminfo " + player.getName())));
+      if (hasEntryTemplate) {
+        Component entry = Message.get("alts.entry").set("name", player.getName()).resolveComponent();
+        message.append(Component.text().color(colour).append(entry));
+      } else {
+        message.append(
+            Component.text(player.getName())
+                .color(colour)
+                .clickEvent(ClickEvent.runCommand("/bminfo " + player.getName())));
+      }
 
       if (index != players.size() - 1) {
-        message.append(Component.text(", "));
+        message.append(separator);
       }
 
       index++;

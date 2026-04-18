@@ -5,7 +5,6 @@ import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.*;
-import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.ColorUtils;
 import me.confuser.banmanager.common.util.Message;
 import org.bukkit.Bukkit;
@@ -17,7 +16,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -80,13 +78,6 @@ public class BukkitServer implements CommonServer {
         user.sendMessage(BukkitServer.formatMessage(message));
       }
     }
-  }
-
-  @Override
-  public void broadcastJSON(TextComponent message, String permission) {
-    Arrays.stream(getOnlinePlayers()).forEach(player -> {
-      if (player.hasPermission(permission)) player.sendJSONMessage(message);
-    });
   }
 
   @Override

@@ -40,7 +40,7 @@ public class UnmuteCommand extends CommonCommand {
       try {
         isMuted = getPlugin().getPlayerMuteStorage().isMuted(UUID.fromString(playerName));
       } catch (IllegalArgumentException e) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return true;
       }
     } else {
@@ -51,7 +51,7 @@ public class UnmuteCommand extends CommonCommand {
       Message message = Message.get("unmute.error.noExists");
       message.set("player", playerName);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -72,8 +72,7 @@ public class UnmuteCommand extends CommonCommand {
         }
 
         if (mute == null) {
-          sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString
-                  ());
+          Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
           return;
         }
 
@@ -89,7 +88,7 @@ public class UnmuteCommand extends CommonCommand {
         try {
           unmuted = getPlugin().getPlayerMuteStorage().unmute(mute, actor, reason, isDelete, parser.isSilent());
         } catch (SQLException e) {
-          sender.sendMessage(Message.get("sender.error.exception").toString());
+          Message.get("sender.error.exception").sendTo(sender);
           getPlugin().getLogger().warning("Failed to execute unmute command", e);
           return;
         }
@@ -111,7 +110,7 @@ public class UnmuteCommand extends CommonCommand {
         }
 
         if (!parser.isSilent()) {
-          getPlugin().getServer().broadcast(message.toString(), "bm.notify.unmute");
+          getPlugin().getServer().broadcast(message, "bm.notify.unmute");
         }
 
         getPlugin().getScheduler().runSync(() -> {

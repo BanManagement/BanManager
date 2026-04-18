@@ -58,14 +58,15 @@ public class JoinListener implements Listener {
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-
-      handleDeny(message);
+      String locale = player.getLocale() != null ? player.getLocale() : "en";
+      event.setCancelled(true);
+      event.setCancelReason(BungeeServer.formatMessage(message.resolveComponent(locale)));
     }
 
     @Override
     public void handleDeny(Message message) {
       event.setCancelled(true);
-      event.setCancelReason(BungeeServer.formatMessage(message.toString()));
+      event.setCancelReason(BungeeServer.formatMessage(message.resolveComponent()));
     }
   }
 
@@ -80,7 +81,7 @@ public class JoinListener implements Listener {
 
     @Override
     public void handleDeny(Message message) {
-      event.getPlayer().disconnect(BungeeServer.formatMessage(message.toString()));
+      event.getPlayer().disconnect(BungeeServer.formatMessage(message.resolveComponent()));
     }
   }
 }

@@ -4,6 +4,7 @@ import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
 
 import java.sql.SQLException;
@@ -40,12 +41,12 @@ public class BanCommand extends CommonCommand {
     final TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
-      sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+      Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
       return true;
     }
 
     if (target.getStatus() == TargetResolver.TargetStatus.AMBIGUOUS) {
-      sender.sendMessage(Message.get("sender.error.ambiguousPlayer").set("player", playerName).toString());
+      Message.get("sender.error.ambiguousPlayer").set("player", playerName).sendTo(sender);
       return true;
     }
 
@@ -64,7 +65,7 @@ public class BanCommand extends CommonCommand {
       try {
         isBanned = getPlugin().getPlayerBanStorage().isBanned(UUID.fromString(playerName));
       } catch (IllegalArgumentException e) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return true;
       }
     } else {
@@ -75,7 +76,7 @@ public class BanCommand extends CommonCommand {
       Message message = Message.get("ban.error.exists");
       message.set("player", targetName);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -93,12 +94,12 @@ public class BanCommand extends CommonCommand {
       final PlayerData player = getPlayer(sender, targetName, true);
 
       if (player == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", targetName).toString());
+        Message.get("sender.error.notFound").set("player", targetName).sendTo(sender);
         return;
       }
 
       if (getPlugin().getExemptionsConfig().isExempt(player, "ban")) {
-        sender.sendMessage(Message.get("sender.error.exempt").set("player", targetName).toString());
+        Message.get("sender.error.exempt").set("player", targetName).sendTo(sender);
         return;
       }
 
@@ -108,7 +109,7 @@ public class BanCommand extends CommonCommand {
           return;
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute ban command", e);
         return;
       }
@@ -130,7 +131,7 @@ public class BanCommand extends CommonCommand {
           try {
             getPlugin().getPlayerBanStorage().unban(ban, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute ban command", e);
             return;
           }
@@ -142,12 +143,14 @@ public class BanCommand extends CommonCommand {
 
       Message kickMessage = null;
       if (onlinePlayer != null) {
+        String dateTimeFormat = Message.getString("ban.player.dateTimeFormat");
         kickMessage = Message.get("ban.player.kick")
                              .set("displayName", onlinePlayer.getDisplayName())
                              .set("player", player.getName())
                              .set("playerId", player.getUUID().toString())
                              .set("reason", ban.getReason())
-                             .set("actor", actor.getName());
+                             .set("actor", actor.getName())
+                             .set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "yyyy-MM-dd HH:mm:ss", ban.getCreated()));
       }
 
       try {
@@ -167,7 +170,7 @@ public class BanCommand extends CommonCommand {
       if (onlinePlayer != null) {
         final Message finalKickMessage = kickMessage;
         getPlugin().getScheduler().runSync(() -> {
-          onlinePlayer.kick(finalKickMessage.toString());
+          onlinePlayer.kick(finalKickMessage);
         });
       }
     });

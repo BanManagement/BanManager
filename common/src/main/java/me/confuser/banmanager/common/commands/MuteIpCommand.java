@@ -56,7 +56,7 @@ public class MuteIpCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -76,7 +76,7 @@ public class MuteIpCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        Message.get("sender.error.notFound").set("player", ipStr).sendTo(sender);
         return;
       }
 
@@ -86,7 +86,7 @@ public class MuteIpCommand extends CommonCommand {
         Message message = Message.get("muteip.error.exists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -101,7 +101,7 @@ public class MuteIpCommand extends CommonCommand {
           try {
             getPlugin().getIpMuteStorage().unmute(mute, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute muteip command", e);
             return;
           }

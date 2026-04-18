@@ -55,7 +55,6 @@ jobs:
           :BanManagerBungee:shadowJar
           :BanManagerVelocity:shadowJar
           :BanManagerSponge:shadowJar
-          :BanManagerSponge7:shadowJar
           :fabric:1.20.1:remapJar
           :fabric:1.21.1:remapJar
           :fabric:1.21.4:remapJar
@@ -71,7 +70,6 @@ jobs:
             bungee/build/libs/BanManagerBungeeCord.jar
             velocity/build/libs/BanManagerVelocity.jar
             sponge/build/libs/BanManagerSponge.jar
-            sponge-api7/build/libs/BanManagerSponge7.jar
             fabric/versions/1.20.1/build/libs/BanManagerFabric-mc1.20.1.jar
             fabric/versions/1.21.1/build/libs/BanManagerFabric-mc1.21.1.jar
             fabric/versions/1.21.4/build/libs/BanManagerFabric-mc1.21.4.jar
@@ -139,12 +137,6 @@ jobs:
             mc_version: "1.21.3"
             java_image: "java21"
             spongeversion: "1.21.3-13.0.0"
-          # Sponge API 7 (Legacy - MC 1.12.2, Java 8)
-          - platform: Sponge7-1.12.2
-            task: testSponge7
-            compose_dir: platforms/sponge7
-            mc_version: "1.12.2"
-            java_image: "java8"
           # Velocity Proxy
           - platform: Velocity
             task: testVelocity

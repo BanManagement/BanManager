@@ -48,7 +48,7 @@ public class BanIpCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -66,7 +66,7 @@ public class BanIpCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        Message.get("sender.error.notFound").set("player", ipStr).sendTo(sender);
         return;
       }
 
@@ -76,7 +76,7 @@ public class BanIpCommand extends CommonCommand {
         Message message = Message.get("banip.error.exists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -86,7 +86,7 @@ public class BanIpCommand extends CommonCommand {
           return;
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute banip command", e);
         return;
       }
@@ -100,7 +100,7 @@ public class BanIpCommand extends CommonCommand {
           try {
             getPlugin().getIpBanStorage().unban(ban, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute banip command", e);
             return;
           }
@@ -130,7 +130,7 @@ public class BanIpCommand extends CommonCommand {
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
-            onlinePlayer.kick(kickMessage.toString());
+            onlinePlayer.kick(kickMessage);
           }
         }
       });

@@ -57,14 +57,14 @@ public class LoglessKickAllCommand extends CommonCommand {
               .set("playerId", player.getUniqueId().toString())
               .set("actor", actor.getName());
 
-          player.kick(kickMessage.toString());
+          player.kick(kickMessage);
         }
 
         if (isSilent || !sender.hasPermission("bm.notify.kick")) {
           message.sendTo(sender);
         }
 
-        if (!isSilent) getPlugin().getServer().broadcast(message.toString(), "bm.notify.kick");
+        if (!isSilent) getPlugin().getServer().broadcast(message, "bm.notify.kick");
       });
     });
 

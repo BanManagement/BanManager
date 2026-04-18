@@ -41,7 +41,7 @@ public class UnbanAllCommand extends CommonCommand {
       Message message = Message.get("unban.error.noExists");
       message.set("player", playerName);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -55,7 +55,7 @@ public class UnbanAllCommand extends CommonCommand {
       }
 
       if (ban == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -70,7 +70,7 @@ public class UnbanAllCommand extends CommonCommand {
           new GlobalLocalApplyHelper(getPlugin()).applyUnban(record, false);
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("errorOccurred").toString());
+        Message.get("errorOccurred").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unbanall command", e);
         return;
       }

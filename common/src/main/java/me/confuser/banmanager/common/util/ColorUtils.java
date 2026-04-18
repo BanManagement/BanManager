@@ -28,7 +28,7 @@ public class ColorUtils {
 
   // Outputs JSON with NO hex colors - safe for pre-1.16 clients
   private static final GsonComponentSerializer DOWNSAMPLING_JSON =
-      GsonComponentSerializer.colorDownsamplingGson();
+      GsonComponentSerializer.builder().downsampleColors().build();
 
   /**
    * Convert Spigot-style &x&r&r&g&g&b&b to &#rrggbb format
@@ -97,6 +97,6 @@ public class ColorUtils {
    */
   public static String toJson(String message) {
     Component component = parse(message);
-    return GsonComponentSerializer.gson().serialize(component);
+    return GsonComponentSerializer.builder().build().serialize(component);
   }
 }

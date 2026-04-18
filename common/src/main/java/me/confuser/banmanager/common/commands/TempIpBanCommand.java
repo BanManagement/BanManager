@@ -45,7 +45,7 @@ public class TempIpBanCommand extends CommonCommand {
       Message message = Message.get("sender.error.invalidIp");
       message.set("ip", ipStr);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -64,7 +64,7 @@ public class TempIpBanCommand extends CommonCommand {
     try {
       expiresCheck = DateUtils.parseDateDiff(parser.args[1], true);
     } catch (Exception e1) {
-      sender.sendMessage(Message.get("time.error.invalid").toString());
+      Message.get("time.error.invalid").sendTo(sender);
       return true;
     }
 
@@ -80,7 +80,7 @@ public class TempIpBanCommand extends CommonCommand {
       final IPAddress ip = getIp(ipStr);
 
       if (ip == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", ipStr).toString());
+        Message.get("sender.error.notFound").set("player", ipStr).sendTo(sender);
         return;
       }
 
@@ -90,7 +90,7 @@ public class TempIpBanCommand extends CommonCommand {
         Message message = Message.get("banip.error.exists");
         message.set("ip", ipStr);
 
-        sender.sendMessage(message.toString());
+        message.sendTo(sender);
         return;
       }
 
@@ -100,7 +100,7 @@ public class TempIpBanCommand extends CommonCommand {
           return;
         }
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute tempbanip command", e);
         return;
       }
@@ -116,7 +116,7 @@ public class TempIpBanCommand extends CommonCommand {
           try {
             getPlugin().getIpBanStorage().unban(ban, actor);
           } catch (SQLException e) {
-            sender.sendMessage(Message.get("sender.error.exception").toString());
+            Message.get("sender.error.exception").sendTo(sender);
             getPlugin().getLogger().warning("Failed to execute tempbanip command", e);
             return;
           }
@@ -148,7 +148,7 @@ public class TempIpBanCommand extends CommonCommand {
 
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
-            onlinePlayer.kick(kickMessage.toString());
+            onlinePlayer.kick(kickMessage);
           }
         }
       });

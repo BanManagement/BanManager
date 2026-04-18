@@ -76,6 +76,10 @@ public class DefaultConfig extends Config {
   @Getter
   private UUIDFetcher uuidFetcher;
   @Getter
+  private String defaultLocale;
+  @Getter
+  private boolean perPlayerLocale;
+  @Getter
   private String geyserPrefix;
 
   public DefaultConfig(File dataFolder, CommonLogger logger) {
@@ -140,6 +144,8 @@ public class DefaultConfig extends Config {
     uuidFetcher = new UUIDFetcher(idToName, nameToId);
 
     geyserPrefix = conf.getString("geyserPrefix", "");
+    defaultLocale = conf.getString("locale.default", "en");
+    perPlayerLocale = conf.getBoolean("locale.perPlayer", true);
   }
 
   public void handleBlockedCommands(BanManagerPlugin plugin, HashSet<String> set) {

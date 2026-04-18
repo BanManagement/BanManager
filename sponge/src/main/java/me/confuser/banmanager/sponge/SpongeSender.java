@@ -62,11 +62,6 @@ public class SpongeSender implements CommonSender {
     }
 
     @Override
-    public void sendMessage(Message message) {
-        sendMessage(message.toString());
-    }
-
-    @Override
     public boolean isConsole() {
         if (audience instanceof ServerPlayer) {
             return false;

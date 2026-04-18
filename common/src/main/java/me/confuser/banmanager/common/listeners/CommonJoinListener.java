@@ -216,24 +216,25 @@ public class CommonJoinListener {
       return;
     }
 
+    String locale = data.getPlayer().getLocale();
     String dateTimeFormat;
     Message message;
 
     if (data.getExpires() == 0) {
       message = Message.get("ban.player.disallowed");
-      dateTimeFormat = Message.getString("ban.player.dateTimeFormat");
+      dateTimeFormat = Message.getString("ban.player.dateTimeFormat", locale);
     } else {
       message = Message.get("tempban.player.disallowed");
-      message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
+      message.set("expires", DateUtils.getDifferenceFormat(data.getExpires(), locale));
 
-      dateTimeFormat = Message.getString("tempban.player.dateTimeFormat");
+      dateTimeFormat = Message.getString("tempban.player.dateTimeFormat", locale);
     }
 
     message.set("id", data.getId());
     message.set("player", data.getPlayer().getName());
     message.set("reason", data.getReason());
     message.set("actor", data.getActor().getName());
-    message.set("created", DateUtils.format(dateTimeFormat, data.getCreated()));
+    message.set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "dd-MM-yyyy kk:mm:ss", data.getCreated()));
 
     handler.handlePlayerDeny(data.getPlayer(), message);
     handleJoinDeny(data.getPlayer(), data.getActor(), data.getReason());
@@ -265,6 +266,21 @@ public class CommonJoinListener {
 
       UUID id = player.getUniqueId();
 
+      if (plugin.getConfig().isPerPlayerLocale()) {
+        try {
+          PlayerData playerData = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(id));
+          if (playerData != null) {
+            String locale = player.getLocale();
+            if (locale != null && !locale.equals(playerData.getLocale())) {
+              playerData.setLocale(locale);
+              plugin.getPlayerStorage().update(playerData);
+            }
+          }
+        } catch (SQLException e) {
+          plugin.getLogger().warning("Failed to update player locale", e);
+        }
+      }
+
       PlayerMuteData mute = plugin.getPlayerMuteStorage().getMute(id);
       if (mute != null && mute.isOnlineOnly() && mute.isPaused()) {
         try {
@@ -278,7 +294,7 @@ public class CommonJoinListener {
 
       try {
         notesItr = plugin.getPlayerNoteStorage().getNotes(id);
-        ArrayList<String> notes = new ArrayList<>();
+        ArrayList<Message> notes = new ArrayList<>();
         String dateTimeFormat = Message.getString("notes.dateTimeFormat");
 
         while (notesItr != null && notesItr.hasNext()) {
@@ -290,7 +306,7 @@ public class CommonJoinListener {
               .set("id", note.getId())
               .set("created", DateUtils.format(dateTimeFormat, note.getCreated()));
 
-          notes.add(noteMessage.toString());
+          notes.add(noteMessage);
         }
 
         if (notes.size() != 0) {
@@ -298,15 +314,14 @@ public class CommonJoinListener {
               .set("amount", notes.size())
               .set("player", player.getName());
 
-          plugin.getServer().broadcastJSON(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
+          plugin.getServer().broadcast(NotesCommand.notesAmountMessage(player.getName(), noteJoinMessage), "bm.notify.notes.joinAmount");
 
-          String header = Message.get("notes.header")
-              .set("player", player.getName())
-              .toString();
+          Message header = Message.get("notes.header")
+              .set("player", player.getName());
 
           plugin.getServer().broadcast(header, "bm.notify.notes.join");
 
-          for (String message : notes) {
+          for (Message message : notes) {
             plugin.getServer().broadcast(message, "bm.notify.notes.join");
           }
 
@@ -464,7 +479,7 @@ public class CommonJoinListener {
       message.set("player", player.getName());
       message.set("players", sb.toString());
 
-      plugin.getServer().broadcast(message.toString(), "bm.notify.duplicateips");
+      plugin.getServer().broadcast(message, "bm.notify.duplicateips");
     }, Duration.ofSeconds(1));
 
     plugin.getScheduler().runAsyncLater(() -> {
@@ -498,7 +513,7 @@ public class CommonJoinListener {
       message.set("player", player.getName());
       message.set("players", sb.toString());
 
-      plugin.getServer().broadcast(message.toString(), "bm.notify.alts");
+      plugin.getServer().broadcast(message, "bm.notify.alts");
     }, Duration.ofSeconds(1));
   }
 
@@ -512,7 +527,7 @@ public class CommonJoinListener {
       .set("reason", reason)
       .set("actor", actor.getName());
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.player");
+    plugin.getServer().broadcast(message, "bm.notify.denied.player");
   }
 
   private void handleJoinDeny(String ip, PlayerData actor, String reason) {
@@ -524,7 +539,7 @@ public class CommonJoinListener {
       .set("reason", reason)
       .set("actor", actor.getName());
 
-    plugin.getServer().broadcast(message.toString(), "bm.notify.denied.ip");
+    plugin.getServer().broadcast(message, "bm.notify.denied.ip");
   }
 
   private void denyAlts(List<PlayerData> duplicates, final UUID uuid) {
@@ -552,7 +567,7 @@ public class CommonJoinListener {
             .set("id", ban.getId())
             .set("actor", ban.getActor().getName());
 
-        bukkitPlayer.kick(kickMessage.toString());
+        bukkitPlayer.kick(kickMessage);
       });
     }
   }
@@ -586,14 +601,16 @@ public class CommonJoinListener {
         plugin.getScheduler().runSync(() -> {
           CommonPlayer bukkitPlayer = plugin.getServer().getPlayer(newBan.getPlayer().getUUID());
 
+          String kickDateTimeFormat = Message.getString("ban.player.dateTimeFormat");
           Message kickMessage = Message.get("ban.player.kick")
               .set("displayName", bukkitPlayer.getDisplayName())
               .set("player", newBan.getPlayer().getName())
               .set("reason", newBan.getReason())
               .set("id", newBan.getId())
-              .set("actor", newBan.getActor().getName());
+              .set("actor", newBan.getActor().getName())
+              .set("created", DateUtils.format(kickDateTimeFormat != null ? kickDateTimeFormat : "yyyy-MM-dd HH:mm:ss", newBan.getCreated()));
 
-          bukkitPlayer.kick(kickMessage.toString());
+          bukkitPlayer.kick(kickMessage);
         });
       }
     } else if (!plugin.getPlayerMuteStorage().isMuted(uuid)) {

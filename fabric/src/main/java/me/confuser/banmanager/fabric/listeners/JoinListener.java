@@ -59,8 +59,9 @@ public class JoinListener {
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
       plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
-
-      handleDeny(message);
+      String locale = player.getLocale() != null ? player.getLocale() : "en";
+      isDenied = true;
+      handler.disconnect(FabricServer.formatMessage(message.resolveComponent(locale)));
     }
 
     @Override

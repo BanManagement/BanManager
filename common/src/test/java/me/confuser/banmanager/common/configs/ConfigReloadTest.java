@@ -97,20 +97,17 @@ public class ConfigReloadTest extends BasePluginTest {
 
   @Test
   public void messagesArePreservedWhenConfigFails() throws IOException {
-    // Get a message that should exist
     String originalMessage = Message.getString("configReloaded");
     assertNotNull("configReloaded message should exist", originalMessage);
 
-    // Corrupt the messages.yml file
-    File messagesFile = new File(temporaryFolder.getRoot(), "messages.yml");
-    try (FileWriter writer = new FileWriter(messagesFile)) {
+    // Corrupt the messages/messages_en.yml so reload yields no usable messages
+    File messagesEnFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
+    try (FileWriter writer = new FileWriter(messagesEnFile)) {
       writer.write("invalid: yaml: [unclosed");
     }
 
-    // Reload configs
     plugin.setupConfigs();
 
-    // Messages should still be available
     String afterReloadMessage = Message.getString("configReloaded");
     assertEquals("Messages should be preserved after failed reload", originalMessage, afterReloadMessage);
   }
@@ -121,8 +118,8 @@ public class ConfigReloadTest extends BasePluginTest {
     String originalMessage = Message.getString("configReloaded");
     assertNotNull("configReloaded message should exist", originalMessage);
 
-    // Modify the messages.yml file with a new message value
-    File messagesFile = new File(temporaryFolder.getRoot(), "messages.yml");
+    // Modify the messages/messages_en.yml file with a new message value
+    File messagesFile = new File(temporaryFolder.getRoot(), "messages/messages_en.yml");
     try (FileWriter writer = new FileWriter(messagesFile)) {
       writer.write("messages:\n");
       writer.write("  configReloaded: \"New reload message\"\n");

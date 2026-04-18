@@ -3,8 +3,6 @@ package me.confuser.banmanager.common;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
-import me.confuser.banmanager.common.util.Message;
-
 import java.util.UUID;
 
 public class TestSender implements CommonSender {
@@ -31,11 +29,6 @@ public class TestSender implements CommonSender {
 
   @Override
   public void sendMessage(String message) {
-
-  }
-
-  @Override
-  public void sendMessage(Message message) {
 
   }
 

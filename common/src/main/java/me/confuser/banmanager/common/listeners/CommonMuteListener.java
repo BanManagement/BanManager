@@ -7,6 +7,7 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
 import me.confuser.banmanager.common.util.DateUtils;
 import me.confuser.banmanager.common.util.Message;
+import me.confuser.banmanager.common.util.NotificationUtils;
 
 import java.util.List;
 
@@ -19,13 +20,16 @@ public class CommonMuteListener {
 
   public void notifyOnMute(PlayerMuteData data, boolean silent) {
     String broadcastPermission;
+    String event;
     Message message;
 
     if (data.getExpires() == 0 && !data.isOnlineOnly()) {
       broadcastPermission = "bm.notify.mute";
+      event = "mute";
       message = Message.get("mute.notify");
     } else if (data.isOnlineOnly()) {
       broadcastPermission = "bm.notify.tempmute";
+      event = "tempmute";
       message = Message.get("tempmute.notifyOnline");
       if (data.isPaused()) {
         message.set("expires", DateUtils.formatDifference(data.getPausedRemaining()));
@@ -34,6 +38,7 @@ public class CommonMuteListener {
       }
     } else {
       broadcastPermission = "bm.notify.tempmute";
+      event = "tempmute";
       message = Message.get("tempmute.notify");
       message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
     }
@@ -46,14 +51,12 @@ public class CommonMuteListener {
         .set("reason", data.getReason());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      NotificationUtils.notifyStaff(plugin, event, message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
     }
 
-    // Check if the sender is online and does not have the
-    // broadcastPermission
     CommonPlayer player = plugin.getServer().getPlayer(data.getActor().getUUID());
 
     if (player == null || !player.isOnline()) {
@@ -67,13 +70,16 @@ public class CommonMuteListener {
 
   public void notifyOnMute(IpMuteData data, boolean silent) {
     String broadcastPermission;
+    String event;
     Message message;
 
     if (data.getExpires() == 0) {
       broadcastPermission = "bm.notify.muteip";
+      event = "mute";
       message = Message.get("muteip.notify");
     } else {
       broadcastPermission = "bm.notify.tempmuteip";
+      event = "tempmute";
       message = Message.get("tempmuteip.notify");
       message.set("expires", DateUtils.getDifferenceFormat(data.getExpires()));
     }
@@ -97,14 +103,12 @@ public class CommonMuteListener {
         .set("players", playerNames.toString());
 
     if (!silent) {
-      plugin.getServer().broadcast(message.toString(), broadcastPermission);
+      NotificationUtils.notifyStaff(plugin, event, message, broadcastPermission);
     } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
     }
 
-    // Check if the sender is online and does not have the
-    // broadcastPermission
     CommonPlayer player = plugin.getServer().getPlayer(data.getActor().getUUID());
 
     if (player == null || !player.isOnline()) {

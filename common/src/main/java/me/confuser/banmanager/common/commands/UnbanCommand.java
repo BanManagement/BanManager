@@ -39,7 +39,7 @@ public class UnbanCommand extends CommonCommand {
       try {
         isBanned = getPlugin().getPlayerBanStorage().isBanned(UUID.fromString(playerName));
       } catch (IllegalArgumentException e) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return true;
       }
     } else {
@@ -50,7 +50,7 @@ public class UnbanCommand extends CommonCommand {
       Message message = Message.get("unban.error.noExists");
       message.set("player", playerName);
 
-      sender.sendMessage(message.toString());
+      message.sendTo(sender);
       return true;
     }
 
@@ -68,7 +68,7 @@ public class UnbanCommand extends CommonCommand {
       }
 
       if (ban == null) {
-        sender.sendMessage(Message.get("sender.error.notFound").set("player", playerName).toString());
+        Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
         return;
       }
 
@@ -84,7 +84,7 @@ public class UnbanCommand extends CommonCommand {
       try {
         unbanned = getPlugin().getPlayerBanStorage().unban(ban, actor, reason, isDelete, parser.isSilent());
       } catch (SQLException e) {
-        sender.sendMessage(Message.get("sender.error.exception").toString());
+        Message.get("sender.error.exception").sendTo(sender);
         getPlugin().getLogger().warning("Failed to execute unban command", e);
         return;
       }
@@ -106,7 +106,7 @@ public class UnbanCommand extends CommonCommand {
       }
 
       if (!parser.isSilent()) {
-        getPlugin().getServer().broadcast(message.toString(), "bm.notify.unban");
+        getPlugin().getServer().broadcast(message, "bm.notify.unban");
       }
     });
 
