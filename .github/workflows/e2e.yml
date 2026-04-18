@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - release/v7
   workflow_dispatch: # Allow manual triggering
 
 jobs:

@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ["Java CI", "E2E Tests"]
     types: [completed]
-    branches: [master]
+    branches: [master, release/v7]
 
 permissions:
   contents: read
@@ -18,10 +18,10 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Only consider successful completions on master from push events
+    # Only consider successful completions on master / release branches from push events
     if: >
       github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'master' &&
+      (github.event.workflow_run.head_branch == 'master' || github.event.workflow_run.head_branch == 'release/v7') &&
       github.event.workflow_run.event == 'push'
 
     steps:
