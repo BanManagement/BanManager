@@ -2,11 +2,16 @@ package me.confuser.banmanager.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.confuser.banmanager.common.api.BmAPI;
 import me.confuser.banmanager.common.commands.*;
 import me.confuser.banmanager.common.commands.global.*;
 import me.confuser.banmanager.common.configs.*;
 import me.confuser.banmanager.common.hikari.HikariDataSource;
+import me.confuser.banmanager.common.impl.AsyncSupport;
+import me.confuser.banmanager.common.impl.BanManagerServiceImpl;
+import me.confuser.banmanager.common.impl.DatabaseAccessImpl;
+import me.confuser.banmanager.common.impl.SchedulerAdapter;
+import me.confuser.banmanager.api.event.EventBus;
+import me.confuser.banmanager.common.impl.event.EventBusImpl;
 import me.confuser.banmanager.common.ormlite.dao.GenericRawResults;
 import me.confuser.banmanager.common.ormlite.db.DatabaseType;
 import me.confuser.banmanager.common.ormlite.jdbc.DataSourceConnectionSource;
@@ -41,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.Long.parseLong;
 
 public class BanManagerPlugin {
-  private static BanManagerPlugin self;
 
   // Token names used by commands/listeners via Message.set(). Hardcoded because these are
   // defined across many source files and not available at runtime as a registry. Used only
@@ -63,15 +67,6 @@ public class BanManagerPlugin {
       normalised.add(MessageRenderer.normaliseTagName(name));
     }
     BUILTIN_TOKENS = Collections.unmodifiableSet(normalised);
-  }
-
-  /*
-   * This block prevents the Maven Shade plugin to remove the specified classes
-   */
-  static {
-    @SuppressWarnings("unused") Class<?>[] classes = new Class<?>[]{
-        BmAPI.class,
-    };
   }
 
   @Getter
@@ -106,6 +101,12 @@ public class BanManagerPlugin {
   private ConnectionSource localConn;
   @Getter
   private ConnectionSource globalConn;
+  // Underlying Hikari pools, exposed via DatabaseAccess to API consumers.
+  // Owned by this plugin; do not close from outside.
+  @Getter
+  private HikariDataSource localDataSource;
+  @Getter
+  private HikariDataSource globalDataSource;
 
   // Storage
   @Getter
@@ -192,6 +193,12 @@ public class BanManagerPlugin {
   @Getter
   private MessageRegistry messageRegistry;
 
+  // MiniMessage / serializer pipeline. Single instance owned by the plugin so static
+  // tokens loaded from messages.yml are scoped to this server instead of leaking
+  // across reloads or between plugins on the same JVM.
+  @Getter
+  private final MessageRenderer messageRenderer = new MessageRenderer();
+
   // Shared HTTP infrastructure for webhooks, UUID lookups and GeoIP downloads.
   // Lazily initialised on first use so unit tests that don't touch HTTP avoid
   // spinning up the executor. volatile ensures the double-checked locking in
@@ -200,6 +207,20 @@ public class BanManagerPlugin {
   private volatile ExecutorService httpExecutor;
   private final Object httpLock = new Object();
 
+  // Public API surface — created in enable() once storage is initialised so all
+  // sub-services have working DAOs, torn down in disable() to close the dedicated
+  // DB-I/O executor and detach the SPI registration.
+  @Getter
+  private BanManagerServiceImpl apiService;
+  private ExecutorService dbExecutor;
+
+  // EventBus is created up-front in enable() — *before* storage — so the storage
+  // layer can publish typed events from its mutating methods. The same instance
+  // is later wrapped by BanManagerServiceImpl so external subscribers and internal
+  // publishers share one dispatch graph.
+  @Getter
+  private EventBus eventBus;
+
   public BanManagerPlugin(PluginInfo pluginInfo, CommonLogger logger, File dataFolder, CommonScheduler scheduler, CommonServer server, CommonMetrics metrics) {
     this.pluginInfo = pluginInfo;
     this.logger = logger;
@@ -207,11 +228,15 @@ public class BanManagerPlugin {
     this.server = server;
     this.scheduler = scheduler;
     this.metrics = metrics;
-    self = this;
   }
 
   public final void enable() throws Exception {
     setupConfigs();
+
+    // Build the event bus first so storage can publish typed events from
+    // its mutating methods. apiService later wraps the same instance so
+    // external subscribers and internal publishers share one dispatch graph.
+    eventBus = new EventBusImpl(logger);
 
     try {
       if (!config.isDebugEnabled()) {
@@ -290,9 +315,50 @@ public class BanManagerPlugin {
         logger.warning("Failed to submit stats, ignoring");
       }
     }
+
+    apiService = buildApiService();
+    me.confuser.banmanager.api.BanManager.set(apiService);
+  }
+
+  /**
+   * Builds the public {@link me.confuser.banmanager.api.BanManagerService} composite root.
+   *
+   * <p>The dedicated DB-I/O executor sizes itself to {@code maxConnections + 2}
+   * threads (a hair over the Hikari pool to leave headroom for transient
+   * spikes); going larger would just queue inside Hikari. Daemon threads stop
+   * the JVM from hanging on shutdown if {@link #disable()} doesn't run
+   * (e.g. SIGKILL).</p>
+   */
+  private BanManagerServiceImpl buildApiService() {
+    int poolSize = Math.max(2, config.getLocalDb().getMaxConnections() + 2);
+    AtomicInteger counter = new AtomicInteger();
+    dbExecutor = Executors.newFixedThreadPool(poolSize, r -> {
+      Thread t = new Thread(r, "BanManager-DB-" + counter.incrementAndGet());
+      t.setDaemon(true);
+      return t;
+    });
+
+    AsyncSupport async = new AsyncSupport(dbExecutor);
+    DatabaseAccessImpl database = new DatabaseAccessImpl(this);
+    SchedulerAdapter sched = new SchedulerAdapter(scheduler);
+
+    return new BanManagerServiceImpl(this, eventBus, database, sched, async);
   }
 
   public final void disable() {
+    // Shutdown order matters:
+    // 1. Drain the DB executor first so all in-flight async work that may
+    //    publish post-events completes against a still-live event bus.
+    // 2. Only then detach the static SPI handle. Callers of BanManager.get()
+    //    after this point see the documented IllegalStateException instead
+    //    of a half-torn-down service whose async submissions silently fail.
+    // 3. Save in-memory state (schedules) before closing connections.
+    // 4. Close ORMLite ConnectionSources, then the Hikari pools they wrap.
+    // 5. HTTP executor last (webhook bursts queued by post-events should
+    //    flush before the pool dies).
+    shutdownDbExecutor();
+    me.confuser.banmanager.api.BanManager.clear();
+
     if (getSchedulesConfig() != null) {
       getSchedulesConfig().save();
     }
@@ -313,7 +379,41 @@ public class BanManagerPlugin {
       globalConn.closeQuietly();
     }
 
+    // ORMLite's DataSourceConnectionSource doesn't close the underlying DataSource on
+    // closeQuietly(), so the Hikari pools must be closed explicitly to release threads.
+    if (localDataSource != null) {
+      localDataSource.close();
+      localDataSource = null;
+    }
+    if (globalDataSource != null) {
+      globalDataSource.close();
+      globalDataSource = null;
+    }
+
     shutdownHttpExecutor();
+  }
+
+  /**
+   * Shuts down the dedicated DB-I/O executor backing the public API. Mirrors
+   * {@link #shutdownHttpExecutor()} — give in-flight queries a few seconds to
+   * finish, then force-cancel anything still running so the JVM can exit.
+   */
+  private void shutdownDbExecutor() {
+    ExecutorService executor = dbExecutor;
+    dbExecutor = null;
+    apiService = null;
+    eventBus = null;
+    if (executor == null) return;
+
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
   }
 
   /**
@@ -370,7 +470,7 @@ public class BanManagerPlugin {
     schedulesConfig = reloadConfig(new SchedulesConfig(dataFolder, logger), schedulesConfig, "schedules.yml");
     exemptionsConfig = reloadConfig(new ExemptionsConfig(dataFolder, logger), exemptionsConfig, "exemptions.yml");
     reasonsConfig = reloadConfig(new ReasonsConfig(dataFolder, logger), reasonsConfig, "reasons.yml");
-    geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger), geoIpConfig, "geoip.yml");
+    geoIpConfig = reloadConfig(new GeoIpConfig(dataFolder, logger, this::getHttpClient), geoIpConfig, "geoip.yml");
     webhookConfig = reloadConfig(new WebhookConfig(dataFolder, logger), webhookConfig, "webhooks.yml");
     notificationsConfig = reloadConfig(new NotificationsConfig(dataFolder, logger), notificationsConfig, "notifications.yml");
 
@@ -382,8 +482,7 @@ public class BanManagerPlugin {
     MessageRegistry newRegistry = new MessageRegistry(defaultLocale);
 
     // Clear static tokens before loading so removed tokens don't persist across reloads
-    MessageRenderer renderer = MessageRenderer.getInstance();
-    renderer.loadStaticTokens(Collections.emptyMap());
+    messageRenderer.loadStaticTokens(Collections.emptyMap());
 
     copyMessagesDirectory();
 
@@ -420,10 +519,12 @@ public class BanManagerPlugin {
       messageRegistry = newRegistry;
     }
 
-    Message.init(messageRegistry, logger);
+    Message.init(messageRegistry, logger, messageRenderer,
+        () -> placeholderResolver,
+        () -> config != null && config.isPerPlayerLocale());
 
-    if (renderer.getStaticTokens() != null) {
-      for (String tokenName : renderer.getStaticTokens().keySet()) {
+    if (messageRenderer.getStaticTokens() != null) {
+      for (String tokenName : messageRenderer.getStaticTokens().keySet()) {
         if (BUILTIN_TOKENS.contains(tokenName)) {
           logger.warning("Static token '" + tokenName + "' collides with a built-in token and will be overridden at runtime");
         }
@@ -460,7 +561,7 @@ public class BanManagerPlugin {
       }
 
       Map<String, String> messages = new HashMap<>();
-      MessageRenderer renderer = MessageRenderer.getInstance();
+      MessageRenderer renderer = messageRenderer;
       int rejectedCount = 0;
 
       for (String key : conf.getConfigurationSection("messages").getKeys(true)) {
@@ -565,10 +666,12 @@ public class BanManagerPlugin {
   }
 
   public boolean setupConnections() throws SQLException {
-    localConn = createConnection(config.getLocalDb(), "bm-local");
+    localDataSource = createDataSource(config.getLocalDb(), "bm-local");
+    localConn = createConnection(config.getLocalDb(), localDataSource);
 
     if (config.getGlobalDb().isEnabled()) {
-      globalConn = createConnection(config.getGlobalDb(), "bm-global");
+      globalDataSource = createDataSource(config.getGlobalDb(), "bm-global");
+      globalConn = createConnection(config.getGlobalDb(), globalDataSource);
     }
 
     // Deregister BanManager's relocated drivers from DriverManager to prevent
@@ -579,7 +682,26 @@ public class BanManagerPlugin {
     return true;
   }
 
+  /**
+   * Backwards-compatible single-arg helper that builds a fresh DataSource
+   * and wraps it. Prefer the (DatabaseConfig, HikariDataSource) overload so
+   * the caller can also expose the pool via {@link #getLocalDataSource()}.
+   */
   public ConnectionSource createConnection(DatabaseConfig dbConfig, String type) throws SQLException {
+    return createConnection(dbConfig, createDataSource(dbConfig, type));
+  }
+
+  public ConnectionSource createConnection(DatabaseConfig dbConfig, HikariDataSource ds) throws SQLException {
+    DatabaseType databaseType = resolveDatabaseType(dbConfig);
+    return new DataSourceConnectionSource(ds, databaseType);
+  }
+
+  /**
+   * Build the Hikari pool for the supplied database config. Split out from
+   * {@link #createConnection(DatabaseConfig, String)} so the public API can
+   * surface the {@link javax.sql.DataSource} without going through ORMLite.
+   */
+  public HikariDataSource createDataSource(DatabaseConfig dbConfig, String type) {
     HikariDataSource ds = new HikariDataSource();
 
     if (!dbConfig.getStorageType().equals("h2")) {
@@ -600,16 +722,11 @@ public class BanManagerPlugin {
 
     if (dbConfig.getLeakDetection() != 0) ds.setLeakDetectionThreshold(dbConfig.getLeakDetection());
 
-    DatabaseType databaseType;
-
     if (dbConfig.getStorageType().equals("mariadb")) {
       ds.setDriverClassName("me.confuser.banmanager.common.mariadb.Driver");
-      databaseType = new MariaDBDatabase();
     } else if (dbConfig.getStorageType().equals("mysql")) {
       // Forcefully specify the newer driver
       ds.setDriverClassName(me.confuser.banmanager.common.mysql.cj.jdbc.Driver.class.getName());
-
-      databaseType = new MySQLDatabase();
 
       ds.addDataSourceProperty("cachePrepStmts", "true");
       ds.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -630,11 +747,24 @@ public class BanManagerPlugin {
         // Required for integration tests
         ds.setDriverClassName("org.h2.Driver");
       }
-
-      databaseType = new H2DatabaseType();
     }
 
-    return new DataSourceConnectionSource(ds, databaseType);
+    return ds;
+  }
+
+  /**
+   * Resolves the ORMLite {@link DatabaseType} for the configured storage backend.
+   * Mirrors the dispatch in {@link #createDataSource(DatabaseConfig, String)} so
+   * the two stay aligned without duplicating Hikari setup.
+   */
+  public DatabaseType resolveDatabaseType(DatabaseConfig dbConfig) {
+    if (dbConfig.getStorageType().equals("mariadb")) {
+      return new MariaDBDatabase();
+    }
+    if (dbConfig.getStorageType().equals("mysql")) {
+      return new MySQLDatabase();
+    }
+    return new H2DatabaseType();
   }
 
   public void setupStorage() throws SQLException {
@@ -751,9 +881,5 @@ public class BanManagerPlugin {
         new UnbanIpAllCommand(this),
         new UnmuteAllCommand(this)
     };
-  }
-
-  public static BanManagerPlugin getInstance() {
-    return self;
   }
 }

@@ -166,8 +166,10 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveVersion.set("mc$minecraftVersion")
 
     dependencies {
+        include(dependency(":BanManagerAPI"))
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
+        include(dependency("com.github.seancfoley:ipaddress:.*"))
     }
 
     mergeServiceFiles()
@@ -187,6 +189,8 @@ tasks.named<ShadowJar>("shadowJar") {
 
     minimize {
         exclude(dependency(":BanManagerLibs"))
+        exclude(dependency(":BanManagerAPI"))
+        exclude(dependency("com.github.seancfoley:ipaddress:.*"))
     }
 }
 

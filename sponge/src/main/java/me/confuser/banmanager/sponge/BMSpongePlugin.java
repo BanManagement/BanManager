@@ -1,12 +1,19 @@
 package me.confuser.banmanager.sponge;
 
 import com.google.inject.Inject;
+import me.confuser.banmanager.api.event.player.PluginReloadedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.listeners.CommonBanListener;
+import me.confuser.banmanager.common.listeners.CommonHooksListener;
+import me.confuser.banmanager.common.listeners.CommonMuteListener;
+import me.confuser.banmanager.common.listeners.CommonNoteListener;
+import me.confuser.banmanager.common.listeners.CommonReportListener;
+import me.confuser.banmanager.common.listeners.CommonWebhookListener;
 import me.confuser.banmanager.common.runnables.*;
 import me.confuser.banmanager.sponge.listeners.*;
 import org.apache.logging.log4j.Logger;
@@ -194,21 +201,23 @@ public class BMSpongePlugin {
         Sponge.eventManager().registerListeners(pluginContainer, new JoinListener(plugin));
         Sponge.eventManager().registerListeners(pluginContainer, new LeaveListener(plugin));
         Sponge.eventManager().registerListeners(pluginContainer, new CommandListener(plugin));
-        Sponge.eventManager().registerListeners(pluginContainer, new HookListener(plugin));
+        new CommonHooksListener(plugin);
 
         registerChatListener();
 
-        Sponge.eventManager().registerListeners(pluginContainer, new ReloadListener(this));
+        plugin.getEventBus().subscribe(PluginReloadedEvent.class, e -> registerChatListener());
 
         if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-            Sponge.eventManager().registerListeners(pluginContainer, new BanListener(plugin));
+            new CommonBanListener(plugin);
+            new CommonMuteListener(plugin);
             Sponge.eventManager().registerListeners(pluginContainer, new MuteListener(plugin));
-            Sponge.eventManager().registerListeners(pluginContainer, new NoteListener(plugin));
-            Sponge.eventManager().registerListeners(pluginContainer, new ReportListener(plugin));
+            new CommonNoteListener(plugin);
+            new CommonReportListener(plugin);
+            new ReportListener(plugin);
         }
 
         if (plugin.getWebhookConfig().isHooksEnabled()) {
-            Sponge.eventManager().registerListeners(pluginContainer, new WebhookListener(plugin));
+            new CommonWebhookListener(plugin);
         }
     }
 

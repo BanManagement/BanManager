@@ -186,7 +186,7 @@ public class InfoCommand extends CommonCommand {
         List<PlayerData> duplicatePlayers = getPlugin().getPlayerStorage().getDuplicatesInTime(ip, getPlugin().getConfig().getTimeAssociatedAlts());
 
         if (!sender.isConsole()) {
-          messages.add(FindAltsCommand.alts(duplicatePlayers));
+          messages.add(FindAltsCommand.alts(getPlugin(), duplicatePlayers));
         } else {
           StringBuilder duplicates = new StringBuilder();
 
@@ -510,7 +510,7 @@ public class InfoCommand extends CommonCommand {
         List<PlayerData> duplicatePlayers = getPlugin().getPlayerStorage().getDuplicatesInTime(player.getIp(), getPlugin().getConfig().getTimeAssociatedAlts());
 
         if (!sender.isConsole()) {
-          messages.add(FindAltsCommand.alts(duplicatePlayers));
+          messages.add(FindAltsCommand.alts(getPlugin(), duplicatePlayers));
         } else {
           StringBuilder duplicates = new StringBuilder();
 

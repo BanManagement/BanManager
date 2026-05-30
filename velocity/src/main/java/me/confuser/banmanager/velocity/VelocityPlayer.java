@@ -1,6 +1,7 @@
 package me.confuser.banmanager.velocity;
 
 import com.velocitypowered.api.proxy.Player;
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -8,7 +9,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -24,11 +24,13 @@ public class VelocityPlayer implements CommonPlayer {
   private static final GsonComponentSerializer DOWNSAMPLING_GSON =
       GsonComponentSerializer.builder().downsampleColors().build();
 
+  private final BanManagerPlugin plugin;
   private final UUID uuid;
   private final boolean onlineMode;
   private final Player player;
 
-  public VelocityPlayer(Player player, boolean onlineMode) {
+  public VelocityPlayer(BanManagerPlugin plugin, Player player, boolean onlineMode) {
+    this.plugin = plugin;
     this.player = player;
     this.uuid = this.player.getUniqueId();
     this.onlineMode = onlineMode;
@@ -100,7 +102,7 @@ public class VelocityPlayer implements CommonPlayer {
   }
 
   private net.kyori.adventure.text.Component convertToNative(Component component) {
-    String json = MessageRenderer.getInstance().toJson(component);
+    String json = plugin.getMessageRenderer().toJson(component);
     return GsonComponentSerializer.gson().deserialize(json);
   }
 
@@ -111,7 +113,7 @@ public class VelocityPlayer implements CommonPlayer {
 
   @Override
   public PlayerData getData() {
-    return CommonCommand.getPlayer(this, getName(), false);
+    return CommonCommand.resolvePlayer(plugin, this, getName(), false);
   }
 
   @Override

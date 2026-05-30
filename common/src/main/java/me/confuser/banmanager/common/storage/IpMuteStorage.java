@@ -1,9 +1,14 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.ip.IpMuteEvent;
+import me.confuser.banmanager.api.event.ip.IpMutedEvent;
+import me.confuser.banmanager.api.event.ip.IpUnmuteEvent;
+import me.confuser.banmanager.api.event.ip.IpUnmutedEvent;
+import me.confuser.banmanager.api.request.IpMuteRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpMuteData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
@@ -144,7 +149,8 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
   public void addMute(IpMuteData mute) {
     mutes.put(mute.getIp().toString(), mute);
 
-    plugin.getServer().callEvent("IpMutedEvent", mute, mute.isSilent() || !plugin.getConfig().isBroadcastOnSync());
+    boolean silent = mute.isSilent() || !plugin.getConfig().isBroadcastOnSync();
+    plugin.getEventBus().publish(new IpMutedEvent(EntityMappers.ipMute(mute), silent));
   }
 
   public void removeMute(IpMuteData mute) {
@@ -156,16 +162,20 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
   }
 
   public boolean mute(IpMuteData mute) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpMuteEvent", mute, mute.isSilent());
+    IpMuteRequest request = EntityMappers.ipMuteRequest(mute);
+    IpMuteEvent pre = new IpMuteEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, mute);
 
     create(mute);
     mutes.put(mute.getIp().toString(), mute);
 
-    plugin.getServer().callEvent("IpMutedEvent", mute, event.isSilent());
+    plugin.getEventBus().publish(new IpMutedEvent(EntityMappers.ipMute(mute), request.silent()));
 
     return true;
   }
@@ -179,18 +189,32 @@ public class IpMuteStorage extends BaseStorage<IpMuteData, Integer> {
   }
 
   public boolean unmute(IpMuteData mute, PlayerData actor, String reason, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpUnmutedEvent", mute, actor, reason, silent);
+    IpUnmuteEvent pre = new IpUnmuteEvent(
+        EntityMappers.ipMute(mute),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
+
     TransactionHelper.runInTransaction(connectionSource, () -> {
       delete(mute);
-      plugin.getIpMuteRecordStorage().addRecord(mute, actor, reason);
+      plugin.getIpMuteRecordStorage().addRecord(mute, actor, finalReason);
     });
 
     mutes.remove(mute.getIp().toString());
+
+    plugin.getEventBus().publish(new IpUnmutedEvent(
+        EntityMappers.ipMute(mute),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     return true;
   }

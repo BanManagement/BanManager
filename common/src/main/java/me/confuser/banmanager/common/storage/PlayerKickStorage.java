@@ -1,9 +1,11 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerKickedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerKickData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
@@ -34,7 +36,13 @@ public class PlayerKickStorage extends BaseStorage<PlayerKickData, Integer> {
   public boolean addKick(PlayerKickData data, boolean isSilent) throws SQLException {
     if (create(data) != 1) return false;
 
-    plugin.getServer().callEvent("PlayerKickedEvent", data, isSilent);
+    plugin.getEventBus().publish(new PlayerKickedEvent(
+        data.getId(),
+        EntityMappers.player(data.getPlayer()),
+        EntityMappers.player(data.getActor()),
+        data.getReason(),
+        data.getCreated(),
+        isSilent));
 
     return true;
   }

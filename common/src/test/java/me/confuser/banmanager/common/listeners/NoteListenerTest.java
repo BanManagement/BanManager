@@ -1,9 +1,11 @@
 package me.confuser.banmanager.common.listeners;
 
+import me.confuser.banmanager.api.dto.PlayerNote;
 import me.confuser.banmanager.common.*;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.util.Message;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,20 +21,21 @@ public class NoteListenerTest extends BasePluginDbTest {
     CommonServer server = this.server;
     CommonSender sender = plugin.getServer().getConsoleSender();
     PlayerNoteData data = new PlayerNoteData(player, sender.getData(), "test");
-    CommonPlayer testPlayer = spy(new TestPlayer(sender.getData().getUUID(), sender.getName(), false));
+    PlayerNote note = EntityMappers.playerNote(data);
+    CommonPlayer testPlayer = spy(new TestPlayer(plugin, sender.getData().getUUID(), sender.getName(), false));
     Message expected = Message.get("notes.notify");
 
-    expected.set("player", data.getPlayer().getName())
-        .set("playerId", data.getPlayer().getUUID().toString())
-        .set("actor", data.getActor().getName())
-        .set("message", data.getMessage());
+    expected.set("player", note.player().name())
+        .set("playerId", note.player().uuid().toString())
+        .set("actor", note.actor().name())
+        .set("message", note.message());
 
     when(plugin.getServer()).thenReturn(server);
     when(server.getPlayer(sender.getData().getUUID())).thenReturn(testPlayer);
     when(testPlayer.hasPermission("bm.notify.notes")).thenReturn(false);
 
     CommonNoteListener listener = new CommonNoteListener(plugin);
-    listener.notifyOnNote(data);
+    listener.notifyOnNote(note);
 
     ArgumentCaptor<Message> broadcastCaptor = ArgumentCaptor.forClass(Message.class);
     verify(server).broadcast(broadcastCaptor.capture(), eq("bm.notify.notes"));

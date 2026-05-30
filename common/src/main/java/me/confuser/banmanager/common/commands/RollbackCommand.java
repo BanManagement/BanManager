@@ -238,14 +238,12 @@ public class RollbackCommand extends CommonCommand {
                 reportQb.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
                 List<PlayerReportData> matchedReports = reportQb.query();
 
-                for (PlayerReportData report : matchedReports) {
-                  getPlugin().getServer().callEvent("PlayerReportDeletedEvent", report);
-                }
-
                 if (!matchedReports.isEmpty()) {
-                  DeleteBuilder<PlayerReportData, Integer> reports = getPlugin().getPlayerReportStorage().deleteBuilder();
-                  reports.where().eq("actor_id", player.getId()).and().le("created", now).and().ge("created", expires);
-                  reports.delete();
+                  java.util.List<Integer> reportIds = new java.util.ArrayList<>(matchedReports.size());
+                  for (PlayerReportData report : matchedReports) {
+                    reportIds.add(report.getId());
+                  }
+                  getPlugin().getPlayerReportStorage().deleteIds(reportIds, sender.getData());
                 }
                 break;
 

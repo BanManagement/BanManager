@@ -34,22 +34,56 @@ public class MigrationRunner {
   private final DatabaseConfig dbConfig;
   private final String scope;
   private final String detectionTableKey;
+  private final String detectionTableName;
   private final ClassLoader resourceLoader;
+  private final String resourceBase;
 
   private final String instanceScope;
 
   public MigrationRunner(BanManagerPlugin plugin, ConnectionSource connectionSource,
                          DatabaseConfig dbConfig, String scope, String detectionTableKey,
                          ClassLoader resourceLoader) {
+    this(plugin, connectionSource, dbConfig, scope, detectionTableKey, null, resourceLoader, "db/" + scope);
+  }
+
+  /**
+   * Full constructor exposing the classpath resource base. Use this from the
+   * public {@code MigrationService} API to allow callers to ship migrations
+   * outside the {@code db/<scope>/} convention.
+   *
+   * @param detectionTableKey logical key to look up in {@code dbConfig}; null
+   *                          when the caller already knows the resolved
+   *                          table name and provides {@code detectionTableName}
+   *                          instead (typical for companion plugins whose
+   *                          tables aren't registered in BanManager's config)
+   * @param detectionTableName explicit (already-resolved) table name to
+   *                           probe for fresh-install detection; pass
+   *                           {@code null} to always run migrations without
+   *                           the fresh-install short-circuit
+   * @param resourceBase classpath directory (no trailing slash) containing
+   *                     {@code migrations.list} and the {@code V*__*.sql}
+   *                     files
+   */
+  public MigrationRunner(BanManagerPlugin plugin, ConnectionSource connectionSource,
+                         DatabaseConfig dbConfig, String scope,
+                         String detectionTableKey, String detectionTableName,
+                         ClassLoader resourceLoader, String resourceBase) {
     this.plugin = plugin;
     this.connectionSource = connectionSource;
     this.dbConfig = dbConfig;
     this.scope = scope;
     this.detectionTableKey = detectionTableKey;
+    this.detectionTableName = detectionTableName;
     this.resourceLoader = resourceLoader;
+    this.resourceBase = stripTrailingSlash(resourceBase);
 
     String id = dbConfig.getInstanceId();
     this.instanceScope = (id != null && !id.isEmpty()) ? scope + ":" + id : scope;
+  }
+
+  private static String stripTrailingSlash(String path) {
+    if (path == null) return null;
+    return path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
   }
 
   public void migrate() throws SQLException {
@@ -59,7 +93,14 @@ public class MigrationRunner {
       return;
     }
 
-    String detectionTableName = dbConfig.getTable(detectionTableKey).getTableName();
+    String resolvedDetectionTable;
+    if (detectionTableName != null) {
+      resolvedDetectionTable = detectionTableName;
+    } else if (detectionTableKey != null) {
+      resolvedDetectionTable = dbConfig.getTable(detectionTableKey).getTableName();
+    } else {
+      resolvedDetectionTable = null;
+    }
 
     int latestVersion = migrations.get(migrations.size() - 1).version();
     boolean isH2 = dbConfig.getStorageType().equals("h2");
@@ -73,7 +114,7 @@ public class MigrationRunner {
       try {
         TableUtils.createTableIfNotExists(connectionSource, SchemaVersion.class);
 
-        if (!tableExists(conn, detectionTableName)) {
+        if (resolvedDetectionTable != null && !tableExists(conn, resolvedDetectionTable)) {
           plugin.getLogger().info("[Migration:" + instanceScope + "] Fresh install detected, marking schema at V" + latestVersion);
           insertVersion(conn, latestVersion, "baseline (fresh install)");
           return;
@@ -81,7 +122,7 @@ public class MigrationRunner {
 
         int currentVersion = getCurrentVersion(conn);
 
-        if (currentVersion == 0) {
+        if (resolvedDetectionTable != null && currentVersion == 0) {
           plugin.getLogger().info("[Migration:" + instanceScope + "] Existing install detected, marking V1 as baseline");
           insertVersion(conn, 1, "baseline (existing install)");
           currentVersion = 1;
@@ -142,7 +183,7 @@ public class MigrationRunner {
 
   private List<MigrationFile> loadManifest() {
     List<MigrationFile> migrations = new ArrayList<>();
-    String manifestPath = "db/" + scope + "/migrations.list";
+    String manifestPath = resourceBase + "/migrations.list";
 
     try (InputStream is = resourceLoader.getResourceAsStream(manifestPath)) {
       if (is == null) {
@@ -214,7 +255,7 @@ public class MigrationRunner {
   }
 
   private String loadSqlFile(String filename) {
-    String path = "db/" + scope + "/" + filename;
+    String path = resourceBase + "/" + filename;
 
     try (InputStream is = resourceLoader.getResourceAsStream(path)) {
       if (is == null) {

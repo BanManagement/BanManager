@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
@@ -14,10 +15,12 @@ public class NameBanData {
 
   @DatabaseField(unique = true, canBeNull = false, columnDefinition = "VARCHAR(16) NOT NULL")
   @Getter
+  @Setter
   private String name;
 
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String reason;
 
   @Getter
@@ -35,10 +38,12 @@ public class NameBanData {
 
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
+  @Setter
   private long expires = 0;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   NameBanData() {

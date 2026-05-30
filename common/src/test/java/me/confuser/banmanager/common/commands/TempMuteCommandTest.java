@@ -167,7 +167,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Player", new TestPlayer(UUID.randomUUID(), "Player123", true));
+    server.setPartialMatch("Player", new TestPlayer(plugin, UUID.randomUUID(), "Player123", true));
     when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
 
     try {
@@ -189,7 +189,7 @@ public class TempMuteCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Play", new TestPlayer(targetPlayer.getUUID(), targetPlayer.getName(), true));
+    server.setPartialMatch("Play", new TestPlayer(plugin, targetPlayer.getUUID(), targetPlayer.getName(), true));
     when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
 
     try {

@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.listeners.CommonCommandListener;
+import me.confuser.banmanager.fabric.BMFabricPlugin;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayerNetworkHandlerMixin {
@@ -28,24 +29,32 @@ public abstract class ServerPlayerNetworkHandlerMixin {
   //? if >=1.21 {
   @Inject(method = "handleCommandExecution", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/message/SignedCommandArguments$Impl;<init>(Ljava/util/Map;)V"), cancellable = true)
   private void banManager_checkCommand(ChatCommandSignedC2SPacket packet, LastSeenMessageList lastSeenMessages, CallbackInfo ci) {
+    BMFabricPlugin mod = BMFabricPlugin.getInstance();
+    if (mod == null) return;
+    BanManagerPlugin plugin = mod.getPlugin();
+    if (plugin == null) return;
     // Split the command
     String[] args = packet.command().split(" ", 6);
     // Get rid of the first /
     String cmd = args[0].replace("/", "").toLowerCase();
 
-    if (new CommonCommandListener(BanManagerPlugin.getInstance()).onCommand(BanManagerPlugin.getInstance().getServer().getPlayer(player.getUuid()), cmd, args)) {
+    if (new CommonCommandListener(plugin).onCommand(plugin.getServer().getPlayer(player.getUuid()), cmd, args)) {
       ci.cancel();
     }
   }
   //?} else {
   /*@Inject(method = "onCommandExecution", at = @At("HEAD"), cancellable = true)
   private void banManager_checkCommand(CommandExecutionC2SPacket packet, CallbackInfo ci) {
+    BMFabricPlugin mod = BMFabricPlugin.getInstance();
+    if (mod == null) return;
+    BanManagerPlugin plugin = mod.getPlugin();
+    if (plugin == null) return;
     // Split the command
     String[] args = packet.command().split(" ", 6);
     // Get rid of the first /
     String cmd = args[0].replace("/", "").toLowerCase();
 
-    if (new CommonCommandListener(BanManagerPlugin.getInstance()).onCommand(BanManagerPlugin.getInstance().getServer().getPlayer(player.getUuid()), cmd, args)) {
+    if (new CommonCommandListener(plugin).onCommand(plugin.getServer().getPlayer(player.getUuid()), cmd, args)) {
       ci.cancel();
     }
   }

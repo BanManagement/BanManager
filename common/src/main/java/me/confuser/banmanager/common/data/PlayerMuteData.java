@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
@@ -16,6 +17,7 @@ public class PlayerMuteData {
   private PlayerData player;
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String reason;
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
@@ -28,6 +30,9 @@ public class PlayerMuteData {
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long updated = System.currentTimeMillis() / 1000L;
+  // setExpires() is defined manually below so other code can extend the
+  // mute (e.g. when continuing a paused mute on rejoin) without a Lombok
+  // @Setter clashing with the existing override.
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
   private long expires = 0;
@@ -35,14 +40,17 @@ public class PlayerMuteData {
 
   @DatabaseField(index = true)
   @Getter
+  @Setter
   private boolean soft = false;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean onlineOnly = false;
 
   @DatabaseField(columnDefinition = "BIGINT UNSIGNED NOT NULL DEFAULT 0")

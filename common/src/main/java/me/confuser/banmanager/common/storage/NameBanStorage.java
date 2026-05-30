@@ -1,9 +1,14 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.name.NameBanEvent;
+import me.confuser.banmanager.api.event.name.NameBannedEvent;
+import me.confuser.banmanager.api.event.name.NameUnbanEvent;
+import me.confuser.banmanager.api.event.name.NameUnbannedEvent;
+import me.confuser.banmanager.api.request.NameBanRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.NameBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
@@ -16,6 +21,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -138,16 +144,32 @@ public class NameBanStorage extends BaseStorage<NameBanData, Integer> {
   }
 
   public boolean ban(NameBanData ban) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("NameBanEvent", ban, ban.isSilent());
+    return ban(ban, null);
+  }
 
-    if (event.isCancelled()) {
+  public boolean ban(NameBanData ban, Message kickMessage) throws SQLException {
+    NameBanRequest request = EntityMappers.nameBanRequest(ban);
+    NameBanEvent pre = new NameBanEvent(request);
+    plugin.getEventBus().publish(pre);
+
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, ban);
 
     create(ban);
     bans.put(ban.getName().toLowerCase(), ban);
 
-    plugin.getServer().callEvent("NameBannedEvent", ban, event.isSilent());
+    if (kickMessage != null) {
+      kickMessage.set("id", ban.getId());
+    }
+
+    NameBannedEvent post = plugin.getEventBus().publish(new NameBannedEvent(EntityMappers.nameBan(ban), request.silent()));
+
+    if (kickMessage != null && !post.placeholders().isEmpty()) {
+      post.placeholders().forEach(kickMessage::set);
+    }
 
     return true;
   }
@@ -165,18 +187,32 @@ public class NameBanStorage extends BaseStorage<NameBanData, Integer> {
   }
 
   public boolean unban(NameBanData ban, PlayerData actor, String reason, boolean delete, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("NameUnbanEvent", ban, actor, reason, silent);
+    NameUnbanEvent pre = new NameUnbanEvent(
+        EntityMappers.nameBan(ban),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
+
     TransactionHelper.runInTransaction(connectionSource, () -> {
       delete(ban);
-      if (!delete) plugin.getNameBanRecordStorage().addRecord(ban, actor, reason);
+      if (!delete) plugin.getNameBanRecordStorage().addRecord(ban, actor, finalReason);
     });
 
     bans.remove(ban.getName().toLowerCase());
+
+    plugin.getEventBus().publish(new NameUnbannedEvent(
+        EntityMappers.nameBan(ban),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     return true;
   }

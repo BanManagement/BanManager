@@ -15,9 +15,11 @@ import java.util.List;
 
 public class BukkitCommand implements CommandExecutor, TabCompleter {
 
+  private final BanManagerPlugin plugin;
   private CommonCommand command;
 
-  public BukkitCommand(CommonCommand command) {
+  public BukkitCommand(BanManagerPlugin plugin, CommonCommand command) {
+    this.plugin = plugin;
     this.command = command;
   }
 
@@ -33,7 +35,7 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
         return true;
       }
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
+      plugin.getLogger().warning("Failed to execute command", e);
     }
 
     return false;
@@ -41,9 +43,9 @@ public class BukkitCommand implements CommandExecutor, TabCompleter {
 
   private CommonSender getSender(CommandSender source) {
     if (source instanceof Player) {
-      return new BukkitPlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
+      return new BukkitPlayer(plugin, (Player) source, plugin.getConfig().isOnlineMode());
     } else {
-      return new BukkitSender(BanManagerPlugin.getInstance(), source);
+      return new BukkitSender(plugin, source);
     }
   }
 

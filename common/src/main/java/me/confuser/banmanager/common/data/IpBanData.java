@@ -6,6 +6,7 @@ import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.storage.mysql.IpAddress;
 
 @DatabaseTable
@@ -18,6 +19,7 @@ public class IpBanData {
   @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
   private IPAddress ip;
   @Getter
+  @Setter
   @DatabaseField(canBeNull = false)
   private String reason;
   @Getter
@@ -32,11 +34,13 @@ public class IpBanData {
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long updated = System.currentTimeMillis() / 1000L;
   @Getter
+  @Setter
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long expires = 0;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   IpBanData() {

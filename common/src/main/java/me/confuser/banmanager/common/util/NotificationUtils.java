@@ -35,7 +35,7 @@ public class NotificationUtils {
     }
 
     plugin.getServer().getConsoleSender().sendMessage(
-        MessageRenderer.getInstance().toPlainText(message.resolveComponent()));
+        plugin.getMessageRenderer().toPlainText(message.resolveComponent()));
   }
 
   public static void notifyPlayer(CommonPlayer player, Message message) {

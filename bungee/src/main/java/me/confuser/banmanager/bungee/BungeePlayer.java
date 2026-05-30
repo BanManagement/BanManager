@@ -1,5 +1,6 @@
 package me.confuser.banmanager.bungee;
 
+import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.commands.CommonCommand;
@@ -7,7 +8,6 @@ import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
@@ -18,11 +18,13 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 public class BungeePlayer implements CommonPlayer {
+  private final BanManagerPlugin plugin;
   private final UUID uuid;
   private final boolean onlineMode;
   private final ProxiedPlayer player;
 
-  public BungeePlayer(ProxiedPlayer player, boolean onlineMode) {
+  public BungeePlayer(BanManagerPlugin plugin, ProxiedPlayer player, boolean onlineMode) {
+    this.plugin = plugin;
     this.player = player;
     this.uuid = player.getUniqueId();
     this.onlineMode = onlineMode;
@@ -35,7 +37,7 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public void kick(Component component) {
-    String json = MessageRenderer.getInstance().toJson(component);
+    String json = plugin.getMessageRenderer().toJson(component);
     player.disconnect(ComponentSerializer.parse(json));
   }
 
@@ -52,13 +54,13 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(Component component) {
-    String json = MessageRenderer.getInstance().toJson(component);
+    String json = plugin.getMessageRenderer().toJson(component);
     player.sendMessage(ComponentSerializer.parse(json));
   }
 
   @Override
   public void sendActionBar(Component component) {
-    String json = MessageRenderer.getInstance().toJson(component);
+    String json = plugin.getMessageRenderer().toJson(component);
     player.sendMessage(ChatMessageType.ACTION_BAR, ComponentSerializer.parse(json));
   }
 
@@ -79,7 +81,7 @@ public class BungeePlayer implements CommonPlayer {
 
   @Override
   public PlayerData getData() {
-    return CommonCommand.getPlayer(this, getName(), false);
+    return CommonCommand.resolvePlayer(plugin, this, getName(), false);
   }
 
   @Override

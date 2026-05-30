@@ -82,8 +82,8 @@ public class NamesCommand extends CommonCommand {
     TextComponent.Builder message = Component.text();
     boolean hasInteractiveTemplate = Message.getRawTemplate("names.interactive") != null;
     String separatorRaw = Message.getRawTemplate("names.separator");
-    MessageRenderer renderer = MessageRenderer.getInstance();
-    Component separator = separatorRaw != null ? renderer.render(separatorRaw) : Component.text(", ").color(NamedTextColor.GRAY);
+    MessageRenderer renderer = Message.renderer();
+    Component separator = separatorRaw != null && renderer != null ? renderer.render(separatorRaw) : Component.text(", ").color(NamedTextColor.GRAY);
 
     int index = 0;
 

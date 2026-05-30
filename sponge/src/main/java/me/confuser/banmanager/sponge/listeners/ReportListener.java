@@ -1,51 +1,54 @@
 package me.confuser.banmanager.sponge.listeners;
 
+import me.confuser.banmanager.api.dto.PlayerReport;
+import me.confuser.banmanager.api.event.player.PlayerReportedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
 import me.confuser.banmanager.common.data.PlayerReportLocationData;
-import me.confuser.banmanager.common.listeners.CommonReportListener;
 import me.confuser.banmanager.common.util.UUIDUtils;
-import me.confuser.banmanager.sponge.api.events.PlayerReportDeletedEvent;
-import me.confuser.banmanager.sponge.api.events.PlayerReportedEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
 import org.spongepowered.api.world.server.ServerLocation;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * Stores the Sponge-specific player and actor location at the time a report
+ * is filed. Notification dispatch and reference cleanup live in the
+ * cross-platform {@link me.confuser.banmanager.common.listeners.CommonReportListener}.
+ */
 public class ReportListener {
-    private final CommonReportListener listener;
     private final BanManagerPlugin plugin;
 
     public ReportListener(BanManagerPlugin plugin) {
         this.plugin = plugin;
-        this.listener = new CommonReportListener(plugin);
+        plugin.getEventBus().subscribe(PlayerReportedEvent.class, this::storeLocation);
     }
 
-    @Listener(order = Order.POST)
-    public void notifyOnReport(PlayerReportedEvent event) {
-        listener.notifyOnReport(event.getReport());
-    }
+    private void storeLocation(PlayerReportedEvent event) {
+        PlayerReport report = event.report();
+        PlayerReportData entity;
+        try {
+            entity = plugin.getPlayerReportStorage().queryForId(report.id());
+        } catch (SQLException e) {
+            plugin.getLogger().warning("Failed to load report entity for location storage", e);
+            return;
+        }
+        if (entity == null) return;
 
-    @Listener(order = Order.POST)
-    public void storeLocation(PlayerReportedEvent event) {
-        PlayerReportData report = event.getReport();
-
-        Optional<ServerPlayer> player = Sponge.server().player(report.getPlayer().getUUID());
-        Optional<ServerPlayer> actor = Sponge.server().player(report.getActor().getUUID());
+        Optional<ServerPlayer> player = Sponge.server().player(report.player().uuid());
+        Optional<ServerPlayer> actor = Sponge.server().player(report.actor().uuid());
 
         try {
-            if (player.isPresent()) createLocation(report, player.get());
+            if (player.isPresent()) createLocation(entity, player.get());
         } catch (SQLException e) {
             plugin.getLogger().warning("Failed to store report location for reported player", e);
         }
 
         try {
-            if (actor.isPresent()) createLocation(report, actor.get());
+            if (actor.isPresent()) createLocation(entity, actor.get());
         } catch (SQLException e) {
             plugin.getLogger().warning("Failed to store report location for actor", e);
         }
@@ -68,10 +71,5 @@ public class ReportListener {
                 0,
                 0
             ));
-    }
-
-    @Listener
-    public void deleteReferences(PlayerReportDeletedEvent event) {
-        listener.deleteReferences(event.getReport());
     }
 }

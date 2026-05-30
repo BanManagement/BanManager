@@ -45,12 +45,13 @@ public class PaginatedView {
       sender.sendMessage(items.get(i));
     }
 
+    MessageRenderer renderer = Message.renderer();
     if (totalPages > 1 && !sender.isConsole()) {
-      sender.sendMessage(buildNavigation(safePage, totalPages));
-    } else if (totalPages > 1) {
+      sender.sendMessage(buildNavigation(renderer, safePage, totalPages));
+    } else if (totalPages > 1 && renderer != null) {
       // Console doesn't support click events, so send a plain legacy string instead
-      sender.sendMessage(MessageRenderer.getInstance().toLegacy(
-          MessageRenderer.getInstance().render("<gray>Page <white>" + safePage + "</white> of <white>" + totalPages + "</white></gray>")));
+      sender.sendMessage(renderer.toLegacy(
+          renderer.render("<gray>Page <white>" + safePage + "</white> of <white>" + totalPages + "</white></gray>")));
     }
 
     if (footer != null) {
@@ -58,8 +59,8 @@ public class PaginatedView {
     }
   }
 
-  private Component buildNavigation(int currentPage, int totalPages) {
-    MessageRenderer renderer = MessageRenderer.getInstance();
+  private Component buildNavigation(MessageRenderer renderer, int currentPage, int totalPages) {
+    if (renderer == null) return Component.empty();
     String escapedCommand = renderer.escapeTags(command);
 
     StringBuilder nav = new StringBuilder();

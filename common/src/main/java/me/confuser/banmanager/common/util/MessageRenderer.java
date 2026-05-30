@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 
 public class MessageRenderer {
 
-  private static MessageRenderer instance; // guarded by class-level synchronization
-
   private final MiniMessage miniMessage;
   private final LegacyComponentSerializer legacySerializer;
   private final PlainTextComponentSerializer plainTextSerializer;
@@ -64,24 +62,6 @@ public class MessageRenderer {
         .hexColors()
         .build();
     this.plainTextSerializer = PlainTextComponentSerializer.plainText();
-  }
-
-  public static synchronized MessageRenderer getInstance() {
-    if (instance == null) {
-      instance = new MessageRenderer();
-    }
-    return instance;
-  }
-
-  public static synchronized void setInstance(MessageRenderer renderer) {
-    instance = renderer;
-  }
-
-  /**
-   * Reset the singleton instance. Intended for test teardown.
-   */
-  public static synchronized void reset() {
-    instance = null;
   }
 
   /**

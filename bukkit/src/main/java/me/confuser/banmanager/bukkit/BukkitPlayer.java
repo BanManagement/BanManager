@@ -35,24 +35,26 @@ public class BukkitPlayer implements CommonPlayer {
     PAPER_ADVENTURE = paper;
   }
 
+  private final BanManagerPlugin plugin;
   private Player player;
   private final UUID uuid;
   private InetAddress address;
   private final boolean onlineMode;
 
-  public BukkitPlayer(UUID uuid, String name, boolean onlineMode) {
+  public BukkitPlayer(BanManagerPlugin plugin, UUID uuid, String name, boolean onlineMode) {
+    this.plugin = plugin;
     this.uuid = uuid;
     this.onlineMode = onlineMode;
   }
 
-  public BukkitPlayer(Player player, boolean onlineMode) {
-    this(player.getUniqueId(), player.getName(), onlineMode);
+  public BukkitPlayer(BanManagerPlugin plugin, Player player, boolean onlineMode) {
+    this(plugin, player.getUniqueId(), player.getName(), onlineMode);
 
     this.player = player;
   }
 
-  public BukkitPlayer(Player player, boolean onlineMode, InetAddress address) {
-    this(player, onlineMode);
+  public BukkitPlayer(BanManagerPlugin plugin, Player player, boolean onlineMode, InetAddress address) {
+    this(plugin, player, onlineMode);
 
     this.address = address;
   }
@@ -64,9 +66,9 @@ public class BukkitPlayer implements CommonPlayer {
   @Override
   public void kick(Component component) {
     if (PAPER_ADVENTURE) {
-      PaperAdventureHelper.kick(getPlayer(), component);
+      PaperAdventureHelper.kick(getPlayer(), component, plugin.getMessageRenderer());
     } else {
-      kick(MessageRenderer.getInstance().toLegacy(component));
+      kick(plugin.getMessageRenderer().toLegacy(component));
     }
   }
 
@@ -83,9 +85,9 @@ public class BukkitPlayer implements CommonPlayer {
   @Override
   public void sendMessage(Component component) {
     if (PAPER_ADVENTURE) {
-      PaperAdventureHelper.sendMessage(getPlayer(), component);
+      PaperAdventureHelper.sendMessage(getPlayer(), component, plugin.getMessageRenderer());
     } else {
-      String json = MessageRenderer.getInstance().toJson(component);
+      String json = plugin.getMessageRenderer().toJson(component);
       getPlayer().spigot().sendMessage(ComponentSerializer.parse(json));
     }
   }
@@ -93,9 +95,9 @@ public class BukkitPlayer implements CommonPlayer {
   @Override
   public void sendActionBar(Component component) {
     if (PAPER_ADVENTURE) {
-      PaperAdventureHelper.sendActionBar(getPlayer(), component);
+      PaperAdventureHelper.sendActionBar(getPlayer(), component, plugin.getMessageRenderer());
     } else {
-      String json = MessageRenderer.getInstance().toJson(component);
+      String json = plugin.getMessageRenderer().toJson(component);
       getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, ComponentSerializer.parse(json));
     }
   }
@@ -105,7 +107,7 @@ public class BukkitPlayer implements CommonPlayer {
     if (PAPER_ADVENTURE) {
       PaperAdventureHelper.showTitle(getPlayer(), title, subtitle, fadeIn, stay, fadeOut);
     } else {
-      MessageRenderer renderer = MessageRenderer.getInstance();
+      MessageRenderer renderer = plugin.getMessageRenderer();
       String legacyTitle = title != null ? renderer.toLegacy(title) : "";
       String legacySubtitle = subtitle != null ? renderer.toLegacy(subtitle) : "";
       getPlayer().sendTitle(legacyTitle, legacySubtitle, fadeIn, stay, fadeOut);
@@ -139,9 +141,9 @@ public class BukkitPlayer implements CommonPlayer {
 
   public PlayerData getData() {
     try {
-      return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
+      return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
     } catch (SQLException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to load player data", e);
+      plugin.getLogger().warning("Failed to load player data", e);
       sendMessage(Message.get("sender.error.exception").toString());
       return null;
     }

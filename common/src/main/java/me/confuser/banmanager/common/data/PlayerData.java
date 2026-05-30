@@ -2,7 +2,7 @@ package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.common.exception.BanManagerInternalException;
 import me.confuser.banmanager.common.ipaddr.AddressStringException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ipaddr.IPAddressString;
@@ -17,6 +17,20 @@ import java.util.UUID;
 
 @DatabaseTable(tableName = "players", daoClass = PlayerStorage.class)
 public class PlayerData {
+
+  /**
+   * Cached loopback address used when constructing a synthetic player without
+   * an IP. Computed once because the input string is a constant — failure here
+   * means the bundled ipaddr library is broken.
+   */
+  private static final IPAddress LOCALHOST_IP;
+  static {
+    try {
+      LOCALHOST_IP = new IPAddressString("127.0.0.1").toAddress();
+    } catch (AddressStringException e) {
+      throw new BanManagerInternalException("Bundled ipaddr library failed to parse '127.0.0.1'", e);
+    }
+  }
 
   @DatabaseField(id = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter
@@ -47,13 +61,7 @@ public class PlayerData {
     this.uuid = uuid;
     this.id = UUIDUtils.toBytes(uuid);
     this.name = name;
-
-    try {
-      this.ip = new IPAddressString("127.0.0.1").toAddress();
-    } catch (AddressStringException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to process player data", e);
-    }
-
+    this.ip = LOCALHOST_IP;
     this.lastSeen = System.currentTimeMillis() / 1000L;
   }
 

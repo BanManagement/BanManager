@@ -114,9 +114,11 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveVersion.set("")
 
     dependencies {
+        include(dependency(":BanManagerAPI"))
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
 
+        include(dependency("com.github.seancfoley:ipaddress:.*"))
         include(dependency("org.bstats:.*:.*"))
         include(dependency("org.slf4j:.*:.*"))
     }
@@ -145,6 +147,12 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
         exclude(dependency("org.slf4j:.*:.*"))
+        // BanManagerAPI is the public surface plugin consumers compile against; preserve
+        // every class even if the BM core itself doesn't reference it.
+        exclude(dependency(":BanManagerAPI"))
+        // ipaddress is exposed unshaded through the API and consumers may call any of its
+        // methods, so don't let static analysis prune unreferenced classes.
+        exclude(dependency("com.github.seancfoley:ipaddress:.*"))
         // JDBC drivers, HikariCP and ORMLite load codecs / dialects / drivers
         // via ServiceLoader. Static analysis can't see those references, so
         // exclude them from minimisation to avoid stripping classes that are

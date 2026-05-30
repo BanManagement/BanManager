@@ -28,8 +28,11 @@ public class MessageDeferredTest {
     de.put("greeting", "Hallo <player>");
     registry.loadLocale("de", de);
 
-    Message.init(registry, new TestLogger());
+    renderer = new MessageRenderer();
+    Message.init(registry, new TestLogger(), renderer, null, null);
   }
+
+  private MessageRenderer renderer;
 
   @Test
   public void resolveWithDefaultLocale() {
@@ -38,7 +41,7 @@ public class MessageDeferredTest {
         .set("reason", "griefing")
         .resolveComponent("en");
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("You are banned by Admin for griefing", plain);
   }
 
@@ -49,7 +52,7 @@ public class MessageDeferredTest {
         .set("reason", "griefing")
         .resolveComponent("de");
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("Du wurdest von Admin gebannt: griefing", plain);
   }
 
@@ -59,29 +62,29 @@ public class MessageDeferredTest {
         .set("player", "Steve")
         .resolveComponent();
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("Hello Steve", plain);
   }
 
   @Test
   public void resolveWithPlayerLocale() {
-    TestPlayer player = new TestPlayer(UUID.randomUUID(), "Steve", true, "de");
+    TestPlayer player = new TestPlayer(null, UUID.randomUUID(), "Steve", true, "de");
     Component component = Message.get("greeting")
         .set("player", "Steve")
         .resolveComponent(player.getLocale());
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("Hallo Steve", plain);
   }
 
   @Test
   public void resolveForFallsBackWithoutPlugin() {
-    TestPlayer player = new TestPlayer(UUID.randomUUID(), "Steve", true, "de");
+    TestPlayer player = new TestPlayer(null, UUID.randomUUID(), "Steve", true, "de");
     Component component = Message.get("greeting")
         .set("player", "Steve")
         .resolveComponentFor(player);
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("Hello Steve", plain);
   }
 
@@ -91,14 +94,14 @@ public class MessageDeferredTest {
     Map<String, String> en = new HashMap<>();
     en.put("test.order", "<first> <second> <first>");
     registry.loadLocale("en", en);
-    Message.init(registry, new TestLogger());
+    Message.init(registry, new TestLogger(), renderer, null, null);
 
     Component component = Message.get("test.order")
         .set("first", "X")
         .set("second", "Y")
         .resolveComponent();
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("X Y X", plain);
   }
 
@@ -124,7 +127,7 @@ public class MessageDeferredTest {
         .replace("Hello", "Hey")
         .resolveComponent();
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = renderer.toPlainText(component);
     assertEquals("Hey Steve", plain);
   }
 }

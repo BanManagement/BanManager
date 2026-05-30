@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common.configs;
 
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
@@ -11,8 +10,10 @@ import java.util.HashMap;
 public class TimeLimitsConfig {
 
   private HashMap<String, HashMap<String, String>> limits;
+  private final CommonLogger logger;
 
   public TimeLimitsConfig(ConfigurationSection config, CommonLogger logger) {
+    this.logger = logger;
     limits = new HashMap<>();
 
     for (TimeLimitType type : TimeLimitType.values()) {
@@ -55,7 +56,7 @@ public class TimeLimitsConfig {
             return true;
           }
         } catch (Exception e) {
-          BanManagerPlugin.getInstance().getLogger().warning("Failed to parse time limit", e);
+          logger.warning("Failed to parse time limit", e);
         }
       }
     }

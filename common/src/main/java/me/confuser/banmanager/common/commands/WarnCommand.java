@@ -48,7 +48,7 @@ public class WarnCommand extends CommonCommand {
     final String playerName = parser.args[0];
     final Reason reason = parser.getReason();
 
-    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
       Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
@@ -156,7 +156,7 @@ public class WarnCommand extends CommonCommand {
       final List<ActionCommand> actionCommands;
 
       try {
-        actionCommands = getPlugin().getConfig().getWarningActions().getCommands(player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
+        actionCommands = getPlugin().getConfig().getWarningActions().getCommands(getPlugin(), player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
         getPlugin().getLogger().warning("Failed to execute warn command", e);
         return;

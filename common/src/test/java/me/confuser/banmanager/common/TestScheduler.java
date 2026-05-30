@@ -29,4 +29,16 @@ public class TestScheduler implements CommonScheduler {
     // In tests, just run the task once immediately
     task.run();
   }
+
+  /**
+   * Tests run every task on the calling thread, so by definition
+   * {@link #runSync(Runnable)} executes "wherever the caller already is" —
+   * not a real game tick thread. Reporting {@code false} keeps tests honest
+   * about that and matches the proxy semantics that production code may
+   * branch on.
+   */
+  @Override
+  public boolean isMainThreadAware() {
+    return false;
+  }
 }

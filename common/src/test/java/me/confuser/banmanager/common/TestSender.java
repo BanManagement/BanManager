@@ -7,11 +7,13 @@ import java.util.UUID;
 
 public class TestSender implements CommonSender {
 
+  private final BanManagerPlugin plugin;
   private final UUID uuid;
   private final String name;
   private final boolean onlineMode;
 
-  public TestSender(UUID uuid, String name, boolean onlineMode) {
+  public TestSender(BanManagerPlugin plugin, UUID uuid, String name, boolean onlineMode) {
+    this.plugin = plugin;
     this.uuid = uuid;
     this.name = name;
     this.onlineMode = onlineMode;
@@ -39,8 +41,8 @@ public class TestSender implements CommonSender {
 
   @Override
   public PlayerData getData() {
-    if (isConsole()) return BanManagerPlugin.getInstance().getPlayerStorage().getConsole();
+    if (isConsole()) return plugin.getPlayerStorage().getConsole();
 
-    return CommonCommand.getPlayer(this, getName(), false);
+    return CommonCommand.resolvePlayer(plugin, this, getName(), false);
   }
 }

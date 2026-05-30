@@ -1,9 +1,12 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerNoteCreatedEvent;
+import me.confuser.banmanager.api.event.player.PlayerNoteEvent;
+import me.confuser.banmanager.api.request.NoteRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerNoteData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -39,9 +42,23 @@ public class PlayerNoteStorage extends BaseStorage<PlayerNoteData, Integer> {
   }
 
   public boolean addNote(PlayerNoteData data, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerNoteCreatedEvent", data, silent);
+    NoteRequest request = EntityMappers.noteRequest(data);
+    PlayerNoteEvent pre = new PlayerNoteEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    return !event.isCancelled() && create(data) == 1;
+    if (pre.isCancelled()) {
+      return false;
+    }
+
+    EntityMappers.applyTo(request, data);
+
+    boolean created = create(data) == 1;
+
+    if (created) {
+      plugin.getEventBus().publish(new PlayerNoteCreatedEvent(EntityMappers.playerNote(data)));
+    }
+
+    return created;
   }
 
   public CloseableIterator<PlayerNoteData> getNotes(UUID uniqueId) throws SQLException {

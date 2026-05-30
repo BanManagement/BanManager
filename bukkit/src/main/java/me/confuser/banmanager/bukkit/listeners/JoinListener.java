@@ -40,7 +40,7 @@ public class JoinListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onJoin(final PlayerJoinEvent event) {
-    listener.onJoin(new BukkitPlayer(event.getPlayer(), plugin.getConfig().isOnlineMode()));
+    listener.onJoin(new BukkitPlayer(plugin, event.getPlayer(), plugin.getConfig().isOnlineMode()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -49,7 +49,7 @@ public class JoinListener implements Listener {
       return;
     }
 
-    listener.onPlayerLogin(new BukkitPlayer(event.getPlayer(), plugin.getConfig().isOnlineMode(), event.getAddress()), new LoginHandler(event));
+    listener.onPlayerLogin(new BukkitPlayer(plugin, event.getPlayer(), plugin.getConfig().isOnlineMode(), event.getAddress()), new LoginHandler(event));
   }
 
   @RequiredArgsConstructor
@@ -59,16 +59,15 @@ public class JoinListener implements Listener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       String locale = player.getLocale() != null ? player.getLocale() : "en";
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent(locale))));
+      event.setKickMessage(BukkitServer.formatMessage(plugin.getMessageRenderer().toLegacy(message.resolveComponent(locale))));
     }
 
     @Override
     public void handleDeny(Message message) {
       event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-      event.setKickMessage(BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent())));
+      event.setKickMessage(BukkitServer.formatMessage(plugin.getMessageRenderer().toLegacy(message.resolveComponent())));
     }
   }
 
@@ -77,14 +76,14 @@ public class JoinListener implements Listener {
     private final PlayerLoginEvent event;
 
     @Override
-    public void handlePlayerDeny(PlayerData player, Message message) {
-      handleDeny(message);
+    public void handleDeny(Message message) {
+      event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+          BukkitServer.formatMessage(plugin.getMessageRenderer().toLegacy(message.resolveComponent())));
     }
 
     @Override
-    public void handleDeny(Message message) {
-      event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-          BukkitServer.formatMessage(MessageRenderer.getInstance().toLegacy(message.resolveComponent())));
+    public void handlePlayerDeny(PlayerData player, Message message) {
+      handleDeny(message);
     }
   }
 }

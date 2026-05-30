@@ -29,9 +29,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class FabricCommand {
 
+  private final BanManagerPlugin plugin;
   private CommonCommand command;
 
-  public FabricCommand(CommonCommand command) {
+  public FabricCommand(BanManagerPlugin plugin, CommonCommand command) {
+    this.plugin = plugin;
     this.command = command;
   }
 
@@ -83,7 +85,7 @@ public class FabricCommand {
         return 1;
       }
     } catch (Exception e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
+      plugin.getLogger().warning("Failed to execute command", e);
     }
 
     return 0;
@@ -91,9 +93,9 @@ public class FabricCommand {
 
   private CommonSender getSender(ServerCommandSource source) {
     if (source.getEntity() instanceof ServerPlayerEntity) {
-      return new FabricPlayer((ServerPlayerEntity) source.getEntity(), source.getServer(), BanManagerPlugin.getInstance().getConfig().isOnlineMode());
+      return new FabricPlayer(plugin, (ServerPlayerEntity) source.getEntity(), source.getServer(), plugin.getConfig().isOnlineMode());
     } else {
-      return new FabricSender(BanManagerPlugin.getInstance(), source);
+      return new FabricSender(plugin, source);
     }
   }
 

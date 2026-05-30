@@ -1,7 +1,6 @@
 package me.confuser.banmanager.common.configs;
 
 import lombok.Getter;
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.apachecommons.compress.archivers.ArchiveEntry;
 import me.confuser.banmanager.common.apachecommons.compress.archivers.tar.TarArchiveInputStream;
@@ -10,6 +9,8 @@ import me.confuser.banmanager.common.maxmind.db.GeoIp2Provider;
 import me.confuser.banmanager.common.maxmind.db.Reader;
 import me.confuser.banmanager.common.maxmind.db.cache.CHMCache;
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
+
+import java.util.function.Supplier;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,8 +36,14 @@ public class GeoIpConfig extends Config {
   @Getter
   private String type;
 
-  public GeoIpConfig(File dataFolder, CommonLogger logger) {
+  // Lazy supplier so the GeoIP config can be constructed before the plugin's
+  // shared HttpClient has been initialised; the supplier is only invoked when
+  // we actually need to download a database.
+  private final Supplier<HttpClient> httpClientSupplier;
+
+  public GeoIpConfig(File dataFolder, CommonLogger logger, Supplier<HttpClient> httpClientSupplier) {
     super(dataFolder, "geoip.yml", logger);
+    this.httpClientSupplier = httpClientSupplier;
   }
 
   @Override
@@ -104,7 +111,7 @@ public class GeoIpConfig extends Config {
     if (countryFile.exists()) {
       logger.info("Loading country database");
       try {
-        countryDatabase = new Reader(cityFile, Reader.FileMode.MEMORY, new CHMCache());
+        countryDatabase = new Reader(countryFile, Reader.FileMode.MEMORY, new CHMCache());
       } catch (IOException e) {
         logger.severe("Failed loading country database", e);
         enabled = false;
@@ -145,7 +152,7 @@ public class GeoIpConfig extends Config {
       location.delete();
     }
 
-    HttpClient client = BanManagerPlugin.getInstance().getHttpClient();
+    HttpClient client = httpClientSupplier.get();
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(downloadUrl))
         .timeout(Duration.ofMinutes(5))

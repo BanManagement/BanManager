@@ -69,8 +69,13 @@ public class BanNameCommand extends CommonCommand {
       final NameBanData ban = new NameBanData(name, actor, reason.getMessage(), isSilent);
       boolean created;
 
+      Message kickMessage = Message.get("banname.name.kick")
+          .set("reason", ban.getReason())
+          .set("actor", actor.getName())
+          .set("name", name);
+
       try {
-        created = getPlugin().getNameBanStorage().ban(ban);
+        created = getPlugin().getNameBanStorage().ban(ban, kickMessage);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banname.error.exists").set("name",
             name));
@@ -83,12 +88,6 @@ public class BanNameCommand extends CommonCommand {
 
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
-        Message kickMessage = Message.get("banname.name.kick")
-            .set("reason", ban.getReason())
-            .set("actor", actor.getName())
-            .set("id", ban.getId())
-            .set("name", name);
-
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (onlinePlayer.getName().equalsIgnoreCase(name)) {
             onlinePlayer.kick(kickMessage);

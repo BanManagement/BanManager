@@ -1,41 +1,41 @@
 package me.confuser.banmanager.common.listeners;
 
+import me.confuser.banmanager.api.dto.PlayerNote;
+import me.confuser.banmanager.api.event.player.PlayerNoteCreatedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
-import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.util.Message;
 
 public class CommonNoteListener {
-  private BanManagerPlugin plugin;
+  private final BanManagerPlugin plugin;
 
   public CommonNoteListener(BanManagerPlugin plugin) {
     this.plugin = plugin;
+    plugin.getEventBus().subscribe(PlayerNoteCreatedEvent.class, e -> notifyOnNote(e.note(), false));
   }
 
-  public void notifyOnNote(PlayerNoteData data) {
+  public void notifyOnNote(PlayerNote data) {
     notifyOnNote(data, false);
   }
 
-  public void notifyOnNote(PlayerNoteData data, boolean silent) {
+  public void notifyOnNote(PlayerNote data, boolean silent) {
     final String broadcastPermission = "bm.notify.notes";
     Message message = Message.get("notes.notify");
 
-    message.set("player", data.getPlayer().getName())
-        .set("playerId", data.getPlayer().getUUID().toString())
-        .set("actor", data.getActor().getName())
-        .set("id", data.getId())
-        .set("message", data.getMessage());
+    message.set("player", data.player().name())
+        .set("playerId", data.player().uuid().toString())
+        .set("actor", data.actor().name())
+        .set("id", data.id())
+        .set("message", data.message());
 
     if (!silent) {
       plugin.getServer().broadcast(message, broadcastPermission);
-    } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.getActor().getUUID())) {
+    } else if (plugin.getPlayerStorage().getConsole().getUUID().equals(data.actor().uuid())) {
       plugin.getServer().getConsoleSender().sendMessage(message);
       return;
     }
 
-    // Check if the sender is online and does not have the
-    // broadcastPermission
-    CommonPlayer player = plugin.getServer().getPlayer(data.getActor().getUUID());
+    CommonPlayer player = plugin.getServer().getPlayer(data.actor().uuid());
 
     if (player == null || !player.isOnline()) {
       return;

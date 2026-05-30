@@ -19,6 +19,12 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.listeners.CommonBanListener;
+import me.confuser.banmanager.common.listeners.CommonHooksListener;
+import me.confuser.banmanager.common.listeners.CommonMuteListener;
+import me.confuser.banmanager.common.listeners.CommonNoteListener;
+import me.confuser.banmanager.common.listeners.CommonReportListener;
+import me.confuser.banmanager.common.listeners.CommonWebhookListener;
 import me.confuser.banmanager.common.runnables.BanSync;
 import me.confuser.banmanager.common.runnables.ExpiresSync;
 import me.confuser.banmanager.common.runnables.GlobalBanSync;
@@ -41,6 +47,12 @@ import net.minecraft.server.MinecraftServer;
 
 public class BMFabricPlugin implements DedicatedServerModInitializer {
 
+  // Mixins are bytecode-injected into Minecraft classes and cannot receive constructor
+  // injection. Fabric mods are singletons per JVM, so we expose this instance directly
+  // for the handful of mixin entry points that need to reach the plugin.
+  @Getter
+  private static BMFabricPlugin instance;
+
   @Getter
   private BanManagerPlugin plugin;
   private String[] configs = new String[] {
@@ -59,17 +71,20 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
 
   @Override
   public void onInitializeServer() {
+    instance = this;
+
     try {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
+      LogManager.getLogger("BanManager").warn("Failed to set up plugin configuration", e);
       return;
     }
 
     this.server = new FabricServer();
-    this.scheduler = new FabricScheduler();
+    Logger log4j = LogManager.getLogger("BanManager");
+    this.scheduler = new FabricScheduler(log4j);
 
-    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(LogManager.getLogger("BanManager")), getDataFolder(),
+    plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(log4j), getDataFolder(),
         scheduler, this.server, null);
 
     try {
@@ -114,12 +129,12 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
 
   private void setupCommands() {
     for (CommonCommand cmd : plugin.getCommands()) {
-      new FabricCommand(cmd).register();
+      new FabricCommand(plugin, cmd).register();
     }
 
     if (plugin.getGlobalConn() != null) {
       for (CommonCommand cmd : plugin.getGlobalCommands()) {
-        new FabricCommand(cmd).register();
+        new FabricCommand(plugin, cmd).register();
       }
     }
   }
@@ -142,7 +157,7 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
         try (InputStream in = getResourceAsStream(name)) {
           Files.copy(in, file.toPath());
         } catch (IOException e) {
-          BanManagerPlugin.getInstance().getLogger().warning("Failed to copy default config file", e);
+          LogManager.getLogger("BanManager").warn("Failed to copy default config file", e);
         }
       } else {
         try (InputStream in = getResourceAsStream(file.getName());
@@ -177,21 +192,22 @@ public class BMFabricPlugin implements DedicatedServerModInitializer {
   public void setupListeners() {
     new JoinListener(plugin);
     new LeaveListener(plugin);
-    new HookListener(plugin);
+    new CommonHooksListener(plugin);
 
     if (!plugin.getConfig().getChatPriority().equals("NONE")) {
       new ChatListener(plugin);
     }
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-      new BanListener(plugin);
-      new MuteListener(plugin);
-      new NoteListener(plugin);
+      new CommonBanListener(plugin);
+      new CommonMuteListener(plugin);
+      new CommonNoteListener(plugin);
+      new CommonReportListener(plugin);
       new ReportListener(plugin, this.server);
     }
 
     if (plugin.getWebhookConfig().isHooksEnabled()) {
-      new WebhookListener(plugin);
+      new CommonWebhookListener(plugin);
     }
   }
 

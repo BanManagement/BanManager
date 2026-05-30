@@ -51,4 +51,15 @@ public class VelocityScheduler implements CommonScheduler {
     }
     repeatingTasks.clear();
   }
+
+  /**
+   * Velocity is a fully-asynchronous proxy with no main-thread tick.
+   * {@link #runSync(Runnable)} is therefore an alias for
+   * {@link #runAsync(Runnable)} — exposed via this flag so callers can
+   * detect platforms where main-thread-only APIs are unavailable.
+   */
+  @Override
+  public boolean isMainThreadAware() {
+    return false;
+  }
 }

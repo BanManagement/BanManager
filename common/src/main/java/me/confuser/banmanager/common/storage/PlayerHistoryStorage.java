@@ -136,11 +136,42 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     return activeSessions.containsKey(uuid);
   }
 
+  /**
+   * Legacy fixed-page-size accessor kept for callers (e.g. the Bukkit
+   * {@code /alts} command) that hard-coded a 10-row layout. New callers
+   * should prefer {@link #getSince(PlayerData, long, int, int)} which
+   * honours an explicit {@code size}.
+   */
   public CloseableIterator<PlayerHistoryData> getSince(PlayerData player, long since, int page) throws SQLException {
-    return queryBuilder().limit(10L).offset(10L * page)
+    return getSince(player, since, page, 10);
+  }
+
+  /**
+   * Page through sessions for a player whose {@code join} time is at or
+   * after {@code since}. Uses {@code LIMIT}/{@code OFFSET} so the database
+   * does the slicing rather than the JVM.
+   *
+   * @param page zero-indexed page
+   * @param size page size; must be {@code > 0}
+   */
+  public CloseableIterator<PlayerHistoryData> getSince(PlayerData player, long since, int page, int size) throws SQLException {
+    if (size <= 0) throw new IllegalArgumentException("size must be > 0");
+    if (page < 0) throw new IllegalArgumentException("page must be >= 0");
+    return queryBuilder().limit((long) size).offset((long) size * page)
         .orderBy("join", false)
         .where().ge("join", since).and().eq("player_id", player)
         .iterator();
+  }
+
+  /**
+   * Total number of sessions for {@code player} on or after {@code since}.
+   * Used by the public {@code HistoryService} pagination layer to populate
+   * {@link me.confuser.banmanager.api.Page#total()}.
+   */
+  public long countSince(PlayerData player, long since) throws SQLException {
+    return queryBuilder()
+        .where().ge("join", since).and().eq("player_id", player)
+        .countOf();
   }
 
   /**
@@ -252,7 +283,7 @@ public class PlayerHistoryStorage extends BaseDaoImpl<PlayerHistoryData, Integer
     if (cleanup.getDays() == 0) return;
 
     String table = getTableInfo().getTableName();
-    String banTable = BanManagerPlugin.getInstance().getIpBanStorage()
+    String banTable = plugin.getIpBanStorage()
         .getTableInfo()
         .getTableName();
 

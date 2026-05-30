@@ -1,10 +1,11 @@
 package me.confuser.banmanager.common.storage.conversion;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.commands.BanIpCommand;
 import me.confuser.banmanager.common.configs.DatabaseConfig;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
+import me.confuser.banmanager.common.ipaddr.IPAddressString;
+import me.confuser.banmanager.common.util.IPUtils;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.StatementBuilder;
 import me.confuser.banmanager.common.ormlite.support.ConnectionSource;
@@ -119,7 +120,7 @@ public class AdvancedBan implements IConverter {
             plugin.getPlayerMuteStorage().mute(data);
           }
         } else if (type.equalsIgnoreCase("IP_BAN") || type.equalsIgnoreCase("TEMP_IP_BAN")) {
-          IPAddress ip = BanIpCommand.getIp(uuid);
+          IPAddress ip = resolveIp(uuid);
 
           if (ip == null) {
             plugin.getLogger().severe(name + " ip ban creation failed, invalid ip");
@@ -164,6 +165,17 @@ public class AdvancedBan implements IConverter {
 
     read.closeQuietly();
     plugin.getLogger().info("Imported " + count + " punishments from AdvancedBan");
+  }
+
+  private IPAddress resolveIp(String input) {
+    if (IPUtils.isValid(input)) {
+      return new IPAddressString(input).getAddress();
+    }
+
+    PlayerData player = plugin.getPlayerStorage().retrieve(input, false);
+    if (player == null) return null;
+
+    return player.getIp();
   }
 
   @Override

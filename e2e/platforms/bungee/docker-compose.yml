@@ -97,6 +97,11 @@ services:
       MODRINTH_ALLOWED_VERSION_TYPE: release
       # Minecraft version required for Modrinth plugin lookup
       MINECRAFT_VERSION: "1.21.4"
+      # Disable native compression/cipher: BungeeCord's bundled zlib-ng requires SSE 4.2 +
+      # PCLMUL CPU support which isn't always present in containerised/virtualised
+      # environments (notably macOS Docker on arm64). Falls back to Java's built-in
+      # implementations. See: https://github.com/SpigotMC/BungeeCord/pull/3718
+      JVM_OPTS: "-Dnet.md_5.bungee.jni.native-compress.enable=false -Dnet.md_5.bungee.jni.native-cipher.enable=false"
     volumes:
       # BanManager BungeeCord plugin JAR (shadow JAR) - mounted directly to plugins dir
       # Note: Not using :ro because itzg/mc-proxy needs to chown all plugin files

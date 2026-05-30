@@ -6,7 +6,6 @@ import me.confuser.banmanager.common.CommonWorld;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.kyori.text.TextComponent;
 import me.confuser.banmanager.common.util.Message;
-import me.confuser.banmanager.common.util.MessageRenderer;
 import me.confuser.banmanager.common.util.MessageRegistry;
 import me.confuser.banmanager.common.util.UUIDUtils;
 import net.kyori.adventure.key.Key;
@@ -26,23 +25,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SpongePlayer implements CommonPlayer {
+    private final BanManagerPlugin plugin;
     private ServerPlayer player;
     private final UUID uuid;
     private final boolean onlineMode;
     private InetAddress address;
 
-    public SpongePlayer(UUID uuid, String name, boolean onlineMode) {
+    public SpongePlayer(BanManagerPlugin plugin, UUID uuid, String name, boolean onlineMode) {
+        this.plugin = plugin;
         this.uuid = uuid;
         this.onlineMode = onlineMode;
     }
 
-    public SpongePlayer(ServerPlayer player, boolean onlineMode) {
-        this(player.uniqueId(), player.name(), onlineMode);
+    public SpongePlayer(BanManagerPlugin plugin, ServerPlayer player, boolean onlineMode) {
+        this(plugin, player.uniqueId(), player.name(), onlineMode);
         this.player = player;
     }
 
-    public SpongePlayer(ServerPlayer player, boolean onlineMode, InetAddress address) {
-        this(player, onlineMode);
+    public SpongePlayer(BanManagerPlugin plugin, ServerPlayer player, boolean onlineMode, InetAddress address) {
+        this(plugin, player, onlineMode);
         this.address = address;
     }
 
@@ -113,7 +114,7 @@ public class SpongePlayer implements CommonPlayer {
     }
 
     private Component convertToNative(me.confuser.banmanager.common.kyori.text.Component component) {
-        String json = MessageRenderer.getInstance().toJson(component);
+        String json = plugin.getMessageRenderer().toJson(component);
         return GsonComponentSerializer.gson().deserialize(json);
     }
 
@@ -125,9 +126,9 @@ public class SpongePlayer implements CommonPlayer {
     @Override
     public PlayerData getData() {
         try {
-            return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
+            return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
         } catch (SQLException e) {
-            BanManagerPlugin.getInstance().getLogger().warning("Failed to load player data", e);
+            plugin.getLogger().warning("Failed to load player data", e);
             sendMessage(Message.get("sender.error.exception").toString());
             return null;
         }

@@ -81,25 +81,34 @@ public abstract class CommonCommand {
     return player.length() > 16;
   }
 
-  public static PlayerData getPlayer(CommonSender sender, String playerName, boolean mojangLookup) {
+  public PlayerData getPlayer(CommonSender sender, String playerName, boolean mojangLookup) {
+    return resolvePlayer(plugin, sender, playerName, mojangLookup);
+  }
+
+  /**
+   * Static-friendly variant of {@link #getPlayer(CommonSender, String, boolean)}
+   * for callers that don't have a {@code CommonCommand} instance to hand
+   * (for example, the platform-specific {@code Sender} adapters).
+   */
+  public static PlayerData resolvePlayer(BanManagerPlugin plugin, CommonSender sender, String playerName, boolean mojangLookup) {
     boolean isUUID = isUUID(playerName);
     PlayerData player = null;
 
     if (isUUID) {
       try {
-        player = BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
+        player = plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(UUID.fromString(playerName)));
       } catch (SQLException e) {
         Message.get("sender.error.exception").sendTo(sender);
-        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
+        plugin.getLogger().warning("Failed to execute command", e);
       }
     } else {
-      player = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(playerName, mojangLookup);
+      player = plugin.getPlayerStorage().retrieve(playerName, mojangLookup);
     }
 
     return player;
   }
 
-  public static void handlePunishmentCreateException(SQLException e, CommonSender sender, Message duplicateMessage) {
+  public void handlePunishmentCreateException(SQLException e, CommonSender sender, Message duplicateMessage) {
     // For some reason ORMLite hides the error code (returns 0 instead of 1062)
     if (e.getCause().getMessage().startsWith("Duplicate entry")) {
       duplicateMessage.sendTo(sender);
@@ -107,29 +116,29 @@ public abstract class CommonCommand {
     }
 
     Message.get("sender.error.exception").sendTo(sender);
-    BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
+    plugin.getLogger().warning("Failed to execute command", e);
   }
 
-  public static void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
-    if (BanManagerPlugin.getInstance().getConfig().isCreateNoteReasons())
+  public void handlePrivateNotes(PlayerData player, PlayerData actor, Reason reason) {
+    if (plugin.getConfig().isCreateNoteReasons())
       if (reason.getNotes().size() == 0) return;
 
     for (String note : reason.getNotes()) {
       try {
-        BanManagerPlugin.getInstance().getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
+        plugin.getPlayerNoteStorage().create(new PlayerNoteData(player, actor, note));
       } catch (SQLException e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute command", e);
+        plugin.getLogger().warning("Failed to execute command", e);
       }
     }
 
   }
 
-  public static IPAddress getIp(String ipStr) {
+  public IPAddress getIp(String ipStr) {
     final boolean isName = !IPUtils.isValid(ipStr);
     IPAddress ip = null;
 
     if (isName) {
-      PlayerData player = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(ipStr, false);
+      PlayerData player = plugin.getPlayerStorage().retrieve(ipStr, false);
       if (player == null) return null;
 
       ip = player.getIp();

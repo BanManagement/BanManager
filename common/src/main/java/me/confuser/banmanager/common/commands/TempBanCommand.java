@@ -39,7 +39,7 @@ public class TempBanCommand extends CommonCommand {
 
     final String playerName = parser.args[0];
     final boolean isUUID = playerName.length() > 16;
-    final TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+    final TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
       Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);

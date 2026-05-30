@@ -1,6 +1,7 @@
 package me.confuser.banmanager.fabric.mixin;
 
 import me.confuser.banmanager.common.BanManagerPlugin;
+import me.confuser.banmanager.fabric.BMFabricPlugin;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -27,7 +28,9 @@ public class SignUpdateMixin {
   }
 
   private void checkMutedSign(CallbackInfo ci) {
-    BanManagerPlugin plugin = BanManagerPlugin.getInstance();
+    BMFabricPlugin mod = BMFabricPlugin.getInstance();
+    if (mod == null) return;
+    BanManagerPlugin plugin = mod.getPlugin();
     if (plugin == null) return;
 
     // Check player mute

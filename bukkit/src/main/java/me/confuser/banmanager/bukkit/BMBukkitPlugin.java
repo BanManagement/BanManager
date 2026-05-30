@@ -1,6 +1,8 @@
 package me.confuser.banmanager.bukkit;
 
 import lombok.Getter;
+import me.confuser.banmanager.api.BanManagerService;
+import me.confuser.banmanager.api.event.player.PluginReloadedEvent;
 import me.confuser.banmanager.bukkit.listeners.*;
 import me.confuser.banmanager.bukkit.placeholders.PAPIPlaceholderResolver;
 import me.confuser.banmanager.bukkit.placeholders.PAPIPlaceholders;
@@ -9,12 +11,19 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.listeners.CommonBanListener;
+import me.confuser.banmanager.common.listeners.CommonHooksListener;
+import me.confuser.banmanager.common.listeners.CommonMuteListener;
+import me.confuser.banmanager.common.listeners.CommonNoteListener;
+import me.confuser.banmanager.common.listeners.CommonReportListener;
+import me.confuser.banmanager.common.listeners.CommonWebhookListener;
 import me.confuser.banmanager.common.runnables.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -52,12 +61,14 @@ public class BMBukkitPlugin extends JavaPlugin {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
       getPluginLoader().disablePlugin(this);
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
+      getLogger().log(java.util.logging.Level.WARNING, "Failed to set up plugin configuration", e);
       return;
     }
 
     metrics = new Metrics(this, 6455);
     plugin = new BanManagerPlugin(pluginInfo, new PluginLogger(getLogger()), getDataFolder(), new BukkitScheduler(this), server, new BukkitMetrics(metrics));
+
+    org.slf4j.impl.BanManagerSlf4jLogger.setPlugin(plugin);
 
     server.enable(plugin);
 
@@ -69,6 +80,11 @@ public class BMBukkitPlugin extends JavaPlugin {
       return;
     }
 
+    // Publish on Bukkit's native ServicesManager too. BanManagerPlugin.enable() already
+    // populated the portable BanManager.get() locator; this gives Vault-style consumers
+    // the idiomatic Bukkit lookup as well.
+    Bukkit.getServicesManager().register(BanManagerService.class, plugin.getApiService(), this, ServicePriority.Normal);
+
     setupListeners();
     setupCommands();
     setupRunnables();
@@ -78,7 +94,11 @@ public class BMBukkitPlugin extends JavaPlugin {
   public void onDisable() {
     getServer().getScheduler().cancelTasks(this);
 
+    Bukkit.getServicesManager().unregisterAll(this);
+
     if (plugin != null) plugin.disable();
+
+    org.slf4j.impl.BanManagerSlf4jLogger.setPlugin(null);
   }
 
   private PluginInfo setupConfigs() throws IOException {
@@ -132,21 +152,23 @@ public class BMBukkitPlugin extends JavaPlugin {
     registerEvent(new JoinListener(plugin));
     registerEvent(new LeaveListener(plugin));
     registerEvent(new CommandListener(plugin));
-    registerEvent(new HookListener(plugin));
+    new CommonHooksListener(plugin);
 
     registerChatListener();
 
-    registerEvent(new ReloadListener(this));
+    plugin.getEventBus().subscribe(PluginReloadedEvent.class, e -> registerChatListener());
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-      registerEvent(new BanListener(plugin));
+      new CommonBanListener(plugin);
+      new CommonMuteListener(plugin);
       registerEvent(new MuteListener(plugin));
-      registerEvent(new NoteListener(plugin));
-      registerEvent(new ReportListener(plugin));
+      new CommonNoteListener(plugin);
+      new CommonReportListener(plugin);
+      new ReportListener(plugin);
     }
 
     if (plugin.getWebhookConfig().isHooksEnabled()) {
-      registerEvent(new WebhookListener(plugin));
+      new CommonWebhookListener(plugin);
     }
 
     if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -189,7 +211,7 @@ public class BMBukkitPlugin extends JavaPlugin {
   public void setupCommands() {
     for (CommonCommand cmd : plugin.getCommands()) {
       try {
-        getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(cmd));
+        getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(plugin, cmd));
       } catch (NullPointerException e) {
         plugin.getLogger().severe("Failed to register /" + cmd.getCommandName() + " command");
       }
@@ -198,7 +220,7 @@ public class BMBukkitPlugin extends JavaPlugin {
     if (plugin.getGlobalConn() != null) {
       for (CommonCommand cmd : plugin.getGlobalCommands()) {
         try {
-          getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(cmd));
+          getCommand(cmd.getCommandName()).setExecutor(new BukkitCommand(plugin, cmd));
         } catch (NullPointerException e) {
           plugin.getLogger().severe("Failed to register /" + cmd.getCommandName() + " command");
         }

@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common.configuration.file;
 
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.configuration.Configuration;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.InvalidConfigurationException;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of {@link Configuration} which saves all files in Yaml.
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 public class YamlConfiguration extends FileConfiguration {
 
+  private static final Logger LOGGER = Logger.getLogger("BanManager");
   private static final String COMMENT_PREFIX = "# ";
   private static final String BLANK_CONFIG = "{}\n";
   private final DumperOptions yamlOptions = new DumperOptions();
@@ -70,7 +72,7 @@ public class YamlConfiguration extends FileConfiguration {
     try {
       config.load(file);
     } catch ( IOException |InvalidConfigurationException e){
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to load YAML configuration", e);
+      LOGGER.log(Level.WARNING, "Failed to load YAML configuration", e);
     }
 
     return config;
@@ -93,7 +95,7 @@ public class YamlConfiguration extends FileConfiguration {
     try {
       config.load(reader);
     } catch (InvalidConfigurationException | IOException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to load YAML configuration", e);
+      LOGGER.log(Level.WARNING, "Failed to load YAML configuration", e);
     }
 
     return config;

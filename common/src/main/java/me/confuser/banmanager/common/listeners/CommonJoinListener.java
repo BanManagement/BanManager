@@ -1,11 +1,13 @@
 package me.confuser.banmanager.common.listeners;
 
+import me.confuser.banmanager.api.event.player.PlayerDeniedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.commands.NotesCommand;
 import me.confuser.banmanager.common.data.*;
 import me.confuser.banmanager.common.google.guava.cache.Cache;
 import me.confuser.banmanager.common.google.guava.cache.CacheBuilder;
+import me.confuser.banmanager.common.impl.IpAddressMapper;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.maxmind.db.model.CountryResponse;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
@@ -125,6 +127,7 @@ public class CommonJoinListener {
       message.set("actor", ipRangeBan.getActor().getName());
       message.set("created", DateUtils.format(dateTimeFormat, ipRangeBan.getCreated()));
 
+      applyDeniedPlaceholders(publishDeniedEvent(id, name, address, PlayerDeniedEvent.Reason.IP_RANGE_BAN), message);
       handler.handleDeny(message);
       return;
     }
@@ -160,6 +163,7 @@ public class CommonJoinListener {
       message.set("actor", ipBan.getActor().getName());
       message.set("created", DateUtils.format(dateTimeFormat, ipBan.getCreated()));
 
+      applyDeniedPlaceholders(publishDeniedEvent(id, name, address, PlayerDeniedEvent.Reason.IP_BAN), message);
       handler.handleDeny(message);
       handleJoinDeny(address.toString(), ipBan.getActor(), ipBan.getReason());
       return;
@@ -196,6 +200,7 @@ public class CommonJoinListener {
       message.set("actor", nameBan.getActor().getName());
       message.set("created", DateUtils.format(dateTimeFormat, nameBan.getCreated()));
 
+      applyDeniedPlaceholders(publishDeniedEvent(id, name, address, PlayerDeniedEvent.Reason.NAME_BAN), message);
       handler.handleDeny(message);
       return;
     }
@@ -236,8 +241,20 @@ public class CommonJoinListener {
     message.set("actor", data.getActor().getName());
     message.set("created", DateUtils.format(dateTimeFormat != null ? dateTimeFormat : "dd-MM-yyyy kk:mm:ss", data.getCreated()));
 
+    applyDeniedPlaceholders(publishDeniedEvent(id, name, address, PlayerDeniedEvent.Reason.PLAYER_BAN), message);
     handler.handlePlayerDeny(data.getPlayer(), message);
     handleJoinDeny(data.getPlayer(), data.getActor(), data.getReason());
+  }
+
+  private PlayerDeniedEvent publishDeniedEvent(UUID id, String name, IPAddress address, PlayerDeniedEvent.Reason reason) {
+    java.util.Optional<UUID> uuid = java.util.Optional.ofNullable(id);
+    java.util.Optional<inet.ipaddr.IPAddress> apiAddress = java.util.Optional.ofNullable(IpAddressMapper.toApi(address));
+    return plugin.getEventBus().publish(new PlayerDeniedEvent(uuid, name, apiAddress, reason));
+  }
+
+  private static void applyDeniedPlaceholders(PlayerDeniedEvent event, Message message) {
+    if (event.placeholders().isEmpty()) return;
+    event.placeholders().forEach(message::set);
   }
 
   public void onPreJoin(UUID id, String name, IPAddress address) {

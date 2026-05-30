@@ -8,19 +8,21 @@ import java.util.UUID;
 
 public class TestPlayer implements CommonPlayer {
 
+  private final BanManagerPlugin plugin;
   private final UUID uuid;
   private final String name;
   private final boolean onlineMode;
   private String locale = "en";
 
-  public TestPlayer(UUID uuid, String name, boolean onlineMode) {
+  public TestPlayer(BanManagerPlugin plugin, UUID uuid, String name, boolean onlineMode) {
+    this.plugin = plugin;
     this.uuid = uuid;
     this.name = name;
     this.onlineMode = onlineMode;
   }
 
-  public TestPlayer(UUID uuid, String name, boolean onlineMode, String locale) {
-    this(uuid, name, onlineMode);
+  public TestPlayer(BanManagerPlugin plugin, UUID uuid, String name, boolean onlineMode, String locale) {
+    this(plugin, uuid, name, onlineMode);
     this.locale = locale;
   }
 
@@ -51,7 +53,7 @@ public class TestPlayer implements CommonPlayer {
 
   @Override
   public PlayerData getData() {
-    return BanManagerPlugin.getInstance().getPlayerStorage().retrieve(this.name, false);
+    return plugin.getPlayerStorage().retrieve(this.name, false);
   }
 
   @Override

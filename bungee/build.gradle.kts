@@ -93,8 +93,10 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveVersion.set("")
 
     dependencies {
+        include(dependency(":BanManagerAPI"))
         include(dependency(":BanManagerCommon"))
         include(dependency(":BanManagerLibs"))
+        include(dependency("com.github.seancfoley:ipaddress:.*"))
         include(dependency("org.bstats:.*:.*"))
 
         relocate("org.bstats", "me.confuser.banmanager.common.bstats")
@@ -117,6 +119,8 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.bstats:.*:.*"))
         exclude(dependency(":BanManagerLibs"))
+        exclude(dependency(":BanManagerAPI"))
+        exclude(dependency("com.github.seancfoley:ipaddress:.*"))
     }
 }
 

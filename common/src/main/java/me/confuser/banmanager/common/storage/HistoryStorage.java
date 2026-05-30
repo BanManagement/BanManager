@@ -20,6 +20,14 @@ public class HistoryStorage {
           "  ( {QUERIES}" +
           "  ) subquery" +
           " ORDER BY created DESC";
+  /**
+   * Same UNION as {@link #playerSql} but wrapped in a COUNT so the API
+   * pagination layer can report a real {@code total} without buffering
+   * every row.
+   */
+  private final String countSql = "SELECT COUNT(*) FROM" +
+          "  ( {QUERIES}" +
+          "  ) subquery";
   private BanManagerPlugin plugin;
 
   private final String banSql;
@@ -104,16 +112,85 @@ public class HistoryStorage {
   }
 
   public List<HistoryEntry> getAll(PlayerData player, InfoCommandParser parser) {
+    return getAllInternal(
+        player,
+        parser.isBans(),
+        parser.isMutes(),
+        parser.isKicks(),
+        parser.isNotes(),
+        parser.isReports(),
+        parser.isWarnings());
+  }
+
+  /**
+   * Type-flag overload used by the public {@code HistoryService} API so it
+   * does not need to fabricate a {@link InfoCommandParser} via reflection.
+   */
+  public List<HistoryEntry> getAll(PlayerData player,
+                                   boolean bans, boolean mutes, boolean kicks,
+                                   boolean notes, boolean reports, boolean warnings) {
+    return getAllInternal(player, bans, mutes, kicks, notes, reports, warnings);
+  }
+
+  /**
+   * Paginated player history with {@code LIMIT}/{@code OFFSET} pushed into the
+   * UNION query so memory stays bounded regardless of history length.
+   *
+   * @param player  target player
+   * @param page    zero-indexed page
+   * @param size    page size (must be {@code > 0})
+   * @return ordered slice; never {@code null}
+   */
+  public List<HistoryEntry> getPaged(PlayerData player,
+                                     boolean bans, boolean mutes, boolean kicks,
+                                     boolean notes, boolean reports, boolean warnings,
+                                     int page, int size) {
+    StringBuilder unions = buildPlayerUnions(bans, mutes, kicks, notes, reports, warnings);
+    if (unions.length() == 0) return new ArrayList<>();
+
+    int typeCount = countActive(bans, mutes, kicks, notes, reports, warnings);
+    return executePagedQuery(player.getId(), SqlType.BYTE_ARRAY, unions, typeCount, page, size);
+  }
+
+  /**
+   * Total row count for the same filter set as
+   * {@link #getPaged(PlayerData, boolean, boolean, boolean, boolean, boolean, boolean, int, int)}.
+   * Used to populate {@link me.confuser.banmanager.api.Page#total()} without
+   * paying the I/O cost of materialising every row.
+   */
+  public long count(PlayerData player,
+                    boolean bans, boolean mutes, boolean kicks,
+                    boolean notes, boolean reports, boolean warnings) {
+    StringBuilder unions = buildPlayerUnions(bans, mutes, kicks, notes, reports, warnings);
+    if (unions.length() == 0) return 0L;
+
+    int typeCount = countActive(bans, mutes, kicks, notes, reports, warnings);
+    return executeCount(player.getId(), SqlType.BYTE_ARRAY, unions, typeCount);
+  }
+
+  private StringBuilder buildPlayerUnions(boolean bans, boolean mutes, boolean kicks,
+                                          boolean notes, boolean reports, boolean warnings) {
     StringBuilder unions = new StringBuilder();
-    int typeCount = 0;
+    if (bans) unions.append(banSql).append(" UNION ALL ");
+    if (mutes) unions.append(muteSql).append(" UNION ALL ");
+    if (kicks) unions.append(kickSql).append(" UNION ALL ");
+    if (notes) unions.append(noteSql).append(" UNION ALL ");
+    if (reports) unions.append(reportSql).append(" UNION ALL ");
+    if (warnings) unions.append(warningSql).append(" UNION ALL ");
+    return unions;
+  }
 
-    if (parser.isBans()) { unions.append(banSql).append(" UNION ALL "); typeCount++; }
-    if (parser.isMutes()) { unions.append(muteSql).append(" UNION ALL "); typeCount++; }
-    if (parser.isKicks()) { unions.append(kickSql).append(" UNION ALL "); typeCount++; }
-    if (parser.isNotes()) { unions.append(noteSql).append(" UNION ALL "); typeCount++; }
-    if (parser.isReports()) { unions.append(reportSql).append(" UNION ALL "); typeCount++; }
-    if (parser.isWarnings()) { unions.append(warningSql).append(" UNION ALL "); typeCount++; }
+  private static int countActive(boolean... flags) {
+    int n = 0;
+    for (boolean f : flags) if (f) n++;
+    return n;
+  }
 
+  private List<HistoryEntry> getAllInternal(PlayerData player,
+                                            boolean bans, boolean mutes, boolean kicks,
+                                            boolean notes, boolean reports, boolean warnings) {
+    StringBuilder unions = buildPlayerUnions(bans, mutes, kicks, notes, reports, warnings);
+    int typeCount = countActive(bans, mutes, kicks, notes, reports, warnings);
     return executeQuery(player.getId(), SqlType.BYTE_ARRAY, unions, typeCount);
   }
 
@@ -185,6 +262,80 @@ public class HistoryStorage {
     } catch (Exception e) {
       plugin.getLogger().warning("Failed to process history operation", e);
       return null;
+    }
+  }
+
+  private List<HistoryEntry> executePagedQuery(Object paramValue, SqlType paramType,
+                                               StringBuilder unions, int typeCount,
+                                               int page, int size) {
+    if (typeCount == 0) return new ArrayList<>();
+
+    unions.setLength(unions.length() - 11);
+    long offset = (long) page * (long) size;
+    String sql = playerSql.replace("{QUERIES}", unions.toString())
+        + " LIMIT " + size + " OFFSET " + offset;
+
+    try (DatabaseConnection connection = plugin.getLocalConn().getReadOnlyConnection("")) {
+      CompiledStatement statement = connection.compileStatement(
+          sql, StatementBuilder.StatementType.SELECT, null,
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+      List<HistoryEntry> results = new ArrayList<>();
+      try {
+        for (int i = 0; i < typeCount; i++) {
+          statement.setObject(i, paramValue, paramType);
+        }
+
+        DatabaseResults dbResults = statement.runQuery(null);
+        try {
+          while (dbResults.next()) {
+            results.add(new HistoryEntry(
+                dbResults.getInt(0),
+                dbResults.getString(1),
+                dbResults.getString(2),
+                dbResults.getLong(3),
+                dbResults.getString(4),
+                dbResults.getString(5)));
+          }
+        } finally {
+          dbResults.closeQuietly();
+        }
+      } finally {
+        try { statement.close(); } catch (Exception ignored) { }
+      }
+      return results;
+    } catch (Exception e) {
+      plugin.getLogger().warning("Failed to process history operation", e);
+      return null;
+    }
+  }
+
+  private long executeCount(Object paramValue, SqlType paramType,
+                            StringBuilder unions, int typeCount) {
+    if (typeCount == 0) return 0L;
+
+    unions.setLength(unions.length() - 11);
+    String sql = countSql.replace("{QUERIES}", unions.toString());
+
+    try (DatabaseConnection connection = plugin.getLocalConn().getReadOnlyConnection("")) {
+      CompiledStatement statement = connection.compileStatement(
+          sql, StatementBuilder.StatementType.SELECT, null,
+          DatabaseConnection.DEFAULT_RESULT_FLAGS, false);
+      try {
+        for (int i = 0; i < typeCount; i++) {
+          statement.setObject(i, paramValue, paramType);
+        }
+        DatabaseResults dbResults = statement.runQuery(null);
+        try {
+          return dbResults.next() ? dbResults.getLong(0) : 0L;
+        } finally {
+          dbResults.closeQuietly();
+        }
+      } finally {
+        try { statement.close(); } catch (Exception ignored) { }
+      }
+    } catch (Exception e) {
+      plugin.getLogger().warning("Failed to count history rows", e);
+      return 0L;
     }
   }
 }

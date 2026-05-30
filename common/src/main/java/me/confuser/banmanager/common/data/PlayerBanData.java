@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
@@ -16,6 +17,7 @@ public class PlayerBanData {
   private PlayerData player;
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String reason;
   @Getter
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
@@ -30,10 +32,12 @@ public class PlayerBanData {
   private long updated = System.currentTimeMillis() / 1000L;
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
+  @Setter
   private long expires = 0;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   PlayerBanData() {

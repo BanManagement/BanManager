@@ -49,7 +49,7 @@ public class TempWarnCommand extends CommonCommand {
     }
 
     final String playerName = parsedArgs[0];
-    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin().getServer(), playerName);
+    TargetResolver.TargetResult target = TargetResolver.resolveTarget(getPlugin(), playerName);
 
     if (target.getStatus() == TargetResolver.TargetStatus.NOT_FOUND) {
       Message.get("sender.error.notFound").set("player", playerName).sendTo(sender);
@@ -177,7 +177,7 @@ public class TempWarnCommand extends CommonCommand {
       final List<ActionCommand> actionCommands;
 
       try {
-        actionCommands = getPlugin().getConfig().getWarningActions().getCommands(player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
+        actionCommands = getPlugin().getConfig().getWarningActions().getCommands(getPlugin(), player, getPlugin().getPlayerWarnStorage().getPointsCount(player));
       } catch (SQLException e) {
         getPlugin().getLogger().warning("Failed to execute tempwarn command", e);
         return;

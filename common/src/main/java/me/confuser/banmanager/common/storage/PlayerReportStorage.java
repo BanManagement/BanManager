@@ -1,9 +1,13 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerReportDeletedEvent;
+import me.confuser.banmanager.api.event.player.PlayerReportEvent;
+import me.confuser.banmanager.api.event.player.PlayerReportedEvent;
+import me.confuser.banmanager.api.request.ReportRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerReportData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ormlite.stmt.DeleteBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
 import me.confuser.banmanager.common.ormlite.stmt.Where;
@@ -34,15 +38,19 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
   }
 
   public boolean report(PlayerReportData data, boolean isSilent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerReportEvent", data, isSilent);
+    ReportRequest request = EntityMappers.reportRequest(data);
+    PlayerReportEvent pre = new PlayerReportEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    EntityMappers.applyTo(request, data);
+
     if (create(data) != 1) return false;
 
-    plugin.getServer().callEvent("PlayerReportedEvent", data, isSilent);
+    plugin.getEventBus().publish(new PlayerReportedEvent(EntityMappers.playerReport(data)));
 
     return true;
   }
@@ -79,17 +87,23 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
     return getReports(page, state, null);
   }
 
-  public int deleteAll(PlayerData player) throws SQLException {
+  public int deleteAll(PlayerData player, PlayerData actor) throws SQLException {
     List<PlayerReportData> reports = queryForEq("player_id", player);
     if (reports.isEmpty()) return 0;
 
-    for (PlayerReportData report : reports) {
-      plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
-    }
-
     DeleteBuilder<PlayerReportData, Integer> builder = deleteBuilder();
     builder.where().eq("player_id", player);
-    return builder.delete();
+    int deleted = builder.delete();
+
+    if (deleted > 0 && actor != null) {
+      for (PlayerReportData report : reports) {
+        plugin.getEventBus().publish(new PlayerReportDeletedEvent(
+            EntityMappers.playerReport(report),
+            EntityMappers.player(actor)));
+      }
+    }
+
+    return deleted;
   }
 
   public boolean isRecentlyReported(PlayerData player, long cooldown) throws SQLException {
@@ -104,30 +118,54 @@ public class PlayerReportStorage extends BaseStorage<PlayerReportData, Integer> 
   }
 
   public int deleteById(Integer id) throws SQLException {
+    return deleteById(id, null);
+  }
+
+  public int deleteById(Integer id, PlayerData actor) throws SQLException {
     PlayerReportData report = queryForId(id);
 
     if (report == null) return 0;
 
-    plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
-
     super.deleteById(id);
+
+    if (actor != null) {
+      plugin.getEventBus().publish(new PlayerReportDeletedEvent(
+          EntityMappers.playerReport(report),
+          EntityMappers.player(actor)));
+    }
 
     return 1;
   }
 
   public int deleteIds(Collection<Integer> ids) throws SQLException {
+    return deleteIds(ids, null);
+  }
+
+  public int deleteIds(Collection<Integer> ids, PlayerData actor) throws SQLException {
     if (ids == null || ids.isEmpty()) return 0;
 
-    for (Integer id : ids) {
-      PlayerReportData report = queryForId(id);
-      if (report != null) {
-        plugin.getServer().callEvent("PlayerReportDeletedEvent", report);
+    List<PlayerReportData> reports = null;
+    if (actor != null) {
+      reports = new java.util.ArrayList<>(ids.size());
+      for (Integer id : ids) {
+        PlayerReportData report = queryForId(id);
+        if (report != null) reports.add(report);
       }
     }
 
     DeleteBuilder<PlayerReportData, Integer> builder = deleteBuilder();
     builder.where().in("id", ids);
-    return builder.delete();
+    int deleted = builder.delete();
+
+    if (deleted > 0 && reports != null) {
+      for (PlayerReportData report : reports) {
+        plugin.getEventBus().publish(new PlayerReportDeletedEvent(
+            EntityMappers.playerReport(report),
+            EntityMappers.player(actor)));
+      }
+    }
+
+    return deleted;
   }
 
   public long getCount(PlayerData player) throws SQLException {

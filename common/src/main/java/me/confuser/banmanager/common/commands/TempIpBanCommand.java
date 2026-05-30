@@ -126,8 +126,13 @@ public class TempIpBanCommand extends CommonCommand {
       final IpBanData ban = new IpBanData(ip, actor, reason, isSilent, expires);
       boolean created;
 
+      Message kickMessage = Message.get("tempbanip.ip.kick")
+          .set("reason", ban.getReason())
+          .set("actor", actor.getName())
+          .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
+
       try {
-        created = getPlugin().getIpBanStorage().ban(ban);
+        created = getPlugin().getIpBanStorage().ban(ban, false, kickMessage);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
             ipStr));
@@ -140,12 +145,6 @@ public class TempIpBanCommand extends CommonCommand {
 
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
-        Message kickMessage = Message.get("tempbanip.ip.kick")
-            .set("reason", ban.getReason())
-            .set("actor", actor.getName())
-            .set("id", ban.getId())
-            .set("expires", DateUtils.getDifferenceFormat(ban.getExpires()));
-
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
             onlinePlayer.kick(kickMessage);

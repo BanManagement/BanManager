@@ -52,8 +52,7 @@ public class MessagesYamlValidatorTest {
 
   @BeforeEach
   public void setUp() {
-    MessageRenderer.reset();
-    renderer = MessageRenderer.getInstance();
+    renderer = new MessageRenderer();
     Map<String, String> staticTokens = new HashMap<>();
     for (String token : KNOWN_STATIC_TOKENS) {
       staticTokens.put(token, "test_" + token);
@@ -65,7 +64,6 @@ public class MessagesYamlValidatorTest {
   @AfterEach
   public void tearDown() {
     renderer.loadStaticTokens(new HashMap<>());
-    MessageRenderer.reset();
   }
 
   @Test

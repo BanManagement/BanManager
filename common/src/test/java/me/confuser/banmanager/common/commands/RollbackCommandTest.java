@@ -1,5 +1,6 @@
 package me.confuser.banmanager.common.commands;
 
+import me.confuser.banmanager.api.event.player.PlayerReportDeletedEvent;
 import me.confuser.banmanager.common.BasePluginDbTest;
 import me.confuser.banmanager.common.CommonServer;
 import me.confuser.banmanager.common.data.*;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
@@ -382,6 +384,9 @@ public class RollbackCommandTest extends BasePluginDbTest {
 
     assertEquals(2, plugin.getPlayerReportStorage().getCount(victim));
 
+    AtomicInteger deletedEvents = new AtomicInteger();
+    plugin.getEventBus().subscribe(PlayerReportDeletedEvent.class, e -> deletedEvents.incrementAndGet());
+
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     String[] args = new String[]{maliciousMod.getName(), "1d", "reports"};
 
@@ -396,6 +401,6 @@ public class RollbackCommandTest extends BasePluginDbTest {
     });
 
     assertEquals(0, plugin.getPlayerReportStorage().getCount(victim));
-    verify(server, times(2)).callEvent(eq("PlayerReportDeletedEvent"), any(PlayerReportData.class));
+    assertEquals(2, deletedEvents.get());
   }
 }

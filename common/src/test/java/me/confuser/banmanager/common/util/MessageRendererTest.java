@@ -16,7 +16,7 @@ public class MessageRendererTest {
 
   @BeforeEach
   public void setUp() {
-    renderer = MessageRenderer.getInstance();
+    renderer = new MessageRenderer();
   }
 
   @AfterEach

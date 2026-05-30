@@ -1,9 +1,14 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerBanEvent;
+import me.confuser.banmanager.api.event.player.PlayerBannedEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnbanEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnbannedEvent;
+import me.confuser.banmanager.api.request.BanRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
@@ -158,7 +163,8 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
   public void addBan(PlayerBanData ban) {
     bans.put(ban.getPlayer().getUUID(), ban);
 
-    plugin.getServer().callEvent("PlayerBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
+    boolean silent = ban.isSilent() || !plugin.getConfig().isBroadcastOnSync();
+    plugin.getEventBus().publish(new PlayerBannedEvent(EntityMappers.playerBan(ban), silent));
   }
 
   public void removeBan(PlayerBanData ban) {
@@ -188,11 +194,15 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
   }
 
   public boolean ban(PlayerBanData ban, boolean fromSync, Message kickMessage) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerBanEvent", ban, ban.isSilent());
+    BanRequest request = EntityMappers.banRequest(ban);
+    PlayerBanEvent pre = new PlayerBanEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, ban);
 
     create(ban);
     bans.put(ban.getPlayer().getUUID(), ban);
@@ -201,7 +211,12 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
       kickMessage.set("id", ban.getId());
     }
 
-    plugin.getServer().callEvent("PlayerBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()), kickMessage);
+    boolean silent = request.silent() || (fromSync && !plugin.getConfig().isBroadcastOnSync());
+    PlayerBannedEvent post = plugin.getEventBus().publish(new PlayerBannedEvent(EntityMappers.playerBan(ban), silent));
+
+    if (kickMessage != null && !post.placeholders().isEmpty()) {
+      post.placeholders().forEach(kickMessage::set);
+    }
 
     return true;
   }
@@ -219,18 +234,32 @@ public class PlayerBanStorage extends BaseStorage<PlayerBanData, Integer> {
   }
 
   public boolean unban(PlayerBanData ban, PlayerData actor, String reason, boolean delete, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerUnbanEvent", ban, actor, reason, silent);
+    PlayerUnbanEvent pre = new PlayerUnbanEvent(
+        EntityMappers.playerBan(ban),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
+
     TransactionHelper.runInTransaction(connectionSource, () -> {
       delete(ban);
-      if (!delete) plugin.getPlayerBanRecordStorage().addRecord(ban, actor, reason);
+      if (!delete) plugin.getPlayerBanRecordStorage().addRecord(ban, actor, finalReason);
     });
 
     bans.remove(ban.getPlayer().getUUID());
+
+    plugin.getEventBus().publish(new PlayerUnbannedEvent(
+        EntityMappers.playerBan(ban),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     return true;
   }
