@@ -33,6 +33,10 @@ public final class IpMuteRequest {
    * {@code com.github.seancfoley:ipaddress} library so callers don't have
    * to import it directly.
    *
+   * <p>Pass a single host literal. The parser also accepts subnet / CIDR
+   * notation and abbreviated forms, which is rarely intended for a
+   * single-host mute.</p>
+   *
    * @throws IllegalArgumentException when {@code ip} is null, blank, or not
    *                                  a valid IPv4 / IPv6 literal
    */

@@ -34,3 +34,6 @@ dependency-reduced-pom.xml
 
 #run dirs
 /fabric/versions/*/run
+
+# Compound-engineering / agent review artifacts
+.context/

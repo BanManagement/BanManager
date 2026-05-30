@@ -35,6 +35,10 @@ public final class IpRangeBanRequest {
    * the bundled {@code com.github.seancfoley:ipaddress} library so callers
    * don't have to import it directly.
    *
+   * <p>Pass single host literals for each endpoint. The parser also accepts
+   * subnet / CIDR notation and abbreviated forms, which is rarely intended
+   * here — the range is defined by the two endpoints, not by CIDR.</p>
+   *
    * @throws IllegalArgumentException when either endpoint is null, blank,
    *                                  or not a valid IPv4 / IPv6 literal
    */

@@ -36,6 +36,11 @@ public final class IpBanRequest {
    * {@code com.github.seancfoley:ipaddress} library so callers don't have
    * to import it directly.
    *
+   * <p>Pass a single host literal. The parser also accepts subnet / CIDR
+   * notation (e.g. {@code 10.0.0.0/8}) and abbreviated forms, which is
+   * rarely intended for a single-host ban — use {@link IpRangeBanRequest}
+   * for ranges.</p>
+   *
    * @throws IllegalArgumentException when {@code ip} is null, blank, or not
    *                                  a valid IPv4 / IPv6 literal
    */
