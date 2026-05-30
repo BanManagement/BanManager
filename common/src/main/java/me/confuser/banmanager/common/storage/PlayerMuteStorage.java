@@ -1,9 +1,14 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerMuteEvent;
+import me.confuser.banmanager.api.event.player.PlayerMutedEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnmuteEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnmutedEvent;
+import me.confuser.banmanager.api.request.MuteRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerMuteData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
 import me.confuser.banmanager.common.ormlite.stmt.QueryBuilder;
@@ -173,7 +178,8 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
   public void addMute(PlayerMuteData mute) {
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-    plugin.getServer().callEvent("PlayerMutedEvent", mute, mute.isSilent() || !plugin.getConfig().isBroadcastOnSync());
+    boolean silent = mute.isSilent() || !plugin.getConfig().isBroadcastOnSync();
+    plugin.getEventBus().publish(new PlayerMutedEvent(EntityMappers.playerMute(mute), silent));
   }
 
   /**
@@ -191,16 +197,21 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
   }
 
   public boolean mute(PlayerMuteData mute, boolean fromSync) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerMuteEvent", mute, mute.isSilent());
+    MuteRequest request = EntityMappers.muteRequest(mute);
+    PlayerMuteEvent pre = new PlayerMuteEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, mute);
 
     create(mute);
     mutes.put(mute.getPlayer().getUUID(), mute);
 
-    plugin.getServer().callEvent("PlayerMutedEvent", mute, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
+    boolean silent = request.silent() || (fromSync && !plugin.getConfig().isBroadcastOnSync());
+    plugin.getEventBus().publish(new PlayerMutedEvent(EntityMappers.playerMute(mute), silent));
 
     return true;
   }
@@ -226,11 +237,19 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
   }
 
   public boolean unmute(PlayerMuteData mute, PlayerData actor, String reason, boolean skipRecord, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, reason, silent);
+    PlayerUnmuteEvent pre = new PlayerUnmuteEvent(
+        EntityMappers.playerMute(mute),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
 
     int deleted = delete(mute);
 
@@ -240,9 +259,15 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
 
     if (deleted > 0) {
       if (!skipRecord) {
-        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, reason);
+        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, finalReason);
       }
     }
+
+    plugin.getEventBus().publish(new PlayerUnmutedEvent(
+        EntityMappers.playerMute(mute),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     // Return true if mute was deleted or if we at least cleared the cache
     // This ensures the player is no longer considered muted
@@ -260,11 +285,19 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
    * @return true if the mute was deleted, false if it was already paused/modified or event was cancelled
    */
   public boolean unmuteIfExpired(PlayerMuteData mute, PlayerData actor) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerUnmuteEvent", mute, actor, "", false);
+    PlayerUnmuteEvent pre = new PlayerUnmuteEvent(
+        EntityMappers.playerMute(mute),
+        EntityMappers.player(actor),
+        "",
+        false);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
 
     final int[] rowsDeleted = {0};
 
@@ -274,12 +307,17 @@ public class PlayerMuteStorage extends BaseStorage<PlayerMuteData, Integer> {
       rowsDeleted[0] = executeRaw(deleteSql, String.valueOf(mute.getId()));
 
       if (rowsDeleted[0] > 0) {
-        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, "");
+        plugin.getPlayerMuteRecordStorage().addRecord(mute, actor, finalReason);
       }
     });
 
     if (rowsDeleted[0] > 0) {
       mutes.remove(mute.getPlayer().getUUID());
+      plugin.getEventBus().publish(new PlayerUnmutedEvent(
+          EntityMappers.playerMute(mute),
+          EntityMappers.player(actor),
+          finalReason,
+          finalSilent));
       return true;
     }
 

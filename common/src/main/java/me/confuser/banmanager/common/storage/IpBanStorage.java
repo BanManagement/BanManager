@@ -1,10 +1,15 @@
 package me.confuser.banmanager.common.storage;
 
 import lombok.Getter;
+import me.confuser.banmanager.api.event.ip.IpBanEvent;
+import me.confuser.banmanager.api.event.ip.IpBannedEvent;
+import me.confuser.banmanager.api.event.ip.IpUnbanEvent;
+import me.confuser.banmanager.api.event.ip.IpUnbannedEvent;
+import me.confuser.banmanager.api.request.IpBanRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
@@ -18,6 +23,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -143,7 +149,8 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
   public void addBan(IpBanData ban) {
     bans.put(ban.getIp().toString(), ban);
 
-    plugin.getServer().callEvent("IpBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
+    boolean silent = ban.isSilent() || !plugin.getConfig().isBroadcastOnSync();
+    plugin.getEventBus().publish(new IpBannedEvent(EntityMappers.ipBan(ban), silent));
   }
 
   public void removeBan(IpBanData ban) {
@@ -155,20 +162,37 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
   }
 
   public boolean ban(IpBanData ban) throws SQLException {
-    return ban(ban, false);
+    return ban(ban, false, null);
   }
 
   public boolean ban(IpBanData ban, boolean fromSync) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpBanEvent", ban, ban.isSilent());
+    return ban(ban, fromSync, null);
+  }
 
-    if (event.isCancelled()) {
+  public boolean ban(IpBanData ban, boolean fromSync, Message kickMessage) throws SQLException {
+    IpBanRequest request = EntityMappers.ipBanRequest(ban);
+    IpBanEvent pre = new IpBanEvent(request);
+    plugin.getEventBus().publish(pre);
+
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, ban);
 
     create(ban);
     bans.put(ban.getIp().toString(), ban);
 
-    plugin.getServer().callEvent("IpBannedEvent", ban, event.isSilent() || (fromSync && !plugin.getConfig().isBroadcastOnSync()));
+    if (kickMessage != null) {
+      kickMessage.set("id", ban.getId());
+    }
+
+    boolean silent = request.silent() || (fromSync && !plugin.getConfig().isBroadcastOnSync());
+    IpBannedEvent post = plugin.getEventBus().publish(new IpBannedEvent(EntityMappers.ipBan(ban), silent));
+
+    if (kickMessage != null && !post.placeholders().isEmpty()) {
+      post.placeholders().forEach(kickMessage::set);
+    }
 
     return true;
   }
@@ -186,18 +210,32 @@ public class IpBanStorage extends BaseStorage<IpBanData, Integer> {
   }
 
   public boolean unban(IpBanData ban, PlayerData actor, String reason, boolean delete, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpUnbanEvent", ban, actor, reason, silent);
+    IpUnbanEvent pre = new IpUnbanEvent(
+        EntityMappers.ipBan(ban),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
+
     TransactionHelper.runInTransaction(connectionSource, () -> {
       delete(ban);
-      if (!delete) plugin.getIpBanRecordStorage().addRecord(ban, actor, reason);
+      if (!delete) plugin.getIpBanRecordStorage().addRecord(ban, actor, finalReason);
     });
 
     bans.remove(ban.getIp().toString());
+
+    plugin.getEventBus().publish(new IpUnbannedEvent(
+        EntityMappers.ipBan(ban),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     return true;
   }

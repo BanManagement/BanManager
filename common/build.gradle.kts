@@ -46,6 +46,7 @@ mavenPublishing {
 }
 
 dependencies {
+    api(project(":BanManagerAPI"))
     api(project(":BanManagerLibs"))
 
     testImplementation(platform("org.junit:junit-bom:5.11.4"))

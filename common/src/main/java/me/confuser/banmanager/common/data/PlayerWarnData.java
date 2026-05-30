@@ -19,6 +19,7 @@ public class PlayerWarnData {
 
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String reason;
 
   @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
@@ -32,6 +33,7 @@ public class PlayerWarnData {
 
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   @Getter
+  @Setter
   private long expires = 0;
 
   @DatabaseField(index = true)
@@ -41,6 +43,7 @@ public class PlayerWarnData {
 
   @DatabaseField(index = true)
   @Getter
+  @Setter
   private double points = 1;
 
   PlayerWarnData() {

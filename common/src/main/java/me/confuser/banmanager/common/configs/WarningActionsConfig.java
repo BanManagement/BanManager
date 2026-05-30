@@ -96,7 +96,7 @@ public class WarningActionsConfig {
     }
   }
 
-  public List<ActionCommand> getCommands(PlayerData player, double overallPoints) {
+  public List<ActionCommand> getCommands(BanManagerPlugin plugin, PlayerData player, double overallPoints) {
     List<ActionCommand> commands = new ArrayList<>();
 
     for (Map.Entry<Double, List<ActionCommand>> entry : actions.entrySet()) {
@@ -105,9 +105,9 @@ public class WarningActionsConfig {
 
         if (!actionCommand.getPointsTimeframe().isEmpty()) {
           try {
-            totalPoints = BanManagerPlugin.getInstance().getPlayerWarnStorage().getPointsCount(player, DateUtils.parseDateDiff(actionCommand.getPointsTimeframe(), false));
+            totalPoints = plugin.getPlayerWarnStorage().getPointsCount(player, DateUtils.parseDateDiff(actionCommand.getPointsTimeframe(), false));
           } catch (Exception e) {
-            BanManagerPlugin.getInstance().getLogger().warning("Failed to calculate warning points", e);
+            plugin.getLogger().warning("Failed to calculate warning points", e);
           }
         }
 

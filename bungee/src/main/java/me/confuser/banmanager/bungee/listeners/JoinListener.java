@@ -42,12 +42,12 @@ public class JoinListener implements Listener {
 
   @EventHandler
   public void onJoin(PostLoginEvent event) {
-    listener.onJoin(new BungeePlayer(event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()));
+    listener.onJoin(new BungeePlayer(plugin.getPlugin(), event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()));
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onPlayerLogin(PostLoginEvent event) {
-    listener.onPlayerLogin(new BungeePlayer(event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()), new LoginHandler(event));
+    listener.onPlayerLogin(new BungeePlayer(plugin.getPlugin(), event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()), new LoginHandler(event));
   }
 
   @RequiredArgsConstructor
@@ -57,7 +57,6 @@ public class JoinListener implements Listener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       String locale = player.getLocale() != null ? player.getLocale() : "en";
       event.setCancelled(true);
       event.setCancelReason(BungeeServer.formatMessage(message.resolveComponent(locale)));

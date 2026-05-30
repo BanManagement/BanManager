@@ -57,10 +57,11 @@ public final class VelocityCommand implements SimpleCommand {
   }
 
   private CommonSender getSender(CommandSource source) {
+    BanManagerPlugin core = plugin.getPlugin();
     if (source instanceof Player) {
-      return new VelocityPlayer((Player) source, BanManagerPlugin.getInstance().getConfig().isOnlineMode());
+      return new VelocityPlayer(core, (Player) source, core.getConfig().isOnlineMode());
     } else {
-      return new VelocitySender(BanManagerPlugin.getInstance(), source);
+      return new VelocitySender(core, source);
     }
   }
 

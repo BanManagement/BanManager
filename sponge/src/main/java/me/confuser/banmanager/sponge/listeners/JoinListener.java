@@ -61,10 +61,10 @@ public class JoinListener {
     public void onJoin(ServerSideConnectionEvent.Join event) {
         ServerPlayer player = event.player();
 
-        listener.onJoin(new SpongePlayer(player, plugin.getConfig().isOnlineMode()));
+        listener.onJoin(new SpongePlayer(plugin, player, plugin.getConfig().isOnlineMode()));
 
         listener.onPlayerLogin(
-            new SpongePlayer(player, plugin.getConfig().isOnlineMode(), player.connection().address().getAddress()),
+            new SpongePlayer(plugin, player, plugin.getConfig().isOnlineMode(), player.connection().address().getAddress()),
             new LoginHandler(player)
         );
     }
@@ -78,7 +78,6 @@ public class JoinListener {
 
         @Override
         public void handlePlayerDeny(PlayerData player, Message message) {
-            plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
             String locale = player.getLocale() != null ? player.getLocale() : "en";
             isDenied = true;
             event.setCancelled(true);
@@ -104,7 +103,7 @@ public class JoinListener {
 
         @Override
         public void handleDeny(Message message) {
-            new SpongePlayer(player, plugin.getConfig().isOnlineMode()).kick(message);
+            new SpongePlayer(plugin, player, plugin.getConfig().isOnlineMode()).kick(message);
         }
     }
 }

@@ -27,12 +27,14 @@ import net.minecraft.server.world.ServerWorld;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 
 public class FabricPlayer implements CommonPlayer {
+  private final BanManagerPlugin plugin;
   private final UUID uuid;
   private final boolean onlineMode;
   private final ServerPlayerEntity player;
   private final MinecraftServer server;
 
-  public FabricPlayer(ServerPlayerEntity player, MinecraftServer server, boolean onlineMode) {
+  public FabricPlayer(BanManagerPlugin plugin, ServerPlayerEntity player, MinecraftServer server, boolean onlineMode) {
+    this.plugin = plugin;
     this.player = player;
     this.server = server;
     this.uuid = player.getUuid();
@@ -45,7 +47,7 @@ public class FabricPlayer implements CommonPlayer {
 
   @Override
   public void kick(Component component) {
-    this.player.networkHandler.disconnect(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)));
+    this.player.networkHandler.disconnect(FabricServer.formatJsonMessage(plugin.getMessageRenderer().toJson(component)));
   }
 
   public void sendMessage(String message) {
@@ -60,19 +62,19 @@ public class FabricPlayer implements CommonPlayer {
 
   @Override
   public void sendMessage(Component component) {
-    getPlayer().sendMessage(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)));
+    getPlayer().sendMessage(FabricServer.formatJsonMessage(plugin.getMessageRenderer().toJson(component)));
   }
 
   @Override
   public void sendActionBar(Component component) {
-    getPlayer().sendMessage(FabricServer.formatJsonMessage(MessageRenderer.getInstance().toJson(component)), true);
+    getPlayer().sendMessage(FabricServer.formatJsonMessage(plugin.getMessageRenderer().toJson(component)), true);
   }
 
   @Override
   public void showTitle(Component title, Component subtitle, int fadeIn, int stay, int fadeOut) {
     ServerPlayerEntity p = getPlayer();
     if (p == null) return;
-    MessageRenderer renderer = MessageRenderer.getInstance();
+    MessageRenderer renderer = plugin.getMessageRenderer();
     if (title != null) {
       net.minecraft.text.Text titleText = FabricServer.formatJsonMessage(renderer.toJson(title));
       p.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.TitleS2CPacket(titleText));
@@ -121,9 +123,9 @@ public class FabricPlayer implements CommonPlayer {
 
   public PlayerData getData() {
     try {
-      return BanManagerPlugin.getInstance().getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
+      return plugin.getPlayerStorage().queryForId(UUIDUtils.toBytes(getUniqueId()));
     } catch (SQLException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to load player data", e);
+      plugin.getLogger().warning("Failed to load player data", e);
       sendMessage(Message.get("sender.error.exception").toString());
       return null;
     }

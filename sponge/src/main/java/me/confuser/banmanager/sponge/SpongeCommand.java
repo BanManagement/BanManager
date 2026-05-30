@@ -87,7 +87,7 @@ public class SpongeCommand {
     private CommonSender getSender(CommandCause cause) {
         Object root = cause.root();
         if (root instanceof ServerPlayer) {
-            return new SpongePlayer((ServerPlayer) root, plugin.getConfig().isOnlineMode());
+            return new SpongePlayer(plugin, (ServerPlayer) root, plugin.getConfig().isOnlineMode());
         } else {
             // Use CommandCause directly as the audience - this properly routes
             // messages back to RCON connections and other command sources

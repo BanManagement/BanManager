@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common;
 
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.util.Message;
@@ -35,7 +34,7 @@ public class TestServer implements CommonServer {
 
       if (player == null) return null;
 
-      return new TestPlayer(uniqueId, player.getName(), true);
+      return new TestPlayer(plugin, uniqueId, player.getName(), true);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -62,7 +61,7 @@ public class TestServer implements CommonServer {
     PlayerData player = plugin.getPlayerStorage().retrieve(name, false);
     if (player == null) return null;
 
-    return new TestPlayer(player.getUUID(), player.getName(), true);
+    return new TestPlayer(plugin, player.getUUID(), player.getName(), true);
   }
 
   @Override
@@ -116,7 +115,7 @@ public class TestServer implements CommonServer {
   public CommonSender getConsoleSender() {
     PlayerData console = plugin.getPlayerStorage().getConsole();
 
-    return new TestSender(console.getUUID(), console.getName(), true);
+    return new TestSender(plugin, console.getUUID(), console.getName(), true);
   }
 
   @Override
@@ -127,11 +126,6 @@ public class TestServer implements CommonServer {
   @Override
   public CommonWorld getWorld(String name) {
     return new CommonWorld(name);
-  }
-
-  @Override
-  public CommonEvent callEvent(String name, Object... args) {
-    return new CommonEvent(false, false);
   }
 
   public void enable(BanManagerPlugin plugin) {

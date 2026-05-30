@@ -1,6 +1,5 @@
 package me.confuser.banmanager.common;
 
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.commands.CommonSender;
 import me.confuser.banmanager.common.kyori.text.Component;
 import me.confuser.banmanager.common.util.Message;
@@ -25,7 +24,10 @@ public interface CommonServer {
         player.sendMessage(message.resolveComponentFor(player));
       }
     }
-    getConsoleSender().sendMessage(MessageRenderer.getInstance().toPlainText(message.resolveComponent()));
+    MessageRenderer renderer = Message.renderer();
+    if (renderer != null) {
+      getConsoleSender().sendMessage(renderer.toPlainText(message.resolveComponent()));
+    }
   }
 
   // Console receives plain text since it cannot render Components with hover/click events
@@ -35,7 +37,10 @@ public interface CommonServer {
         player.sendMessage(message);
       }
     }
-    getConsoleSender().sendMessage(MessageRenderer.getInstance().toPlainText(message));
+    MessageRenderer renderer = Message.renderer();
+    if (renderer != null) {
+      getConsoleSender().sendMessage(renderer.toPlainText(message));
+    }
   }
 
   void broadcast(String message, String permission, CommonSender sender);
@@ -45,8 +50,6 @@ public interface CommonServer {
   boolean dispatchCommand(CommonSender consoleSender, String command);
 
   CommonWorld getWorld(String name);
-
-  CommonEvent callEvent(String name, Object... args);
 
   CommonExternalCommand getPluginCommand(String commandName);
 }

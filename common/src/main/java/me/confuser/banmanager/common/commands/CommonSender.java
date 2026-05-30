@@ -17,6 +17,7 @@ public interface CommonSender {
   }
 
   default void sendMessage(Component component) {
-    sendMessage(MessageRenderer.getInstance().toLegacy(component));
+    MessageRenderer renderer = Message.renderer();
+    sendMessage(renderer != null ? renderer.toLegacy(component) : component.toString());
   }
 }

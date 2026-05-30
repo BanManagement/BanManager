@@ -41,10 +41,10 @@ public class JoinListener {
 
     ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
       listener.onJoin(
-          new FabricPlayer(handler.getPlayer(), server, plugin.getConfig().isOnlineMode()));
+          new FabricPlayer(plugin, handler.getPlayer(), server, plugin.getConfig().isOnlineMode()));
 
       listener.onPlayerLogin(
-          new FabricPlayer(handler.getPlayer(), server, plugin.getConfig().isOnlineMode()),
+          new FabricPlayer(plugin, handler.getPlayer(), server, plugin.getConfig().isOnlineMode()),
           new LoginHandler(handler.getPlayer()));
     });
   }
@@ -58,7 +58,6 @@ public class JoinListener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       String locale = player.getLocale() != null ? player.getLocale() : "en";
       isDenied = true;
       handler.disconnect(FabricServer.formatMessage(message.resolveComponent(locale)));

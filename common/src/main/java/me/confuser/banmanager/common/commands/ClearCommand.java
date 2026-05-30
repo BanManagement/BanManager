@@ -88,7 +88,7 @@ public class ClearCommand extends CommonCommand {
               break;
 
             case "reports":
-              getPlugin().getPlayerReportStorage().deleteAll(player);
+              getPlugin().getPlayerReportStorage().deleteAll(player, sender.getData());
               break;
 
             case "warnings":

@@ -110,8 +110,12 @@ public class BanIpCommand extends CommonCommand {
       final IpBanData ban = new IpBanData(ip, actor, parser.getReason().getMessage(), isSilent);
       boolean created;
 
+      Message kickMessage = Message.get("banip.ip.kick")
+          .set("reason", ban.getReason())
+          .set("actor", actor.getName());
+
       try {
-        created = getPlugin().getIpBanStorage().ban(ban);
+        created = getPlugin().getIpBanStorage().ban(ban, false, kickMessage);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("banip.error.exists").set("ip",
             ipStr));
@@ -123,11 +127,6 @@ public class BanIpCommand extends CommonCommand {
       }
 
       getPlugin().getScheduler().runSync(() -> {
-        Message kickMessage = Message.get("banip.ip.kick")
-            .set("reason", ban.getReason())
-            .set("id", ban.getId())
-            .set("actor", actor.getName());
-
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (IPUtils.toIPAddress(onlinePlayer.getAddress()).equals(ip)) {
             onlinePlayer.kick(kickMessage);

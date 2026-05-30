@@ -19,7 +19,8 @@ public interface CommonPlayer extends CommonSender {
   }
 
   default void kick(Component component) {
-    kick(MessageRenderer.getInstance().toLegacy(component));
+    MessageRenderer renderer = Message.renderer();
+    kick(renderer != null ? renderer.toLegacy(component) : component.toString());
   }
 
   void sendMessage(String message);
@@ -31,7 +32,8 @@ public interface CommonPlayer extends CommonSender {
 
   @Override
   default void sendMessage(Component component) {
-    sendMessage(MessageRenderer.getInstance().toLegacy(component));
+    MessageRenderer renderer = Message.renderer();
+    sendMessage(renderer != null ? renderer.toLegacy(component) : component.toString());
   }
 
   default void sendActionBar(Component component) {

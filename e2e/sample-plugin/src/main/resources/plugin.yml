@@ -1,0 +1,23 @@
+name: BanManagerSamplePlugin
+main: me.confuser.banmanager.sample.SamplePlugin
+version: ${pluginVersion}
+api-version: '1.20'
+authors: [BanManager]
+description: Sample consumer plugin demonstrating the BanManagerAPI surface.
+softdepend: [BanManager]
+
+commands:
+  sampleban:
+    description: Ban a player via the BanManager API
+    usage: /<command> <player> [reason]
+    permission: banmanager.sample.ban
+  samplecount:
+    description: Print live counts via DatabaseAccess
+    usage: /<command>
+    permission: banmanager.sample.count
+
+permissions:
+  banmanager.sample.ban:
+    default: op
+  banmanager.sample.count:
+    default: op

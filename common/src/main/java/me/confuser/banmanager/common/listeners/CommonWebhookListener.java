@@ -1,28 +1,60 @@
 package me.confuser.banmanager.common.listeners;
 
+import me.confuser.banmanager.api.dto.IpBan;
+import me.confuser.banmanager.api.dto.IpMute;
+import me.confuser.banmanager.api.dto.Player;
+import me.confuser.banmanager.api.dto.PlayerBan;
+import me.confuser.banmanager.api.dto.PlayerMute;
+import me.confuser.banmanager.api.dto.PlayerReport;
+import me.confuser.banmanager.api.dto.PlayerWarn;
+import me.confuser.banmanager.api.event.ip.IpBannedEvent;
+import me.confuser.banmanager.api.event.ip.IpUnbannedEvent;
+import me.confuser.banmanager.api.event.player.PlayerBannedEvent;
+import me.confuser.banmanager.api.event.player.PlayerKickedEvent;
+import me.confuser.banmanager.api.event.player.PlayerMutedEvent;
+import me.confuser.banmanager.api.event.player.PlayerReportedEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnbannedEvent;
+import me.confuser.banmanager.api.event.player.PlayerUnmutedEvent;
+import me.confuser.banmanager.api.event.player.PlayerWarnedEvent;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.data.*;
+import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.data.PlayerReportLocationData;
+import me.confuser.banmanager.common.data.Webhook;
+import me.confuser.banmanager.common.impl.IpAddressMapper;
 import me.confuser.banmanager.common.util.DateUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CommonWebhookListener {
-  private BanManagerPlugin plugin;
+  private final BanManagerPlugin plugin;
 
   public CommonWebhookListener(BanManagerPlugin plugin) {
     this.plugin = plugin;
+    plugin.getEventBus().subscribe(PlayerBannedEvent.class, e -> sendAll(notifyOnBan(e.ban()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerMutedEvent.class, e -> sendAll(notifyOnMute(e.mute()), e.silent()));
+    plugin.getEventBus().subscribe(IpBannedEvent.class, e -> sendAll(notifyOnBan(e.ban()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerKickedEvent.class,
+        e -> sendAll(notifyOnKick(e.id(), e.player(), e.actor(), e.reason(), e.created()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerWarnedEvent.class, e -> sendAll(notifyOnWarn(e.warn()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerUnbannedEvent.class,
+        e -> sendAll(notifyOnUnban(e.ban(), e.actor(), e.reason()), e.silent()));
+    plugin.getEventBus().subscribe(IpUnbannedEvent.class,
+        e -> sendAll(notifyOnUnban(e.ban(), e.actor(), e.reason()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerUnmutedEvent.class,
+        e -> sendAll(notifyOnUnmute(e.mute(), e.actor(), e.reason()), e.silent()));
+    plugin.getEventBus().subscribe(PlayerReportedEvent.class,
+        e -> sendAll(notifyOnReport(e.report(), e.report().actor(), e.report().reason()), false));
   }
 
   private String toISO8601(long timestamp) {
@@ -30,31 +62,32 @@ public class CommonWebhookListener {
         .format(java.time.Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
   }
 
-  public List<Webhook> notifyOnBan(PlayerBanData ban) {
-    String type = ban.getExpires() == 0 ? "ban" : "tempban";
+  public List<Webhook> notifyOnBan(PlayerBan ban) {
+    String type = ban.expires() == 0 ? "ban" : "tempban";
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", ban.getPlayer().getName());
-    replacements.put("[playerId]", ban.getPlayer().getUUID().toString());
-    replacements.put("[actor]", ban.getActor().getName());
-    replacements.put("[actorId]", ban.getActor().getUUID().toString());
-    replacements.put("[id]", String.valueOf(ban.getId()));
-    replacements.put("[created]", toISO8601(ban.getCreated()));
-    replacements.put("[reason]", ban.getReason());
+    replacements.put("[player]", ban.player().name());
+    replacements.put("[playerId]", ban.player().uuid().toString());
+    replacements.put("[actor]", ban.actor().name());
+    replacements.put("[actorId]", ban.actor().uuid().toString());
+    replacements.put("[id]", String.valueOf(ban.id()));
+    replacements.put("[created]", toISO8601(ban.created()));
+    replacements.put("[reason]", ban.reason());
 
-    if (ban.getExpires() != 0) {
-      replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
+    if (ban.expires() != 0) {
+      replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.expires()));
     }
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnBan(IpBanData ban) {
-    String type = ban.getExpires() == 0 ? "banip" : "tempbanip";
+  public List<Webhook> notifyOnBan(IpBan ban) {
+    String type = ban.expires() == 0 ? "banip" : "tempbanip";
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
-    List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(ban.getIp(),
+    me.confuser.banmanager.common.ipaddr.IPAddress internalIp = IpAddressMapper.toInternal(ban.ip());
+    List<PlayerData> players = plugin.getPlayerStorage().getDuplicatesInTime(internalIp,
         plugin.getConfig().getTimeAssociatedAlts());
     StringBuilder playerNames = new StringBuilder();
 
@@ -67,145 +100,145 @@ public class CommonWebhookListener {
       playerNames.setLength(playerNames.length() - 2);
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[ip]", ban.getIp().toString());
-    replacements.put("[actor]", ban.getActor().getName());
-    replacements.put("[actorId]", ban.getActor().getUUID().toString());
-    replacements.put("[reason]", ban.getReason());
-    replacements.put("[created]", toISO8601(ban.getCreated()));
+    replacements.put("[ip]", ban.ip().toString());
+    replacements.put("[actor]", ban.actor().name());
+    replacements.put("[actorId]", ban.actor().uuid().toString());
+    replacements.put("[reason]", ban.reason());
+    replacements.put("[created]", toISO8601(ban.created()));
     replacements.put("[players]", playerNames.toString());
 
-    if (ban.getExpires() != 0) {
-      replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.getExpires()));
+    if (ban.expires() != 0) {
+      replacements.put("[expires]", DateUtils.getDifferenceFormat(ban.expires()));
     }
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnKick(PlayerKickData kick) {
+  public List<Webhook> notifyOnKick(int id, Player player, Player actor, String reason, long created) {
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks("kick");
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", kick.getPlayer().getName());
-    replacements.put("[playerId]", kick.getPlayer().getUUID().toString());
-    replacements.put("[actor]", kick.getActor().getName());
-    replacements.put("[actorId]", kick.getActor().getUUID().toString());
-    replacements.put("[id]", String.valueOf(kick.getId()));
-    replacements.put("[created]", toISO8601(kick.getCreated()));
-    replacements.put("[reason]", kick.getReason());
+    replacements.put("[player]", player.name());
+    replacements.put("[playerId]", player.uuid().toString());
+    replacements.put("[actor]", actor.name());
+    replacements.put("[actorId]", actor.uuid().toString());
+    replacements.put("[id]", String.valueOf(id));
+    replacements.put("[created]", toISO8601(created));
+    replacements.put("[reason]", reason);
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnMute(PlayerMuteData mute) {
-    String type = mute.getExpires() == 0 ? "mute" : "tempmute";
+  public List<Webhook> notifyOnMute(PlayerMute mute) {
+    String type = mute.expires() == 0 ? "mute" : "tempmute";
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", mute.getPlayer().getName());
-    replacements.put("[playerId]", mute.getPlayer().getUUID().toString());
-    replacements.put("[actor]", mute.getActor().getName());
-    replacements.put("[actorId]", mute.getActor().getUUID().toString());
-    replacements.put("[id]", String.valueOf(mute.getId()));
-    replacements.put("[created]", toISO8601(mute.getCreated()));
-    replacements.put("[reason]", mute.getReason());
+    replacements.put("[player]", mute.player().name());
+    replacements.put("[playerId]", mute.player().uuid().toString());
+    replacements.put("[actor]", mute.actor().name());
+    replacements.put("[actorId]", mute.actor().uuid().toString());
+    replacements.put("[id]", String.valueOf(mute.id()));
+    replacements.put("[created]", toISO8601(mute.created()));
+    replacements.put("[reason]", mute.reason());
 
-    if (mute.getExpires() != 0) {
-      replacements.put("[expires]", DateUtils.getDifferenceFormat(mute.getExpires()));
+    if (mute.expires() != 0) {
+      replacements.put("[expires]", DateUtils.getDifferenceFormat(mute.expires()));
     }
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnWarn(PlayerWarnData warn) {
-    String type = warn.getExpires() == 0 ? "warning" : "tempwarning";
+  public List<Webhook> notifyOnWarn(PlayerWarn warn) {
+    String type = warn.expires() == 0 ? "warning" : "tempwarning";
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks(type);
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", warn.getPlayer().getName());
-    replacements.put("[playerId]", warn.getPlayer().getUUID().toString());
-    replacements.put("[actor]", warn.getActor().getName());
-    replacements.put("[actorId]", warn.getActor().getUUID().toString());
-    replacements.put("[id]", String.valueOf(warn.getId()));
-    replacements.put("[created]", toISO8601(warn.getCreated()));
-    replacements.put("[points]", String.valueOf(warn.getPoints()));
-    replacements.put("[reason]", warn.getReason());
+    replacements.put("[player]", warn.player().name());
+    replacements.put("[playerId]", warn.player().uuid().toString());
+    replacements.put("[actor]", warn.actor().name());
+    replacements.put("[actorId]", warn.actor().uuid().toString());
+    replacements.put("[id]", String.valueOf(warn.id()));
+    replacements.put("[created]", toISO8601(warn.created()));
+    replacements.put("[points]", String.valueOf(warn.points()));
+    replacements.put("[reason]", warn.reason());
 
-    if (warn.getExpires() != 0) {
-      replacements.put("[expires]", DateUtils.getDifferenceFormat(warn.getExpires()));
+    if (warn.expires() != 0) {
+      replacements.put("[expires]", DateUtils.getDifferenceFormat(warn.expires()));
     }
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnUnban(PlayerBanData ban, PlayerData actor, String reason) {
+  public List<Webhook> notifyOnUnban(PlayerBan ban, Player actor, String reason) {
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unban");
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", ban.getPlayer().getName());
-    replacements.put("[playerId]", ban.getPlayer().getUUID().toString());
-    replacements.put("[actor]", actor.getName());
-    replacements.put("[actorId]", actor.getUUID().toString());
-    replacements.put("[id]", String.valueOf(ban.getId()));
-    replacements.put("[created]", toISO8601(ban.getCreated()));
+    replacements.put("[player]", ban.player().name());
+    replacements.put("[playerId]", ban.player().uuid().toString());
+    replacements.put("[actor]", actor.name());
+    replacements.put("[actorId]", actor.uuid().toString());
+    replacements.put("[id]", String.valueOf(ban.id()));
+    replacements.put("[created]", toISO8601(ban.created()));
     replacements.put("[reason]", reason);
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnUnban(IpBanData ban, PlayerData actor, String reason) {
+  public List<Webhook> notifyOnUnban(IpBan ban, Player actor, String reason) {
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unbanip");
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[ip]", ban.getIp().toString());
-    replacements.put("[actor]", actor.getName());
-    replacements.put("[actorId]", actor.getUUID().toString());
-    replacements.put("[id]", String.valueOf(ban.getId()));
-    replacements.put("[created]", toISO8601(ban.getCreated()));
+    replacements.put("[ip]", ban.ip().toString());
+    replacements.put("[actor]", actor.name());
+    replacements.put("[actorId]", actor.uuid().toString());
+    replacements.put("[id]", String.valueOf(ban.id()));
+    replacements.put("[created]", toISO8601(ban.created()));
     replacements.put("[reason]", reason);
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnUnmute(PlayerMuteData mute, PlayerData actor, String reason) {
+  public List<Webhook> notifyOnUnmute(PlayerMute mute, Player actor, String reason) {
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks("unmute");
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", mute.getPlayer().getName());
-    replacements.put("[playerId]", mute.getPlayer().getUUID().toString());
-    replacements.put("[actor]", actor.getName());
-    replacements.put("[actorId]", actor.getUUID().toString());
-    replacements.put("[id]", String.valueOf(mute.getId()));
-    replacements.put("[created]", toISO8601(mute.getCreated()));
+    replacements.put("[player]", mute.player().name());
+    replacements.put("[playerId]", mute.player().uuid().toString());
+    replacements.put("[actor]", actor.name());
+    replacements.put("[actorId]", actor.uuid().toString());
+    replacements.put("[id]", String.valueOf(mute.id()));
+    replacements.put("[created]", toISO8601(mute.created()));
     replacements.put("[reason]", reason);
 
     return resolve(hooks, replacements);
   }
 
-  public List<Webhook> notifyOnReport(PlayerReportData report, PlayerData actor, String reason) {
+  public List<Webhook> notifyOnReport(PlayerReport report, Player actor, String reason) {
     List<Webhook> hooks = plugin.getWebhookConfig().getHooks("report");
 
     List<PlayerReportLocationData> locations = null;
     try {
-      locations = plugin.getPlayerReportLocationStorage().getByReport(report);
+      locations = plugin.getPlayerReportLocationStorage().getAllByReportId(report.id());
     } catch (SQLException e) {
       plugin.getLogger().warning("Failed to load report locations for webhook", e);
     }
 
     Map<String, String> replacements = new HashMap<>();
-    replacements.put("[player]", report.getPlayer().getName());
-    replacements.put("[playerId]", report.getPlayer().getUUID().toString());
-    replacements.put("[actor]", actor.getName());
-    replacements.put("[actorId]", actor.getUUID().toString());
-    replacements.put("[id]", String.valueOf(report.getId()));
-    replacements.put("[created]", toISO8601(report.getCreated()));
+    replacements.put("[player]", report.player().name());
+    replacements.put("[playerId]", report.player().uuid().toString());
+    replacements.put("[actor]", actor.name());
+    replacements.put("[actorId]", actor.uuid().toString());
+    replacements.put("[id]", String.valueOf(report.id()));
+    replacements.put("[created]", toISO8601(report.created()));
     replacements.put("[reason]", reason);
 
-    if (locations != null && locations.size() > 0) {
+    if (locations != null && !locations.isEmpty()) {
       PlayerReportLocationData playerLocation = null;
       PlayerReportLocationData actorLocation = null;
 
       for (PlayerReportLocationData location : locations) {
-        if (location.getPlayer().equals(actor)) {
+        if (location.getPlayer() != null && location.getPlayer().getUUID().equals(actor.uuid())) {
           actorLocation = location;
         } else {
           playerLocation = location;
@@ -258,6 +291,14 @@ public class CommonWebhookListener {
       result = result.replace(entry.getKey(), entry.getValue());
     }
     return result;
+  }
+
+  private void sendAll(List<Webhook> webhooks, boolean isSilent) {
+    for (Webhook data : webhooks) {
+      if (isSilent && data.ignoreSilent()) continue;
+      if (data.url() == null || data.payload() == null || data.url().isEmpty() || data.payload().isEmpty()) continue;
+      sendAsync(data);
+    }
   }
 
   public void sendAsync(Webhook data) {

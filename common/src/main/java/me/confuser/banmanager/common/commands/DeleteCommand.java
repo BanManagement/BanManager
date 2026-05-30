@@ -82,7 +82,7 @@ public class DeleteCommand extends CommonCommand {
               break;
 
             case "reports":
-              rows = getPlugin().getPlayerReportStorage().deleteIds(ids);
+              rows = getPlugin().getPlayerReportStorage().deleteIds(ids, sender.getData());
               break;
 
             case "warnings":

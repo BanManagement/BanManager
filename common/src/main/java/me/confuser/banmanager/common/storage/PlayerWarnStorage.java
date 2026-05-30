@@ -1,10 +1,13 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.player.PlayerWarnEvent;
+import me.confuser.banmanager.api.event.player.PlayerWarnedEvent;
+import me.confuser.banmanager.api.request.WarnRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.configs.CleanUp;
 import me.confuser.banmanager.common.data.PlayerData;
 import me.confuser.banmanager.common.data.PlayerWarnData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.google.guava.cache.Cache;
 import me.confuser.banmanager.common.google.guava.cache.CacheBuilder;
 import me.confuser.banmanager.common.ormlite.dao.CloseableIterator;
@@ -70,17 +73,23 @@ public class PlayerWarnStorage extends BaseStorage<PlayerWarnData, Integer> {
   }
 
   public boolean addWarning(PlayerWarnData data, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("PlayerWarnEvent", data, silent);
+    WarnRequest request = EntityMappers.warnRequest(data, silent);
+    PlayerWarnEvent pre = new PlayerWarnEvent(request);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, data);
 
     if (plugin.getConfig().isWarningMutesEnabled()) muteWarnings.put(data.getPlayer().getUUID(), data);
 
     boolean created = create(data) == 1;
 
-    if (created) plugin.getServer().callEvent("PlayerWarnedEvent", data, event.isSilent());
+    if (created) {
+      plugin.getEventBus().publish(new PlayerWarnedEvent(EntityMappers.playerWarn(data), request.silent()));
+    }
 
     return created;
   }

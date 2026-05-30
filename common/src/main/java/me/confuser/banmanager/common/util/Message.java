@@ -1,7 +1,6 @@
 package me.confuser.banmanager.common.util;
 
 import lombok.Getter;
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonLogger;
 import me.confuser.banmanager.common.CommonPlayer;
 import me.confuser.banmanager.common.PlaceholderResolver;
@@ -10,6 +9,8 @@ import me.confuser.banmanager.common.kyori.text.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,9 @@ public class Message {
 
   private static volatile MessageRegistry registry;
   private static volatile CommonLogger logger;
+  private static volatile MessageRenderer renderer;
+  private static volatile Supplier<PlaceholderResolver> papiResolverSupplier = () -> null;
+  private static volatile BooleanSupplier perPlayerLocaleSupplier = () -> false;
   // Matches PlaceholderAPI %placeholder% tokens. May also match non-PAPI patterns like %100%,
   // but the resolver's no-op return for unrecognised placeholders makes this harmless.
   private static final Pattern PAPI_PATTERN = Pattern.compile("%([^%]+)%");
@@ -47,9 +51,34 @@ public class Message {
     }
   }
 
-  public static void init(MessageRegistry messageRegistry, CommonLogger commonLogger) {
+  public static void init(MessageRegistry messageRegistry, CommonLogger commonLogger,
+                          MessageRenderer messageRenderer,
+                          Supplier<PlaceholderResolver> papiResolver,
+                          BooleanSupplier perPlayerLocale) {
     registry = messageRegistry;
     logger = commonLogger;
+    renderer = messageRenderer;
+    papiResolverSupplier = papiResolver != null ? papiResolver : () -> null;
+    perPlayerLocaleSupplier = perPlayerLocale != null ? perPlayerLocale : () -> false;
+  }
+
+  /**
+   * Reset all injected dependencies. Intended for test teardown.
+   */
+  public static void reset() {
+    registry = null;
+    logger = null;
+    renderer = null;
+    papiResolverSupplier = () -> null;
+    perPlayerLocaleSupplier = () -> false;
+  }
+
+  /**
+   * @return the active {@link MessageRenderer} as injected via {@link #init}, or
+   * {@code null} if no plugin has initialised the message system.
+   */
+  public static MessageRenderer renderer() {
+    return renderer;
   }
 
   public static Message get(String key) {
@@ -72,18 +101,16 @@ public class Message {
   }
 
   public static String getString(String key) {
-    if (registry == null) return null;
+    if (registry == null || renderer == null) return null;
     String template = registry.getMessage(key);
     if (template == null) return null;
-    MessageRenderer renderer = MessageRenderer.getInstance();
     return renderer.toLegacy(renderer.render(template));
   }
 
   public static String getString(String key, String locale) {
-    if (registry == null) return null;
+    if (registry == null || renderer == null) return null;
     String template = registry.getMessage(key, locale);
     if (template == null) return null;
-    MessageRenderer renderer = MessageRenderer.getInstance();
     return renderer.toLegacy(renderer.render(template));
   }
 
@@ -135,7 +162,8 @@ public class Message {
    */
   public String resolve(String locale) {
     Component component = resolveComponent(locale);
-    return MessageRenderer.getInstance().toLegacy(component);
+    if (renderer == null) return "";
+    return renderer.toLegacy(component);
   }
 
   /**
@@ -157,19 +185,17 @@ public class Message {
    * Resolve the message template to a Component using MiniMessage, with optional PAPI resolution.
    */
   public Component resolveComponent(String locale, CommonPlayer player) {
-    if (registry == null) return Component.empty();
+    if (registry == null || renderer == null) return Component.empty();
 
     String template = registry.getMessage(key, locale);
     if (template == null) return Component.empty();
-
-    MessageRenderer renderer = MessageRenderer.getInstance();
 
     // Step 1: Apply .replace() substitutions on the raw string
     template = applyRawReplacements(template);
 
     // Step 2: Resolve PAPI placeholders individually, escaping MiniMessage tags in output
-    if (player != null && BanManagerPlugin.getInstance() != null) {
-      PlaceholderResolver papiResolver = BanManagerPlugin.getInstance().getPlaceholderResolver();
+    if (player != null) {
+      PlaceholderResolver papiResolver = papiResolverSupplier.get();
       if (papiResolver != null) {
         template = resolvePapiSafe(papiResolver, player, template);
       }
@@ -190,9 +216,8 @@ public class Message {
   public Component resolveComponentFor(CommonPlayer player) {
     if (player == null) return resolveComponent(getDefaultLocale());
 
-    BanManagerPlugin plugin = BanManagerPlugin.getInstance();
     String locale = getDefaultLocale();
-    if (plugin != null && plugin.getConfig() != null && plugin.getConfig().isPerPlayerLocale()) {
+    if (perPlayerLocaleSupplier.getAsBoolean()) {
       locale = player.getLocale();
     }
     return resolveComponent(locale, player);
@@ -200,7 +225,8 @@ public class Message {
 
   public String resolveFor(CommonPlayer player) {
     Component component = resolveComponentFor(player);
-    return MessageRenderer.getInstance().toLegacy(component);
+    if (renderer == null) return "";
+    return renderer.toLegacy(component);
   }
 
   public boolean sendTo(CommonSender sender) {
@@ -250,7 +276,6 @@ public class Message {
    * to prevent injection of formatting/click/hover tags from external placeholder plugins.
    */
   private static String resolvePapiSafe(PlaceholderResolver resolver, CommonPlayer player, String template) {
-    MessageRenderer renderer = MessageRenderer.getInstance();
     Matcher matcher = PAPI_PATTERN.matcher(template);
     StringBuffer sb = new StringBuffer();
     while (matcher.find()) {

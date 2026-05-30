@@ -20,6 +20,7 @@ public class PlayerReportData {
 
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String reason;
 
   @Getter

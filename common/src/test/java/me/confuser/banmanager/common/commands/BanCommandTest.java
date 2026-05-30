@@ -91,7 +91,7 @@ public class BanCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Player", new TestPlayer(UUID.randomUUID(), "Player123", true));
+    server.setPartialMatch("Player", new TestPlayer(plugin, UUID.randomUUID(), "Player123", true));
     when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
 
     try {
@@ -108,7 +108,7 @@ public class BanCommandTest extends BasePluginDbTest {
   public void shouldBlockSelfTargetThroughPartialName() {
     PlayerData self = testUtils.createPlayerWithName("Player123");
     PlayerData offlinePlayer = testUtils.createPlayerWithName("Player");
-    CommonSender sender = spy(new TestPlayer(self.getUUID(), self.getName(), true));
+    CommonSender sender = spy(new TestPlayer(plugin, self.getUUID(), self.getName(), true));
     String[] args = new String[]{offlinePlayer.getName(), "test"};
 
     server.setUseStorageForOnlineLookups(false);
@@ -137,7 +137,7 @@ public class BanCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Play", new TestPlayer(targetPlayer.getUUID(), targetPlayer.getName(), true));
+    server.setPartialMatch("Play", new TestPlayer(plugin, targetPlayer.getUUID(), targetPlayer.getName(), true));
     when(sender.hasPermission(cmd.getPermission() + ".offline")).thenReturn(false);
 
     try {
@@ -156,7 +156,7 @@ public class BanCommandTest extends BasePluginDbTest {
     PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
-    CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
+    CommonPlayer commonPlayer = spy(new TestPlayer(plugin, player.getUUID(), player.getName(), true));
     this.server.setExactMatch(player.getName(), commonPlayer);
     String[] args = new String[]{player.getName(), "test"};
 
@@ -181,7 +181,7 @@ public class BanCommandTest extends BasePluginDbTest {
     PlayerData player = testUtils.createRandomPlayer();
     CommonServer server = this.server;
     CommonSender sender = spy(server.getConsoleSender());
-    CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
+    CommonPlayer commonPlayer = spy(new TestPlayer(plugin, player.getUUID(), player.getName(), true));
     this.server.setExactMatch(player.getName(), commonPlayer);
     String[] args = new String[]{player.getName(), "test"};
 

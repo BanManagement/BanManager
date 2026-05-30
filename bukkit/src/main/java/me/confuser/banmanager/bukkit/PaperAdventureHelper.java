@@ -30,20 +30,25 @@ class PaperAdventureHelper {
 
   private PaperAdventureHelper() {}
 
-  static void sendMessage(Player player, Component component) {
-    ((Audience) player).sendMessage(convertToNative(component));
+  static void sendMessage(Player player, Component component, MessageRenderer renderer) {
+    ((Audience) player).sendMessage(convertToNative(component, renderer));
   }
 
-  static void sendActionBar(Player player, Component component) {
-    ((Audience) player).sendActionBar(convertToNative(component));
+  static void sendActionBar(Player player, Component component, MessageRenderer renderer) {
+    ((Audience) player).sendActionBar(convertToNative(component, renderer));
   }
 
   static void showTitle(Player player, Component title, Component subtitle,
                         int fadeIn, int stay, int fadeOut) {
+    showTitle(player, title, subtitle, fadeIn, stay, fadeOut, null);
+  }
+
+  static void showTitle(Player player, Component title, Component subtitle,
+                        int fadeIn, int stay, int fadeOut, MessageRenderer renderer) {
     net.kyori.adventure.text.Component nativeTitle = title != null
-        ? convertToNative(title) : net.kyori.adventure.text.Component.empty();
+        ? convertToNative(title, renderer) : net.kyori.adventure.text.Component.empty();
     net.kyori.adventure.text.Component nativeSubtitle = subtitle != null
-        ? convertToNative(subtitle) : net.kyori.adventure.text.Component.empty();
+        ? convertToNative(subtitle, renderer) : net.kyori.adventure.text.Component.empty();
 
     Title.Times times = Title.Times.times(
         Duration.ofMillis(fadeIn * 50L),
@@ -53,10 +58,10 @@ class PaperAdventureHelper {
     ((Audience) player).showTitle(Title.title(nativeTitle, nativeSubtitle, times));
   }
 
-  static void kick(Player player, Component component) {
+  static void kick(Player player, Component component, MessageRenderer renderer) {
     if (KICK_METHOD != null) {
       try {
-        KICK_METHOD.invoke(player, convertToNative(component));
+        KICK_METHOD.invoke(player, convertToNative(component, renderer));
         return;
       } catch (IllegalAccessException e) {
         java.util.logging.Logger.getLogger("BanManager").warning("Failed to invoke Paper kick method, falling back to legacy: " + e.getMessage());
@@ -64,11 +69,12 @@ class PaperAdventureHelper {
         throw new IllegalStateException("Failed to kick player", e.getCause());
       }
     }
-    player.kickPlayer(MessageRenderer.getInstance().toLegacy(component));
+    player.kickPlayer(renderer != null ? renderer.toLegacy(component) : component.toString());
   }
 
-  private static net.kyori.adventure.text.Component convertToNative(Component component) {
-    String json = MessageRenderer.getInstance().toJson(component);
+  private static net.kyori.adventure.text.Component convertToNative(Component component, MessageRenderer renderer) {
+    if (renderer == null) return net.kyori.adventure.text.Component.empty();
+    String json = renderer.toJson(component);
     return GsonComponentSerializer.gson().deserialize(json);
   }
 }

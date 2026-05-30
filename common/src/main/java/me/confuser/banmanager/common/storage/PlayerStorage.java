@@ -181,10 +181,8 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   public PlayerData retrieve(String name, boolean mojangLookup) {
 
     try {
-      List<PlayerData> results = queryForEq("name", new SelectArg(name));
-      if (results.size() == 1) {
-        return results.get(0);
-      }
+      PlayerData hit = findByExactName(name);
+      if (hit != null) return hit;
     } catch (SQLException e) {
       plugin.getLogger().warning("Failed to process player storage operation", e);
     }
@@ -211,6 +209,19 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     return null;
+  }
+
+  /**
+   * Strict variant of {@link #retrieve(String, boolean)} that does not fall
+   * back to a Mojang lookup and propagates {@link SQLException} so callers
+   * can surface storage failures explicitly (e.g. wrap into
+   * {@link me.confuser.banmanager.api.exception.StorageException}). Returns
+   * the unique row matching {@code name}, or {@code null} when there are
+   * zero or multiple matches.
+   */
+  public PlayerData findByExactName(String name) throws SQLException {
+    List<PlayerData> results = queryForEq("name", new SelectArg(name));
+    return results.size() == 1 ? results.get(0) : null;
   }
 
   public List<PlayerData> retrieve(String name) {
@@ -247,6 +258,20 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
   }
 
   public List<PlayerData> getDuplicatesInTime(IPAddress ip, long timeDiff) {
+    try {
+      return findDuplicatesInTime(ip, timeDiff);
+    } catch (SQLException e) {
+      plugin.getLogger().warning("Failed to process player storage operation", e);
+      return new ArrayList<>();
+    }
+  }
+
+  /**
+   * Strict variant of {@link #getDuplicatesInTime(IPAddress, long)} that
+   * propagates {@link SQLException}. Bypass-IP and per-player {@code alts}
+   * exemptions still apply.
+   */
+  public List<PlayerData> findDuplicatesInTime(IPAddress ip, long timeDiff) throws SQLException {
     ArrayList<PlayerData> players = new ArrayList<>();
 
     if (plugin.getConfig().getBypassPlayerIps().contains(ip.toString())) {
@@ -254,40 +279,32 @@ public class PlayerStorage extends BaseDaoImpl<PlayerData, byte[]> {
     }
 
     QueryBuilder<PlayerData, byte[]> query = queryBuilder();
-    try {
-      query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
+    query.leftJoin(plugin.getPlayerBanStorage().queryBuilder());
 
-      Where<PlayerData, byte[]> where = query.where();
+    Where<PlayerData, byte[]> where = query.where();
+    where.eq("ip", ip);
 
-      where.eq("ip", ip);
-
-      if (timeDiff != 0) {
-        long currentTime = System.currentTimeMillis() / 1000L;
-
-        where.and().ge("lastSeen", (currentTime - timeDiff));
-      }
-
-      query.setWhere(where);
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process player storage operation", e);
-      return players;
+    if (timeDiff != 0) {
+      long currentTime = System.currentTimeMillis() / 1000L;
+      where.and().ge("lastSeen", (currentTime - timeDiff));
     }
 
+    query.setWhere(where);
 
-    CloseableIterator<PlayerData> itr = null;
+    // CloseableIterator extends AutoCloseable (close() throws Exception),
+    // so try-with-resources would force this method to declare
+    // `throws Exception`. Use closeQuietly() to drain the cursor while
+    // keeping the SQLException-only contract — close-time errors here just
+    // mean the result set is gone, which is fine; the caller already has
+    // the rows.
+    CloseableIterator<PlayerData> itr = query.limit(300L).iterator();
     try {
-      itr = query.limit(300L).iterator();
-
       while (itr.hasNext()) {
         PlayerData player = itr.next();
-
         if (!plugin.getExemptionsConfig().isExempt(player, "alts")) players.add(player);
       }
-
-    } catch (SQLException e) {
-      plugin.getLogger().warning("Failed to process player storage operation", e);
     } finally {
-      if (itr != null) itr.closeQuietly();
+      itr.closeQuietly();
     }
 
     return players;

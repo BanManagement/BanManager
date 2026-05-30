@@ -43,4 +43,15 @@ public class BukkitScheduler implements CommonScheduler {
     long periodTicks = SchedulerTime.durationToTicksCeil(period);
     Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, initialTicks, periodTicks);
   }
+
+  /**
+   * Bukkit pins {@link #runSync(Runnable)} to the server tick thread via
+   * {@code BukkitScheduler#runTask(Plugin, Runnable)}, so main-thread-only
+   * APIs (Bukkit {@code World} mutations, inventory changes, etc.) are safe
+   * to call from inside the submitted task.
+   */
+  @Override
+  public boolean isMainThreadAware() {
+    return true;
+  }
 }

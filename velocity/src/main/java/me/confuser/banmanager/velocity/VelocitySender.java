@@ -39,6 +39,6 @@ public class VelocitySender implements CommonSender {
   public PlayerData getData() {
     if (isConsole()) return plugin.getPlayerStorage().getConsole();
 
-    return CommonCommand.getPlayer(this, getName(), false);
+    return CommonCommand.resolvePlayer(plugin, this, getName(), false);
   }
 }

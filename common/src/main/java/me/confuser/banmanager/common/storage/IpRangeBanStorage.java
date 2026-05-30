@@ -1,9 +1,14 @@
 package me.confuser.banmanager.common.storage;
 
+import me.confuser.banmanager.api.event.ip.IpRangeBanEvent;
+import me.confuser.banmanager.api.event.ip.IpRangeBannedEvent;
+import me.confuser.banmanager.api.event.ip.IpRangeUnbanEvent;
+import me.confuser.banmanager.api.event.ip.IpRangeUnbannedEvent;
+import me.confuser.banmanager.api.request.IpRangeBanRequest;
 import me.confuser.banmanager.common.BanManagerPlugin;
-import me.confuser.banmanager.common.api.events.CommonEvent;
 import me.confuser.banmanager.common.data.IpRangeBanData;
 import me.confuser.banmanager.common.data.PlayerData;
+import me.confuser.banmanager.common.impl.EntityMappers;
 import me.confuser.banmanager.common.google.guava.collect.Range;
 import me.confuser.banmanager.common.google.guava.collect.TreeRangeSet;
 import me.confuser.banmanager.common.ipaddr.AddressValueException;
@@ -19,6 +24,7 @@ import me.confuser.banmanager.common.ormlite.support.DatabaseResults;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTableConfig;
 import me.confuser.banmanager.common.ormlite.table.TableUtils;
 import me.confuser.banmanager.common.util.IPUtils;
+import me.confuser.banmanager.common.util.Message;
 import me.confuser.banmanager.common.util.TransactionHelper;
 import me.confuser.banmanager.common.util.UUIDUtils;
 
@@ -189,7 +195,8 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
     }
     bans.put(range, ban);
 
-    plugin.getServer().callEvent("IpRangeBannedEvent", ban, ban.isSilent() || !plugin.getConfig().isBroadcastOnSync());
+    boolean silent = ban.isSilent() || !plugin.getConfig().isBroadcastOnSync();
+    plugin.getEventBus().publish(new IpRangeBannedEvent(EntityMappers.ipRangeBan(ban), silent));
   }
 
   public void removeBan(IpRangeBanData ban) {
@@ -204,11 +211,19 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
   }
 
   public boolean ban(IpRangeBanData ban) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpRangeBanEvent", ban, ban.isSilent());
+    return ban(ban, null);
+  }
 
-    if (event.isCancelled()) {
+  public boolean ban(IpRangeBanData ban, Message kickMessage) throws SQLException {
+    IpRangeBanRequest request = EntityMappers.ipRangeBanRequest(ban);
+    IpRangeBanEvent pre = new IpRangeBanEvent(request);
+    plugin.getEventBus().publish(pre);
+
+    if (pre.isCancelled()) {
       return false;
     }
+
+    EntityMappers.applyTo(request, ban);
 
     create(ban);
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
@@ -218,7 +233,15 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
       ranges.add(range);
     }
 
-    plugin.getServer().callEvent("IpRangeBannedEvent", ban, event.isSilent());
+    if (kickMessage != null) {
+      kickMessage.set("id", ban.getId());
+    }
+
+    IpRangeBannedEvent post = plugin.getEventBus().publish(new IpRangeBannedEvent(EntityMappers.ipRangeBan(ban), request.silent()));
+
+    if (kickMessage != null && !post.placeholders().isEmpty()) {
+      post.placeholders().forEach(kickMessage::set);
+    }
 
     return true;
   }
@@ -232,15 +255,23 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
   }
 
   public boolean unban(IpRangeBanData ban, PlayerData actor, String reason, boolean silent) throws SQLException {
-    CommonEvent event = plugin.getServer().callEvent("IpRangeUnbanEvent", ban, actor, reason, silent);
+    IpRangeUnbanEvent pre = new IpRangeUnbanEvent(
+        EntityMappers.ipRangeBan(ban),
+        EntityMappers.player(actor),
+        reason,
+        silent);
+    plugin.getEventBus().publish(pre);
 
-    if (event.isCancelled()) {
+    if (pre.isCancelled()) {
       return false;
     }
 
+    String finalReason = pre.reason();
+    boolean finalSilent = pre.silent();
+
     TransactionHelper.runInTransaction(connectionSource, () -> {
       delete(ban);
-      plugin.getIpRangeBanRecordStorage().addRecord(ban, actor, reason);
+      plugin.getIpRangeBanRecordStorage().addRecord(ban, actor, finalReason);
     });
 
     Range range = Range.closed(ban.getFromIp(), ban.getToIp());
@@ -248,6 +279,12 @@ public class IpRangeBanStorage extends BaseStorage<IpRangeBanData, Integer> {
     synchronized (rangesLock) {
       ranges.remove(range);
     }
+
+    plugin.getEventBus().publish(new IpRangeUnbannedEvent(
+        EntityMappers.ipRangeBan(ban),
+        EntityMappers.player(actor),
+        finalReason,
+        finalSilent));
 
     return true;
   }

@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.google.guava.collect.Range;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
@@ -25,6 +26,7 @@ public class IpRangeBanData {
   private IPAddress toIp;
 
   @Getter
+  @Setter
   @DatabaseField(canBeNull = false)
   private String reason;
 
@@ -40,11 +42,13 @@ public class IpRangeBanData {
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long updated = System.currentTimeMillis() / 1000L;
   @Getter
+  @Setter
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long expires = 0;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   IpRangeBanData() {

@@ -1,8 +1,8 @@
 package me.confuser.banmanager.fabric;
 
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonScheduler;
 import net.minecraft.server.MinecraftServer;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.concurrent.Executors;
@@ -13,11 +13,16 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class FabricScheduler implements CommonScheduler {
+  // Constructed before BanManagerPlugin (it's a constructor argument), so we accept a
+  // Logger directly to keep failure reporting available without reaching into the plugin
+  // singleton.
+  private final Logger logger;
   private final ScheduledExecutorService schedulerService;
   private final ForkJoinPool executorService;
   private MinecraftServer server;
 
-  public FabricScheduler() {
+  public FabricScheduler(Logger logger) {
+    this.logger = logger;
     this.schedulerService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
       @Override
       public Thread newThread(Runnable r) {
@@ -33,7 +38,7 @@ public class FabricScheduler implements CommonScheduler {
           worker.setName("banmanager-worker-" + worker.getPoolIndex());
           return worker;
         },
-        (t, e) -> BanManagerPlugin.getInstance().getLogger().warning("Uncaught exception in scheduler worker thread", e),
+        (t, e) -> logger.warn("Uncaught exception in scheduler worker thread", e),
         false);
   }
 
@@ -47,7 +52,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Exception in async task", e);
+        logger.warn("Exception in async task", e);
       }
     });
   }
@@ -58,7 +63,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed async task", e);
+        logger.warn("Exception in delayed async task", e);
       }
     }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
@@ -69,7 +74,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Exception in sync task", e);
+        logger.warn("Exception in sync task", e);
       }
     });
   }
@@ -80,7 +85,7 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed sync task", e);
+        logger.warn("Exception in delayed sync task", e);
       }
     }), delay.toMillis(), TimeUnit.MILLISECONDS);
   }
@@ -91,9 +96,20 @@ public class FabricScheduler implements CommonScheduler {
       try {
         task.run();
       } catch (Exception e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Exception in repeating async task", e);
+        logger.warn("Exception in repeating async task", e);
       }
     }), initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Fabric dispatches {@link #runSync(Runnable)} via
+   * {@link MinecraftServer#execute(Runnable)}, which queues the task to run
+   * on the server's main thread. Worldgen and entity APIs that require the
+   * server thread are therefore safe to call from inside the submitted task.
+   */
+  @Override
+  public boolean isMainThreadAware() {
+    return true;
   }
 
   public void shutdown() {

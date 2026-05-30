@@ -41,12 +41,12 @@ public class JoinListener extends Listener {
 
   @Subscribe
   public void onJoin(PostLoginEvent event) {
-    listener.onJoin(new VelocityPlayer(event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()));
+    listener.onJoin(new VelocityPlayer(plugin.getPlugin(), event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()));
   }
 
   @Subscribe(order = PostOrder.LAST)
   public void onPlayerLogin(PostLoginEvent event) {
-    listener.onPlayerLogin(new VelocityPlayer(event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()), new LoginHandler(event));
+    listener.onPlayerLogin(new VelocityPlayer(plugin.getPlugin(), event.getPlayer(), plugin.getPlugin().getConfig().isOnlineMode()), new LoginHandler(event));
   }
 
   @RequiredArgsConstructor
@@ -61,7 +61,6 @@ public class JoinListener extends Listener {
 
     @Override
     public void handlePlayerDeny(PlayerData player, Message message) {
-      plugin.getServer().callEvent("PlayerDeniedEvent", player, message);
       event.setResult(ResultedEvent.ComponentResult.denied(
           VelocityServer.convert(message.resolveComponent(player.getLocale() != null ? player.getLocale() : "en"))));
     }

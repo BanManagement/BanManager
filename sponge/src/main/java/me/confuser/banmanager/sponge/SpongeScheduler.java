@@ -1,7 +1,8 @@
 package me.confuser.banmanager.sponge;
 
-import me.confuser.banmanager.common.BanManagerPlugin;
 import me.confuser.banmanager.common.CommonScheduler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Ticks;
@@ -16,6 +17,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class SpongeScheduler implements CommonScheduler {
+    private static final Logger LOGGER = LogManager.getLogger("BanManager");
+
     private final PluginContainer plugin;
     private final ScheduledExecutorService schedulerService;
     private final ForkJoinPool executorService;
@@ -37,7 +40,7 @@ public class SpongeScheduler implements CommonScheduler {
                 worker.setName("banmanager-worker-" + worker.getPoolIndex());
                 return worker;
             },
-            (t, e) -> BanManagerPlugin.getInstance().getLogger().warning("Uncaught exception in scheduler worker thread", e),
+            (t, e) -> LOGGER.warn("Uncaught exception in scheduler worker thread", e),
             false);
     }
 
@@ -47,7 +50,7 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                BanManagerPlugin.getInstance().getLogger().warning("Exception in async task", e);
+                LOGGER.warn("Exception in async task", e);
             }
         });
     }
@@ -58,7 +61,7 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed async task", e);
+                LOGGER.warn("Exception in delayed async task", e);
             }
         }), delay.toMillis(), TimeUnit.MILLISECONDS);
     }
@@ -72,7 +75,7 @@ public class SpongeScheduler implements CommonScheduler {
                     try {
                         task.run();
                     } catch (Exception e) {
-                        BanManagerPlugin.getInstance().getLogger().warning("Exception in sync task", e);
+                        LOGGER.warn("Exception in sync task", e);
                     }
                 })
                 .build()
@@ -90,7 +93,7 @@ public class SpongeScheduler implements CommonScheduler {
                     try {
                         task.run();
                     } catch (Exception e) {
-                        BanManagerPlugin.getInstance().getLogger().warning("Exception in delayed sync task", e);
+                        LOGGER.warn("Exception in delayed sync task", e);
                     }
                 })
                 .build()
@@ -103,9 +106,19 @@ public class SpongeScheduler implements CommonScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                BanManagerPlugin.getInstance().getLogger().warning("Exception in repeating async task", e);
+                LOGGER.warn("Exception in repeating async task", e);
             }
         }), initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Sponge dispatches {@link #runSync(Runnable)} through the server's
+     * scheduler so the task runs on the main game tick thread, where the
+     * full Sponge API surface (worlds, inventories, etc.) is legal to touch.
+     */
+    @Override
+    public boolean isMainThreadAware() {
+        return true;
     }
 
     public void shutdown() {

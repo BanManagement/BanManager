@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.ipaddr.IPAddress;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
@@ -17,6 +18,7 @@ public class IpMuteData {
   @DatabaseField(canBeNull = false, persisterClass = IpAddress.class, columnDefinition = "VARBINARY(16) NOT NULL")
   private IPAddress ip;
   @Getter
+  @Setter
   @DatabaseField(canBeNull = false)
   private String reason;
   @Getter
@@ -31,15 +33,18 @@ public class IpMuteData {
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long updated = System.currentTimeMillis() / 1000L;
   @Getter
+  @Setter
   @DatabaseField(index = true, columnDefinition = "BIGINT UNSIGNED NOT NULL")
   private long expires = 0;
 
   @DatabaseField(index = true)
   @Getter
+  @Setter
   private boolean soft = false;
 
   @DatabaseField
   @Getter
+  @Setter
   private boolean silent = false;
 
   IpMuteData() {

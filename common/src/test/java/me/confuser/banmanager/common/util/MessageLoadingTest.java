@@ -22,7 +22,7 @@ public class MessageLoadingTest extends BasePluginTest {
             .set("expires", "1d")
             .resolveComponent();
 
-    String plain = MessageRenderer.getInstance().toPlainText(component);
+    String plain = plugin.getMessageRenderer().toPlainText(component);
     assertEquals("Currently banned for abc by def at 8th July which expires in 1d", plain);
   }
 
@@ -37,7 +37,7 @@ public class MessageLoadingTest extends BasePluginTest {
       }
     }
 
-    Message.init(registry, new TestLogger());
+    Message.init(registry, new TestLogger(), plugin.getMessageRenderer(), null, null);
   }
 
   @Test

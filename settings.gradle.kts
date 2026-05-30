@@ -14,6 +14,7 @@ plugins {
 rootProject.name = "BanManager"
 
 // Non-Fabric modules (standard includes)
+include(":BanManagerAPI")
 include(":BanManagerCommon")
 include(":BanManagerBukkit")
 include(":BanManagerBungee")
@@ -21,7 +22,9 @@ include(":BanManagerSponge")
 include(":BanManagerLibs")
 include(":BanManagerVelocity")
 include(":BanManagerE2E")
+include(":BanManagerSamplePlugin")
 
+project(":BanManagerAPI").projectDir = file("api")
 project(":BanManagerCommon").projectDir = file("common")
 project(":BanManagerBukkit").projectDir = file("bukkit")
 project(":BanManagerBungee").projectDir = file("bungee")
@@ -29,6 +32,7 @@ project(":BanManagerSponge").projectDir = file("sponge")
 project(":BanManagerLibs").projectDir = file("libs")
 project(":BanManagerVelocity").projectDir = file("velocity")
 project(":BanManagerE2E").projectDir = file("e2e")
+project(":BanManagerSamplePlugin").projectDir = file("e2e/sample-plugin")
 
 // Fabric module with Stonecutter multi-version support
 stonecutter {

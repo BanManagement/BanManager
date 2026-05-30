@@ -1,6 +1,7 @@
 package me.confuser.banmanager.bungee;
 
 import lombok.Getter;
+import me.confuser.banmanager.api.event.player.PluginReloadedEvent;
 import me.confuser.banmanager.bungee.configs.BungeeConfig;
 import me.confuser.banmanager.bungee.listeners.*;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -8,6 +9,11 @@ import me.confuser.banmanager.common.commands.CommonCommand;
 import me.confuser.banmanager.common.configs.PluginInfo;
 import me.confuser.banmanager.common.configuration.ConfigurationSection;
 import me.confuser.banmanager.common.configuration.file.YamlConfiguration;
+import me.confuser.banmanager.common.listeners.CommonBanListener;
+import me.confuser.banmanager.common.listeners.CommonHooksListener;
+import me.confuser.banmanager.common.listeners.CommonMuteListener;
+import me.confuser.banmanager.common.listeners.CommonNoteListener;
+import me.confuser.banmanager.common.listeners.CommonWebhookListener;
 import me.confuser.banmanager.common.runnables.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -47,7 +53,7 @@ public class BMBungeePlugin extends Plugin {
     try {
       pluginInfo = setupConfigs();
     } catch (IOException e) {
-      BanManagerPlugin.getInstance().getLogger().warning("Failed to set up plugin configuration", e);
+      getLogger().log(java.util.logging.Level.WARNING, "Failed to set up plugin configuration", e);
       return;
     }
 
@@ -115,7 +121,7 @@ public class BMBungeePlugin extends Plugin {
         try (InputStream in = getResourceAsStream(name)) {
           Files.copy(in, file.toPath());
         } catch (IOException e) {
-          BanManagerPlugin.getInstance().getLogger().warning("Failed to copy default config file", e);
+          getLogger().log(java.util.logging.Level.WARNING, "Failed to copy default config file", e);
         }
       } else {
         try (InputStream in = getResourceAsStream(file.getName());
@@ -154,20 +160,20 @@ public class BMBungeePlugin extends Plugin {
   public void setupListeners() {
     registerEvent(new JoinListener(this));
     registerEvent(new LeaveListener(plugin));
-    registerEvent(new HookListener(plugin));
+    new CommonHooksListener(plugin);
 
     registerChatListener();
 
-    registerEvent(new ReloadListener(this));
+    plugin.getEventBus().subscribe(PluginReloadedEvent.class, e -> registerChatListener());
 
     if (plugin.getConfig().isDisplayNotificationsEnabled()) {
-      registerEvent(new BanListener(plugin));
-      registerEvent(new MuteListener(plugin));
-      registerEvent(new NoteListener(plugin));
+      new CommonBanListener(plugin);
+      new CommonMuteListener(plugin);
+      new CommonNoteListener(plugin);
     }
 
     if (plugin.getWebhookConfig().isHooksEnabled()) {
-      registerEvent(new WebhookListener(plugin));
+      new CommonWebhookListener(plugin);
     }
   }
 

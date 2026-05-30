@@ -43,7 +43,9 @@ public final class TargetResolver {
   private TargetResolver() {
   }
 
-  public static TargetResult resolveTarget(CommonServer server, String input) {
+  public static TargetResult resolveTarget(BanManagerPlugin plugin, String input) {
+    CommonServer server = plugin.getServer();
+
     if (CommonCommand.isUUID(input)) {
       try {
         CommonPlayer onlinePlayer = server.getPlayer(UUID.fromString(input));
@@ -65,7 +67,7 @@ public final class TargetResolver {
 
     CommonPlayer partialPlayer = server.getPlayer(input);
     if (partialPlayer != null) {
-      PlayerData exactStored = BanManagerPlugin.getInstance().getPlayerStorage().retrieve(input, false);
+      PlayerData exactStored = plugin.getPlayerStorage().retrieve(input, false);
 
       if (exactStored != null && !exactStored.getName().equalsIgnoreCase(partialPlayer.getName())) {
         return new TargetResult(TargetStatus.AMBIGUOUS, partialPlayer, partialPlayer.getName());

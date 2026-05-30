@@ -38,4 +38,16 @@ public class BungeeScheduler implements CommonScheduler {
   public void runAsyncRepeating(Runnable task, Duration initialDelay, Duration period) {
     ProxyServer.getInstance().getScheduler().schedule(plugin, task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
   }
+
+  /**
+   * BungeeCord is a fully-asynchronous proxy with no main-thread tick.
+   * {@link #runSync(Runnable)} is therefore an alias for
+   * {@link #runAsync(Runnable)} — exposed via this flag so callers can
+   * detect platforms where main-thread-only APIs (Bukkit {@code World} etc.)
+   * are unavailable.
+   */
+  @Override
+  public boolean isMainThreadAware() {
+    return false;
+  }
 }

@@ -90,8 +90,13 @@ public class TempNameBanCommand extends CommonCommand {
         final NameBanData ban = new NameBanData(name, actor, reason, isSilent, expires);
         boolean created;
 
+        Message kickMessage = Message.get("tempbanname.name.kick")
+            .set("reason", ban.getReason())
+            .set("name", name)
+            .set("actor", actor.getName());
+
         try {
-          created = getPlugin().getNameBanStorage().ban(ban);
+          created = getPlugin().getNameBanStorage().ban(ban, kickMessage);
         } catch (SQLException e) {
           handlePunishmentCreateException(e, sender, Message.get("banname.error.exists").set("player",
               name));
@@ -104,12 +109,6 @@ public class TempNameBanCommand extends CommonCommand {
 
         // Find online players
         getPlugin().getScheduler().runSync(() -> {
-          Message kickMessage = Message.get("tempbanname.name.kick")
-              .set("reason", ban.getReason())
-              .set("name", name)
-              .set("id", ban.getId())
-              .set("actor", actor.getName());
-
           for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(name)) {
               onlinePlayer.kick(kickMessage);

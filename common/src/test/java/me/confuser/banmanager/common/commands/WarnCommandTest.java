@@ -91,7 +91,7 @@ public class WarnCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Player", new TestPlayer(UUID.randomUUID(), "Player123", true));
+    server.setPartialMatch("Player", new TestPlayer(plugin, UUID.randomUUID(), "Player123", true));
     when(sender.hasPermission("bm.command.warn.offline")).thenReturn(false);
 
     try {
@@ -113,7 +113,7 @@ public class WarnCommandTest extends BasePluginDbTest {
     server.setUseStorageForOnlineLookups(false);
     server.clearExactMatches();
     server.clearPartialMatches();
-    server.setPartialMatch("Play", new TestPlayer(targetPlayer.getUUID(), targetPlayer.getName(), true));
+    server.setPartialMatch("Play", new TestPlayer(plugin, targetPlayer.getUUID(), targetPlayer.getName(), true));
     when(sender.hasPermission("bm.command.warn.offline")).thenReturn(false);
 
     try {
@@ -131,7 +131,7 @@ public class WarnCommandTest extends BasePluginDbTest {
   public void shouldFailIfPlayerExempt() {
     CommonSender sender = spy(plugin.getServer().getConsoleSender());
     PlayerData player = testUtils.createRandomPlayer();
-    CommonPlayer commonPlayer = spy(new TestPlayer(player.getUUID(), player.getName(), true));
+    CommonPlayer commonPlayer = spy(new TestPlayer(plugin, player.getUUID(), player.getName(), true));
     server.setExactMatch(player.getName(), commonPlayer);
     String[] args = new String[]{player.getName(), "test"};
 
@@ -183,7 +183,7 @@ public class WarnCommandTest extends BasePluginDbTest {
     actionsField.setAccessible(true);
     actionsField.set(warningActionsConfig, actions);
 
-    List<ActionCommand> commands = warningActionsConfig.getCommands(player, 5);
+    List<ActionCommand> commands = warningActionsConfig.getCommands(plugin, player, 5);
 
     assertEquals(2, commands.size());
 

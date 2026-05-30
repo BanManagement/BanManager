@@ -1,6 +1,7 @@
 package me.confuser.banmanager.common.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.confuser.banmanager.common.ormlite.field.DatabaseField;
 import me.confuser.banmanager.common.ormlite.table.DatabaseTable;
 import me.confuser.banmanager.common.storage.mysql.ByteArray;
@@ -16,6 +17,7 @@ public class PlayerNoteData {
   private PlayerData player;
   @DatabaseField(canBeNull = false)
   @Getter
+  @Setter
   private String message;
   @DatabaseField(index = true, canBeNull = false, foreign = true, foreignAutoRefresh = true, persisterClass = ByteArray.class, columnDefinition = "BINARY(16) NOT NULL")
   @Getter

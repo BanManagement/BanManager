@@ -61,7 +61,7 @@ public class FindAltsCommand extends CommonCommand {
           return;
         }
 
-        ((CommonPlayer) sender).sendJSONMessage(alts(players));
+        ((CommonPlayer) sender).sendJSONMessage(alts(getPlugin(), players));
       } else {
         ArrayList<String> names = new ArrayList<>(players.size());
 
@@ -83,14 +83,14 @@ public class FindAltsCommand extends CommonCommand {
     return true;
   }
 
-  public static TextComponent alts(List<PlayerData> players) {
+  public static TextComponent alts(BanManagerPlugin plugin, List<PlayerData> players) {
     TextComponent.Builder message = Component.text();
 
     List<PlayerData> unbanned = new ArrayList<>();
     Map<UUID, TextColor> colours = new HashMap<>();
 
     for (PlayerData player : players) {
-      PlayerBanData ban = BanManagerPlugin.getInstance().getPlayerBanStorage().getBan(player.getUUID());
+      PlayerBanData ban = plugin.getPlayerBanStorage().getBan(player.getUUID());
 
       if (ban != null) {
         colours.put(player.getUUID(), ban.getExpires() == 0 ? NamedTextColor.RED : NamedTextColor.GOLD);
@@ -101,7 +101,7 @@ public class FindAltsCommand extends CommonCommand {
 
     if (!unbanned.isEmpty()) {
       try {
-        Set<UUID> withRecords = BanManagerPlugin.getInstance().getPlayerBanRecordStorage()
+        Set<UUID> withRecords = plugin.getPlayerBanRecordStorage()
             .queryBuilder()
             .selectColumns("player_id")
             .where().in("player_id", unbanned.stream().map(PlayerData::getId).collect(Collectors.toList()))
@@ -114,7 +114,7 @@ public class FindAltsCommand extends CommonCommand {
           colours.put(player.getUUID(), withRecords.contains(player.getUUID()) ? NamedTextColor.YELLOW : NamedTextColor.GREEN);
         }
       } catch (SQLException e) {
-        BanManagerPlugin.getInstance().getLogger().warning("Failed to execute findalts command", e);
+        plugin.getLogger().warning("Failed to execute findalts command", e);
         for (PlayerData player : unbanned) {
           colours.put(player.getUUID(), NamedTextColor.GREEN);
         }
@@ -123,7 +123,7 @@ public class FindAltsCommand extends CommonCommand {
 
     boolean hasEntryTemplate = Message.getRawTemplate("alts.entry") != null;
     String separatorRaw = Message.getRawTemplate("alts.separator");
-    MessageRenderer renderer = MessageRenderer.getInstance();
+    MessageRenderer renderer = plugin.getMessageRenderer();
     Component separator = separatorRaw != null ? renderer.render(separatorRaw) : Component.text(", ");
 
     int index = 0;

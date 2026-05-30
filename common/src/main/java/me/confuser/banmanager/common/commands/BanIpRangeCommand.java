@@ -62,8 +62,12 @@ public class BanIpRangeCommand extends CommonCommand {
       final IpRangeBanData ban = new IpRangeBanData(fromIp, toIp, actor, reason.getMessage(), isSilent);
       boolean created;
 
+      Message kickMessage = Message.get("baniprange.ip.kick")
+          .set("reason", ban.getReason())
+          .set("actor", actor.getName());
+
       try {
-        created = getPlugin().getIpRangeBanStorage().ban(ban);
+        created = getPlugin().getIpRangeBanStorage().ban(ban, kickMessage);
       } catch (SQLException e) {
         handlePunishmentCreateException(e, sender, Message.get("baniprange.error.exists"));
         return;
@@ -75,11 +79,6 @@ public class BanIpRangeCommand extends CommonCommand {
 
       // Find online players
       getPlugin().getScheduler().runSync(() -> {
-        Message kickMessage = Message.get("baniprange.ip.kick")
-            .set("id", ban.getId())
-            .set("reason", ban.getReason())
-            .set("actor", actor.getName());
-
         for (CommonPlayer onlinePlayer : getPlugin().getServer().getOnlinePlayers()) {
           if (ban.inRange(IPUtils.toIPAddress(onlinePlayer.getAddress()))) {
             onlinePlayer.kick(kickMessage);
