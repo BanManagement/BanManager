@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * End-to-end sample plugin that exercises every public surface of
@@ -53,6 +54,8 @@ import java.util.logging.Level;
  * </ul>
  */
 public class SamplePlugin extends JavaPlugin {
+
+  private static final Pattern SAFE_TABLE_NAME = Pattern.compile("[A-Za-z0-9_]+");
 
   private final List<Subscription> subscriptions = new ArrayList<>();
 
@@ -216,6 +219,11 @@ public class SamplePlugin extends JavaPlugin {
   }
 
   private static long countOf(Connection conn, String table) throws SQLException {
+    // Table names cannot be bound as JDBC parameters, so allowlist the
+    // identifier before interpolating it to keep the query injection-safe.
+    if (!SAFE_TABLE_NAME.matcher(table).matches()) {
+      throw new IllegalArgumentException("Unsafe table name: " + table);
+    }
     try (PreparedStatement ps = conn.prepareStatement("SELECT count(*) FROM " + table);
          ResultSet rs = ps.executeQuery()) {
       return rs.next() ? rs.getLong(1) : 0L;
